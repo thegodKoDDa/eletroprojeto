@@ -13,9 +13,7 @@ Atualizado em 23/10/2026. Bugs corrigidos constam em CHANGELOG/revisões, não c
 | CONT-02 / alta | Perda de disco/computador | .checkpoints no mesmo disco não protege contra perda física. Cópia externa protegida ainda necessária; não realizada nesta sessão. |
 | PDF-01 / média | Conferência documental | Extração/renderização independentes em MuPDF e inspeção visual realizadas nas entregas 0.10.0/0.10.1; impressão física e conferência em outros visualizadores ainda pendentes. |
 
-Scripts PowerShell são wrappers opcionais; execução real em Windows/PowerShell depende de ambiente com Python 3.11+ e ainda precisa ser conferida lá. PostgreSQL, catálogo global persistido e detecção seletiva de impacto normativo continuam planejados, ver roadmap.
-
-Atualização deste parágrafo histórico: PostgreSQL18.6 e backend Windows11/Python3.13 foram executados/testados; catálogo global persistido em0005. Continuidade Windows encontrou conexões SQLite não fechadas explicitamente; corrigidas com contextlib.closing, sete testes passaram com duas limitações explícitas (GPG ausente e privilégio de symlink indisponível). Frontend Windows em preparação. Impressão física/leitor de tela real permanecem pendentes; axe automático não os substitui.
+Backend e frontend foram executados em Windows real; PostgreSQL e catálogo persistente também foram validados. Os testes de continuidade no Windows tiveram duas limitações explícitas: GPG ausente e privilégio de symlink indisponível. Impressão física e leitor de tela real permanecem pendentes; axe automático não os substitui.
 
 Resolvidas em0.11.0: DATA-01 (rascunhos recuperáveis por conta/aba, erros de armazenamento explícitos) e fluxo guiado de conflitos409; CONT-01 (Git init autorizado, status/commit utilizáveis; baseline local revisado `d5d8212`, sem push). Limites da recuperação: dados gravados neste perfil de navegador, não após limpar o armazenamento ou em outro computador. Banco/checkpoint não capturam rascunhos do navegador.
 

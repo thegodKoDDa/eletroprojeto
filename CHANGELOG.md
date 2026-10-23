@@ -1,5 +1,12 @@
 # Histórico de alterações
 
+## Organização de arquivos — 23/10/2026 (sem alteração de versão)
+
+- Referências normativas fora da raiz, revisões antigas em docs/history e índices de documentação/referências. Hashes dos PDFs preservados.
+- Removidos caches regeneráveis e marcadores de download; preservados dados, instalações, backups e serviços.
+- Estado atual separado dos registros históricos; README e pendências corrigidos quanto a lint, autenticação, PostgreSQL e Windows já implementados/verificados.
+
+
 ## 0.12.0 — 23/10/2026
 
 - NDU-0017.0 fornecida pelo usuário revisada e registrada por arquivo/hash;6.3 mantida apenas como referência histórica substituída. PDFs não incorporados ao Git/ZIP de código.

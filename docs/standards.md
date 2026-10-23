@@ -65,7 +65,7 @@ Referências da stack consultadas:
 
 Foram localizados PDFs NDU-001 7.0 no domínio oficial Energisa, mas a leitura integral retornou 403/erro. O registro permanece pendente. Nenhum fator foi habilitado a partir de fragmentos indexados ou da expressão histórica com 0,92. A edição e os requisitos de NBR 5410 continuam sem confirmação em exemplar oficial autorizado.
 
-Fontes de fabricante e tabela pública Enel de equipamentos foram incorporadas ao catálogo com classificação nominal/máxima/estimada, URL, documento e data. Essa tabela Enel fornece apenas referências de potência; não foi utilizada como critério normativo para projetos Energisa. Veja a relação completa de fontes e as informações descartadas por ambiguidade em [review-2026-10-21.md](review-2026-10-21.md).
+Fontes de fabricante e tabela pública Enel de equipamentos foram incorporadas ao catálogo com classificação nominal/máxima/estimada, URL, documento e data. Essa tabela Enel fornece apenas referências de potência; não foi utilizada como critério normativo para projetos Energisa. Veja a relação completa de fontes e as informações descartadas por ambiguidade em [review-2026-10-21.md](history/review-2026-10-21.md).
 
 Os testes de bloqueio normativo verificam que valores não auditados permanecem nulos, mesmo com cargas ou grupos informados. Isso não equivale a teste de conformidade com exemplos normativos; tais exemplos e revisão técnica continuam pendentes.
 
@@ -147,3 +147,8 @@ W de placa/manual continuam intactos; previsão VA não substitui iluminação n
 `tests/test_residential.py` registra resultados calculados manualmente antes da execução, separados da implementação: quarto retangular 3×4 m, cozinha 3×3 m, pontos manuais acima/abaixo do mínimo, mudanças de área/perímetro, limites 6/10/14 m² e perímetros exatos/frações. Verifica atribuição por ambiente (sem misturar cômodos), nulos/escopo, recálculo, ausência de dupla contagem e PDF. São exemplos aritméticos independentes, não projetos certificados nem exemplos oficiais de aprovação da distribuidora. Teste API verifica contrato, persistência e histórico anterior intacto; E2E verifica seleção, correção, recálculo, JSON e responsividade.
 
 Motor 0.6.0 e hash do registro distinguem estes resultados da versão anterior. Projetos salvos não foram regravados; novos cálculos com escopo residencial podem passar de null a valores ou a pendências de entrada. Histórico e snapshots anteriores preservam o procedimento antigo. Demanda continua null e nunca é substituída por zero, porcentagem genérica ou soma de instalada. As verificações efetivamente executadas estão em CURRENT_STATE.
+
+
+## Organização local dos exemplares — 23/10/2026
+
+Os dois exemplares anteriormente na raiz estão agora em `references/energisa/ndu-001-v7.0.pdf` e `references/energisa/historico/ndu-001-v6.3.pdf`. SHA256 conferidos após mover; nomes originais/hash nos metadados da API permanecem como proveniência. Sem alteração de regras ou redistribuição dos PDFs. Consulte `references/README.md`.

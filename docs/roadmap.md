@@ -15,7 +15,7 @@ Rascunhos/conflitos guiados, autenticação de proprietário com sessões HTTPS/
 - Projetos com histórico/versionamento, duplicação, exclusão reversível, recuperação e salvamento automático após primeiro salvamento.
 - Ação de ambientes persistente durante a rolagem, foco no novo cadastro; apresentações simples e técnica dos mesmos resultados.
 - PDF preliminar e JSON consistentes com snapshot; registro técnico versionado e revalidação conservadora.
-- Proteção inicial de tamanho HTTP/CORS, backup e workflow de qualidade. Estado dos testes em `review-0.5.0.md`.
+- Proteção inicial de tamanho HTTP/CORS, backup e workflow de qualidade. Estado dos testes em `history/review-0.5.0.md`.
 
 ## Pendências prioritárias
 

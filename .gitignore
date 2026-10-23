@@ -40,3 +40,6 @@ id_ed25519
 *.bundle
 /NDU*.pdf
 *:Zone.Identifier
+
+# Exemplares normativos locais; índice público sem redistribuir PDFs
+/references/**/*.pdf

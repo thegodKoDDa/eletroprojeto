@@ -35,7 +35,7 @@ npm run dev
 
 Endereços configurados: [projeto](http://localhost:3000) e [API documentada](http://localhost:8000/docs). Serviços locais verificados na entrega 0.9.0; disponibilidade depende da execução atual.
 
-Configurações: `NEXT_PUBLIC_API_URL` em `frontend/.env.local`; `DATABASE_URL`, `CORS_ORIGINS` e `MAX_REQUEST_BYTES` no backend (exemplos em `.env.example`). Banco padrão: `backend/eletroprojeto.db`, com caminho absoluto consistente entre API e Alembic. Não há criação automática de tabelas. O lock Python registra o ambiente testado em Python 3.14; PostgreSQL depende de driver e validação próprios.
+Configurações: `NEXT_PUBLIC_API_URL` em `frontend/.env.local`; `DATABASE_URL`, `CORS_ORIGINS` e `MAX_REQUEST_BYTES` no backend (exemplos em `.env.example`). Banco padrão: `backend/eletroprojeto.db`, com caminho absoluto consistente entre API e Alembic. Não há criação automática de tabelas. O lock Python registra o ambiente testado em Python 3.14; PostgreSQL possui driver e validação local registrados no estado atual.
 
 ## Funcionalidades
 
@@ -44,7 +44,7 @@ Configurações: `NEXT_PUBLIC_API_URL` em `frontend/.env.local`; `DATABASE_URL`,
 - Consulta completa paginada, com pesquisa e ordenação; sem aba Recentes no aside. Novo projeto e Salvar como novo criam registros independentes.
 - Sugestões de equipamentos por ambiente, com alternativa de busca geral, sem apagar cargas ao mudar o tipo de cômodo.
 - Ambientes com ação de adição sticky, foco no novo nome e preservação dos anteriores.
-- Catálogo com 37 registros, 34 potências documentadas e valores editáveis. Fonte original preservada; restauração disponível. Cadastro por equipamento comum, sem exigir marca/modelo.
+- Catálogo persistente e versionado, com referências documentadas e valores editáveis. Fonte original preservada; restauração disponível. Cadastro por equipamento comum, sem exigir marca/modelo.
 - Decimal: W/kW, potência por ambiente/categoria, VA/kVA com FP suficiente, correntes conforme configuração, conversões térmicas e mecânicas com unidades separadas. BTU/h e kWh/mês não viram potência elétrica de dimensionamento.
 - Recálculo com debounce de 400 ms, cancelamento e rejeição de respostas obsoletas. Exportações exigem cálculo atual.
 - Tela inicial no Espaço de trabalho: criar projeto, abrir biblioteca ou acessar lixeira. Navegação e ações do projeto no aside; memória de cálculo dentro do projeto. Voltar ao Início mantém a edição nesta aba.
@@ -71,17 +71,19 @@ npm run build:webpack
 npm run test:e2e
 ```
 
-Estado e verificações da entrega 0.6.1 em [CURRENT_STATE](docs/CURRENT_STATE.md); revisão histórica 0.5.0 em [review-0.5.0](docs/review-0.5.0.md). O workflow `.github/workflows/quality.yml` prepara testes, contratos, TypeScript e build em CI; sua execução remota ainda não foi observada. ESLint ainda não está configurado.
+Estado e verificações da entrega atual em [CURRENT_STATE](docs/CURRENT_STATE.md); revisão histórica 0.5.0 em [review-0.5.0](docs/history/review-0.5.0.md). O workflow `.github/workflows/quality.yml` prepara testes, contratos, TypeScript e build em CI; sua execução remota ainda não foi observada. ESLint e verificações de formatação estão configurados.
 
 ## Organização e referências
+
+Consulte o [índice de documentação e pastas](docs/README.md) e o [índice dos exemplares normativos locais](references/README.md).
 
 - `backend/app/calculations`: operações, resolução de equipamentos, agregações e referências normativas.
 - `backend/app/projects.py`: snapshots e histórico; `main.py`: REST; `security.py`: limite HTTP/CORS; `database.py`: ORM; `reports`: geração documental.
 - `frontend/src/components/projects`: área de trabalho; `calculations`: resultados; `equipment`: edição; `lib`: API, contratos gerados, recálculo e formatação.
 
-Documentação de referência: [arquitetura](docs/architecture.md), [cálculos](docs/calculations.md), [normas](docs/standards.md), [segurança e recuperação](docs/security.md), [roadmap](docs/roadmap.md), [histórico](CHANGELOG.md). Relatórios anteriores em `docs/review-*`, `audit.md`, `forms-and-pdf.md` e `technical-expansion.md` são registros históricos; seus totais de testes não representam esta versão.
+Documentação de referência: [arquitetura](docs/architecture.md), [cálculos](docs/calculations.md), [normas](docs/standards.md), [segurança e recuperação](docs/security.md), [roadmap](docs/roadmap.md), [histórico](CHANGELOG.md). Relatórios anteriores em `docs/history/review-*`, `audit.md`, `forms-and-pdf.md` e `technical-expansion.md` são registros históricos; seus totais de testes não representam esta versão.
 
-Uso local sem autenticação. Publicação multiusuário exige autorização por projeto e demais proteções descritas na documentação de segurança. Revisão e responsabilidade técnica de profissional habilitado continuam necessárias.
+Modo local sem autenticação; modo remoto com autenticação e isolamento por proprietário implementados. Publicação exige a preparação operacional descrita na documentação de segurança. Revisão e responsabilidade técnica de profissional habilitado continuam necessárias.
 
 ## Continuidade entre sessões
 
