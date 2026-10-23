@@ -31,3 +31,6 @@ PostgreSQL, Windows e E2EHTTPS não repetidos nesta entrega local; evidências a
 Checkpoint anterior à mudança: `.checkpoints/20261023T184620161249Z`, verificado com hashes, restauraçãoSQLite e recuperaçãoGit. Inventários/referências/revisões organizados conforme docs/README.md; PDFs locais em references/energisa, fora de Git/ZIP de código. Caminho do checkpoint final será registrado após geração.
 
 Próximas prioridades locais: ampliar exceções normativas somente após fontes/testes próprios; dimensionamento de circuitos/cabos/proteções/queda de tensão/entrada; geometria/localização dos pontos e associação territorial oficial completa. Ver roadmap/KNOWN_ISSUES. Leitor de tela real ainda não conferido. Retomar por AGENTS e `python3 scripts/continuity.py retomar`; não recriar produto ou regravar dados antigos para atualizar regras. Sem push/publicação.
+
+
+Checkpoint final0.13.0 verificado: `.checkpoints/20261023T190612580807Z`,163arquivos, hashes/ZIP/banco/bundleGit e restauraçãoSQLite/clonagemGit isoladas aprovados. Commit funcional `07b28ab`; registro do caminho posterior à geração preservado em commit documental separado. Banco0005,9projetos/29históricos/7revisões preservados. Sem push/publicação; escopo local conforme decisão do usuário.
