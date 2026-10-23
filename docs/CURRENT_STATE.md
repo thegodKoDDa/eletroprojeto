@@ -1,5 +1,7 @@
 # Estado atual — 0.12.0 / motor0.7.0: NDU-001 fornecida e método parametrizado
 
+Checkpoint da entrega: `.checkpoints/20261023T181019429476Z` —156arquivos, hashes/ZIP/banco/bundleGit e restauraçãoSQLite/clonagemGit isoladas aprovados; código`97836cf`,9projetos/29históricos/7revisões,0005. PDFs/Zone.Identifier não integram o ZIP de fonte e continuam na raiz com hashes registrados em standards.md. Caminho registrado após geração automática; registro posterior preservado em commit documental. Sem push/publicação/exclusão de arquivos enviados ou cópia externa real.
+
 ## Entrega NDU-001 — 23/10/2026
 
 Pedido atual: ler os dois PDFs da raiz, aproveitar conteúdo útil na API e descartar o que não serve. Arquivo de nome longo contém7.0/novembro2024,162p;6.3 contém189p com erratas/adendos até2023. §2 da7.0 substitui anteriores;6.3 registrada somente como histórica. Originais e hashes preservados; PDFs/Zone.Identifier ignorados no Git/ZIP de fonte, sem redistribuição. Identificação/escopo/fontes/condições/testes em standards.md; matemática em calculations.md.
