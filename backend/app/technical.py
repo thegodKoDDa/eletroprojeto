@@ -155,9 +155,15 @@ def applicability(utility: str, state: str = "SP"):
     return dict(
         utility=utility,
         state=state,
-        status="awaiting_technical_validation" if compatible else "out_of_scope",
+        status="pending"
+        if utility == "energisa_sul_sudeste" and state == "SP"
+        else "awaiting_technical_validation"
+        if compatible
+        else "out_of_scope",
         documents=[doc for doc in DOCUMENTS if doc["id"] in ids],
-        reason="Norma selecionada, mas cálculo específico ainda não validado."
+        reason="Método NDU-001 7.0 d1–d5 disponível com classificação e revisão explícitas; não valida território ou dimensionamento final."
+        if utility == "energisa_sul_sudeste" and state == "SP"
+        else "Norma selecionada, mas cálculo específico ainda não validado."
         if compatible
         else "Distribuidora/estado selecionados ainda sem cobertura verificada. Nenhuma regra de outra distribuidora foi aplicada.",
     )
@@ -208,13 +214,26 @@ def normative_capabilities(utility: str, state: str = "SP") -> list[dict]:
                 code=rule.code,
                 label=rule.label,
                 purpose=rule.purpose,
-                available=rule.procedure is not None,
+                available=rule.procedure is not None
+                and (
+                    rule.code != "demand" or (utility == "energisa_sul_sudeste" and state == "SP")
+                ),
                 status=status,
                 reason=reason,
                 evidence=evidence,
                 pending_checks=checks,
             )
         )
+    if utility == "energisa_sul_sudeste" and state == "SP":
+        for capability in capabilities:
+            if capability["code"] == "demand":
+                capability.update(
+                    available=True,
+                    status="estimated",
+                    reason="Método NDU-001 7.0 §9.1 d1–d5 disponível mediante classificação e revisão explícitas no painel de demanda.",
+                    evidence=[asdict(ENERGISA_V7_EVIDENCE)],
+                    pending_checks=["Confirmar escopo e revisar inventário no painel de demanda."],
+                )
     return capabilities
 
 

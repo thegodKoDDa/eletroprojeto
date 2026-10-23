@@ -1,5 +1,8 @@
 # Memória duradoura — EletroProjeto
 
+Decisão vigente — 23/10/2026: foco em uso LOCAL. Publicação/infraestrutura remota e CI hospedado, impressão física e backup externo estão fora do escopo atual por escolha explícita do usuário; não cobrar nem bloquear entregas por esses itens. Preservar checkpoints locais e proteções existentes.0.13.0/motor0.8.0 integra NDU7.0 d1–d5 ao cadastro e relatórios com revisão vinculada por hash; nomes/classificações não são inferidos do catálogo. Mudança de inventário/escopo invalida revisão. Registros de versões abaixo são históricos e não substituem CURRENT_STATE/roadmap.
+
+
 Organização de 23/10/2026: referências locais em `references/energisa/`, revisões antigas em `docs/history/`; índice em `docs/README.md`. CURRENT_STATE contém somente o resumo atual; o antigo documento cumulativo está preservado em `docs/history/state-before-organization.md`. Não usar afirmações de versões antigas como estado presente.
 
 0.12.0/motor0.7.0: usuário forneceu NDU0017.0 e6.3. Método parametrizado residencial d1–d5 implementado em `/calculations/energisa-demand`, separado da classificação automática dos projetos; condições/limites em standards/calculations. Fonte rastreada por hash/nome como exemplar enviado, sem alegar download oficial verificado.6.3 somente histórica; PDFs fora de Git/ZIP de código. Nenhuma carga/manual/catálogo/histórico regravado. Demanda automática no cadastro, grupos especiais e dimensionamento final continuam pendentes.

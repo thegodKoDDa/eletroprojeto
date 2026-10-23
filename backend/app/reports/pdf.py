@@ -527,6 +527,92 @@ def render_report(project, result, project_version=None):
     doc.line(
         "Previsões normativas indisponíveis neste estudo não indicam falhas no cadastro. Valores nulos não representam zero."
     )
+    regional = result.get("energisa_demand")
+    if regional:
+        doc.section("Demanda revisada — NDU-001 7.0")
+        doc.line(
+            "Estimativa d1–d5; inventário e classificação declarados. Não dimensiona a instalação."
+        )
+        declarations = regional["declarations"]
+        unit_labels = {
+            "individual_residential": "Residência individual",
+            "grouped": "Unidades agrupadas",
+            "non_residential": "Não residencial",
+            "unconfirmed": "Não confirmado",
+        }
+
+        def answer(value):
+            return "Sim" if value is True else "Não" if value is False else "Não confirmado"
+
+        doc.line(
+            "Unidade declarada: " + unit_labels.get(declarations.get("unit_type"), "Não confirmado")
+        )
+        doc.line(
+            "Letreiros/vitrines: "
+            + answer(declarations.get("has_signage_or_display_lighting"))
+            + "; uso simultâneo de luz/TUG: "
+            + answer(declarations.get("simultaneous_lighting_outlets"))
+        )
+        doc.line(
+            "Reservas não entram na demanda; suas potências permanecem na conferência do limite de carga instalada."
+        )
+        doc.line(
+            "Grupos confirmados ausentes: "
+            + ", ".join(declarations.get("confirmed_absent_groups", []))
+        )
+        doc.line(
+            "Inventário revisado: "
+            + ("Sim" if regional["inventory_reviewed"] else "Não / confirmação desatualizada")
+        )
+        doc.table(
+            ["Ambiente / equipamento", "Grupo", "Reserva", "Quantidade", "W/unidade"],
+            [
+                (
+                    f"{item['environment']} / {item['name']}",
+                    item["group"] or "Pendente",
+                    "Sim" if item["reserve"] else "Não",
+                    str(item["quantity"]),
+                    val(item["unit_power_w"]),
+                )
+                for item in regional["inventory"]
+            ],
+            [44, 12, 12, 14, 18],
+        )
+        if regional["groups"]:
+            doc.table(
+                ["Grupo", "Quantidade", "Instalada W", "Demanda W"],
+                [
+                    (
+                        item["group"],
+                        str(item["quantity"]),
+                        val(item["installed_power_w"]),
+                        val(item["demand_w"]),
+                    )
+                    for item in regional["groups"]
+                ],
+                [20, 20, 30, 30],
+            )
+        for group in regional["groups"]:
+            if group["factor"] is not None:
+                doc.line(group["group"] + " — fator por quantidade: " + val(group["factor"]))
+            if group["bands"]:
+                doc.line(group["group"] + " — faixas cumulativas da Tabela 5")
+                doc.table(
+                    ["Faixa W", "Fator", "Demanda W"],
+                    [
+                        (val(band["installed_band_w"]), val(band["factor"]), val(band["demand_w"]))
+                        for band in group["bands"]
+                    ],
+                    [35, 30, 35],
+                )
+        for message in regional["pending_checks"] + regional["limitations"]:
+            doc.line(message)
+        doc.line(
+            "Referência: "
+            + regional["reference"]["title"]
+            + "; "
+            + regional["reference"]["section"]
+        )
     doc.section("Para conversar com a distribuidora")
     doc.line(summary["atendimento_distribuidora"]["situacao"])
     if not summary["atendimento_distribuidora"]["demanda_disponivel"]:

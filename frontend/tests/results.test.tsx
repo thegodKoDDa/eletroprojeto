@@ -148,3 +148,17 @@ it('keeps real missing inputs actionable while hiding stale coverage details', (
   expect(screen.getByText('Atualizando a cobertura para as entradas atuais…')).toBeVisible();
   expect(screen.queryByRole('link', { name: 'Catálogo oficial ABNT' })).toBeNull();
 });
+
+it('hides an old demand value while new project inputs are recalculating', () => {
+  const demand = {
+    value: '6.913043478',
+    unit: 'kVA',
+    status: 'estimated',
+    reason: 'Inventário revisado',
+  };
+  const { rerender } = render(<DemandSummary demand={demand} stale={false} />);
+  expect(screen.getByText('6,913 kVA')).toBeInTheDocument();
+  rerender(<DemandSummary demand={demand} stale />);
+  expect(screen.queryByText('6,913 kVA')).not.toBeInTheDocument();
+  expect(screen.getByText('Recalculando demanda…')).toBeInTheDocument();
+});

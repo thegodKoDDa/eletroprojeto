@@ -130,3 +130,8 @@ Motor permanece 0.6.0 e normas intactas: a versão 0.10.0 altera documento/API d
 `catalog_store.py` persiste revisões imutáveis e ponteiro ativo na migração0005. Inicialização publica o catálogo de código somente se ainda não houver revisão; depois carrega a publicada, atualizando a lista compartilhada usada por endpoints e hashes técnicos. `catalog_admin.py publish-reviewed --file` é publicação administrativa explícita, com modelos/IDs validados e sem alterar snapshots dos projetos. Reiniciar todos os workers após publicar para que tenham a mesma revisão. Não há atualização silenciosa a partir de fabricante, cadastro de projeto ou edição de potência.
 
 Contratos continuam gerados por types:sync; wrappers Node escolhem Python por plataforma e aceitam ELETROPROJETO_PYTHON para QA isolado. E2E gera banco no diretório temporário do sistema, não em caminho Linux fixo. Testes PostgreSQL usam schemas QA únicos; migrações são verificadas separadamente no banco QA. O banco de produção SQLite não é selecionado por essas rotinas.
+
+
+## Integração de demanda no snapshot — 0.13.0
+
+Settings opcionais ProjectInput.energisa_demand e classificação Load.energisa_demand são preservados no payload JSON e histórico existentes; nenhuma migração necessária. Projetos legados mantêm método desativado e conteúdo persistido intacto. Adaptador puro project_demand chama energisa, emite digest de revisão e dados tipados; engine integra resultado normativo. Contratos gerados por types:sync, hook inclui settings no corpo/dependências, relatórios usam resultado do mesmo snapshot. APP0.13.0/ENGINE0.8.0/JSON1.3/schema0005. Escopo vigente é local; infraestrutura de publicação não integra a lista ativa.

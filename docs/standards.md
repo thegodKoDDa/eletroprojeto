@@ -152,3 +152,10 @@ Motor 0.6.0 e hash do registro distinguem estes resultados da versão anterior. 
 ## Organização local dos exemplares — 23/10/2026
 
 Os dois exemplares anteriormente na raiz estão agora em `references/energisa/ndu-001-v7.0.pdf` e `references/energisa/historico/ndu-001-v6.3.pdf`. SHA256 conferidos após mover; nomes originais/hash nos metadados da API permanecem como proveniência. Sem alteração de regras ou redistribuição dos PDFs. Consulte `references/README.md`.
+
+
+## Integração ao cadastro — 0.13.0, 23/10/2026
+
+A integração utiliza exclusivamente as regras e fatores d1–d5 já conferidos na0.12.0, do mesmo exemplar local7.0/hash acima: §9.1 e tabelas5–8/10. Não amplia o escopo a d6/d7, centrais presentes, agrupamentos ou outras distribuidoras. Não transforma previsão normativaVA, BTU/h ou consumo em potência elétricaW.
+
+Cada carga recebe classificação explícita e indicação de reserva; escopo, simultaneidade, ausências e inventário são confirmados pelo usuário. O backend vincula a revisão ao inventário por hash. Falta de dados/classificação/revisão produz null/pending; incompatibilidade confirmada produz null/out_of_scope. Sem reclassificação ou regravação de projetos antigos. Condições de instalada/75kW e reservas continuam as mesmas. Matemática e integração em calculations.md; testes de resultados/limites em test_energisa.py e test_project_demand.py, além de persistência/API/PDF/JSON/E2E. Isso não constitui aprovação da distribuidora ou dimensionamento final.

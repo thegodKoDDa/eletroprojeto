@@ -286,3 +286,16 @@ Pedido: revisar raiz/pastas, organizar e excluir o necessário. Inventário dos 
 
 
 Checkpoint final da organização: `.checkpoints/20261023T182530510469Z`, 159 arquivos; hashes/ZIP/banco/bundle Git e restauração SQLite/clonagem Git isoladas aprovados. Commit da organização `2eaeb21`; registro do caminho feito após a geração, em commit documental separado. Banco preservado (9 projetos/29 históricos/7 revisões,0005). Sem push ou cópia externa; PDFs locais não integram o ZIP de código.
+
+
+## Integração de demanda para uso local — 23/10/2026,0.13.0/motor0.8.0
+
+Usuário autorizou prioridade recomendada e retirou do escopo atual publicação/infraestrutura remota/CI hospedado, impressão física e backup externo. Preferência registrada em AGENTS/memória/roadmap/pendências/continuidade/segurança; nenhum recurso funcional ou backup local excluído. Checkpoint anterior `.checkpoints/20261023T184620161249Z`,159arquivos e restaurações verificadas.
+
+Implementado adaptador puro calculations/project_demand.py; schemas de settings/classificação/inventário/revisão, engine/registro/capacidades, hook/page/DemandReview/DemandSummary, PDF/JSON1.3 e contratos gerados. Fatores energisa.py intocados. Revisão vinculada ao hash evita manter demanda após alterar o inventário; sem classificação ou confirmação não há número. Reserva excluída da demanda, incluída no limite instalado. Escopo não ampliado para d6/d7/centrais/agrupamentos/outras distribuidoras. Projetos legados não receberam classificação nem revisão por migração.
+
+Testes finais:345backend+85subtestes e8continuidade (353+85 conjuntos),92frontend,13E2E locais e repetição final do teste de demanda com axe/painel ativo, PDF/JSON, persistência/reabertura, mudanças/invalidação e telas pequenas. Tipos/contratos/lint/formatação/Ruff/buildwebpack/Alembiccheck/pipcheck aprovados. MuPDF extração/render e inspeção visual da página de demanda; PDF real de navegador em/tmp/eletroprojeto-demand-e2e.pdf. Artefatos QA são fictícios e temporários; não são backups externos. Não repetidos Windows/PostgreSQL/HTTPS nesta entrega local.
+
+Falhas iniciais corrigidas: tipos obrigatórios nos defaults de classificação; confirmação controlada por resposta sumia durante debounce (estado pendente agora preserva marcação otimista, resultado continua bloqueado); testes antigos esperavam demanda indisponível, atualizados para disponibilidade condicionada e fontes conferidas. Resumo de demanda passou a ocultar valor antigo durante recálculo e recebeu teste de regressão. Chamadas iniciais usaram cwd/nome incorretos de ferramentas/testes; corrigidas. Instalação editável sem isolamento falhou por setuptools ausente, repetição com build isolado aprovada; nenhuma dependência runtime nova.
+
+Banco0005,9projetos/29históricos/7revisões: comparação integral nas três tabelas com checkpoint inicial idêntica, integridade/FKok. Nenhuma migração/dado/manual/catálogo preexistente alterado. API reiniciada PID567673/sessão73185,health0.13.0/motor0.8.0; frontend existente3000 HTTP200/navegadorsem erros. Smoke real sem salvar dados retornou6,913043478…kVA no exemplo6500W/6,36kWdemandados. Git e checkpoint final a registrar após revisão; sem push/publicação. Trabalho futuro local e limites registrados no CURRENT_STATE, sem pendências ativas de publicação/impressão física/backup externo.

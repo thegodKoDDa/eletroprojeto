@@ -215,3 +215,34 @@ test('changing requested operation invalidates diagnostics and recalculates the 
   expect(JSON.parse(fetch.mock.calls[1][1].body).analysis_scope).toBe('current');
   expect(result.current.result?.installed_power.value).toBe('7500');
 });
+
+test('demand settings invalidate the current result and are included in recalculation', async () => {
+  const fetch = vi.fn().mockResolvedValue({
+    ok: true,
+    status: 200,
+    json: async () => ({ installed_power: { value: '0' } }),
+  });
+  vi.stubGlobal('fetch', fetch);
+  const { result, rerender } = renderHook(({ data }) => useCalculation(data), {
+    initialProps: { data: input },
+  });
+  await act(async () => {
+    await vi.advanceTimersByTimeAsync(400);
+  });
+  rerender({
+    data: {
+      ...input,
+      energisa_demand: {
+        enabled: true,
+        unit_type: 'individual_residential',
+        confirmed_absent_groups: [],
+      },
+    },
+  });
+  expect(result.current.result).toBeUndefined();
+  expect(result.current.stale).toBe(true);
+  await act(async () => {
+    await vi.advanceTimersByTimeAsync(400);
+  });
+  expect(JSON.parse(fetch.mock.calls[1][1].body).energisa_demand.enabled).toBe(true);
+});

@@ -82,7 +82,30 @@ class CatalogItem(Schema):
     parameters: TechnicalParameters = Field(default_factory=TechnicalParameters)
 
 
+EnergisaGroup = Literal["d1", "d2", "d3", "d4", "d5", "d6", "d7"]
+
+
+class EnergisaLoadClassification(Schema):
+    group: EnergisaGroup | None = None
+    reserve: bool = Field(default=False, strict=True)
+    air_conditioning_type: Literal["unconfirmed", "window_or_individual", "central_unit"] = (
+        "unconfirmed"
+    )
+
+
+class ProjectEnergisaDemandSettings(Schema):
+    enabled: bool = Field(default=False, strict=True)
+    unit_type: Literal["unconfirmed", "individual_residential", "grouped", "non_residential"] = (
+        "unconfirmed"
+    )
+    has_signage_or_display_lighting: bool | None = Field(default=None, strict=True)
+    simultaneous_lighting_outlets: bool | None = Field(default=None, strict=True)
+    confirmed_absent_groups: list[EnergisaGroup] = Field(default_factory=list, max_length=7)
+    reviewed_inventory_digest: str | None = Field(default=None, pattern="^[a-f0-9]{64}$")
+
+
 class Load(Schema):
+    energisa_demand: EnergisaLoadClassification | None = None
     id: UUID = Field(default_factory=uuid4)
     name: Text
     category: Text = "Outros"
@@ -159,6 +182,7 @@ class Environment(Schema):
 
 
 class ProjectInput(Schema):
+    energisa_demand: ProjectEnergisaDemandSettings | None = None
     analysis_scope: Literal["installed", "apparent", "current", "normative"] = "installed"
     name: Text
     municipality: Text
@@ -310,9 +334,6 @@ class ResearchEvidence(Schema):
     sha256: str | None = Field(default=None, pattern="^[a-f0-9]{64}$")
 
 
-EnergisaGroup = Literal["d1", "d2", "d3", "d4", "d5", "d6", "d7"]
-
-
 class EnergisaDemandLoad(Schema):
     name: Text
     group: EnergisaGroup = Field(
@@ -413,6 +434,26 @@ class EnergisaDemandResult(Schema):
     reference: ResearchEvidence
 
 
+class ProjectEnergisaDemandInventoryItem(Schema):
+    load_id: str
+    environment_id: str
+    environment: str
+    name: str
+    group: EnergisaGroup | None
+    quantity: int
+    unit_power_w: Nonnegative | None
+    reserve: bool
+    air_conditioning_type: Literal["unconfirmed", "window_or_individual", "central_unit"]
+
+
+class ProjectEnergisaDemandResult(EnergisaDemandResult):
+    declarations: ProjectEnergisaDemandSettings
+    inventory_digest: str
+    inventory_reviewed: bool
+    unclassified_load_ids: list[str]
+    inventory: list[ProjectEnergisaDemandInventoryItem]
+
+
 class NormativeCapability(Schema):
     code: Literal["lighting", "outlets", "demand"]
     label: str
@@ -463,6 +504,7 @@ class NormativeEnvironment(Schema):
 
 
 class CalculationResult(Schema):
+    energisa_demand: ProjectEnergisaDemandResult | None = None
     normative_environments: list[NormativeEnvironment] = Field(default_factory=list)
     normative_capabilities: list[NormativeCapability] = Field(default_factory=list)
     notifications: list["Notification"] = Field(default_factory=list)

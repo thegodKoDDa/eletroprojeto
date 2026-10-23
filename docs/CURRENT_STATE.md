@@ -1,30 +1,33 @@
-# Estado atual — EletroProjeto 0.12.0 / motor 0.7.0
+# Estado atual — EletroProjeto 0.13.0 / motor 0.8.0
 
-## Produto e dados
+## Escopo vigente
 
-API/frontend 0.12.0, motor 0.7.0, migração 0005. SQLite local com 9 projetos (8 ativos e 1 na lixeira), 29 históricos e 7 revisões técnicas no checkpoint anterior à organização. Nenhuma fórmula, configuração privada, migração ou dado de projeto foi alterado pela limpeza de 23/10/2026.
+Decisão explícita do usuário em23/10/2026: uso LOCAL. Publicação/infraestrutura remota, CI hospedado, impressão física e backup externo foram retirados do trabalho atual. Não solicitar recursos nem bloquear a evolução por esses itens. Recursos existentes de segurança/backup/CI ficam preservados; checkpoints locais continuam em uso.
 
-NDU-001 7.0 fornecida pelo usuário sustenta o endpoint parametrizado `/api/v1/calculations/energisa-demand`, no escopo residencial individual Energisa Sul-Sudeste/SP, até 75 kW, parcelas d1–d5. Classificação automática do cadastro, d6/d7/centrais presentes e dimensionamento final seguem pendentes. Fontes/condições/testes em [standards](standards.md) e [calculations](calculations.md); não declarar aprovação pela concessionária ou conformidade final.
+## Entrega — demanda integrada ao projeto
 
-Rascunhos recuperáveis, conflitos guiados, autenticação HTTPS/CSRF com isolamento por proprietário, catálogo persistente e portabilidade PostgreSQL foram implementados. A entrega anterior registrou 320 testes backend + 85 subtestes, 90 frontend, 12 E2E locais e 1 E2E HTTPS; são evidências da entrega funcional anterior, não nova execução da limpeza. Windows e PostgreSQL também foram verificados naquela entrega; ver [sessões](SESSION_HISTORY.md).
+Painel opcional de demanda NDU-0017.0 entre ambientes e resultados. Classificação explícita por carga, reservas e tipo AC; confirmação de unidade, letreiros/vitrines, simultaneidade luz/TUG e grupos ausentes. O mesmo motor puro d1–d5 atende endpoint parametrizado e cadastro/PDF/JSON, sem fórmulas no frontend ou alteração dos fatores já conferidos.
 
-## Organização — 23/10/2026
+Revisão vinculada por SHA256 ao inventário/escopo. Mudanças de cargas, potências, quantidades, classificação, reservas, IDs ou declarações invalidam a revisão, inclusive via API ou após salvar/reabrir. Não há classificação presumida pelo catálogo nem conversão de previsãoVA/BTU/kWh emW. Inventário vazio, dados desconhecidos, inconsistências ou falta de revisão mantêm valor nulo. Reservas não entram na demanda, mas entram na conferência de instalada/75kW.
 
-Inventário dos arquivos próprios, leitura automatizada com hashes/validação sintática Python e JSON, revisão de configurações, documentação e saídas locais. PDFs movidos para `references/energisa/`, com edição 6.3 em `historico/` e hashes preservados. Cinco revisões movidas para `docs/history/`; [índice](README.md) define o papel de cada pasta/documento. O antigo estado cumulativo foi preservado integralmente em `history/state-before-organization.md`, com ajuste de links relativos; não usar suas afirmações históricas como estado atual.
+Escopo: residência individual Energisa Sul-Sudeste/SP até75kW, d1–d5. d6/d7, centrais presentes, agrupamentos, outra distribuidora/UF e demais condições incompatíveis permanecem fora do escopo. Não há dimensionamento final ou aprovação da concessionária. Fontes/condições em standards.md e matemática em calculations.md.
 
-Removidos apenas caches regeneráveis Python/pytest/Ruff/TypeScript, relatórios temporários de testes e dois marcadores de download Zone.Identifier. Ambientes Linux/Windows, node_modules, Next ativo/build, bancos, backups históricos, fontes, migrações, Git e checkpoints preservados. Manifesto privado de movimentações/exclusões: `.checkpoints/cleanup-20261023.json`. PDFs continuam excluídos de Git/ZIP de código; precisam de cópia externa própria.
+Relatórios PDF/JSON1.3 trazem inventário, declarações/revisão, grupos, fatores/faixas, demanda e pendências. Resumo oculta demanda anterior durante recálculo; guard de exportação inclui configurações novas no digest. Contratos gerados por types:sync; API/frontend0.13.0, motor0.8.0, schema0005 sem nova migração.
 
-Ponto de recuperação anterior: `.checkpoints/20261023T181839782078Z`, 156 arquivos, hashes/ZIP/banco/bundle Git verificados com restauração SQLite e clonagem Git isoladas. Verificações e checkpoint final desta limpeza serão registrados abaixo e em SESSION_HISTORY.
+## Dados e verificação observada
 
-## Próximo trabalho
+9 projetos (8 ativos/1 na lixeira),29 históricos,7 revisões técnicas. Todas as colunas dessas três tabelas comparadas ao checkpoint anterior e idênticas; SQLite íntegro/FK sem violações. Nenhum projeto legado regravado/classificado/revisado automaticamente; catálogo e potências manuais preservados.
 
-Consultar [pendências](KNOWN_ISSUES.md): integração automática da demanda, dimensionamento e geometria completos, associação territorial oficial, implantação remota, execução hospedada do CI, backup externo protegido, impressão física e leitor de tela real. Não houve push ou publicação. Checkpoints no mesmo disco não protegem contra perda física.
+- Backend345 testes+85 subtestes; continuidade/backup8 (execução conjunta353+85 aprovada).
+- Frontend92; tipos/lint/formatação; Ruff; Alembic check e pip check aprovados.
+- Suíte local13E2E aprovada; repetição direcionada do fluxo final de demanda aprovada, incluindo axe com painel ativo, PDF/JSON, reabertura, edição, exclusão por escopo e telas320/768/1440.
+- Build webpack aprovado após alterações finais de frontend. Contratos sincronizados. PDF baixado no navegador, extraído/renderizado independentemente e página de demanda inspecionada, sem cortes observados no exemplo de três páginas.
+- Smoke API real:6,913043478…kVA para1000W d1+5500W d2 revisados. Health0.13.0/motor0.8.0; frontend3000 HTTP200 e navegador real sem pageerrors/versão correta. API PID567673/sessão73185; frontend existente preservado. Revalidar processos em cada retomada.
 
-Retomar por AGENTS e `python3 scripts/continuity.py retomar`; conferir processos e HTTP antes de iniciar serviços. Frontend 3000/API 8000 estavam ativos na inspeção anterior à limpeza; disponibilidade final depende da verificação abaixo.
+PostgreSQL, Windows e E2EHTTPS não repetidos nesta entrega local; evidências anteriores continuam históricas. Sem nova migração ou dependência de execução. Instalação editável Python atualizada para0.13.0 com build isolado temporário; tentativa sem isolamento falhou por setuptools ausente, resolvida sem adicioná-lo ao runtime.
 
-## Verificação final da organização
+## Continuidade e próximos passos
 
-Backend320 testes+85 subtestes, frontend90, continuidade/backup8, tipos/lint, Alembic check, links locais e hashes aprovados. Dados comparados integralmente ao checkpoint anterior e preservados. API8000 health0.12.0/motor0.7.0 e frontend3000 HTTP200 confirmados. Não repetidos build/E2E/PostgreSQL/Windows nesta alteração documental e de arquivos locais, sem mudanças no código de execução. Detalhes e limitações em SESSION_HISTORY.
+Checkpoint anterior à mudança: `.checkpoints/20261023T184620161249Z`, verificado com hashes, restauraçãoSQLite e recuperaçãoGit. Inventários/referências/revisões organizados conforme docs/README.md; PDFs locais em references/energisa, fora de Git/ZIP de código. Caminho do checkpoint final será registrado após geração.
 
-
-Checkpoint final da organização: `.checkpoints/20261023T182530510469Z`, 159 arquivos; hashes/ZIP/banco/bundle Git e restauração SQLite/clonagem Git isoladas aprovados. Commit da organização `2eaeb21`; registro do caminho feito após a geração, em commit documental separado. Banco preservado (9 projetos/29 históricos/7 revisões,0005). Sem push ou cópia externa; PDFs locais não integram o ZIP de código.
+Próximas prioridades locais: ampliar exceções normativas somente após fontes/testes próprios; dimensionamento de circuitos/cabos/proteções/queda de tensão/entrada; geometria/localização dos pontos e associação territorial oficial completa. Ver roadmap/KNOWN_ISSUES. Leitor de tela real ainda não conferido. Retomar por AGENTS e `python3 scripts/continuity.py retomar`; não recriar produto ou regravar dados antigos para atualizar regras. Sem push/publicação.

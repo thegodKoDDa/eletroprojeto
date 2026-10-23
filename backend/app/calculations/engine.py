@@ -1,13 +1,15 @@
 import hashlib
 import json
+from dataclasses import asdict
 from decimal import Decimal, localcontext
 
 from ..version import APP_VERSION, ENGINE_VERSION
 from .energy import energy_cost, resolve_energy
 from .equipment import resolve_equipment
 from .power import installed_power, watts_to_kw
+from .project_demand import project_energisa_demand
 from .residential import residential_prevision
-from .standards import pending_rule
+from .standards import ENERGISA_V7_EVIDENCE, pending_rule
 from .units import va_to_kva
 
 
@@ -32,6 +34,7 @@ def calculate(project: dict) -> dict:
             "utility",
             "environments",
             "energy_tariff_brl_per_kwh",
+            "energisa_demand",
         )
     }
     digest = hashlib.sha256(
@@ -218,7 +221,11 @@ def calculate(project: dict) -> dict:
             return {"value": number, "unit": unit, "status": state}
 
         residential, normative_rooms = residential_prevision(project)
+        regional_demand = project_energisa_demand(project)
+        if regional_demand is not None:
+            regional_demand["reference"] = asdict(ENERGISA_V7_EVIDENCE)
         output = {
+            "energisa_demand": regional_demand,
             "normative_environments": normative_rooms,
             "normative_capabilities": normative_capabilities(
                 project["utility"], project.get("state", "SP")
@@ -279,6 +286,15 @@ def calculate(project: dict) -> dict:
             "counting_policy": "Cada instância é somada uma vez. Iluminação é subconjunto da potência instalada. Previsão TUG/iluminação normativa e demanda são bases separadas. BTU/h, kWh/mês e saída do micro-ondas não são potências elétricas de entrada. Valores W com cargas pendentes são subtotais conhecidos; VA é soma escalar, não análise vetorial.",
         }
 
+        if regional_demand is not None:
+            output["normative"]["demand"] = {
+                "value": regional_demand["value"],
+                "unit": "kVA",
+                "status": regional_demand["status"],
+                "reference": regional_demand["reference"],
+                "reason": "; ".join(regional_demand["pending_checks"])
+                or "Estimativa NDU-001 7.0 d1–d5 com inventário revisado; sem dimensionamento final.",
+            }
         from ..validation import notifications
 
         output["notifications"] = notifications(project, output)

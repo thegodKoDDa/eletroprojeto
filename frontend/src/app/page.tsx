@@ -17,6 +17,7 @@ import { draftKey, readDrafts, writeDraft, type Draft } from '@/lib/drafts';
 import { AccessBoundary } from '@/components/projects/AccessBoundary';
 import { WorkspaceIcon } from '@/components/layout/WorkspaceIcon';
 import { useCalculation } from '@/lib/use-calculation';
+import { DemandReview } from '@/components/calculations/DemandReview';
 import { EquipmentEditor } from '@/components/equipment/EquipmentEditor';
 import { Field, RequirementsContext, CalculationScopeContext } from '@/components/ui/Field';
 import type { components } from '@/lib/api.generated';
@@ -1243,6 +1244,12 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                     ))}
                   </div>
                 </section>
+                <DemandReview
+                  input={input}
+                  result={currentResult}
+                  onChange={(value) => change('energisa_demand', value)}
+                  onLoadChange={updateLoad}
+                />
                 <ResultsPanel
                   result={result}
                   loading={loading}

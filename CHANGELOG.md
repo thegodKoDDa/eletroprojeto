@@ -1,5 +1,13 @@
 # Histórico de alterações
 
+## 0.13.0 — 23/10/2026
+
+- Demanda NDU-0017.0 d1–d5 integrada ao inventário do projeto, com classificação e revisão explícitas, reservas e confirmações de escopo/ausências.
+- Revisão vinculada ao hash do inventário; mudanças invalidam a confirmação e bloqueiam resultado/exportação desatualizados. Sem inferência automática de grupos.
+- PDF/JSON1.3 com inventário, demanda, memória por grupo/faixa, declarações e limites. Projetos legados preservados; sem migração ou mudança de fatores.
+- Escopo local definido pelo usuário: publicação/CI hospedado, impressão física e backup externo retirados das tarefas atuais.
+
+
 ## Organização de arquivos — 23/10/2026 (sem alteração de versão)
 
 - Referências normativas fora da raiz, revisões antigas em docs/history e índices de documentação/referências. Hashes dos PDFs preservados.

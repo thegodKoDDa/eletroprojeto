@@ -8,6 +8,7 @@ export function useCalculation(input: ProjectInput, scope = 'default', enabled =
     () =>
       JSON.stringify({
         analysis_scope: input.analysis_scope ?? 'installed',
+        energisa_demand: input.energisa_demand ?? null,
         energy_tariff_brl_per_kwh: input.energy_tariff_brl_per_kwh ?? null,
         name: input.name,
         built_area_m2: input.built_area_m2 === '' ? null : input.built_area_m2,
@@ -19,6 +20,7 @@ export function useCalculation(input: ProjectInput, scope = 'default', enabled =
     [
       input.energy_tariff_brl_per_kwh,
       input.analysis_scope,
+      input.energisa_demand,
       input.name,
       input.built_area_m2,
       input.state,

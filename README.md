@@ -1,14 +1,14 @@
-# EletroProjeto 0.12.0
+# EletroProjeto 0.13.0
 
-Método parametrizado NDU-0017.0 disponível em POST `/api/v1/calculations/energisa-demand`, com exemplo na documentação da API. Escopo residencial limitado d1–d5 e inventário explícito; não calcula automaticamente a demanda dos projetos ao selecionar a distribuidora. Origem dos PDFs, condições, memória e limites em [standards.md](docs/standards.md) e [calculations.md](docs/calculations.md). Motor0.7.0; dados e históricos preservados.
+NDU-001 7.0 integrada ao cadastro e aos relatórios: ative o painel de demanda, confirme o escopo, classifique cada carga e revise o inventário. No escopo residencial individual Energisa Sul-Sudeste/SP até75kW, d1–d5, o motor calcula a demanda estimada. Qualquer mudança relevante exige nova revisão. Selecionar a concessionária sozinho não habilita resultado. Limites/fontes em [standards](docs/standards.md); não há dimensionamento final.
 
-Desde0.11.0 há recuperação local de rascunhos, resolução guiada de conflitos, sessões de usuário para implantação HTTPS e catálogo persistente versionado. Projetos existentes permanecem locais e sem proprietário até atribuição administrativa explícita. Motor atual0.7.0; demanda automática do cadastro e dimensionamento completo continuam pendentes.
+Desde0.11.0 há recuperação local de rascunhos, resolução guiada de conflitos, sessões de usuário para implantação HTTPS e catálogo persistente versionado. Projetos existentes permanecem locais e sem proprietário até atribuição administrativa explícita. Motor atual0.8.0; demanda exige classificação/revisão explícitas; dimensionamento completo continua pendente.
 
-Operação local, configuração de contas/HTTPS/CSRF e limites: [segurança](docs/security.md). Catálogo e migrações: [arquitetura](docs/architecture.md). Testes efetivos Linux/Windows/PostgreSQL, checkpoint/Git e pendências: [estado atual](docs/CURRENT_STATE.md). CI em `.github/workflows/quality.yml` precisa de repositório remoto para executar hospedado; nenhum push automático é feito. Backup GPG externo exige destino e fingerprint de chave pública escolhidos pelo responsável; teste em diretório temporário não é cópia externa real.
+Escopo atual definido pelo usuário: uso local. Publicação remota, execução hospedada de CI, impressão física e backup externo ficam fora do trabalho atual. Recursos existentes foram preservados. [Estado atual](docs/CURRENT_STATE.md), [roadmap](docs/roadmap.md) e [segurança](docs/security.md) descrevem funcionamento e limites.
 
 Estudo de cargas residenciais com Next.js App Router, TypeScript e Tailwind; Python/FastAPI, Pydantic, SQLAlchemy, SQLite e Alembic. Toda matemática elétrica fica no backend.
 
-**Etapa 1 parcial:** potência cadastrada e grandezas derivadas disponíveis. Previsão residencial de iluminação/TUG disponível por seleção explícita, em escopo limitado; demanda da distribuidora permanece pendente de verificação. Nenhum resultado é apresentado como dimensionamento final.
+**Etapa 1 parcial:** potência cadastrada e grandezas derivadas disponíveis. Previsão residencial de iluminação/TUG disponível por seleção explícita, em escopo limitado; demanda Energisa d1–d5 disponível mediante inventário e escopo revisados. Nenhum resultado é apresentado como dimensionamento final.
 
 ## Execução local
 
@@ -40,7 +40,7 @@ Configurações: `NEXT_PUBLIC_API_URL` em `frontend/.env.local`; `DATABASE_URL`,
 ## Funcionalidades
 
 - Criar/abrir/editar projetos; salvar com versão otimista e histórico. Duplicar e excluir diretamente na área de trabalho. Lixeira separada com data de exclusão, recuperação com histórico preservado e exclusão definitiva confirmada.
-- Salvamento automático após primeiro salvamento manual, com debounce de 1,5 segundo, preservação de edições durante a requisição e sem repetição infinita da mesma falha. Alterações no nome pausam o autosave até escolher entre renomear o projeto e salvar como novo. Pode ser desativado em Outros dados do projeto. Projetos novos ainda precisam do primeiro salvamento; dados ainda não enviados podem ser perdidos ao fechar a página.
+- Salvamento automático após primeiro salvamento manual, com debounce de 1,5 segundo, preservação de edições durante a requisição e sem repetição infinita da mesma falha. Alterações no nome pausam o autosave até escolher entre renomear o projeto e salvar como novo. Pode ser desativado em Outros dados do projeto. Projetos novos ainda precisam do primeiro salvamento; rascunhos recuperáveis dependem do armazenamento do navegador.
 - Consulta completa paginada, com pesquisa e ordenação; sem aba Recentes no aside. Novo projeto e Salvar como novo criam registros independentes.
 - Sugestões de equipamentos por ambiente, com alternativa de busca geral, sem apagar cargas ao mudar o tipo de cômodo.
 - Ambientes com ação de adição sticky, foco no novo nome e preservação dos anteriores.

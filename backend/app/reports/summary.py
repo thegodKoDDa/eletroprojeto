@@ -160,10 +160,11 @@ def build_summary(project: dict, result: dict, project_version: int | None = Non
         if project["utility"] == "unconfirmed"
         else "Localidade/distribuidora fora da cobertura validada neste estudo."
         if result.get("technical_context", {}).get("status") == "out_of_scope"
-        else "Procedimento de demanda desta distribuidora ainda indisponível neste estudo."
+        else demand.get("reason")
+        or "Procedimento de demanda desta distribuidora ainda indisponível neste estudo."
     )
     return dict(
-        formato_versao="1.2",
+        formato_versao="1.3",
         emissao=dict(
             data_hora=datetime.now(ZoneInfo("America/Sao_Paulo")).strftime("%d/%m/%Y, %H:%M:%S"),
             fuso="America/Sao_Paulo",
@@ -253,6 +254,7 @@ def build_summary(project: dict, result: dict, project_version: int | None = Non
             )
             for key, item in result["normative"].items()
         },
+        demanda_revisada=result.get("energisa_demand"),
         atendimento_distribuidora=dict(
             demanda_disponivel=demand_available,
             situacao="Demanda estimada disponível para revisão"

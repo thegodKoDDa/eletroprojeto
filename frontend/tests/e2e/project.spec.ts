@@ -458,22 +458,15 @@ test('research coverage is informative while real input problems remain correcta
   await expect(page.getByLabel('Resumo de resultados')).not.toContainText('Demanda');
   await expect(page.locator('#results')).not.toContainText('Procedimento não validado');
   const coverage = page.getByLabel('Cobertura normativa');
-  await expect(coverage.locator('details').first()).not.toHaveAttribute('open', '');
-  await coverage.getByText('Recursos normativos ainda indisponíveis (1)', { exact: true }).click();
-  await expect(coverage).toContainText('Não indicam erros na sua instalação');
-  await coverage
-    .getByText('Pesquisa e fontes de demanda da distribuidora', { exact: true })
-    .click();
-  await expect(
-    coverage.getByRole('link', { name: 'Energisa NDU-001 — PDF oficial' }),
-  ).toBeVisible();
+  await expect(coverage).toHaveCount(0);
+  await expect(page.getByRole('region', { name: 'Revisão da demanda Energisa' })).toBeVisible();
   const registry = await (
     await request.get(
       'http://127.0.0.1:8010/api/v1/technical/rules?utility=energisa_sul_sudeste&state=SP',
     )
   ).json();
   expect(registry.coverage.filter((item: { available: boolean }) => item.available)).toHaveLength(
-    2,
+    3,
   );
   expect(
     registry.coverage
@@ -498,6 +491,9 @@ test('research coverage is informative while real input problems remain correcta
   await expect(coverage.getByRole('link', { name: 'Energisa NDU-001 — PDF oficial' })).toHaveCount(
     0,
   );
+  await expect(coverage.locator('details').first()).not.toHaveAttribute('open', '');
+  await coverage.getByText('Recursos normativos ainda indisponíveis (1)', { exact: true }).click();
+  await expect(coverage).toContainText('Não indicam erros na sua instalação');
   await coverage
     .getByText('Pesquisa e fontes de demanda da distribuidora', { exact: true })
     .click();
@@ -736,7 +732,7 @@ test('shower reference variants retain usage through restoration, saving and JSO
   const { readFile } = await import('node:fs/promises');
   const file = await download;
   const report = JSON.parse(await readFile((await file.path())!, 'utf8'));
-  expect(report.formato_versao).toBe('1.2');
+  expect(report.formato_versao).toBe('1.3');
   expect(report.equipamentos[0].potencia_personalizada).toBe(false);
   expect(report.equipamentos[0].horas_por_dia).toBe('0.5');
   expect(Number(report.resultados.consumo_mensal.valor)).toBe(112.5);

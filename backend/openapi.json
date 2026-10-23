@@ -3,7 +3,7 @@
   "info": {
     "title": "EletroProjeto",
     "description": "Cálculos de cargas residenciais: potência instalada (W/kW), potência aparente (VA/kVA), correntes, conversões, consumo mensal e estimativa de custo pela tarifa informada. Valores padrão são sugestões documentadas; valores manuais válidos são respeitados e recalculados. Previsão residencial de iluminação e TUG disponível por seleção explícita, com escopo e limites documentados. Demanda Energisa residencial parametrizada disponível em escopo limitado e inventário explícito. Demanda automática do cadastro e dimensionamento final permanecem pendentes.",
-    "version": "0.12.0"
+    "version": "0.13.0"
   },
   "paths": {
     "/api/v1/auth/session": {
@@ -1501,6 +1501,16 @@
     "schemas": {
       "CalculationInput": {
         "properties": {
+          "energisa_demand": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ProjectEnergisaDemandSettings"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "analysis_scope": {
             "type": "string",
             "enum": [
@@ -1668,6 +1678,16 @@
       },
       "CalculationResult": {
         "properties": {
+          "energisa_demand": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ProjectEnergisaDemandResult"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "normative_environments": {
             "items": {
               "$ref": "#/components/schemas/NormativeEnvironment"
@@ -2614,6 +2634,48 @@
         ],
         "title": "EnergisaDemandResult"
       },
+      "EnergisaLoadClassification": {
+        "properties": {
+          "group": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "d1",
+                  "d2",
+                  "d3",
+                  "d4",
+                  "d5",
+                  "d6",
+                  "d7"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Group"
+          },
+          "reserve": {
+            "type": "boolean",
+            "title": "Reserve",
+            "default": false
+          },
+          "air_conditioning_type": {
+            "type": "string",
+            "enum": [
+              "unconfirmed",
+              "window_or_individual",
+              "central_unit"
+            ],
+            "title": "Air Conditioning Type",
+            "default": "unconfirmed"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "EnergisaLoadClassification"
+      },
       "Environment": {
         "properties": {
           "id": {
@@ -2918,6 +2980,16 @@
       },
       "Load": {
         "properties": {
+          "energisa_demand": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EnergisaLoadClassification"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "id": {
             "type": "string",
             "format": "uuid",
@@ -3750,6 +3822,16 @@
       },
       "Project": {
         "properties": {
+          "energisa_demand": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ProjectEnergisaDemandSettings"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "analysis_scope": {
             "type": "string",
             "enum": [
@@ -3959,8 +4041,317 @@
         ],
         "title": "Project"
       },
+      "ProjectEnergisaDemandInventoryItem": {
+        "properties": {
+          "load_id": {
+            "type": "string",
+            "title": "Load Id"
+          },
+          "environment_id": {
+            "type": "string",
+            "title": "Environment Id"
+          },
+          "environment": {
+            "type": "string",
+            "title": "Environment"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "group": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "d1",
+                  "d2",
+                  "d3",
+                  "d4",
+                  "d5",
+                  "d6",
+                  "d7"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Group"
+          },
+          "quantity": {
+            "type": "integer",
+            "title": "Quantity"
+          },
+          "unit_power_w": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit Power W"
+          },
+          "reserve": {
+            "type": "boolean",
+            "title": "Reserve"
+          },
+          "air_conditioning_type": {
+            "type": "string",
+            "enum": [
+              "unconfirmed",
+              "window_or_individual",
+              "central_unit"
+            ],
+            "title": "Air Conditioning Type"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "load_id",
+          "environment_id",
+          "environment",
+          "name",
+          "group",
+          "quantity",
+          "unit_power_w",
+          "reserve",
+          "air_conditioning_type"
+        ],
+        "title": "ProjectEnergisaDemandInventoryItem"
+      },
+      "ProjectEnergisaDemandResult": {
+        "properties": {
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          },
+          "unit": {
+            "type": "string",
+            "const": "kVA",
+            "title": "Unit"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "calculated",
+              "estimated",
+              "pending",
+              "invalid",
+              "out_of_scope",
+              "awaiting_technical_validation"
+            ],
+            "title": "Status"
+          },
+          "installed_power_w": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Installed Power W"
+          },
+          "demanded_power_kw": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Demanded Power Kw"
+          },
+          "groups": {
+            "items": {
+              "$ref": "#/components/schemas/EnergisaDemandGroupResult"
+            },
+            "type": "array",
+            "title": "Groups"
+          },
+          "pending_checks": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Pending Checks"
+          },
+          "ignored_reserve_loads": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Ignored Reserve Loads"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Limitations"
+          },
+          "reference": {
+            "$ref": "#/components/schemas/ResearchEvidence"
+          },
+          "declarations": {
+            "$ref": "#/components/schemas/ProjectEnergisaDemandSettings"
+          },
+          "inventory_digest": {
+            "type": "string",
+            "title": "Inventory Digest"
+          },
+          "inventory_reviewed": {
+            "type": "boolean",
+            "title": "Inventory Reviewed"
+          },
+          "unclassified_load_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Unclassified Load Ids"
+          },
+          "inventory": {
+            "items": {
+              "$ref": "#/components/schemas/ProjectEnergisaDemandInventoryItem"
+            },
+            "type": "array",
+            "title": "Inventory"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "value",
+          "unit",
+          "status",
+          "installed_power_w",
+          "demanded_power_kw",
+          "groups",
+          "pending_checks",
+          "ignored_reserve_loads",
+          "limitations",
+          "reference",
+          "declarations",
+          "inventory_digest",
+          "inventory_reviewed",
+          "unclassified_load_ids",
+          "inventory"
+        ],
+        "title": "ProjectEnergisaDemandResult"
+      },
+      "ProjectEnergisaDemandSettings": {
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled",
+            "default": false
+          },
+          "unit_type": {
+            "type": "string",
+            "enum": [
+              "unconfirmed",
+              "individual_residential",
+              "grouped",
+              "non_residential"
+            ],
+            "title": "Unit Type",
+            "default": "unconfirmed"
+          },
+          "has_signage_or_display_lighting": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Has Signage Or Display Lighting"
+          },
+          "simultaneous_lighting_outlets": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Simultaneous Lighting Outlets"
+          },
+          "confirmed_absent_groups": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "d1",
+                "d2",
+                "d3",
+                "d4",
+                "d5",
+                "d6",
+                "d7"
+              ]
+            },
+            "type": "array",
+            "maxItems": 7,
+            "title": "Confirmed Absent Groups"
+          },
+          "reviewed_inventory_digest": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewed Inventory Digest"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "ProjectEnergisaDemandSettings"
+      },
       "ProjectInput": {
         "properties": {
+          "energisa_demand": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ProjectEnergisaDemandSettings"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "analysis_scope": {
             "type": "string",
             "enum": [

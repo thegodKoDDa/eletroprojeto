@@ -543,6 +543,7 @@ export interface components {
     schemas: {
         /** CalculationInput */
         CalculationInput: {
+            energisa_demand?: components["schemas"]["ProjectEnergisaDemandSettings"] | null;
             /**
              * Analysis Scope
              * @default installed
@@ -600,6 +601,7 @@ export interface components {
         };
         /** CalculationResult */
         CalculationResult: {
+            energisa_demand?: components["schemas"]["ProjectEnergisaDemandResult"] | null;
             /** Normative Environments */
             normative_environments?: components["schemas"]["NormativeEnvironment"][];
             /** Normative Capabilities */
@@ -900,6 +902,22 @@ export interface components {
             limitations: string[];
             reference: components["schemas"]["ResearchEvidence"];
         };
+        /** EnergisaLoadClassification */
+        EnergisaLoadClassification: {
+            /** Group */
+            group?: ("d1" | "d2" | "d3" | "d4" | "d5" | "d6" | "d7") | null;
+            /**
+             * Reserve
+             * @default false
+             */
+            reserve: boolean;
+            /**
+             * Air Conditioning Type
+             * @default unconfirmed
+             * @enum {string}
+             */
+            air_conditioning_type: "unconfirmed" | "window_or_individual" | "central_unit";
+        };
         /** Environment */
         Environment: {
             /**
@@ -1010,6 +1028,7 @@ export interface components {
         };
         /** Load */
         Load: {
+            energisa_demand?: components["schemas"]["EnergisaLoadClassification"] | null;
             /**
              * Id
              * Format: uuid
@@ -1288,6 +1307,7 @@ export interface components {
         };
         /** Project */
         Project: {
+            energisa_demand?: components["schemas"]["ProjectEnergisaDemandSettings"] | null;
             /**
              * Analysis Scope
              * @default installed
@@ -1358,8 +1378,92 @@ export interface components {
             /** Standards Version */
             standards_version: string;
         };
+        /** ProjectEnergisaDemandInventoryItem */
+        ProjectEnergisaDemandInventoryItem: {
+            /** Load Id */
+            load_id: string;
+            /** Environment Id */
+            environment_id: string;
+            /** Environment */
+            environment: string;
+            /** Name */
+            name: string;
+            /** Group */
+            group: ("d1" | "d2" | "d3" | "d4" | "d5" | "d6" | "d7") | null;
+            /** Quantity */
+            quantity: number;
+            /** Unit Power W */
+            unit_power_w: number | string | null;
+            /** Reserve */
+            reserve: boolean;
+            /**
+             * Air Conditioning Type
+             * @enum {string}
+             */
+            air_conditioning_type: "unconfirmed" | "window_or_individual" | "central_unit";
+        };
+        /** ProjectEnergisaDemandResult */
+        ProjectEnergisaDemandResult: {
+            /** Value */
+            value: number | string | null;
+            /**
+             * Unit
+             * @constant
+             */
+            unit: "kVA";
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "calculated" | "estimated" | "pending" | "invalid" | "out_of_scope" | "awaiting_technical_validation";
+            /** Installed Power W */
+            installed_power_w: number | string | null;
+            /** Demanded Power Kw */
+            demanded_power_kw: number | string | null;
+            /** Groups */
+            groups: components["schemas"]["EnergisaDemandGroupResult"][];
+            /** Pending Checks */
+            pending_checks: string[];
+            /** Ignored Reserve Loads */
+            ignored_reserve_loads: string[];
+            /** Limitations */
+            limitations: string[];
+            reference: components["schemas"]["ResearchEvidence"];
+            declarations: components["schemas"]["ProjectEnergisaDemandSettings"];
+            /** Inventory Digest */
+            inventory_digest: string;
+            /** Inventory Reviewed */
+            inventory_reviewed: boolean;
+            /** Unclassified Load Ids */
+            unclassified_load_ids: string[];
+            /** Inventory */
+            inventory: components["schemas"]["ProjectEnergisaDemandInventoryItem"][];
+        };
+        /** ProjectEnergisaDemandSettings */
+        ProjectEnergisaDemandSettings: {
+            /**
+             * Enabled
+             * @default false
+             */
+            enabled: boolean;
+            /**
+             * Unit Type
+             * @default unconfirmed
+             * @enum {string}
+             */
+            unit_type: "unconfirmed" | "individual_residential" | "grouped" | "non_residential";
+            /** Has Signage Or Display Lighting */
+            has_signage_or_display_lighting?: boolean | null;
+            /** Simultaneous Lighting Outlets */
+            simultaneous_lighting_outlets?: boolean | null;
+            /** Confirmed Absent Groups */
+            confirmed_absent_groups?: ("d1" | "d2" | "d3" | "d4" | "d5" | "d6" | "d7")[];
+            /** Reviewed Inventory Digest */
+            reviewed_inventory_digest?: string | null;
+        };
         /** ProjectInput */
         ProjectInput: {
+            energisa_demand?: components["schemas"]["ProjectEnergisaDemandSettings"] | null;
             /**
              * Analysis Scope
              * @default installed

@@ -393,7 +393,7 @@ async def test_reference_lookup_search_and_rules(client):
     assert {rule["code"]: rule["status"] for rule in rules["normative"]} == {
         "lighting": "calculated",
         "outlets": "calculated",
-        "demand": "awaiting_technical_validation",
+        "demand": "estimated",
     }
     documents = (await client.get("/api/v1/technical/documents")).json()
     ndu = next(doc for doc in documents["documents"] if doc["id"] == "ndu001")
@@ -674,9 +674,9 @@ async def test_version_and_documentation_groups_are_consistent(client):
         == frontend["version"]
         == backend["project"]["version"]
         == APP_VERSION
-        == "0.12.0"
+        == "0.13.0"
     )
-    assert health["engine_version"] == ENGINE_VERSION == "0.7.0"
+    assert health["engine_version"] == ENGINE_VERSION == "0.8.0"
     spec = (await client.get("/openapi.json")).json()
     assert spec["info"]["version"] == APP_VERSION
     assert spec["paths"]["/api/v1/reports/pdf"]["post"]["tags"] == ["Relatórios"]
@@ -845,10 +845,10 @@ async def test_demand_input_pending_and_unverified_rule_are_different_states(cli
     assert not any(n["target_id"] == "project.utility" for n in missing["notifications"])
     payload["utility"] = "energisa_sul_sudeste"
     known = (await client.post("/api/v1/calculations/full", json=payload)).json()
-    assert known["normative"]["demand"]["status"] == "awaiting_technical_validation"
+    assert known["normative"]["demand"]["status"] == "pending"
     assert known["normative"]["demand"]["value"] is None
     rule = next(n for n in known["normative_capabilities"] if n["code"] == "demand")
-    assert not rule["available"]
+    assert rule["available"]
     assert "9.1" in rule["reason"]
     assert any("Energisa" in item["title"] for item in rule["evidence"])
     assert known["installed_power"]["value"] == missing["installed_power"]["value"] == "15000"
@@ -1076,7 +1076,7 @@ async def test_research_is_exposed_as_coverage_not_as_project_errors(client, pay
     assert not any(n["category"] == "normative" for n in calculated["notifications"])
     assert not any(n["target_id"] == "project.utility" for n in calculated["notifications"])
     for item in registry["coverage"]:
-        assert item["available"] is (item["code"] != "demand")
+        assert item["available"] is True
         assert item["label"] and item["purpose"] and item["reason"]
         assert bool(item["pending_checks"]) is (item["code"] == "demand")
         assert item["evidence"]
@@ -1096,7 +1096,7 @@ async def test_research_is_exposed_as_coverage_not_as_project_errors(client, pay
     demand = next(item for item in registry["coverage"] if item["code"] == "demand")
     assert any("9.1" in (e["section"] or "") for e in demand["evidence"])
     assert all(
-        bool(rule["procedure"]) == bool(rule["tests"]) == (rule["code"] != "demand")
+        bool(rule["procedure"]) == bool(rule["tests"]) is True
         for rule in registry["normative"]
     )
 
@@ -1290,3 +1290,53 @@ async def test_json_report_recalculates_and_guards_snapshot_without_saving(clien
         assert (await client.post("/api/v1/reports/json", json=changed)).status_code == 409
     body["project"]["environments"][0]["loads"][0]["quantity"] = 3
     assert (await client.post("/api/v1/reports/json", json=body)).status_code == 409
+
+
+async def test_project_demand_persistence_exports_and_stale_guard(client, payload):
+    from app.schemas import CalculationInput
+
+    payload["utility"] = "energisa_sul_sudeste"
+    payload["energisa_demand"] = dict(
+        enabled=True,
+        unit_type="individual_residential",
+        has_signage_or_display_lighting=False,
+        confirmed_absent_groups=["d1", "d3", "d4", "d5", "d6", "d7"],
+    )
+    payload["environments"][0]["loads"][0]["energisa_demand"] = dict(group="d2")
+    # Normalize IDs before review exactly as the editor does; unsaved omitted UUIDs
+    # intentionally create a new inventory and cannot reuse another review.
+    payload = CalculationInput.model_validate(payload).model_dump(mode="json")
+    first = (await client.post("/api/v1/calculations/full", json=payload)).json()
+    assert first["energisa_demand"]["status"] == "pending"
+    payload["energisa_demand"]["reviewed_inventory_digest"] = first["energisa_demand"][
+        "inventory_digest"
+    ]
+    response = await client.post("/api/v1/calculations/full", json=payload)
+    assert response.status_code == 200
+    result = response.json()
+    assert result["energisa_demand"]["inventory_reviewed"]
+    assert result["energisa_demand"]["demanded_power_kw"] == "11.25"
+    saved_response = await client.post("/api/v1/projects", json=payload)
+    assert saved_response.status_code == 201
+    saved = saved_response.json()
+    loaded = (await client.get(f"/api/v1/projects/{saved['id']}")).json()
+    assert loaded["energisa_demand"] == payload["energisa_demand"]
+    export = dict(
+        project=payload,
+        expected_input_digest=result["input_digest"],
+        expected_engine_version=result["engine_version"],
+        expected_registry_version=result["technical_context"]["registry_version"],
+    )
+    report = await client.post("/api/v1/reports/json", json=export)
+    assert report.status_code == 200
+    summary = report.json()
+    assert summary["demanda_revisada"]["value"] == result["energisa_demand"]["value"]
+    pdf = await client.post("/api/v1/reports/pdf", json=export)
+    assert pdf.status_code == 200 and pdf.content.startswith(b"%PDF")
+    payload["environments"][0]["loads"][0]["quantity"] = 3
+    changed = (await client.post("/api/v1/calculations/full", json=payload)).json()
+    assert not changed["energisa_demand"]["inventory_reviewed"]
+    assert changed["normative"]["demand"]["value"] is None
+    export["project"] = payload
+    rejected = await client.post("/api/v1/reports/json", json=export)
+    assert rejected.status_code == 409

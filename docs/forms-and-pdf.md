@@ -117,3 +117,8 @@ Rascunhos não confirmados no servidor são gravados no navegador em slots por e
 Conflitos409 pausam autosave e preservam os campos locais. A interface consulta a versão atual e oferece salvar a edição como novo projeto ou carregar a versão do servidor, mantendo o rascunho anterior recuperável. Não há fusão silenciosa nem botão de sobrescrita forçada. Debounce/cancelamento dos cálculos e guardas de exportação continuam existentes.
 
 No modo remoto HTTPS, o editor só é montado após autenticação; sair desmonta os dados da conta e remove o token CSRF da memória. Rascunhos permanecem no perfil local, separados por conta na interface; perfis de navegador separados continuam necessários em computador compartilhado. Sessão expirada solicita novo login e mantém a recuperação local. Modo local mantém uso em loopback sem exigir criação de conta.
+
+
+## Demanda integrada — 0.13.0
+
+Painel de revisão NDU7.0 entre ambientes e resultados, com ativação opcional, classificação explícita por carga, reserva, tipo AC, escopo/ausências/simultaneidade e confirmação de inventário. Confirmação é vinculada ao digest emitido pelo backend; alterações invalidam a revisão e ocultam demanda antiga no recálculo. PDF/JSON1.3 incluem declarações, inventário e memória por grupo/faixa, além de pendências/limites. PDF usa rótulos em português para declarações. As fórmulas permanecem no motor único. Decisão do usuário: operação local; impressão física fora do escopo.

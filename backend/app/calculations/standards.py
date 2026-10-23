@@ -125,11 +125,14 @@ RULES = (
         "Energisa NDU-001",
         "7.0",
         "2024-11-01",
-        None,
+        "§9.1, Tabelas5–8/10",
         "https://www.energisa.com.br/normas-tecnicas",
-        "awaiting_technical_validation",
-        "Método residencial da seção 9.1 conferido no escopo d1–d5. Este cadastro ainda não possui classificação revisada para calcular demanda automaticamente; grupos especiais presentes exigem revisão própria.",
-        ("utility", "loads", "demand_classification"),
+        "estimated",
+        "Método residencial §9.1 d1–d5 integrado ao cadastro mediante classificação e revisão explícitas; grupos especiais presentes exigem revisão própria.",
+        ("utility", "state", "energisa_demand", "environments.loads.energisa_demand"),
+        procedure="app.calculations.project_demand.project_energisa_demand",
+        limits="Somente residência individual Energisa Sul-Sudeste/SP até75kW, d1–d5, inventário explicitamente classificado/revisado. Grupos d6/d7 ou centrais presentes fora do escopo; sem dimensionamento final.",
+        tests=("tests/test_energisa.py", "tests/test_project_demand.py", "tests/test_api.py"),
         label="Demanda da distribuidora",
         purpose="Estimativa de potência demandada pelo método da distribuidora; não é potência instalada nem consumo mensal.",
         evidence=(
@@ -151,7 +154,7 @@ RULES = (
         pending_checks=(
             "No método parametrizado, declarar inventário completo e classificação explícita, ausência dos grupos e reservas; base W distinta das previsões VA.",
             "Revisar grupos d6/d7 e unidades centrais de ar-condicionado antes de ampliar o escopo.",
-            "Integrar classificação ao cadastro de projetos antes de habilitar cálculo automático pela seleção da distribuidora.",
+            "Revisar o inventário do projeto; selecionar a distribuidora sozinho não confirma classificação nem escopo.",
         ),
     ),
 )
@@ -162,7 +165,9 @@ def pending_rule(code: str) -> dict:
     return {
         "value": None,
         "unit": "kVA" if code == "demand" else "VA",
-        "status": "pending" if rule.procedure else rule.status,
+        "status": "pending" if rule.procedure or code == "demand" else rule.status,
         "reference": asdict(rule),
-        "reason": rule.reason,
+        "reason": "Ative o painel de demanda e revise classificação, inventário e escopo para usar a NDU-001 7.0 d1–d5."
+        if code == "demand"
+        else rule.reason,
     }

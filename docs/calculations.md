@@ -71,3 +71,16 @@ Fonte, edição, cláusulas conferidas, escopo e restrições em [standards.md](
 - Exemplo manual independente: quarto 3×4 m (A=12/P=14), cinco pontos cadastrados → mínimo três, base cinco/500 VA, iluminação 160 VA. Cozinha 3×3 m (A=9/P=12), um ponto cadastrado → mínimo/base quatro/1900 VA, iluminação 100 VA. Totais separados: iluminação 260 VA; TUG 2400 VA. Um LED de placa 9 W continua 9 W instalados; os VA não entram nessa soma.
 
 API retorna `normative_environments` tipado com mínimos, cadastrados, base, VA, faltas e condições; `normative.lighting/outlets` só totalizam quando cada parcela é conhecida. Vazio/desconhecido/fora de escopo não vira zero. Notificações e requisitos condicionais são derivados no backend. Guardas de recálculo/contratos/exportação preservadas. Testes específicos de fronteira em `tests/test_residential.py`.
+
+
+## Integração local NDU-001 — 0.13.0 / motor0.8.0, 23/10/2026
+
+O projeto pode ativar `energisa_demand` e classificar explicitamente cada carga em `Load.energisa_demand` (grupo, reserva, enquadramento de AC). Não há inferência por nome, tipo, catálogo, VA normativo ou BTU/h. Adaptador puro `calculations/project_demand.py` encaminha o inventário ao mesmo método d1–d5 já conferido; fatores e fórmulas de energisa.py não mudaram. Potência elétrica adotada em W e quantidades manuais prevalecem; modo mecânico não é convertido implicitamente nesta integração.
+
+Escopo precisa confirmar unidade residencial individual, Energisa Sul-Sudeste/SP, ausência de letreiros/vitrines, simultaneidade luz/TUG quando aplicável e ausência explícita dos grupos sem cargas em operação. Reservas são identificadas individualmente, excluídas da demanda mas incluídas na conferência de instalada/75kW. d6/d7 ou unidade central em operação continuam fora do escopo; sem potência positiva, classificação completa, escopo ou revisão, demanda nula. Inventário vazio não produz uma falsa demanda zero.
+
+Revisão vinculada ao SHA256 canônico do inventário, IDs, nomes/ambientes, classificação, potências, quantidades, reservas e declarações de escopo/ausências. O backend emite o digest; confirmar no formulário grava esse digest no projeto. Qualquer mudança correspondente invalida a confirmação mesmo via API direta ou após salvar/reabrir; não depende apenas de reset de checkbox no frontend. Nenhum projeto antigo recebe classificação ou confirmação por migração.
+
+`calculations/full` integra `energisa_demand` tipado e `normative.demand` coerentes. Capacidades técnicas distinguem método disponível de inventário ainda pendente. O digest geral inclui as configurações da demanda, preservando guards de exportação. Frontend envia essas configurações pelo hook existente, mantendo debounce/cancelamento; painel usa somente resultado atual e resumo de demanda oculta número anterior durante recálculo.
+
+PDF/JSON1.3 trazem demanda, inventário por ID/ambiente, grupos, reservas, declarações, memória/fatores/faixas, pendências e referência NDU7.0. JSON mantém estrutura anterior com adições. Não determina circuito, cabos, proteção, categoria de fornecimento, território oficial nem aprovação. Referências/condições normativas continuam as da0.12, sem nova tabela habilitada. Testes próprios em test_project_demand.py e integração API/E2E; resultados finais em CURRENT_STATE/SESSION_HISTORY.

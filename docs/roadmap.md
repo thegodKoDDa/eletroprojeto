@@ -1,35 +1,22 @@
-# Roadmap — estado 0.12.0
+# Roadmap — uso local, 0.13.0
 
-0.12.0: NDU0017.0 enviada pelo usuário permitiu método residencial parametrizado d1–d5 na API, com classificação e ausências explícitas. Integração ao cadastro, grupos especiais, dimensionamento e território completos continuam pendentes. Fontes/escopo/testes em standards.md; não confundir endpoint disponível com demanda automática ou conformidade final.
-
-## Atualização 0.11.0 — 23/10/2026
-
-Rascunhos/conflitos guiados, autenticação de proprietário com sessões HTTPS/CSRF, catálogo persistente versionado, testes PostgreSQL reais e backend Windows implementados/verificados. Workflow CI ampliado e Git inicializado; falta execução hospedada/remote, cópia externa real e validações físicas. Preparar frontend Windows. Detecção seletiva de impacto normativo, colaboração com permissões de equipe e implantação remota operacional continuam futuras. Prioridades normativas abaixo continuam válidas, sem demanda/dimensionamento final habilitados por suposição.
+Decisão do usuário em 23/10/2026: operar localmente. Publicação/infraestrutura remota, execução hospedada de CI, impressão física e backup externo foram retirados do escopo atual; não tratá-los como bloqueios ou cobrar recursos para essas tarefas. Código funcional de autenticação, CI e backup já existente fica preservado para evitar regressões.
 
 ## Disponível
 
-- Previsão residencial de iluminação/TUG por ambiente interno, por seleção explícita; API/interface/relatórios integrados. Escopo, fontes e exceções em standards.md.
+- Projetos, histórico, biblioteca/lixeira, duplicação, autosave, rascunhos recuperáveis e resolução guiada de conflitos.
+- Motor Python Decimal, potências W/VA, correntes com dados suficientes, consumo/custo opcionais e catálogo persistente com preservação de valores manuais.
+- Previsão residencial quantitativa de iluminação/TUG em escopo explícito; resultados simples/técnicos e PDF/JSON.
+- NDU-001 7.0 d1–d5 integrada ao inventário do projeto: classificação explícita de cada carga, reservas, ausências, escopo e revisão vinculada por hash. Mudanças invalidam a confirmação; sem classificação ou fora do escopo, demanda nula. Não constitui dimensionamento final.
+- Git e checkpoints locais com verificação de hashes, restauração SQLite e recuperação de histórico. PostgreSQL e Windows já possuem validações anteriores.
 
-- Motor Python Decimal, somas e memória por carga, ambiente e categoria; W/kW, VA/kVA e correntes com dados suficientes; conversões térmicas/mecânicas separadas.
-- Catálogo rastreável, referências editáveis, proteção de valores manuais, requisitos e avisos por operação. Pesquisa/cobertura normativa integrada à API em 0.8.0, separada de erros de cadastro.
-- Projetos com histórico/versionamento, duplicação, exclusão reversível, recuperação e salvamento automático após primeiro salvamento.
-- Ação de ambientes persistente durante a rolagem, foco no novo cadastro; apresentações simples e técnica dos mesmos resultados.
-- PDF preliminar e JSON consistentes com snapshot; registro técnico versionado e revalidação conservadora.
-- Proteção inicial de tamanho HTTP/CORS, backup e workflow de qualidade. Estado dos testes em `history/review-0.5.0.md`.
+## Prioridades locais seguintes
 
-## Pendências prioritárias
+1. Manter regressões de cálculos, cadastro, relatórios, acessibilidade automática, contratos, tipos, lint e build conforme as mudanças.
+2. Ampliar a cobertura de demanda somente com revisão específica de grupos especiais, centrais de ar-condicionado e demais exceções. Não aplicar fatores de outra distribuidora.
+3. Implementar circuitos, condutores, disjuntores/proteções, queda de tensão e padrão de entrada após validação das respectivas regras, limites e exemplos.
+4. Implementar análise física de localização/distribuição de pontos e restrições da instalação; quantidades previstas não validam posição em planta.
+5. Ampliar associação territorial oficial sem inferir concessionária por município ou endereço incompleto.
+6. Melhorar revalidação seletiva de projetos afetados por mudanças normativas e desempenho em grandes acervos quando necessário.
 
-1. Manter testes de navegador/build/lint/contratos/formatação e auditorias online em atualizações. ESLint/Prettier/Ruff configurados em 0.7.0; consumo mensal/custo opcionais disponíveis. Implantar essas verificações em CI quando houver Git/repositório utilizável.
-2. Completar acesso/revisão da demanda da distribuidora (NDU integral/tabelas/notas), mantendo nulos até validação. Previsão residencial quantitativa de iluminação/TUG disponível em escopo limitado na 0.9.0; ampliar apenas com condições/casos/testes próprios. Não há dimensionamento final.
-3. Autenticação e autorização por projeto antes de exposição multiusuário; ingress/TLS, rate limiting, observabilidade e backup durável.
-4. Recuperação de rascunhos não enviados, gerenciamento de conflitos mais guiado e otimização de consultas para grandes acervos.
-5. Conferir áreas de concessão e ampliar regras regionais sem presumir distribuidora por município.
-6. Catálogo global persistente e validação PostgreSQL. Preservar a revisão contínua dos componentes e contratos, sem prometer ausência universal de erros.
-
-## Etapas posteriores
-
-Circuitos, condutores, proteções, queda de tensão e padrão de entrada dependem de regras e testes próprios. Corrente por equipamento não representa dimensionamento de circuito. O relatório PDF existente continua sendo estudo parcial de cargas.
-
-## Continuidade estabelecida
-
-Memória, estado, sessões e checkpoint local verificável: [continuity.md](continuity.md). Manter atualizados em cada sessão. Pendências: Git utilizável nesta instalação, cópia externa protegida e validação dos wrappers no Windows. Não são substitutos para a validação normativa ou os testes reais de navegador.
+Fontes, condições e testes normativos em [standards](standards.md) e [calculations](calculations.md). Estado das verificações em [CURRENT_STATE](CURRENT_STATE.md). A ausência de impressão física foi aceita pelo usuário; testes automáticos de acessibilidade não equivalem a uso com leitor de tela real, ainda não conferido.
