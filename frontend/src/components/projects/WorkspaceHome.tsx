@@ -13,8 +13,8 @@ type Props = {
 export function WorkspaceHome({ busy, projectName, onNew, onLibrary, onTrash, onContinue }: Props) {
   return (
     <section aria-labelledby="workspace-title" className="workspace-home">
-      <div className="workspace-welcome">
-        <p className="eyebrow">INÍCIO / ELETROPROJETO</p>
+      <header className="workspace-welcome">
+        <p className="eyebrow">ESPAÇO DE TRABALHO</p>
         <h1
           id="workspace-title"
           data-workspace-heading
@@ -23,11 +23,11 @@ export function WorkspaceHome({ busy, projectName, onNew, onLibrary, onTrash, on
         >
           Seu próximo projeto começa aqui.
         </h1>
-        <p className="mt-2 max-w-xl text-sm muted">
+        <p className="mt-4 max-w-xl text-sm leading-6 muted">
           Crie um estudo de cargas residenciais, continue um projeto salvo ou recupere um projeto da
           lixeira.
         </p>
-      </div>
+      </header>
       <div className="workspace-options">
         <button
           className="workspace-option workspace-option-primary"
@@ -37,8 +37,8 @@ export function WorkspaceHome({ busy, projectName, onNew, onLibrary, onTrash, on
           <span className="workspace-option-icon" aria-hidden="true">
             <WorkspaceIcon name="new" />
           </span>
-          <span className="workspace-option-title">Criar novo projeto</span>
-          <span className="workspace-option-description">
+          <span className="text-lg font-semibold">Criar novo projeto</span>
+          <span className="text-sm leading-6 muted">
             Cadastre a residência, os ambientes e os equipamentos.
           </span>
           <span className="workspace-option-link">
@@ -49,8 +49,8 @@ export function WorkspaceHome({ busy, projectName, onNew, onLibrary, onTrash, on
           <span className="workspace-option-icon" aria-hidden="true">
             <WorkspaceIcon name="library" />
           </span>
-          <span className="workspace-option-title">Abrir projetos salvos</span>
-          <span className="workspace-option-description">
+          <span className="text-lg font-semibold">Abrir projetos salvos</span>
+          <span className="text-sm leading-6 muted">
             Encontre seus projetos e continue de onde parou.
           </span>
           <span className="workspace-option-link">
@@ -61,8 +61,8 @@ export function WorkspaceHome({ busy, projectName, onNew, onLibrary, onTrash, on
           <span className="workspace-option-icon" aria-hidden="true">
             <WorkspaceIcon name="trash" />
           </span>
-          <span className="workspace-option-title">Acessar lixeira</span>
-          <span className="workspace-option-description">
+          <span className="text-lg font-semibold">Acessar lixeira</span>
+          <span className="text-sm leading-6 muted">
             Restaure projetos excluídos ou remova-os definitivamente.
           </span>
           <span className="workspace-option-link">
@@ -71,7 +71,7 @@ export function WorkspaceHome({ busy, projectName, onNew, onLibrary, onTrash, on
         </button>
       </div>
       {projectName && (
-        <div className="panel mt-4 flex flex-wrap items-center justify-between gap-3">
+        <div className="panel mt-6 flex flex-wrap items-center justify-between gap-4">
           <div className="min-w-0">
             <p className="eyebrow">EDIÇÃO EM ANDAMENTO</p>
             <p className="break-words text-sm">{projectName}</p>
@@ -82,7 +82,7 @@ export function WorkspaceHome({ busy, projectName, onNew, onLibrary, onTrash, on
           </button>
         </div>
       )}
-      <p className="mt-4 text-xs muted">
+      <p className="mt-8 text-xs leading-6 muted">
         Os cálculos e a memória de cálculo ficam dentro de cada projeto. Os resultados disponíveis
         compõem um estudo preliminar de cargas.
       </p>

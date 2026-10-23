@@ -309,7 +309,7 @@ test('home, draft continuity, library, duplication, trash and exports work toget
     expect(
       await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
     ).toBe(true);
-    await expect(sidebar).toHaveCount(0);
+    await expect(sidebar).toBeVisible();
   }
   await page.setViewportSize({ width: 390, height: 844 });
   await page.screenshot({ path: '/tmp/eletroprojeto-home-mobile.png', fullPage: true });

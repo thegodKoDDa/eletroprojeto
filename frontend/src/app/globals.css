@@ -528,57 +528,48 @@ details[open]:not(.action-menu) > summary {
 .quiet:hover:not(:disabled) {
   color: var(--accent);
 }
-.app-shell.app-shell-home {
-  display: flex;
-  flex-direction: column;
-}
-.home-brandbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  width: 100%;
-  max-width: 1120px;
-  margin-inline: auto;
-  padding: 0.75rem clamp(1rem, 3vw, 2rem);
-}
-.home-brandbar .workspace-brand {
-  margin: 0;
-}
 .app-shell-home .workspace-main {
-  flex: 1;
-  min-height: 0;
-  max-width: 1120px;
-  padding: 0.5rem clamp(1rem, 3vw, 2rem) 1rem;
+  padding: clamp(1rem, 3vw, 2.75rem);
+}
+.app-shell-home .workspace-sidebar {
+  padding: 1.5rem 1.1rem;
+}
+.app-shell-home .workspace-brand {
+  margin-bottom: 2rem;
+}
+.app-shell-home .workspace-navigation button {
+  min-height: 46px;
+  padding: 0.7rem;
 }
 .workspace-home {
   width: 100%;
-  margin: 0.75rem auto 1rem;
+  max-width: 70rem;
+  margin: clamp(1rem, 5vh, 3.5rem) auto 3rem;
 }
 .workspace-welcome {
-  max-width: 44rem;
-  margin-bottom: 1.25rem;
+  max-width: 43rem;
+  margin-bottom: 2.25rem;
 }
 .workspace-welcome h1 {
-  max-width: 22ch;
+  max-width: 17ch;
   line-height: 1.15;
   letter-spacing: -0.035em;
-  font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+  font-size: clamp(2rem, 4vw, 3rem);
 }
 .workspace-options {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.75rem;
+  gap: 1rem;
 }
 .workspace-option {
-  display: grid;
-  grid-template-columns: 34px minmax(0, 1fr);
-  align-content: start;
-  gap: 0.3rem 0.65rem;
-  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1.5rem;
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: var(--radius-inner);
+  border-radius: var(--radius-card);
   text-align: left;
   transition:
     border-color 0.15s,
@@ -595,34 +586,22 @@ details[open]:not(.action-menu) > summary {
 .workspace-option-icon {
   display: grid;
   place-items: center;
-  grid-row: 1 / 4;
-  width: 34px;
-  height: 34px;
+  width: 44px;
+  height: 44px;
   color: var(--accent);
   background: #70dcb60e;
   border: 1px solid #70dcb61c;
-  border-radius: 9px;
-}
-.workspace-option-title {
-  font-size: 0.95rem;
-  font-weight: 600;
-  line-height: 1.4;
-}
-.workspace-option-description {
-  grid-column: 2;
-  color: var(--muted);
-  font-size: 0.8rem;
-  line-height: 1.5;
+  border-radius: 12px;
 }
 .workspace-option-link {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  grid-column: 2;
-  gap: 0.5rem;
-  padding-top: 0.35rem;
+  width: 100%;
+  gap: 1rem;
+  margin-top: auto;
+  padding-top: 1rem;
   color: var(--accent);
-  font-size: 0.75rem;
+  font-size: 0.8rem;
 }
 .workspace-library {
   width: 100%;
@@ -1166,10 +1145,11 @@ textarea[aria-invalid='true'] {
     grid-template-columns: minmax(0, 1fr);
   }
   .workspace-option {
-    padding: 0.75rem;
+    gap: 0.8rem;
+    padding: 1.25rem;
   }
   .workspace-welcome {
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
   }
   .environment-header {
     align-items: flex-start;

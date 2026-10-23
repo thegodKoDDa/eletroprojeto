@@ -1,13 +1,13 @@
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
-test('home hides sidebar and equipment disclosures stay compact and functional', async ({
+test('home preserves sidebar branding and equipment disclosures stay compact and functional', async ({
   page,
 }) => {
   await page.goto('/');
   const sidebar = page.locator('.workspace-sidebar');
-  await expect(sidebar).toHaveCount(0);
-  await expect(page.locator('.home-brandbar .brand-name')).toHaveText('EletroProjeto');
+  await expect(sidebar).toBeVisible();
+  await expect(sidebar.locator('.brand-name')).toHaveText('EletroProjeto');
   await expect(page.locator('.workspace-footer')).toContainText('Estudo preliminar');
   expect(
     (await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze())
@@ -34,7 +34,7 @@ test('home hides sidebar and equipment disclosures stay compact and functional',
   await page.getByRole('button', { name: /^Acessar lixeira/ }).click();
   await expect(sidebar).toBeVisible();
   await sidebar.getByRole('button', { name: 'Início', exact: true }).click();
-  await expect(sidebar).toHaveCount(0);
+  await expect(sidebar).toBeVisible();
   await page.getByRole('button', { name: /^Abrir projetos salvos/ }).click();
   await expect(sidebar).toBeVisible();
   await sidebar.getByRole('button', { name: 'Início', exact: true }).click();
@@ -74,7 +74,7 @@ test('home hides sidebar and equipment disclosures stay compact and functional',
       await equipment.screenshot({ path: `/tmp/eletroprojeto-equipment-compact-${width}.png` });
   }
   await sidebar.getByRole('button', { name: 'Início', exact: true }).click();
-  await expect(sidebar).toHaveCount(0);
+  await expect(sidebar).toBeVisible();
   await page.getByRole('button', { name: 'Continuar edição', exact: true }).click();
   await expect(sidebar).toBeVisible();
   await expect(page.getByTestId('equipment-editor')).toHaveCount(1);

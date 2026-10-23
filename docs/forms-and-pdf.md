@@ -149,3 +149,8 @@ Teste de navegador simula POST recebido com resposta abortada, edição, recarga
 Home desmonta somente a navegação lateral, mantendo o estado do editor no componente principal. Marca e logout passam ao cabeçalho inicial; rodapé continua presente. Entrar em criar/biblioteca/lixeira revela aside; retorno ao início o oculta. Cartões iniciais usam ícone lateral e menor espaçamento. Main inicial sobrescreve min-height para evitar empurrar o rodapé para fora da janela por herdar100dvh.
 
 EquipmentEditor agrupa três details nativos em equipment-options flex com quebra, sem alterar cálculos/valores ou conteúdos. Resumos30px desktop/mínimo34px celular; abertos ocupam a linha inteira e crescem com conteúdo. Ações do equipamento em faixa própria com borda. Controles gerais/painéis/títulos recebem espaçamento menor, mantendo estados e foco. compact.spec.ts verifica navegação, recuperação da edição em memória, altura/alinhamento, abertura dos três grupos, axe e overflow320–1440px. Artefatos fictícios em/tmp/eletroprojeto-{home,equipment}-compact-{390,1440}.png.
+
+
+### Correção solicitada: restaurar somente o início
+
+A alternativa sem aside foi rejeitada pelo usuário. Sidebar volta a ser sempre renderizado; marca/logo, informações e saída da conta ficam nele, sem cabeçalho alternativo. WorkspaceHome e estilos dos cartões retornam à composição anterior0.14.0; padding do main/sidebar/marca/navegação da Home é restaurado por escopo app-shell-home, preservando a compactação das demais telas. Rodapé existente continua abaixo do conteúdo; desktop1440×900 verificado. Testes agora exigem sidebar visível ao abrir e ao voltar ao início; demais regressões dos equipamentos permanecem.

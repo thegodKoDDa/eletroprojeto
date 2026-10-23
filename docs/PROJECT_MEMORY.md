@@ -6,7 +6,7 @@ Aplicação local de estudo/cálculo elétrico residencial, para leigos, estudan
 
 Usuário autorizou otimizar armazenamento, salvamento, continuidade, estrutura e limpeza, mantendo funcionalidade. Publicação/infraestrutura remota/CI hospedado, impressão física e backup externo foram retirados do escopo atual; não voltar a cobrá-los. Manter mecanismos existentes e checkpoints locais. Rotinas de terminal/testes/contratos/migrações/serviços são executadas pelo agente, sem delegar ao usuário. Restrições obrigatórias do ambiente continuam válidas; nunca push sem autorização.
 
-Início0.14.1 sem navegação lateral, com marca/logo/rodapé preservados. Aside aparece ao criar/abrir projetos ou lixeira e some ao voltar ao início. Interface compacta, especialmente disclosures nativos de equipamentos; preservar campos, teclado e estado de edição.
+Correção da0.14.1: usuário pediu restaurar APENAS a aparência antiga do início. Sidebar sempre presente, marca/logo no aside, cartões verticais maiores e rodapé abaixo do conteúdo. Não voltar a ocultar aside no início. Compactação das outras telas/equipamentos preservada.
 
 ## Invariantes de produto
 

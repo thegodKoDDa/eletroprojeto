@@ -2,6 +2,8 @@
 
 ## 0.14.1 — 23/10/2026
 
+- Correção posterior solicitada pelo usuário: aparência antiga do início restaurada, com sidebar sempre presente, marca/logo na lateral, cartões e espaçamentos originais. Compactação das outras telas mantida.
+
 - Tela inicial sem barra lateral; marca, logo, saída da conta e rodapé preservados. Navegação lateral aparece ao entrar em criação, biblioteca ou lixeira; edição mantida ao voltar.
 - Espaçamentos e controles mais compactos. Configurações avançadas, consumo mensal e referências dos equipamentos agrupados em disclosures menores com quebra responsiva, sem retirar conteúdo.
 - Regressão:348backend+85subtestes,92frontend,16E2E,1E2EHTTPS, contratos/tipos/lint/formatação/build e Alembiccheck aprovados. Sem mudanças de dependências, dados, fórmulas ou migrações.

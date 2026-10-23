@@ -6,13 +6,13 @@ Uso LOCAL. Publicação, CI hospedado, impressão física e backup externo fora 
 
 9 projetos (8 ativos/1 na lixeira),30 históricos e8 revisões técnicas. Todas as colunas dessas três tabelas comparadas ao checkpoint inicial `.checkpoints/20261023T194010017686Z` e idênticas após a tarefa. SQLite íntegro/FK sem violações. Testes de gravação usaram bancos QA isolados; nada foi regravado nos projetos reais.
 
-## Interface compacta — 0.14.1
+## Interface — correção da 0.14.1
 
-Início sem aside: marca/logo e saída de conta no cabeçalho, informações e rodapé preservados. Criar projeto, projetos salvos e lixeira abrem o espaço com navegação lateral; voltar ao início a oculta novamente. Estado da edição permanece ao continuar. Cartões iniciais e espaçamentos gerais de controles/painéis reduzidos, sem retirar campos.
+Por pedido do usuário, restaurada somente a aparência antiga do início: aside sempre visível, nome/logo e informações na lateral, cartões verticais e espaçamentos originais da Home. Rodapé abaixo do conteúdo e alinhado à área principal; na janela desktop1440×900 permanece dentro da altura disponível. No celular a navegação continua acima do conteúdo, sem overflow. Removido o cabeçalho alternativo para evitar duplicação da marca. Compactação de equipamentos e das demais telas preservada.
 
 Equipamentos agrupam Configurações avançadas, Consumo mensal e Valores de referência em disclosures nativos compactos, alinhados no desktop e com quebra no celular. Resumos de30px no desktop/ mínimo34px no celular, ações separadas por borda e espaçamento menor. Conteúdo aberto sem altura fixa; foco, hover, desabilitados e teclado preservados.
 
-Validação desta entrega:348 testes backend+85 subtestes,92 frontend,16E2E e1E2EHTTPS de duas contas aprovados. Contratos/tipos/lint/formatação/buildwebpack/Alembiccheck aprovados. Novo E2E confere Home sem aside, rodapé dentro da janela1440×900, navegação, edição preservada, três disclosures funcionais, axe e ausência de overflow320/390/768/1440. Capturas QA desktop/celular inspecionadas. Smoke localhost confirmou API0.14.1/motor0.8.0, comportamento da barra e nenhum pageerror. API reiniciada PID594371; frontend3000 existente preservado. Conferir processos ao retomar.
+Validação da correção:348backend+85subtestes,92frontend,16E2E e1E2EHTTPS aprovados; tipos/lint/formatação/buildwebpack aprovados. Testes atualizados exigem sidebar visível também ao abrir/retornar ao início, marca única no aside, navegação, edição preservada, disclosures compactos e ausência de overflow320/390/768/1440. Capturas desktop/celular inspecionadas. Versão permanece0.14.1, sem mudanças de contratos, dependências ou backend. Backend reexecutado como regressão; sem nova migração ou contrato para gerar. PostgreSQL/Windows/scripts não repetidos nesta correção visual.
 
 Banco real comparado integralmente ao checkpoint `.checkpoints/20261023T214013315521Z`:9projetos/30históricos/8revisões idênticos, nenhuma gravação pela tarefa. Nenhuma dependência, fórmula, migração ou catálogo alterados; locks comparados estruturalmente, somente versão própria mudou. PostgreSQL, Windows e testes unitários dos scripts não repetidos nesta entrega visual; evidências abaixo são da0.14.0. Encerramento final verifica novamente fonte, hashes e restauração isolada.
 
