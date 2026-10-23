@@ -778,27 +778,37 @@ fieldset {
   background: #0f1924;
 }
 .equipment-options {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: start;
   gap: 0.15rem 0.5rem;
   margin-top: 0.35rem;
 }
 .equipment-options > details {
-  flex: 0 1 auto;
-  min-width: 0;
-  max-width: 100%;
+  display: contents;
 }
-.equipment-options > details[open] {
-  flex: 1 1 100%;
+.equipment-options > details::details-content {
+  grid-column: 1 / -1;
+  min-width: 0;
 }
 .equipment-card .equipment-options > details > summary {
+  grid-row: 1;
+  min-width: 0;
   min-height: 30px;
   justify-content: flex-start;
   padding: 0.2rem 0.4rem;
   gap: 0.55rem;
   font-size: 0.75rem;
   line-height: 1.5;
+}
+.equipment-options > details:nth-child(1) > summary {
+  grid-column: 1;
+}
+.equipment-options > details:nth-child(2) > summary {
+  grid-column: 2;
+}
+.equipment-options > details:nth-child(3) > summary {
+  grid-column: 3;
 }
 .equipment-options > details[open] > div {
   margin: 0.5rem 0.25rem 0.4rem;

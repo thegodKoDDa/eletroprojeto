@@ -154,3 +154,8 @@ EquipmentEditor agrupa três details nativos em equipment-options flex com quebr
 ### Correção solicitada: restaurar somente o início
 
 A alternativa sem aside foi rejeitada pelo usuário. Sidebar volta a ser sempre renderizado; marca/logo, informações e saída da conta ficam nele, sem cabeçalho alternativo. WorkspaceHome e estilos dos cartões retornam à composição anterior0.14.0; padding do main/sidebar/marca/navegação da Home é restaurado por escopo app-shell-home, preservando a compactação das demais telas. Rodapé existente continua abaixo do conteúdo; desktop1440×900 verificado. Testes agora exigem sidebar visível ao abrir e ao voltar ao início; demais regressões dos equipamentos permanecem.
+
+
+### Painéis de equipamento: cabeçalhos estáveis ao expandir
+
+Corrigida quebra dos três resumos: flex-basis100% no details aberto empurrava os vizinhos. equipment-options agora usa grid de três colunas com summaries fixos na primeira linha; details com display:contents e ::details-content abrangendo todas as colunas mantêm o comportamento nativo e conteúdo de largura completa abaixo. Sem posicionamento absoluto ou altura fixa. Permite abrir vários grupos simultaneamente. Regressão compara coordenadas dos três cabeçalhos após cada abertura em320/390/768/1440, verifica campo de consumo visível e ausência de overflow; mantém navegação e edição preservada. Navegadores antigos sem ::details-content não foram validados.

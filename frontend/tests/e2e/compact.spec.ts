@@ -50,7 +50,9 @@ test('home preserves sidebar branding and equipment disclosures stay compact and
   await expect(summaries).toHaveCount(3);
   const geometry = await summaries.evaluateAll((nodes) =>
     nodes.map((node) => ({
-      y: node.getBoundingClientRect().y,
+      y:
+        node.getBoundingClientRect().y -
+        node.closest('[data-testid="equipment-editor"]')!.getBoundingClientRect().y,
       height: node.getBoundingClientRect().height,
     })),
   );
@@ -62,6 +64,18 @@ test('home preserves sidebar branding and equipment disclosures stay compact and
     const disclosure = equipment.getByTestId(key);
     await disclosure.locator('summary').click();
     await expect(disclosure).toHaveAttribute('open', '');
+    const expandedPositions = await summaries.evaluateAll((nodes) =>
+      nodes.map((node) => ({
+        x: node.getBoundingClientRect().x,
+        y:
+          node.getBoundingClientRect().y -
+          node.closest('[data-testid="equipment-editor"]')!.getBoundingClientRect().y,
+      })),
+    );
+    for (let i = 0; i < geometry.length; i++) {
+      expect(Math.abs(expandedPositions[i].y - geometry[i].y)).toBeLessThan(2);
+    }
+
     await disclosure.locator('summary').click();
     await expect(disclosure).not.toHaveAttribute('open', '');
   }
@@ -70,6 +84,37 @@ test('home preserves sidebar branding and equipment disclosures stay compact and
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
       true,
     );
+    const beforeOpen = await summaries.evaluateAll((nodes) =>
+      nodes.map((node) => ({
+        x: node.getBoundingClientRect().x,
+        y:
+          node.getBoundingClientRect().y -
+          node.closest('[data-testid="equipment-editor"]')!.getBoundingClientRect().y,
+      })),
+    );
+    for (let index = 0; index < 3; index++) {
+      await summaries.nth(index).evaluate((node) => (node as HTMLElement).click());
+      const afterOpen = await summaries.evaluateAll((nodes) =>
+        nodes.map((node) => ({
+          x: node.getBoundingClientRect().x,
+          y:
+            node.getBoundingClientRect().y -
+            node.closest('[data-testid="equipment-editor"]')!.getBoundingClientRect().y,
+        })),
+      );
+      afterOpen.forEach((position, i) => {
+        expect(Math.abs(position.x - beforeOpen[i].x)).toBeLessThan(2);
+        expect(Math.abs(position.y - beforeOpen[i].y)).toBeLessThan(2);
+      });
+    }
+    await expect(
+      equipment.getByLabel('Consumo de energia (kWh/mês)', { exact: true }),
+    ).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+      true,
+    );
+    for (let index = 0; index < 3; index++)
+      await summaries.nth(index).evaluate((node) => (node as HTMLElement).click());
     if (width === 390 || width === 1440)
       await equipment.screenshot({ path: `/tmp/eletroprojeto-equipment-compact-${width}.png` });
   }

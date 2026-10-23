@@ -2,6 +2,8 @@
 
 ## 0.14.1 — 23/10/2026
 
+- Corrigido deslocamento dos botões de equipamento ao abrir opções: cabeçalhos permanecem na primeira linha, conteúdo expandido abaixo em largura completa, inclusive com os três painéis abertos.
+
 - Correção posterior solicitada pelo usuário: aparência antiga do início restaurada, com sidebar sempre presente, marca/logo na lateral, cartões e espaçamentos originais. Compactação das outras telas mantida.
 
 - Tela inicial sem barra lateral; marca, logo, saída da conta e rodapé preservados. Navegação lateral aparece ao entrar em criação, biblioteca ou lixeira; edição mantida ao voltar.
