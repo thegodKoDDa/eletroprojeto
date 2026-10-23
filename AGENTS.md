@@ -28,7 +28,8 @@ EletroProjeto é uma ferramenta de estudo/cálculo elétrico residencial para le
 
 ### Início de toda sessão / RETOMAR ELETROPROJETO
 
-Ler este arquivo, `docs/PROJECT_MEMORY.md`, `docs/CURRENT_STATE.md`, `docs/roadmap.md`, `docs/KNOWN_ISSUES.md`, últimos registros de `CHANGELOG.md` e `docs/SESSION_HISTORY.md`. Conferir código, versões, Git real, banco/migrações e dependências; executar `python3 scripts/continuity.py retomar` (ou wrapper PowerShell). O script não inicia serviços nem valida testes: o agente verifica/inicia serviços conforme a tarefa e informa somente resultados observados. Continuar pelo próximo passo registrado, sem depender da conversa anterior.
+Ler este arquivo, `docs/PROJECT_MEMORY.md`, `docs/CURRENT_STATE.md`, `docs/roadmap.md`, `docs/KNOWN_ISSUES.md` e os últimos registros de CHANGELOG/SESSION_HISTORY (começar por `tail -n 60`, ampliar somente se necessário). Executar `python3 scripts/continuity.py retomar`: saída compacta de Git, banco e dependências, sem repetir os documentos já lidos. `.checkpoints/latest.json` aponta para o último ponto publicado; marcador/hash do manifest não substituem restauração completa com verificar. Conferir serviços existentes antes de iniciar outros. Executar doctor quando dependências, permissões, ambiente ou falhas exigirem revisão; não reinstalar nem repetir baterias já aprovadas sem mudança relevante. Continuar pelo próximo passo registrado, sem depender da conversa anterior.
+
 
 ### Durante o desenvolvimento
 
@@ -36,12 +37,11 @@ Depois de alterações relevantes, atualizar o documento responsável e CURRENT_
 
 ### ENCERRAR SESSÃO DO ELETROPROJETO
 
-1. Conferir arquivos no disco e Git (inclusive novos arquivos); não é possível assegurar buffers não salvos de um editor externo.
-2. Atualizar CURRENT_STATE, acrescentar SESSION_HISTORY sem apagar registros, atualizar CHANGELOG/documentos afetados; registrar testes realmente executados e tarefas interrompidas.
-3. Executar verificações proporcionais, conferir banco/migrações. Não apagar dados nem alterações para obter estado limpo.
-4. Revisar nomes/conteúdo de arquivos por segredos antes de versionar. Nunca adicionar `.env` privados, bancos, backups, tokens ou credenciais. Não fazer push sem autorização.
-5. Executar `python3 scripts/continuity.py encerrar`. Exigir verificação do arquivo de código, hashes e restauração SQLite isolada; registrar caminho em CURRENT_STATE antes de criar o checkpoint final quando possível. Checkpoint falho não é seguro.
-6. Criar commit Git local revisado quando disponível/autorizado pelo pedido de checkpoint; não inicializar/substituir histórico existente ou contornar restrições de `.git`. Se indisponível, registrar explicitamente ausência de commit e usar arquivo verificado como recuperação local.
-7. Relatar o que foi preservado, exclusões, falhas, backup, Git e como retomar. Não desligar computador, fechar programas à força ou interromper gravações. Escopo definido pelo usuário em 23/10/2026: manter uso local e checkpoints locais; publicação, impressão física e backup externo estão fora do trabalho atual. Não voltar a cobrar esses itens. Backup no mesmo disco não protege contra perda do computador.
+1. Conferir disco, Git e arquivos novos; buffers não salvos de editor externo não são verificáveis.
+2. Atualizar CURRENT_STATE e acrescentar SESSION_HISTORY sem apagar registros; atualizar documentos responsáveis. Registrar somente verificações efetivas, limitações e próximo passo. Usar `.checkpoints/latest.json` como referência persistente do checkpoint final, sem prometer sucesso antes da execução.
+3. Executar verificações proporcionais às mudanças. Preservar dados e migrações; não repetir testes/instalações sem mudança, falha ou preocupação concreta. Limpeza com `python3 scripts/maintenance.py clean` primeiro simula; `--apply` remove apenas gerados permitidos e `--qa-builds` inclui saídas QA com portas livres. Nunca remover dependências úteis, dados, fontes, normas ou pontos únicos de recuperação para obter estado limpo.
+4. Revisar segredos nos nomes/conteúdo antes de versionar. Nunca adicionar .env privado, banco, backup, token ou credencial. Revisar e criar um único commit local de código/docs quando Git estiver disponível e autorizado; nenhum push. Não modificar histórico nem contornar proteção de .git.
+5. Depois do commit, executar `python3 scripts/continuity.py encerrar`. O checkpoint deve incluir o commit final, hashes, fonte e restaurações SQLite/Git isoladas; só então atualizará latest.json atomicamente. Sem mudanças, reutiliza o último ponto após revalidá-lo por completo; `--force-new` força cópia distinta. Falha não é sucesso: o ponteiro anterior permanece e o agente deve resolver/relatar o erro. Não fazer outro commit apenas para copiar o caminho do checkpoint para os docs; consultar o ponteiro evita ciclo de commits/checkpoints redundantes.
+6. Conferir status final e relatar preservação, exclusões, verificações, checkpoint retornado e como retomar. Sem Git, registrar ausência de commit e usar arquivo de fonte verificado. Não fechar programas à força, interromper gravações ou desligar o computador.
 
-Scripts auxiliares não substituem análise/documentação do agente. Ver procedimento, restauração e retenção em `docs/continuity.md`. Nunca afirmar que o procedimento executa automaticamente fora de uma sessão ou que é possível recuperar contexto sem ler os arquivos.
+Uso local definido pelo usuário em23/10/2026: publicação, impressão física e backup externo fora do trabalho atual; não cobrar esses itens. Checkpoint no mesmo disco não cobre perda física. Scripts não substituem análise/leitura dos documentos e não executam fora da sessão. Procedimento e recuperação em docs/continuity.md.

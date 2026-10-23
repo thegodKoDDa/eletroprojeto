@@ -258,6 +258,19 @@ class Project(ProjectInput):
     standards_version: str
 
 
+class ProjectSummary(Schema):
+    id: UUID
+    name: str
+    municipality: str
+    state: str
+    utility: str
+    version: int
+    created_at: datetime
+    updated_at: datetime
+    deleted_at: datetime | None
+    standards_version: str
+
+
 class Value(Schema):
     value: Decimal
     unit: Literal["W", "kW", "VA", "kVA", "A", "kWh", "BRL"]

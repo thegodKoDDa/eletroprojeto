@@ -90,6 +90,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/projects/summaries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Project Summaries */
+        get: operations["project_summaries_api_v1_projects_summaries_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/projects/{project_id}": {
         parameters: {
             query?: never;
@@ -1513,6 +1530,38 @@ export interface components {
             /** Environments */
             environments?: components["schemas"]["Environment"][];
         };
+        /** ProjectSummary */
+        ProjectSummary: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Name */
+            name: string;
+            /** Municipality */
+            municipality: string;
+            /** State */
+            state: string;
+            /** Utility */
+            utility: string;
+            /** Version */
+            version: number;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+            /** Deleted At */
+            deleted_at: string | null;
+            /** Standards Version */
+            standards_version: string;
+        };
         /** RegionalMethodInfo */
         RegionalMethodInfo: {
             /** Code */
@@ -1875,7 +1924,9 @@ export interface operations {
     create_api_v1_projects_post: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                "idempotency-key"?: string | null;
+            };
             path?: never;
             cookie?: never;
         };
@@ -1892,6 +1943,41 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Project"];
+                };
+            };
+            /** @description Entradas inválidas; avisos localizados quando disponíveis. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InputValidationError"];
+                };
+            };
+        };
+    };
+    project_summaries_api_v1_projects_summaries_get: {
+        parameters: {
+            query?: {
+                archived?: boolean;
+                limit?: number;
+                offset?: number;
+                q?: string;
+                sort?: "recent" | "name";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProjectSummary"][];
                 };
             };
             /** @description Entradas inválidas; avisos localizados quando disponíveis. */

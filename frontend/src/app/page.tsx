@@ -1,5 +1,5 @@
 'use client';
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import {
   request,
   requestReport,
@@ -81,6 +81,12 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
   const [initializationIssues, setInitializationIssues] = useState<string[]>([]);
   const [input, setInput] = useState<ProjectInput>(initial);
   const [saved, setSaved] = useState<Project>();
+  const inputSignature = useMemo(() => JSON.stringify(input), [input]);
+  const savedSignature = useMemo(
+    () => JSON.stringify(saved ? projectInputs(saved) : initial()),
+    [saved],
+  );
+  const createId = useRef<string | undefined>(undefined);
   const draftSlot = useRef<string | undefined>(undefined);
   const recoveredSource = useRef<{ key: string; data: string } | undefined>(undefined);
   const [recoverableDrafts, setRecoverableDrafts] = useState<{ key: string; draft: Draft }[]>([]);
@@ -104,20 +110,51 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
       active = false;
     };
   }, [draftOwner]);
+  const pendingDraft = useRef<(() => void) | undefined>(undefined);
   useEffect(() => {
-    if (!hasProject || !draftSlot.current) return;
-    try {
-      if (saved && JSON.stringify(projectInputs(saved)) === JSON.stringify(input))
-        localStorage.removeItem(draftSlot.current);
-      else writeDraft(localStorage, draftSlot.current, input, saved);
-    } catch {
-      queueMicrotask(() =>
-        setDraftIssue(
-          'Não foi possível proteger o rascunho neste navegador. Salve no servidor antes de fechar.',
-        ),
-      );
+    function flush() {
+      pendingDraft.current?.();
     }
-  }, [input, saved, hasProject]);
+    function hidden() {
+      if (document.visibilityState === 'hidden') flush();
+    }
+    window.addEventListener('pagehide', flush);
+    window.addEventListener('beforeunload', flush);
+    document.addEventListener('visibilitychange', hidden);
+    return () => {
+      flush();
+      window.removeEventListener('pagehide', flush);
+      window.removeEventListener('beforeunload', flush);
+      document.removeEventListener('visibilitychange', hidden);
+    };
+  }, []);
+  useLayoutEffect(() => {
+    if (!hasProject || !draftSlot.current) {
+      pendingDraft.current = undefined;
+      return;
+    }
+    const slot = draftSlot.current;
+    createId.current ??= crypto.randomUUID();
+    const creation = createId.current;
+    let persisted = false;
+    function persist() {
+      if (persisted) return;
+      try {
+        if (saved && savedSignature === inputSignature) localStorage.removeItem(slot);
+        else writeDraft(localStorage, slot, input, saved, creation);
+        persisted = true;
+      } catch {
+        queueMicrotask(() =>
+          setDraftIssue(
+            'Não foi possível proteger o rascunho neste navegador. Salve no servidor antes de fechar.',
+          ),
+        );
+      }
+    }
+    pendingDraft.current = persist;
+    const timer = setTimeout(persist, 250);
+    return () => clearTimeout(timer);
+  }, [input, saved, hasProject, inputSignature, savedSignature]);
   const [pendingRoom, setPendingRoom] = useState<string>();
   useEffect(() => {
     if (pendingRoom) {
@@ -194,7 +231,7 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
     notifications,
     httpStatus,
   } = useCalculation(input, String(calculationScope), view === 'project');
-  const dirty = JSON.stringify(saved ? projectInputs(saved) : initial()) !== JSON.stringify(input);
+  const dirty = savedSignature !== inputSignature;
   const refresh = useCallback(async () => {
     setLibraryRevision((value) => value + 1);
   }, []);
@@ -314,12 +351,26 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
         asNew && saved && input.name === saved.name
           ? { ...input, name: `${input.name.slice(0, 190)} · cópia` }
           : input;
+      const creating = !saved || asNew;
+      if (creating) {
+        createId.current ??= crypto.randomUUID();
+        try {
+          writeDraft(localStorage, draftSlot.current!, input, saved, createId.current);
+        } catch {
+          setDraftIssue('Não foi possível proteger o identificador do salvamento neste navegador.');
+        }
+      }
       try {
         const project = await request<Project>(
           saved && !asNew ? `/projects/${saved.id}?expected_version=${saved.version}` : '/projects',
-          { method: saved && !asNew ? 'PUT' : 'POST', body: JSON.stringify(snapshot) },
+          {
+            method: saved && !asNew ? 'PUT' : 'POST',
+            body: JSON.stringify(snapshot),
+            headers: creating ? { 'Idempotency-Key': createId.current! } : undefined,
+          },
         );
         setSaved(project);
+        if (creating) createId.current = undefined;
         try {
           const source = recoveredSource.current;
           if (source && localStorage.getItem(source.key) === source.data)
@@ -347,7 +398,29 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
         );
         await refresh();
       } catch (e) {
-        if (e instanceof APIError && e.status === 409 && saved && !asNew) {
+        if (e instanceof APIError && e.status === 409 && creating && createId.current) {
+          try {
+            const existing = await request<Project>(`/projects/${createId.current}`);
+            setSaved(existing);
+            if (
+              currentInput.current.name === startedInput.name &&
+              ((asNew && snapshot.name !== startedInput.name) ||
+                startedInput.name.trim() === existing.name)
+            )
+              setInput((old) => ({ ...old, name: existing.name }));
+            createId.current = undefined;
+            setConflict(undefined);
+            setConflictPending(false);
+            setMessage(
+              'Primeiro salvamento recuperado. Suas alterações atuais foram mantidas para o próximo salvamento.',
+            );
+            await refresh();
+          } catch {
+            setMessage(
+              'Não foi possível recuperar o primeiro salvamento. O rascunho foi preservado; confira os projetos salvos antes de tentar novamente.',
+            );
+          }
+        } else if (e instanceof APIError && e.status === 409 && saved && !asNew) {
           setConflictPending(true);
           setMessage(
             'Outra edição alterou este projeto. Salvamento automático pausado; suas alterações locais foram preservadas.',
@@ -374,7 +447,7 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
   useEffect(() => {
     if (!autosave || !saved || !dirty || busy || conflictPending || input.name !== saved.name)
       return;
-    const attempt = JSON.stringify([saved.id, saved.version, input]);
+    const attempt = `${saved.id}:${saved.version}:${inputSignature}`;
     if (autosaveAttempt.current === attempt) return;
     const timer = setTimeout(() => {
       autosaveAttempt.current = attempt;
@@ -382,9 +455,9 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
     }, 1500);
     return () => clearTimeout(timer);
     // save uses exactly the input/version captured by this scheduled effect.
-  }, [autosave, saved, input, dirty, busy, save, conflictPending]);
+  }, [autosave, saved, input, inputSignature, dirty, busy, save, conflictPending]);
 
-  async function open(project: Project) {
+  async function open(project: Pick<Project, 'id'>) {
     if (hasProject && dirty && !window.confirm('Descartar alterações locais e abrir este projeto?'))
       return false;
     const snapshot = currentInput.current;
@@ -398,6 +471,8 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
         );
         return false;
       }
+      pendingDraft.current?.();
+      createId.current = undefined;
       setCalculationScope((value) => value + 1);
       setSaved(fresh);
       recoveredSource.current = undefined;
@@ -422,6 +497,8 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
       !window.confirm('Descartar alterações locais e criar outro projeto?')
     )
       return;
+    pendingDraft.current?.();
+    createId.current = undefined;
     setCalculationScope((value) => value + 1);
     setSaved(undefined);
     recoveredSource.current = undefined;
@@ -433,7 +510,7 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
     setOperationIssues(undefined);
     setMessage('');
   }
-  async function remove(project = saved) {
+  async function remove(project: Pick<Project, 'id' | 'version' | 'name'> | undefined = saved) {
     if (
       !project ||
       !window.confirm(
@@ -465,7 +542,7 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
       setBusy(false);
     }
   }
-  async function duplicateProject(project: Project) {
+  async function duplicateProject(project: Pick<Project, 'id'>) {
     setBusy(true);
     setMessage('Duplicando projeto…');
     try {
@@ -478,7 +555,7 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
       setBusy(false);
     }
   }
-  async function restoreProject(project: Project) {
+  async function restoreProject(project: Pick<Project, 'id' | 'version'>) {
     setBusy(true);
     setMessage('Restaurando projeto…');
     try {
@@ -514,7 +591,7 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
       setBusy(false);
     }
   }
-  async function purgeProject(project: Project) {
+  async function purgeProject(project: Pick<Project, 'id' | 'version' | 'name'>) {
     if (
       !window.confirm(
         `Excluir definitivamente “${project.name}” e seu histórico? Esta ação não pode ser desfeita.`,
@@ -666,6 +743,8 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                           !window.confirm('Descartar a edição atual e recuperar este rascunho?')
                         )
                           return;
+                        pendingDraft.current?.();
+                        createId.current = draft.createId;
                         setInput(draft.input);
                         setSaved(draft.saved);
                         setConflict(undefined);
@@ -734,6 +813,7 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                       )
                         return;
                       // Keep the local draft and use a new slot for the server edition.
+                      pendingDraft.current?.();
                       try {
                         setRecoverableDrafts(readDrafts(localStorage, draftOwner));
                       } catch {

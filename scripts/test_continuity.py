@@ -117,7 +117,7 @@ class ContinuityTests(unittest.TestCase):
 
     def test_distinct_checkpoints_and_resume_state(self):
         first = c.checkpoint(self.root)["checkpoint"]
-        second = c.checkpoint(self.root)["checkpoint"]
+        second = c.checkpoint(self.root, force_new=True)["checkpoint"]
         self.assertNotEqual(first, second)
         self.assertEqual(c.check(self.root)["database"]["counts"]["projects"], 2)
 
@@ -145,6 +145,44 @@ class ContinuityTests(unittest.TestCase):
         (folder / "repository.bundle").write_bytes(b"corrupt")
         with self.assertRaises(ValueError):
             c.verify(folder)
+
+    def test_unchanged_checkpoint_is_reused_and_reverified(self):
+        first = c.checkpoint(self.root)
+        second = c.checkpoint(self.root)
+        self.assertEqual(first["checkpoint"], second["checkpoint"])
+        self.assertTrue(second["reused"])
+        self.assertEqual(c.latest_checkpoint(self.root), Path(first["checkpoint"]))
+        self.db.execute("INSERT INTO projects VALUES ('new', NULL)")
+        self.db.commit()
+        third = c.checkpoint(self.root)
+        self.assertNotEqual(first["checkpoint"], third["checkpoint"])
+        self.assertEqual(third["database"]["counts"]["projects"], 3)
+
+    def test_failed_verification_never_publishes_latest_or_final_folder(self):
+        first = c.checkpoint(self.root)
+        with patch.object(c, "verify", side_effect=ValueError("QA failure")):
+            with self.assertRaises(ValueError):
+                c.checkpoint(self.root, force_new=True)
+        self.assertEqual(c.latest_checkpoint(self.root), Path(first["checkpoint"]))
+        self.assertEqual(len(list((self.root / ".checkpoints").glob("*/VERIFIED.json"))), 1)
+        self.assertTrue(c.verify(Path(first["checkpoint"]))["verified"])
+
+    def test_corrupt_latest_is_not_reused(self):
+        first = Path(c.checkpoint(self.root)["checkpoint"])
+        (first / "source.zip").write_bytes(b"corrupt")
+        second = c.checkpoint(self.root)
+        self.assertFalse(second["reused"])
+        self.assertNotEqual(first, Path(second["checkpoint"]))
+        self.assertTrue(c.verify(Path(second["checkpoint"]))["verified"])
+
+    def test_concurrent_checkpoint_is_refused_without_overwriting_lock(self):
+        store = self.root / ".checkpoints"
+        store.mkdir()
+        with c.checkpoint_lock(store):
+            with self.assertRaises(ValueError):
+                c.checkpoint(self.root)
+        self.assertFalse((store / ".checkpoint.lock").exists())
+        self.assertTrue(c.checkpoint(self.root)["verified"])
 
 
 if __name__ == "__main__":

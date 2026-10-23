@@ -674,7 +674,7 @@ async def test_version_and_documentation_groups_are_consistent(client):
         == frontend["version"]
         == backend["project"]["version"]
         == APP_VERSION
-        == "0.13.1"
+        == "0.14.0"
     )
     assert health["engine_version"] == ENGINE_VERSION == "0.8.0"
     spec = (await client.get("/openapi.json")).json()
@@ -1096,8 +1096,7 @@ async def test_research_is_exposed_as_coverage_not_as_project_errors(client, pay
     demand = next(item for item in registry["coverage"] if item["code"] == "demand")
     assert any("9.1" in (e["section"] or "") for e in demand["evidence"])
     assert all(
-        bool(rule["procedure"]) == bool(rule["tests"]) is True
-        for rule in registry["normative"]
+        bool(rule["procedure"]) == bool(rule["tests"]) is True for rule in registry["normative"]
     )
 
 
@@ -1340,3 +1339,63 @@ async def test_project_demand_persistence_exports_and_stale_guard(client, payloa
     export["project"] = payload
     rejected = await client.post("/api/v1/reports/json", json=export)
     assert rejected.status_code == 409
+
+
+async def test_lightweight_summary_search_trash_and_full_open(client, payload):
+    payload["notes"] = "Detalhe privado do projeto " * 200
+    saved = (await client.post("/api/v1/projects", json=payload)).json()
+    full = await client.get("/api/v1/projects")
+    response = await client.get("/api/v1/projects/summaries?limit=21")
+    assert response.status_code == 200
+    summary = response.json()[0]
+    assert summary["id"] == saved["id"] and summary["name"] == saved["name"]
+    assert "environments" not in summary and "notes" not in summary
+    by_city = (
+        await client.get("/api/v1/projects/summaries", params={"q": payload["municipality"]})
+    ).json()
+    assert by_city[0]["id"] == saved["id"]
+    assert len(response.content) < len(full.content) / 5
+    assert (await client.get("/api/v1/projects/summaries?q=does-not-exist")).json() == []
+    assert (await client.get("/api/v1/projects/summaries?q=%25")).json() == []
+    await client.delete(f"/api/v1/projects/{saved['id']}?expected_version=1")
+    assert (await client.get("/api/v1/projects/summaries")).json() == []
+    trash = (await client.get("/api/v1/projects/summaries?archived=true")).json()
+    assert trash[0]["id"] == saved["id"] and trash[0]["deleted_at"]
+
+
+async def test_unchanged_put_has_no_new_history_or_version_and_stale_still_conflicts(
+    client, payload
+):
+    saved = (await client.post("/api/v1/projects", json=payload)).json()
+    repeat = (
+        await client.put(f"/api/v1/projects/{saved['id']}?expected_version=1", json=payload)
+    ).json()
+    assert repeat["version"] == 1 and repeat["updated_at"] == saved["updated_at"]
+    assert len((await client.get(f"/api/v1/projects/{saved['id']}/history")).json()) == 1
+    changed = {**payload, "notes": "Nota nova"}
+    update = await client.put(f"/api/v1/projects/{saved['id']}?expected_version=1", json=changed)
+    assert update.json()["version"] == 2
+    stale = await client.put(f"/api/v1/projects/{saved['id']}?expected_version=1", json=changed)
+    assert stale.status_code == 409
+    assert len((await client.get(f"/api/v1/projects/{saved['id']}/history")).json()) == 2
+
+
+async def test_first_save_retry_is_idempotent_without_overwriting_newer_input(client, payload):
+    from uuid import uuid4
+
+    headers = {"Idempotency-Key": str(uuid4())}
+    first = await client.post("/api/v1/projects", json=payload, headers=headers)
+    repeat = await client.post("/api/v1/projects", json=payload, headers=headers)
+    assert first.status_code == repeat.status_code == 201
+    assert first.json()["id"] == repeat.json()["id"] == headers["Idempotency-Key"]
+    assert len((await client.get("/api/v1/projects")).json()) == 1
+    assert len((await client.get(f"/api/v1/projects/{first.json()['id']}/history")).json()) == 1
+    conflict = await client.post(
+        "/api/v1/projects", json={**payload, "notes": "Edição após queda"}, headers=headers
+    )
+    assert conflict.status_code == 409
+    assert (await client.get(f"/api/v1/projects/{first.json()['id']}")).json()["notes"] == ""
+    invalid = await client.post(
+        "/api/v1/projects", json=payload, headers={"Idempotency-Key": "invalid"}
+    )
+    assert invalid.status_code == 422

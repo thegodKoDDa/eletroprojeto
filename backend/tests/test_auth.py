@@ -65,6 +65,12 @@ async def test_owner_isolation_csrf_and_revocation(secured):
     assert (await client.get("/api/v1/projects")).status_code == 401
     headers = await signin(client, "bob")
     assert (await client.get("/api/v1/projects")).json() == []
+    assert (await client.get("/api/v1/projects/summaries")).json() == []
+    assert (await client.get("/api/v1/projects/summaries?q=Privado")).json() == []
+    collision = await client.post(
+        "/api/v1/projects", json=payload, headers={**headers, "Idempotency-Key": project_id}
+    )
+    assert collision.status_code == 409
     for path in ("", "/history", "/report", "/revalidation"):
         assert (await client.get(f"/api/v1/projects/{project_id}{path}")).status_code == 404
     for path in ("/duplicate", "/restore?expected_version=1", "/recalculate?expected_version=1"):

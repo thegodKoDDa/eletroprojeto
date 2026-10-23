@@ -1,79 +1,54 @@
-# Continuidade, checkpoint e recuperação
+# Continuidade, armazenamento e recuperação — 0.14.0
 
-## Uso permanente
+## Rotina curta e verificável
 
-Ao pedir **ENCERRAR SESSÃO DO ELETROPROJETO**, o agente segue AGENTS, atualiza estado/histórico, testa o necessário, revisa segredos e executa o checkpoint. Ao pedir **RETOMAR ELETROPROJETO**, lê a documentação e confere o estado real antes de continuar. Isso funciona pela leitura local, não por memória garantida da conversa nem por processo em segundo plano.
+RETOMAR: ler AGENTS, memória/estado/roadmap/pendências atuais e cauda dos registros; `python3 scripts/continuity.py retomar` retorna Git, banco, dependências e último checkpoint. A saída compacta evita imprimir documentos já lidos; `--documents` os inclui quando necessário. O agente confere serviços existentes e segue o próximo passo registrado. Scripts não iniciam serviços nem substituem leitura/análise.
 
-Linux/macOS, a partir da raiz (Python 3.11+ padrão ou backend/.venv/bin/python):
+ENCERRAR: conferir disco/Git, atualizar docs responsáveis e testes efetivos, revisar segredos e fazer um único commit local quando autorizado. Depois executar `python3 scripts/continuity.py encerrar`: inclui o HEAD final no bundle, verifica fonte/banco e restaura SQLite/Git isoladamente. O retorno informa o caminho; `.checkpoints/latest.json` é o ponteiro persistente. Não criar novo commit/checkpoint só para copiar esse caminho aos docs. Nenhum push, desligamento ou encerramento forçado de programas.
 
 ```bash
-python3 scripts/continuity.py encerrar
 python3 scripts/continuity.py retomar
+python3 scripts/continuity.py encerrar
+python3 scripts/continuity.py encerrar --force-new
 python3 scripts/continuity.py verificar --checkpoint .checkpoints/IDENTIFICADOR
+python3 scripts/maintenance.py doctor
+python3 scripts/maintenance.py clean
+python3 scripts/maintenance.py clean --apply --qa-builds
 ```
 
-Windows/PowerShell:
+Continuidade usa só stdlib Python3.11+. Wrappers retomar.ps1/encerrar.ps1 preferem backend/.venv-windows/Scripts/python.exe, depois .venv/Scripts/python.exe ou python no PATH; aceitam -Documents e -ForceNew respectivamente. Não alterar ExecutionPolicy global. Políticas de sessão podem bloquear .ps1; QA Windows usou autorização temporária somente do processo. Os comandos Python equivalentes continuam disponíveis; limitações reais são relatadas.
 
-```powershell
-./scripts/encerrar.ps1
-./scripts/retomar.ps1
-```
+## O que fica protegido
 
-Wrappers procuram backend/.venv/Scripts/python.exe, depois python no PATH. Não alterar ExecutionPolicy global para executá-los. Python não depende de pacotes externos para continuidade; ambiente Windows/PowerShell não está disponível para teste nesta sessão. Instalação/execução da aplicação em README; `types:sync` atual usa sintaxe POSIX e precisará adaptação no Windows nativo ou WSL. Scripts não instalam pacotes, migram banco, abrem portas, encerram processos, fazem commits ou push.
+Cada diretório publicado contém source.zip, data.sqlite3, manifest.json, VERIFIED.json e repository.bundle quando há Git com commit. Fonte inclui código/locks/testes/migrações/docs e arquivos normais não privados, inclusive alterações no disco ainda sem commit. Exclui .git, checkpoints, ambientes/dependências, builds/caches/logs, symlinks, bancos/arquivos de backup, .env privado/chaves/credenciais conhecidas, PDFs normativos e metadados de download. .env.example é incluído. Revisar segredos também no conteúdo/histórico antes de versionar. Não capturar buffers de editor nem rascunhos do navegador é um limite explícito.
 
-## Conteúdo e limites
+Banco privado SQLite é copiado pela API backup, incluindo transações confirmadas em WAL, sem alterar o original. integrity_check e foreign_key_check no snapshot; restauração isolada confere contagens/migração e percorre todas as linhas do dump sem guardar o SQL inteiro em RAM. Hashes de arquivos grandes são lidos em blocos. Não há garantia de transação única entre fonte e banco: hashes da fonte são reconferidos e alterações de refs Git durante captura causam falha.
 
-`.checkpoints/<UTC-com-microssegundos>/` contém source.zip, data.sqlite3, manifest.json (hashes SHA-256, estado Git e contagens sem dados pessoais) e VERIFIED.json. Só considerar íntegro após saída verificada. Diretório 0700 e arquivos 0600 em POSIX; no Windows usar conta/diretório protegidos por ACL. Sem criptografia embutida.
+DATABASE_URL absoluto SQLite do ambiente é respeitado; relativo/memória/outro banco é recusado para não copiar dados errados. Default backend/eletroprojeto.db. O script não carrega .env nem descobre variáveis privadas de outro processo; o agente confere configuração ao operar serviços. PostgreSQL requer backup apropriado ao banco, não cópia de arquivo SQLite.
 
-ZIP captura arquivos regulares do projeto, incluindo código, referências, fontes licenciadas, lockfiles, migrações, testes e documentos. Exclui .git, dependências, builds/cache/logs, symlinks, .checkpoints, .env privados, bancos, chaves e credenciais por nome. Essa exclusão não detecta todos os segredos possíveis: o agente deve revisar conteúdo antes de versionar/compartilhar. Bancos contêm projetos e devem ficar privados. `.env.example` é incluído; configurações privadas devem ter recuperação segura separada, nunca publicadas. Arquivos em buffers do editor e rascunhos ainda no navegador não são capturados. Salvar no editor e aguardar Salvo na aplicação antes de fechar.
+## Publicação e reutilização
 
-SQLite é aberto mode=ro; Connection.backup cria snapshot consistente, incluindo transações confirmadas em WAL. Verifica integrity_check e foreign_key_check; restaura em arquivo temporário isolado e lê dump completo. Não toca no banco original. Usa DATABASE_URL absoluto SQLite, se definido no ambiente, ou backend/eletroprojeto.db; URL relativa/outro banco é recusada. Variáveis configuradas apenas num processo servidor externo não são detectáveis: conferir seu DATABASE_URL antes do encerramento. O script não carrega .env automaticamente.
+Capturas concorrentes são bloqueadas por lock privado, sem disputar latest.json. Lock POSIX de processo encerrado na mesma máquina pode ser recuperado; em outros casos é preciso conferir o processo antes de removê-lo. Doctor informa lock/pontos pendentes.
 
-Fonte não é snapshot atômico do filesystem: evitar editar durante a captura; script confere hashes novamente e falha se detectar alteração. Banco representa um instante transacional, não inclui edições futuras. Arquivos/código e banco são preservados separadamente, sem promessa de transação entre eles.
+Captura em .checkpoints/.pending-*, privado e sem anúncio como ponto concluído. Componentes são gravados/fechados/sincronizados; manifest/marker escritos com troca atômica. Só após verify bem-sucedido o diretório ganha o nome final e latest.json é atualizado atomicamente com hash do manifest. POSIX sincroniza também os diretórios. Falha mantém o ponteiro anterior; .pending não é backup concluído nem deve ser apagado sem análise.
 
-## Retenção
+Sem mudanças na fonte, hash do banco, HEAD/branch/refs Git, o último ponto pode ser reutilizado. Antes do retorno, executa a mesma verificação completa, restauração SQLite e clone Git. Não usar timestamp/marker como prova suficiente. --force-new força novo ponto físico. Corrupção impede reutilização; é criado novo ponto verificado e o corrompido fica para análise. Retomar confere somente pointer/hash do manifest, informando expressamente que não refez a restauração; verificar executa essa etapa.
 
-Manter os 14 checkpoints verificados mais recentes e pelo menos um por semana durante oito semanas. O script sinaliza revisão quando há mais de 14, mas não apaga automaticamente. Antes de remover cópias antigas, verificar as mantidas e copiar para disco/local externo protegido. Revisar mensalmente espaço e retenção com o agente. Não há agendamento automático nem cópia externa configurada. Mesmo disco não é proteção contra roubo/falha física; desligamento não apaga cópia local, mas não garante durabilidade externa.
+Arquivos privados0600/diretórios0700 no POSIX. Em Windows, chmod não verifica ACL: considerar proteção da conta/local e inspeção nativa. A auditoria doctor mostra limites da plataforma; --fix-permissions só atua em privados conhecidos, sem seguir symlinks ou mudar código/.git/política global. Dados e snapshots não são criptografados automaticamente.
 
-## Recuperação segura
+## Limpeza e retenção
 
-1. Não substituir arquivos em uso. Confirmar ausência de gravações e preservar a versão atual primeiro; não fechar processos à força.
-2. Executar verificar no checkpoint escolhido. ZIP inclui paths relativos sem .git; não apaga arquivos novos da instalação atual.
-3. Extrair source.zip para diretório novo, revisar manifest/hashes e arquivos, nunca por cima da única cópia. Instalar dependências dos locks conforme README. Não copiar node_modules ou venv entre máquinas.
-4. Restaurar data.sqlite3 com a API SQLite `backup` para um **arquivo de destino novo**, conferindo integrity_check e foreign_key_check. Exemplo (trocar caminhos, não usar o banco ativo como destino):
+clean primeiro simula; --apply remove somente allowlist de caches Python/pytest/Ruff/TypeScript e relatórios QA. --qa-builds também pode remover .next/e2e e e2e-auth se portas QA não estiverem ocupadas; estado de porta desconhecido impede essas exclusões. Preserva Next ativo/build/cache, venvs Linux/Windows, node_modules, metadados de instalação, fontes, normas, banco, backups, .git e checkpoints. Symlinks são recusados. A execução gera manifesto privado de remoções em .checkpoints/cleanup-*.json.
 
-```python
-import sqlite3
-from pathlib import Path
-source = Path('.checkpoints/IDENTIFICADOR/data.sqlite3').resolve()
-target = Path('/caminho/novo/recuperado.db')
-if target.exists():
-    raise ValueError('Não sobrescrever destino existente')
-with sqlite3.connect(source.as_uri() + '?mode=ro', uri=True) as old:
-    with sqlite3.connect(target) as restored:
-        old.backup(restored)
-        assert restored.execute('PRAGMA integrity_check').fetchall() == [('ok',)]
-        assert restored.execute('PRAGMA foreign_key_check').fetchall() == []
-```
+Não apagar pontos únicos automaticamente. O limite de14 sinaliza revisão, não autorização para descartar história nem exigência de backup externo (fora do escopo atual). Nesta revisão os pontos antigos eram distintos e foram preservados. Reutilização evita redundância futura. Cache de compilação útil é mantido; saídas QA opcionais podem ser regeneradas. Doctor verifica toolchain, pip/npm, Git, SQLite, serviços e permissões sem reinstalar tudo.
 
-5. Apontar DATABASE_URL para o arquivo restaurado (caminho absoluto); conferir Alembic current/heads antes de qualquer upgrade. Nunca downgrade/reset para resolver diferenças.
-6. Conferir projetos ativos, lixeira e histórico; iniciar serviços apenas após conferência. Restauração isolada dos backups é testada a cada checkpoint, sem alterar produção.
+## Restauração
 
-## Git
+1. Preservar a instalação atual e confirmar ausência de gravações antes de substituir qualquer banco. Não fechar processos à força.
+2. Selecionar o caminho de latest.json ou um ponto anterior e executar verificar. Não usar .pending ou arquivo sem verificação bem-sucedida.
+3. Extrair source.zip para diretório novo e revisar arquivos/manifest. Instalar pelos locks; não copiar venv/node_modules entre sistemas. Extrair não remove arquivos extras nem restaura configuração privada excluída.
+4. Restaurar data.sqlite3 via sqlite3.Connection.backup para **arquivo de destino novo**, validar integridade/FK e contagens. Não sobrescrever o banco ativo/única cópia. Fechar explicitamente todas as conexões, inclusive Windows.
+5. Apontar DATABASE_URL absoluto ao restaurado, conferir Alembic current/heads; nunca downgrade/reset para eliminar diferenças. Conferir biblioteca/lixeira/histórico antes de continuar.
+6. repository.bundle recupera commits/refs com clone isolado; source.zip cobre o disco no instante da captura. Git não contém banco e bundle não contém buffers ou .env. Verificação de hashes não prova ausência de segredos/normas corretas.
 
-Quando disponível, revisar status/diff/novos arquivos e exclusões de segredos antes de criar commit local seletivo. Nenhum `git add .` indiscriminado. Snapshot não inventa branch/commit e não cria repositório dentro de .git bloqueada. Nesta instalação não há histórico Git recuperável: a relação completa preservada está no manifest do checkpoint. Git não contém o banco; backup não substitui versionamento. Sem push remoto autorizado.
-
-Na revisão 0.7.0, novos arquivos de fonte dos checkpoints passaram a excluir também `.ruff_cache` e diretórios terminados em `.egg-info`/`.dist-info`, metadados gerados ao instalar pacotes. A fonte canônica de dependências permanece em pyproject/package/lock, não nesses artefatos. Checkpoints anteriores não foram alterados ou apagados. Teste de exclusão cobre essas entradas.
-# Atualização de portabilidade e cópia protegida — 0.11.0
-
-As conexões SQLite das rotinas de checkpoint/restauração e do backup administrativo são fechadas explicitamente com contextlib.closing. O gerenciador de contexto da conexão SQLite sozinho gerencia transação, mas não fecha o arquivo: o Windows revelou bloqueio de exclusão do arquivo restaurado. Corrigido e verificado em Linux e Windows; nunca ocultar a falha ignorando erros de limpeza/restauração.
-
-Fonte de checkpoint exclui também `.venv-windows` e arquivos criptografados/arquivos de backup, além das exclusões anteriores. O banco continua preservado separadamente; contas e hashes/sessões também fazem parte dos dados privados e devem ser protegidos. Git inicializado em23/10 por solicitação explícita; primeiro commit revisado não substitui os checkpoints nem uma cópia fora do computador.
-
-`scripts/external_backup.py` recebe checkpoint verificado, diretório externo escolhido e fingerprint completo de chave pública GPG já importada. Criptografa código/banco/manifest/VERIFIED, recusa sobrescrever e compara hash do arquivo transferido. A recuperação real exige decriptação com a chave do responsável e nova verificação de arquivo/hashes/restauração; o comando não marca essa etapa como concluída. Teste QA com chave temporária efetuou o ciclo completo. A cópia real depende de destino/chave e não foi feita nesta revisão.
-
-`scripts/windows_qa.ps1` prepara cópia nativa temporária a partir do ZIP de fonte verificado, baixa Node oficial com SHA256 comparado e executa contratos/tipos/frontend/Chromium/build. Python Windows separado deve existir; ELETROPROJETO_PYTHON aponta para ele. Nenhum npm ci Windows é executado sobre node_modules Linux. Artefatos ficam em diretório temporário identificado, sem exclusão de projetos ou checkpoints. Validação física e leitor de tela real continuam distintos desses testes.
-Histórico Git agora também é preservado quando há commit: `repository.bundle`, hash SHA256 e clonagem bare isolada com comparação de HEAD durante a verificação. O pacote criptografado inclui o bundle quando presente. Testes rejeitam corrupção e comprovam restauração do histórico; Git é necessário para verificar essa parte. A fonte continua capturando arquivos do disco, inclusive alterações não commitadas; o bundle preserva apenas commits/refs existentes, não os buffers de editor ou segredos de configuração de `.git`.
-
-
-Decisão de escopo em23/10/2026: usuário manterá operação local e retirou publicação remota/CI hospedado, impressão física e backup externo do trabalho atual. Não solicitar destino/chave nem bloquear entregas por esses itens. Mecanismos existentes permanecem preservados; checkpoints locais continuam verificados. Limitações físicas de armazenamento local permanecem verdadeiras, sem constituir tarefa ativa de cópia externa.
+Fonte/PDFs locais enviados em references não integram ZIP; preservar os originais no projeto. Recursos já existentes external_backup.py/GPG e Windows QA ficam disponíveis, mas publicação, impressão física e cópia externa foram retiradas do trabalho atual pelo usuário. Mesmo disco não protege contra perda física; não há agendamento automático fora das sessões.

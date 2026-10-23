@@ -1,5 +1,13 @@
 # Histórico de alterações
 
+## 0.14.0 — 23/10/2026
+
+- Biblioteca SQL leve, busca compartilhada por nome/município, projeto completo só ao abrir; listagem real328.785→2.827bytes (-99,14%).
+- Salvamento idêntico sem nova versão/histórico e primeiro POST idempotente; resposta perdida/recarga preservam rascunho e evitam duplicação. Serialização por snapshot e escrita local agrupada com flush na saída.
+- Checkpoint publicado atomicamente, hashes em blocos/dump sem retenção em RAM, reutilização de ponto idêntico após restauração completa, latest.json estável e retomada compacta. Fluxo de encerramento com um commit seguido do checkpoint, sem ciclo documental extra.
+- Doctor/limpeza com simulação, allowlist e manifesto, modos privados corrigidos; cerca49,7MB de gerados removidos, dependências e checkpoints únicos mantidos. Wrappers Windows testados em ambiente isolado.
+
+
 ## 0.13.1 — 23/10/2026
 
 - Polimento geral: títulos das etapas, formulários, seleções, checkboxes, disclosures, botões, bordas, raios, espaçamentos, hover/foco e estados desativados.

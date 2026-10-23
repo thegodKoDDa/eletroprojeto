@@ -1,6 +1,7 @@
 import type { components } from './api.generated';
 export type ProjectInput = components['schemas']['ProjectInput'];
 export type Project = components['schemas']['Project'];
+export type ProjectSummary = components['schemas']['ProjectSummary'];
 export type Environment = components['schemas']['Environment'];
 export type Load = components['schemas']['Load'];
 export type CalculationResult = components['schemas']['CalculationResult'];

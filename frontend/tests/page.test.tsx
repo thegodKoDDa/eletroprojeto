@@ -511,13 +511,13 @@ test('removes recent projects and loads the library only when requested', async 
     await vi.advanceTimersByTimeAsync(1000);
   });
   expect(screen.queryByText('Recentes')).toBeNull();
-  expect(fetch.mock.calls.some(([url]) => url.includes('/projects?'))).toBe(false);
+  expect(fetch.mock.calls.some(([url]) => url.includes('/projects/summaries?'))).toBe(false);
   fireEvent.click(screen.getByRole('button', { name: 'Projetos salvos' }));
   await act(async () => {
     await vi.advanceTimersByTimeAsync(250);
   });
   expect(screen.getByRole('region', { name: 'Projetos salvos' })).toBeInTheDocument();
-  expect(fetch.mock.calls.some(([url]) => url.includes('/projects?'))).toBe(true);
+  expect(fetch.mock.calls.some(([url]) => url.includes('/projects/summaries?'))).toBe(true);
 });
 
 test('failed saving exposes a correction action for the exact project field', async () => {

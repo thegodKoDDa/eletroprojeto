@@ -21,7 +21,7 @@ Revisões de versões anteriores ficam em `history/review-*.md`. O [estado anter
 
 - `backend/`: API, motor Python, migrações, testes e ferramenta de inspeção PDF. Banco e `backups/` são privados; ambientes `.venv`/`.venv-windows` e metadados de instalação são mantidos.
 - `frontend/`: aplicação, contratos gerados, testes e configurações. `node_modules/` e `.next/` são saídas locais necessárias à instalação/execução.
-- `scripts/`: continuidade, backup, QA e seus testes; wrappers PowerShell preservados.
+- `scripts/`: continuity.py para retomar/checkpoint/verificar; maintenance.py para auditar instalação/permissões e limpar gerados; backup/QA e testes. Wrappers PowerShell preservados.
 - `.github/`: automação CI. `.git/`: histórico local.
 - `references/`: índice dos exemplares normativos locais; PDFs ignorados no Git.
 - `.checkpoints/`: recuperação privada verificada, sem exclusão automática. Integrações privadas e arquivos `.env` permanecem em seus locais.

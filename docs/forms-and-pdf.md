@@ -135,3 +135,10 @@ Observações passaram a área própria sempre visível, cinco linhas redimensio
 Mais ações mantém details nativo/teclado; rótulo/seta alinhados, estado aberto explícito, opções com ícones e lixeira separada. Fecha por Escape, saída de foco e clique fora; callbacks mantêm retorno de foco ao acionador. Bloqueio inclui saving/busy/exporting e exportações respeitam cálculo atual; títulos explicam indisponibilidade. Role do agrupamento de avisos corrigido para group após axe encontrar aria-label num div sem papel. Indicador Next de desenvolvimento desativado por sobrepor controles no celular; erros de compilação/execução continuam visíveis.
 
 Regressão E2E interface.spec.ts verifica autosave desligado/ligado com consulta real ao banco QA, observações multilinha, cabeçalhos, teclado/Escape/clique fora, axe e layouts320/390/768/1024/1440. Capturas QA em/tmp/eletroprojeto-{project,actions}-polish-{390,1440}.png. Testes e verificações finais no CURRENT_STATE/SESSION_HISTORY. Sem alteração de fórmulas, fontes normativas, migrações ou catálogo.
+
+
+## Salvamento/rascunhos/retorno — 0.14.0
+
+Biblioteca leve com payload completo somente ao abrir. Rascunhos por conta/aba conservam schema1 e createId opcional, escrita agrupada250ms e flush em pagehide/beforeunload/visibility hidden/desmontagem e antes de trocar contexto. Antes do POST o identificador é persistido imediatamente. Primeiro envio repetido não duplica; se houve nova edição após a resposta perdida, editor recupera o projeto já criado e mantém o input atual para o próximo PUT. PUT idêntico na mesma revisão não gera histórico/versão.
+
+Teste de navegador simula POST recebido com resposta abortada, edição, recarga imediata antes do debounce, recuperação sem envio, reenvio e atualização: um projeto, duas versões reais e notas preservadas. Backend valida ausências de IDs/colisão entre proprietários e biblioteca leve. Sem envio na saída da página, promessa de proteção contra limpeza do navegador/queda abrupta sem eventos ou mudança das regras normativas. Últimas edições anteriores ao flush podem ser perdidas em término abrupto; eventos normais de saída foram testados.

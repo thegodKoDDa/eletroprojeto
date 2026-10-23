@@ -135,3 +135,14 @@ Contratos continuam gerados por types:sync; wrappers Node escolhem Python por pl
 ## Integração de demanda no snapshot — 0.13.0
 
 Settings opcionais ProjectInput.energisa_demand e classificação Load.energisa_demand são preservados no payload JSON e histórico existentes; nenhuma migração necessária. Projetos legados mantêm método desativado e conteúdo persistido intacto. Adaptador puro project_demand chama energisa, emite digest de revisão e dados tipados; engine integra resultado normativo. Contratos gerados por types:sync, hook inclui settings no corpo/dependências, relatórios usam resultado do mesmo snapshot. APP0.13.0/ENGINE0.8.0/JSON1.3/schema0005. Escopo vigente é local; infraestrutura de publicação não integra a lista ativa.
+
+
+## Armazenamento e biblioteca — 0.14.0
+
+GET projects/summaries projeta somente identificação/localidade/versões/datas no SQL, sem carregar payloads de ambientes/notas. Compartilha filtro/ordenação/paginação com GET projects, preservado por compatibilidade. Busca nome/município com curingas escapados; ambas usam ORM/critério de proprietário e são testadas contra vazamento entre contas. ProjectWorkspace usa summaries e abrir busca a versão completa/fresca por ID. Duplicar/restaurar/lixeira não exigem baixar equipamentos na listagem.
+
+PUT verifica expected_version antes de tudo; igualdade normalizada e mesma revisão técnica retornam o registro sem UPDATE, incremento, cálculo/histórico novo. IDs omitidos em requisições são alinhados por posição somente na comparação, sem alterar modelos ou dados; IDs explícitos continuam relevantes. Mudança real mantém transação/histórico/versão otimista. Sem migração ou normalização destrutiva de payloads.
+
+POST opcional Idempotency-Key UUID usa a chave como ID do projeto: reenvio idêntico retorna o mesmo registro sem novo histórico; payload diferente/chave de outra conta/lixeira gera409, sem sobrescrita. Corridas de inserção convergem em transação; falhas de integridade não relacionadas à chave continuam erros. Header liberado no CORS sem mudar autenticação/CSRF/origens. Editor grava a chave no rascunho antes do primeiro POST;409 após resposta perdida recupera o ID já salvo, mantém todas as alterações locais e usa PUT no próximo salvamento.
+
+Rascunhos mantêm formato1 compatível com campo opcional createId; persistência250ms com flush em eventos de saída/ocultação/desmontagem e troca de contexto. Serializações de input/base são memoizadas por snapshot, sem repetição em renderizações de status/menu. Não há envio de rede automático ao encerrar/recuperar rascunho. Continuidade/limpeza em scripts separados, conforme continuity.md.

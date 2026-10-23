@@ -1,40 +1,34 @@
-# Estado atual — EletroProjeto 0.13.1 / motor 0.8.0
+# Estado atual — EletroProjeto 0.14.0 / motor 0.8.0
 
-## Escopo vigente
+## Escopo e dados
 
-Uso LOCAL por decisão explícita do usuário. Publicação/infraestrutura remota, CI hospedado, impressão física e backup externo fora do trabalho atual. Preservar checkpoints locais, recursos existentes, dados e produto; não cobrar esses itens descartados.
+Uso LOCAL. Publicação, CI hospedado, impressão física e backup externo fora do trabalho atual. Recursos existentes preservados; sem push. API/frontend0.14.0, motor0.8.0, JSON1.3 e schema0005, sem nova migração ou fórmula/regra/catálogo alterados.
 
-## Entrega — polimento geral da interface, 23/10/2026
+9 projetos (8 ativos/1 na lixeira),30 históricos e8 revisões técnicas. Todas as colunas dessas três tabelas comparadas ao checkpoint inicial `.checkpoints/20261023T194010017686Z` e idênticas após a tarefa. SQLite íntegro/FK sem violações. Testes de gravação usaram bancos QA isolados; nada foi regravado nos projetos reais.
 
-Etapas01/02/03 padronizadas com SectionHeading (marcador, título e descrição); revisão Energisa segue a mesma hierarquia. Campos, selects, checkboxes, disclosures, botões, bordas, raios, espaçamentos, hover/foco, ativo/aberto/desativado e opções do catálogo revisados. Tema escuro e organização principal preservados.
+## Otimização entregue
 
-Checkboxes não herdam mais padding de campos de texto:18px, padding zero, rótulo clicável/alinhado e foco visível. Salvamento automático está sempre visível em cartão próprio, com estado Após salvar/Ativado/Desativado/Pausado/Salvando e explicação. Mantidos debounce1,5s, primeiro salvamento manual, pausa em renomeação/conflito e proteção contra repetição de falhas. Preferência continua da sessão, sem novo armazenamento.
+- Biblioteca usa GET projects/summaries, projeção SQL sem equipamentos/notas; abrir busca payload completo/fresco. Consulta única para lista completa e resumos, filtros nome/município escapados, paginação/ordenação e isolamento por proprietário. Transferência real dos mesmos8 projetos:328.785→2.827bytes (-99,14%). Endpoint completo preservado por compatibilidade.
+- PUT sem mudanças na mesma revisão mantém versão/data/histórico e evita cálculo/gravação redundantes. expected_version continua obrigatório e conflito409 precede comparação. Mudanças reais mantêm transação/histórico e valores manuais.
+- Primeiro POST com Idempotency-Key UUID evita duplicação após perda de resposta. Chave persistida no rascunho antes do envio; reenvio diferente409 recupera versão já criada, mantendo edições locais. Salvar como novo conserva nome da cópia também após resposta perdida. Sem sobrescrita silenciosa de outra conta/lixeira.
+- Serialização de input/base por snapshot memoizada. Rascunhos schema1 compatíveis com createId opcional, escrita agrupada250ms e flush em saída/ocultação/desmontagem/troca de contexto. Recuperar não envia ao servidor. Limite real: término abrupto sem eventos pode perder o intervalo anterior ao flush; navegador limpo/outro perfil não recupera esses dados.
+- Encerrar captura em .pending privado, valida hashes, restaura SQLite/Git, sincroniza e publica atomicamente. Lock evita concorrência no ponteiro; latest.json só avança após sucesso. Dados grandes lidos em blocos/dump percorrido sem reter tudo em RAM. Ponto idêntico é reutilizado somente após nova verificação completa; --force-new força distinto. Pontos incompletos/corrompidos não são anunciados como seguros.
+- Regras AGENTS/continuidade simplificadas: ler docs atuais + cauda de registros, retomar compacto, um commit revisado final e só então checkpoint. latest.json elimina commit/checkpoint extra só para registrar caminho. Memória/guia consolidados; SESSION_HISTORY preservado.
+- maintenance.py doctor/clean auditam instalações/permissões/serviços e limpam apenas gerados por allowlist, com simulação/manifest. Cerca50MB de caches/saídas QA removidos. Preservados venvs Linux/Windows, node_modules, Next ativo/cache/build, dados, backups, normas e Git.28 checkpoints anteriores integralmente verificados e distintos, nenhum apagado. Três arquivos privados corrigidos para0600; fontes sem escrita global. Não alterar ACL/política global por suposição.
 
-Observações em área própria sempre visível, cinco linhas redimensionáveis, limite10.000, contador e descrição acessível. Outros dados mantém apenas campos complementares. Mais ações tem ícones alinhados, seta/estado aberto, lixeira separada, títulos explicativos e fechamento por Escape/foco/clique fora; bloqueio inclui salvamento/exportação. Avisos ganharam role group compatível com aria-label. Indicador Next de desenvolvimento desativado por sobrepor controles no celular; erros continuam visíveis.
+## Verificações efetivas
 
-## Funcionalidades preservadas
+- Linux:348 testes backend+85 subtestes e15 scripts de continuidade/manutenção (363+85 conjuntos).
+- Frontend92;15E2E locais; repetição final do fluxo de resposta perdida/recarga/cópia;1E2EHTTPS de duas contas aprovado. Tipos/lint/formatação/contratos/buildwebpack/Ruff/Alembiccheck/pipcheck/npm ls aprovados.
+- PostgreSQL QA18.6 já ativo:93 testes API/autenticação aprovados, com schemas temporários. Banco real continua SQLite0005.
+- Windows real/Python3.13:11 scripts aprovados,4 pulados por recursos/permissões/plataforma indisponíveis. Wrappers retomar/encerrar/reutilizar/ForceNew aprovados em projeto fictício isolado. Política inicial bloqueou .ps1; QA usou autorização somente do processo, sem mudança global. ACL Windows e backend/frontend Windows completos não revalidados nesta tarefa.
+- Instalações Python/pip, Node/npm/pacotes e Git auditadas, sem dependência nova. Git fsck sem corrupção; blobs órfãos recuperáveis preservados, sem prune. Banco real idêntico e28 backups antigos restaurados/verificados, sem falhas.
+- Smoke navegador real: biblioteca leve, abertura/recalculo de projeto existente, versão0.14.0 e nenhum pageerror. API PID586275/sessão55305 e frontend3000 HTTP200; revalidar processos ao retomar. Doctor final sem modos privados pendentes ou lock/.pending, serviços saudáveis.
 
-Projetos/biblioteca/lixeira/histórico, rascunhos/conflitos, catálogo persistente, valores manuais, consumo/custo, previsão residencial luz/TUG e demandaNDU7.0 d1–d5 com inventário/classificação/revisão explícitos. Revisão de demanda vinculada ao digest: alteração relevante invalida confirmação; resultado antigo oculto durante recálculo e exportação exige snapshot atual. Escopo residencial individual Energisa Sul-Sudeste/SP até75kW, sem d6/d7/centrais presentes/agrupamentos. Sem dimensionamento final ou aprovação da concessionária. Fontes/regras em standards/calculations; UI em forms-and-pdf.
+Benchmark sintético de checkpoint16MiB antes/depois sem ganho relevante de tempo observado (0,1227/0,1212s, medição intermediária); RSS observado46.972/43.008KiB. Não extrapolar promessa universal. Ganhos principais comprovados: transferência da biblioteca, eliminação de gravações/cópias redundantes, contexto menor e segurança da recuperação. Fonte/banco/refs alterados continuam exigindo ponto novo completo.
 
-API/frontend0.13.1, motor0.8.0 e JSON1.3; schema0005, sem migração. Nenhuma fórmula/norma/catálogo ou dependência runtime alterada; locks comparados estruturalmente ao Git, somente versão própria mudou. Contratos gerados por types:sync; instalação editável Python atualizada.
+## Continuidade e próximo trabalho
 
-## Dados e verificações desta entrega
+Referência persistente do encerramento final: `.checkpoints/latest.json`, preenchida/confirmada somente pelo comando encerrar após o commit revisado. Não alterar estes docs novamente apenas para colar o caminho. O retorno da execução e VERIFIED.json comprovam o resultado; verificar refaz restauração completa. FonteZIP exclui dados privados/PDFs; referências locais intactas em references/energisa.
 
-Banco inicial desta tarefa:9projetos (8ativos/1lixeira),30históricos,8revisões técnicas. Todas as colunas das três tabelas comparadas ao checkpoint inicial e idênticas; SQLite íntegro/FK sem violações. Testes de gravação usaram banco QA isolado, não os projetos reais.
-
-- Backend345+85subtestes e continuidade8 (353+85 conjuntos),92frontend aprovados.
-- 14E2E locais aprovados; repetição final de interface.spec após ocultar indicadorNext também aprovada.
-- Teste novo verifica autosave desligado semPUT/ligado com persistência real QA, observações multilinha, tipografia dos três cabeçalhos, menu por teclado/Escape/clique fora, axe e telas320/390/768/1024/1440, sem overflow horizontal. Checkbox18px/textarea>130px conferidos.
-- Capturas desktop/celular inspecionadas em/tmp/eletroprojeto-{project,actions}-polish-{390,1440}.png; não representam banco real nem backup.
-- Tipos/lint/formatação/buildwebpack/Ruff/contratos/Alembiccheck/pipcheck/npm ls aprovados. Sem alterações em cálculos; PostgreSQL/Windows/E2EHTTPS não repetidos nesta entrega visual local.
-
-API reiniciada PID573356/sessão24451 para carregar versão0.13.1; frontend existente preservado e reiniciado automaticamente pelo Next ao mudar configuração. Smoke final no navegador real: versão0.13.1, checkbox18×18px, sem overflow em390px ou pageerrors; health API0.13.1/motor0.8.0 confirmado. Conferir PIDs/portas em cada retomada, sem iniciar duplicados.
-
-## Continuidade e próximo passo
-
-Checkpoint inicial `.checkpoints/20261023T191637169089Z`:163arquivos e restaurações SQLite/Git verificadas. Caminho do checkpoint final a registrar após geração. PDFs locais em references/energisa, fora do Git/ZIP de código. Sem push/publicação.
-
-Próximas prioridades locais no roadmap: ampliar exceções normativas somente após fontes/testes próprios; dimensionamento e geometria completos; associação territorial oficial. Leitor de tela real ainda não conferido. Retomar por AGENTS e `python3 scripts/continuity.py retomar`; preservar este polimento e o motor único existente.
-
-
-Checkpoint final do polimento verificado: `.checkpoints/20261023T192927917260Z`,165arquivos; hashes/ZIP/banco/bundleGit e restauraçãoSQLite/clonagemGit isoladas aprovados. Commit funcional `e9377a1`; caminho registrado após geração em commit documental separado.9projetos/30históricos/8revisões/schema0005 preservados; sem push/publicação.
+Retomar por AGENTS + continuity.py retomar. Próximas prioridades locais no roadmap: exceções normativas, dimensionamento e geometria completos, associação territorial oficial. Polimento0.13.1, motor único, revisões explícitas de demanda NDU7.0 d1–d5 e limites permanecem. Sem implantação ou tarefas de impressão física/cópia externa.

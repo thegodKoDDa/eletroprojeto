@@ -1,4 +1,4 @@
-# EletroProjeto 0.13.1
+# EletroProjeto 0.14.0
 
 NDU-001 7.0 integrada ao cadastro e aos relatórios: ative o painel de demanda, confirme o escopo, classifique cada carga e revise o inventário. No escopo residencial individual Energisa Sul-Sudeste/SP até75kW, d1–d5, o motor calcula a demanda estimada. Qualquer mudança relevante exige nova revisão. Selecionar a concessionária sozinho não habilita resultado. Limites/fontes em [standards](docs/standards.md); não há dimensionamento final.
 
@@ -111,3 +111,10 @@ A interface separa **Dados do projeto a revisar** de **Recursos normativos ainda
 PDF e JSON preservam os resultados anteriores e acrescentam cobertura do consumo, tarifa, equipamentos/uso considerado e pendências de preenchimento. Estimam consumo mensal para as cargas/hábitos cadastrados, não medição automática. Consumo parcial é identificado; potência, consumo e demanda permanecem grandezas separadas. A orientação de atendimento não substitui requisitos locais ou aprovação da distribuidora.
 
 Os dois arquivos são preparados/recalculados pela API com proteção contra entradas antigas; JSON 1.2 é aditivo, legível e conserva valores nulos. Preencha consumo mensal por unidade ou potência com horas/dias de uso para obter estimativas; tarifa é opcional para custo. Não há horários, ciclos ou tarifas presumidos. Ver docs/forms-and-pdf.md para conteúdo/contrato e docs/standards.md para cobertura normativa.
+
+
+## Manutenção local
+
+A biblioteca busca metadados leves e carrega o projeto completo ao abrir. Salvamento sem alterações na mesma revisão não cria versão/histórico redundantes; o primeiro envio pode ser repetido com identificador persistido no rascunho, evitando duplicação após perda de resposta. Rascunhos agrupam edições rápidas e são gravados localmente ao sair/ocultar a página.
+
+`python3 scripts/continuity.py retomar` fornece resumo compacto; `encerrar` publica checkpoint verificado e atualiza `.checkpoints/latest.json`, reutilizando cópia idêntica somente após nova verificação completa. `python3 scripts/maintenance.py doctor` audita instalações/permissões/serviços; `clean` simula limpeza e `clean --apply --qa-builds` remove somente gerados permitidos. Procedimento completo e limites em [continuidade](docs/continuity.md). Não reinstalar dependências válidas nem iniciar serviços duplicados na retomada.

@@ -2,7 +2,7 @@
 
 import { useEffect, useId, useState } from 'react';
 import { formatDate } from '@/lib/format';
-import { request, type Project } from '@/lib/api';
+import { request, type ProjectSummary as Project } from '@/lib/api';
 import { WorkspaceIcon } from '@/components/layout/WorkspaceIcon';
 
 type Props = {
@@ -49,7 +49,7 @@ export function ProjectWorkspace({
         q: filters.query,
         sort: filters.sort,
       });
-      request<Project[]>(`/projects?${parameters}`, { signal: controller.signal })
+      request<Project[]>(`/projects/summaries?${parameters}`, { signal: controller.signal })
         .then((list) => {
           if (controller.signal.aborted) return;
           // Removing the last item on a page returns to the preceding page.

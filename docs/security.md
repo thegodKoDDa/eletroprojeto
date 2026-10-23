@@ -54,3 +54,10 @@ Auditoria npm inicial encontrou dois alertas críticos e um moderado em ferramen
 
 
 Decisão de escopo em23/10/2026: usuário manterá operação local e retirou publicação remota/CI hospedado, impressão física e backup externo do trabalho atual. Não solicitar destino/chave nem bloquear entregas por esses itens. Mecanismos existentes permanecem preservados; checkpoints locais continuam verificados. Limitações físicas de armazenamento local permanecem verdadeiras, sem constituir tarefa ativa de cópia externa.
+
+
+## Manutenção local — 0.14.0
+
+Doctor inspeciona toolchain/instalações, SQLite/Git, HTTP local e modos privados, sem imprimir conteúdo de .env/credenciais. fix-permissions restringe apenas arquivos conhecidos ao dono (POSIX0600/0700), não segue symlinks nem altera código/.git/política global. Três arquivos privados nesta instalação foram ajustados; fontes sem escrita global. ACL Windows não é validada por chmod. QA Windows usou permissão de execução somente no processo temporário, sem mudar ExecutionPolicy global.
+
+Summaries mantém isolamento por proprietário inclusive filtros; tentativa de reutilizar chave de criação de outra conta responde409 sem retornar payload. Idempotency-Key não autentica nem substitui CSRF. Fluxos de sessão/HTTPS existentes preservados, sem implantação remota ativa. Limpeza estritamente por allowlist, nunca dados/backups/venvs/node_modules; detalhes em continuity.md.

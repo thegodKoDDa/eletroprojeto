@@ -5,6 +5,7 @@ from uuid import UUID, uuid4
 from zoneinfo import ZoneInfo
 
 from fastapi import HTTPException
+from sqlalchemy import or_, select
 from sqlalchemy.orm import Session
 
 from .calculations.engine import calculate
@@ -97,3 +98,49 @@ def record(session: Session, row: ProjectRow):
             created_at=utcnow(),
         )
     )
+
+
+def same_input(payload: dict, data: ProjectInput) -> bool:
+    """Compare normalized snapshots, retaining generated IDs omitted by API clients.
+
+    Explicit IDs always participate. Positional alignment is only for comparison;
+    it never mutates input models or the persisted snapshot.
+    """
+    previous = ProjectInput.model_validate(payload).model_dump(mode="json")
+    incoming = data.model_dump(mode="json")
+    for index, room in enumerate(data.environments):
+        if index >= len(previous["environments"]):
+            break
+        old_room = previous["environments"][index]
+        current = incoming["environments"][index]
+        if "id" not in room.model_fields_set:
+            current["id"] = old_room["id"]
+        for position, load in enumerate(room.loads):
+            if position >= len(old_room["loads"]):
+                break
+            if "id" not in load.model_fields_set:
+                current["loads"][position]["id"] = old_room["loads"][position]["id"]
+    return previous == incoming
+
+
+def listing_query(*, archived: bool, q: str, sort: str):
+    """One owner-scoped ORM query for full and summary lists on SQLite/PostgreSQL."""
+    query = select(ProjectRow).where(
+        ProjectRow.deleted_at.is_not(None) if archived else ProjectRow.deleted_at.is_(None)
+    )
+    if q.strip():
+        escaped = q.strip().replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+        query = query.where(
+            or_(
+                *(
+                    ProjectRow.payload[key].as_string().ilike(f"%{escaped}%", escape="\\")
+                    for key in ("name", "municipality")
+                )
+            )
+        )
+    order = (
+        (ProjectRow.payload["name"].as_string().asc(), ProjectRow.id.asc())
+        if sort == "name"
+        else (ProjectRow.updated_at.desc(), ProjectRow.id.asc())
+    )
+    return query.order_by(*order)

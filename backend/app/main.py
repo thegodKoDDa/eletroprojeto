@@ -1,15 +1,16 @@
 import os
 from contextlib import asynccontextmanager
 from dataclasses import asdict
-from typing import Literal
+from typing import Annotated, Literal
 from uuid import UUID, uuid4
 
-from fastapi import Depends, FastAPI, HTTPException, Query, Response
+from fastapi import Depends, FastAPI, Header, HTTPException, Query, Response
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from sqlalchemy.orm.exc import StaleDataError
 
@@ -25,8 +26,10 @@ from .projects import (
     ProjectValidationError,
     brasilia_time,
     find,
+    listing_query,
     record,
     reject_invalid_draft,
+    same_input,
     view,
 )
 from .schemas import (
@@ -42,6 +45,7 @@ from .schemas import (
     PDFExportInput,
     Project,
     ProjectInput,
+    ProjectSummary,
     TechnicalRules,
     UtilityInfo,
 )
@@ -87,7 +91,7 @@ app.add_middleware(
         os.getenv("CORS_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000")
     ),
     allow_methods=["GET", "POST", "PUT", "DELETE"],
-    allow_headers=["Content-Type", "If-Match", "X-CSRF-Token"],
+    allow_headers=["Content-Type", "If-Match", "X-CSRF-Token", "Idempotency-Key"],
     allow_credentials=True,
 )
 app.add_middleware(RequestBoundary)
@@ -113,40 +117,107 @@ def projects(
     sort: Literal["recent", "name"] = "recent",
     session: Session = Depends(get_session),
 ):
-    condition = ProjectRow.deleted_at.is_not(None) if archived else ProjectRow.deleted_at.is_(None)
-    # Search JSON scalar through SQLAlchemy, portable between SQLite/PostgreSQL.
-    statement = select(ProjectRow).where(condition)
-    if q.strip():
-        escaped = q.strip().replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
-        statement = statement.where(
-            ProjectRow.payload["name"].as_string().ilike(f"%{escaped}%", escape="\\")
-        )
-    order = (
-        (ProjectRow.payload["name"].as_string().asc(), ProjectRow.id.asc())
-        if sort == "name"
-        else (ProjectRow.updated_at.desc(), ProjectRow.id.asc())
-    )
-    statement = statement.order_by(*order).offset(offset)
+    statement = listing_query(archived=archived, q=q, sort=sort).offset(offset)
     if limit is not None:
         statement = statement.limit(limit)
     return [view(row) for row in session.scalars(statement)]
 
 
+@app.get(PREFIX + "/projects/summaries", tags=["Projetos"], response_model=list[ProjectSummary])
+def project_summaries(
+    archived: bool = False,
+    limit: int = Query(default=21, ge=1, le=100),
+    offset: int = Query(default=0, ge=0),
+    q: str = Query(default="", max_length=200),
+    sort: Literal["recent", "name"] = "recent",
+    session: Session = Depends(get_session),
+):
+    columns = [
+        ProjectRow.id,
+        ProjectRow.version,
+        ProjectRow.created_at,
+        ProjectRow.updated_at,
+        ProjectRow.deleted_at,
+        ProjectRow.standards_version,
+        *(
+            ProjectRow.payload[key].as_string().label(key)
+            for key in ("name", "municipality", "state", "utility")
+        ),
+    ]
+    statement = (
+        listing_query(archived=archived, q=q, sort=sort)
+        .with_only_columns(*columns)
+        .offset(offset)
+        .limit(limit)
+    )
+    rows = session.execute(statement).mappings()
+    return [
+        {
+            **row,
+            "state": row["state"] or "SP",
+            "utility": row["utility"] or "unconfirmed",
+            "created_at": brasilia_time(row["created_at"]),
+            "updated_at": brasilia_time(row["updated_at"]),
+            "deleted_at": brasilia_time(row["deleted_at"]) if row["deleted_at"] else None,
+        }
+        for row in rows
+    ]
+
+
 @app.post(PREFIX + "/projects", tags=["Projetos"], response_model=Project, status_code=201)
-def create(data: ProjectInput, session: Session = Depends(get_session)):
+def create(
+    data: ProjectInput,
+    session: Session = Depends(get_session),
+    idempotency_key: Annotated[UUID | None, Header()] = None,
+):
     reject_invalid_draft(data)
+    if idempotency_key:
+        previous = session.get(ProjectRow, str(idempotency_key))
+        if previous is not None:
+            if previous.deleted_at is None and same_input(previous.payload, data):
+                return view(previous)
+            raise HTTPException(
+                409,
+                "Primeiro salvamento já recebido. Reabra o projeto antes de reenviar alterações.",
+            )
     now = utcnow()
     row = ProjectRow(
-        id=str(uuid4()),
+        id=str(idempotency_key or uuid4()),
         payload=data.model_dump(mode="json"),
         created_at=now,
         updated_at=now,
         standards_version=registry_version(),
     )
     session.add(row)
-    session.flush()
-    record(session, row)
-    session.commit()
+    try:
+        session.flush()
+        record(session, row)
+        session.commit()
+    except IntegrityError:
+        session.rollback()
+        if not idempotency_key:
+            raise
+        # Only a collision on this key is a retry; unrelated integrity failures propagate.
+        if (
+            session.scalar(
+                select(ProjectRow.__table__.c.id).where(
+                    ProjectRow.__table__.c.id == str(idempotency_key)
+                )
+            )
+            is None
+        ):
+            raise
+        # Concurrent identical attempts converge to the same owner-scoped project.
+        previous = session.get(ProjectRow, str(idempotency_key))
+        if (
+            previous is not None
+            and previous.deleted_at is None
+            and same_input(previous.payload, data)
+        ):
+            return view(previous)
+        raise HTTPException(
+            409, "Identificador de salvamento já utilizado; confira a versão salva."
+        )
     return view(row)
 
 
@@ -166,8 +237,12 @@ def update(
     if row.version != expected_version:
         raise HTTPException(409, "Projeto alterado em outra sessão. Recarregue antes de salvar.")
     reject_invalid_draft(data)
-    row.standards_version = registry_version()
-    row.payload = data.model_dump(mode="json")
+    payload = data.model_dump(mode="json")
+    version = registry_version()
+    if row.standards_version == version and same_input(row.payload, data):
+        return view(row)
+    row.standards_version = version
+    row.payload = payload
     row.updated_at = utcnow()
     try:
         session.flush()

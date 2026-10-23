@@ -1,6 +1,10 @@
+param([switch]$Documents)
 $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $PSScriptRoot
-$python = Join-Path $root 'backend/.venv/Scripts/python.exe'
-if (-not (Test-Path $python)) { $python = 'python' }
-& $python (Join-Path $PSScriptRoot 'continuity.py') retomar
-if ($LASTEXITCODE -ne 0) { throw 'Retomada encontrou uma pendência. Consulte a saída.' }
+$candidates = @((Join-Path $root 'backend/.venv-windows/Scripts/python.exe'), (Join-Path $root 'backend/.venv/Scripts/python.exe'))
+$python = $candidates | Where-Object { Test-Path $_ } | Select-Object -First 1
+if (-not $python) { $python = 'python' }
+$arguments = @((Join-Path $PSScriptRoot 'continuity.py'), 'retomar')
+if ($Documents) { $arguments += '--documents' }
+& $python @arguments
+if ($LASTEXITCODE -ne 0) { throw 'Continuidade falhou. Consulte a saída; não assumir ponto verificado.' }

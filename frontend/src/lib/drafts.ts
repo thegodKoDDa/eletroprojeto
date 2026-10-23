@@ -6,6 +6,7 @@ export type Draft = {
   updatedAt: string;
   input: ProjectInput;
   saved?: Project;
+  createId?: string;
 };
 
 // Each mounted editor owns a slot: simultaneous tabs never overwrite each other.
@@ -46,9 +47,15 @@ export function readDrafts(storage: Storage, scope = 'local'): { key: string; dr
   return drafts.sort((a, b) => b.draft.updatedAt.localeCompare(a.draft.updatedAt));
 }
 
-export function writeDraft(storage: Storage, key: string, input: ProjectInput, saved?: Project) {
+export function writeDraft(
+  storage: Storage,
+  key: string,
+  input: ProjectInput,
+  saved?: Project,
+  createId?: string,
+) {
   storage.setItem(
     key,
-    JSON.stringify({ schema: 1, updatedAt: new Date().toISOString(), input, saved }),
+    JSON.stringify({ schema: 1, updatedAt: new Date().toISOString(), input, saved, createId }),
   );
 }
