@@ -194,6 +194,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/calculations/energisa-demand": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Energisa Demand
+         * @description NDU-001 v7 residencial individual d1–d5, inventário explícito; sem dimensionamento final.
+         */
+        post: operations["energisa_demand_api_v1_calculations_energisa_demand_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/equipment": {
         parameters: {
             query?: never;
@@ -733,6 +753,153 @@ export interface components {
             /** Documents */
             documents: components["schemas"]["TechnicalDocument"][];
         };
+        /** EnergisaDemandBand */
+        EnergisaDemandBand: {
+            /** Installed Band W */
+            installed_band_w: number | string;
+            /** Factor */
+            factor: number | string;
+            /** Demand W */
+            demand_w: number | string;
+        };
+        /** EnergisaDemandGroupResult */
+        EnergisaDemandGroupResult: {
+            /**
+             * Group
+             * @enum {string}
+             */
+            group: "d1" | "d2" | "d3" | "d4" | "d5" | "d6" | "d7";
+            /** Quantity */
+            quantity: number;
+            /** Installed Power W */
+            installed_power_w: number | string | null;
+            /** Factor */
+            factor: number | string | null;
+            /** Demand W */
+            demand_w: number | string | null;
+            /** Table */
+            table: string;
+            /** Reason */
+            reason: string | null;
+            /** Bands */
+            bands?: components["schemas"]["EnergisaDemandBand"][];
+        };
+        /**
+         * EnergisaDemandInput
+         * @example {
+         *       "confirmed_absent_groups": [
+         *         "d3",
+         *         "d4",
+         *         "d5",
+         *         "d6",
+         *         "d7"
+         *       ],
+         *       "has_signage_or_display_lighting": false,
+         *       "inventory_reviewed": true,
+         *       "loads": [
+         *         {
+         *           "group": "d1",
+         *           "name": "Iluminação/TUG — exemplo fictício",
+         *           "quantity": 1,
+         *           "unit_power_w": "1000"
+         *         },
+         *         {
+         *           "group": "d2",
+         *           "name": "Chuveiro — exemplo manual",
+         *           "quantity": 1,
+         *           "unit_power_w": "5500"
+         *         }
+         *       ],
+         *       "simultaneous_lighting_outlets": false,
+         *       "state": "SP",
+         *       "unit_type": "individual_residential",
+         *       "utility": "energisa_sul_sudeste"
+         *     }
+         */
+        EnergisaDemandInput: {
+            /** Utility */
+            utility: string;
+            /** State */
+            state: string;
+            /**
+             * Unit Type
+             * @enum {string}
+             */
+            unit_type: "individual_residential" | "grouped" | "non_residential";
+            /**
+             * Inventory Reviewed
+             * @description Confirma inventário completo, classificação de cada carga uma única vez, quantidades, potências adotadas e identificação das reservas (§9.1 notaVI).
+             */
+            inventory_reviewed: boolean;
+            /**
+             * Has Signage Or Display Lighting
+             * @description Letreiros/iluminação de vitrines não são abrangidos pela Tabela5; presença deixa este método fora de escopo.
+             */
+            has_signage_or_display_lighting: boolean;
+            /** Simultaneous Lighting Outlets */
+            simultaneous_lighting_outlets?: boolean | null;
+            /** Loads */
+            loads: components["schemas"]["EnergisaDemandLoad"][];
+            /** Confirmed Absent Groups */
+            confirmed_absent_groups: ("d1" | "d2" | "d3" | "d4" | "d5" | "d6" | "d7")[];
+        };
+        /** EnergisaDemandLoad */
+        EnergisaDemandLoad: {
+            /** Name */
+            name: string;
+            /**
+             * Group
+             * @description Classificação explícita §9.1: d1 iluminação/TUG; d2 aquecimento de água; d3 secadora de roupas/micro-ondas/lava-louças/hidromassagem; d4 fogão/forno elétrico; d5 AC janela/individual; d6 motores; d7 solda transformador/raios-X. Sem classificação automática.
+             * @enum {string}
+             */
+            group: "d1" | "d2" | "d3" | "d4" | "d5" | "d6" | "d7";
+            /** Quantity */
+            quantity: number;
+            /**
+             * Unit Power W
+             * @description Potência elétrica por unidade, em W, adotada pelo responsável. Não informar VA normativo, potência térmica ou kWh. Valores manuais válidos prevalecem sobre referências.
+             */
+            unit_power_w: number | string | null;
+            /**
+             * Reserve
+             * @default false
+             */
+            reserve: boolean;
+            /**
+             * Air Conditioning Type
+             * @default unconfirmed
+             * @enum {string}
+             */
+            air_conditioning_type: "unconfirmed" | "window_or_individual" | "central_unit";
+        };
+        /** EnergisaDemandResult */
+        EnergisaDemandResult: {
+            /** Value */
+            value: number | string | null;
+            /**
+             * Unit
+             * @constant
+             */
+            unit: "kVA";
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "calculated" | "estimated" | "pending" | "invalid" | "out_of_scope" | "awaiting_technical_validation";
+            /** Installed Power W */
+            installed_power_w: number | string | null;
+            /** Demanded Power Kw */
+            demanded_power_kw: number | string | null;
+            /** Groups */
+            groups: components["schemas"]["EnergisaDemandGroupResult"][];
+            /** Pending Checks */
+            pending_checks: string[];
+            /** Ignored Reserve Loads */
+            ignored_reserve_loads: string[];
+            /** Limitations */
+            limitations: string[];
+            reference: components["schemas"]["ResearchEvidence"];
+        };
         /** Environment */
         Environment: {
             /**
@@ -1242,6 +1409,27 @@ export interface components {
             /** Environments */
             environments?: components["schemas"]["Environment"][];
         };
+        /** RegionalMethodInfo */
+        RegionalMethodInfo: {
+            /** Code */
+            code: string;
+            /** Endpoint */
+            endpoint: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "calculated" | "estimated" | "pending" | "invalid" | "out_of_scope" | "awaiting_technical_validation";
+            /** Available */
+            available: boolean;
+            /** Scope */
+            scope: string;
+            /** Supported Utilities */
+            supported_utilities: string[];
+            /** Supported States */
+            supported_states: string[];
+            reference: components["schemas"]["ResearchEvidence"];
+        };
         /** ResearchEvidence */
         ResearchEvidence: {
             /** Title */
@@ -1254,11 +1442,15 @@ export interface components {
              * Access
              * @enum {string}
              */
-            access: "official_metadata" | "official_index" | "institutional_full_text" | "official_full_text";
+            access: "official_metadata" | "official_index" | "institutional_full_text" | "official_full_text" | "user_supplied_full_text";
             /** Consulted On */
             consulted_on: string;
             /** Section */
             section?: string | null;
+            /** File Name */
+            file_name?: string | null;
+            /** Sha256 */
+            sha256?: string | null;
         };
         /** TechnicalDocument */
         TechnicalDocument: {
@@ -1276,6 +1468,10 @@ export interface components {
             status: string;
             /** Consulted On */
             consulted_on: string;
+            /** Source File */
+            source_file?: string | null;
+            /** Sha256 */
+            sha256?: string | null;
         };
         /** TechnicalParameters */
         TechnicalParameters: {
@@ -1337,6 +1533,8 @@ export interface components {
         };
         /** TechnicalRules */
         TechnicalRules: {
+            /** Regional Methods */
+            regional_methods?: components["schemas"]["RegionalMethodInfo"][];
             /** Registry Version */
             registry_version: string;
             /** Mathematical */
@@ -1852,6 +2050,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CalculationResult"];
+                };
+            };
+            /** @description Entradas inválidas; avisos localizados quando disponíveis. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InputValidationError"];
+                };
+            };
+        };
+    };
+    energisa_demand_api_v1_calculations_energisa_demand_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EnergisaDemandInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EnergisaDemandResult"];
                 };
             };
             /** @description Entradas inválidas; avisos localizados quando disponíveis. */

@@ -15,8 +15,9 @@ from sqlalchemy.orm.exc import StaleDataError
 
 from .auth import authenticate_request
 from .auth import router as auth_router
+from .calculations.energisa import calculate_energisa_demand
 from .calculations.engine import ENGINE_VERSION, calculate
-from .calculations.standards import RULES
+from .calculations.standards import ENERGISA_V7_EVIDENCE, RULES
 from .catalog import CATALOG
 from .catalog_store import initialize_catalog
 from .database import HistoryRow, ProjectRow, TechnicalRevisionRow, get_session, utcnow
@@ -33,6 +34,8 @@ from .schemas import (
     CalculationResult,
     CatalogItem,
     DocumentRegistry,
+    EnergisaDemandInput,
+    EnergisaDemandResult,
     FieldRequirement,
     HealthInfo,
     InputValidationError,
@@ -46,6 +49,7 @@ from .security import RequestBoundary, cors_origins
 from .technical import (
     DOCUMENTS,
     MATHEMATICAL_RULES,
+    REGIONAL_METHODS,
     STATES,
     UTILITIES,
     applicability,
@@ -74,7 +78,7 @@ app = FastAPI(
     separate_input_output_schemas=False,
     title="EletroProjeto",
     version=APP_VERSION,
-    description="Cálculos de cargas residenciais: potência instalada (W/kW), potência aparente (VA/kVA), correntes, conversões, consumo mensal e estimativa de custo pela tarifa informada. Valores padrão são sugestões documentadas; valores manuais válidos são respeitados e recalculados. Previsão residencial de iluminação e TUG disponível por seleção explícita, com escopo e limites documentados. Demanda da distribuidora permanece indisponível até conferência integral do método. Não constitui dimensionamento final.",
+    description="Cálculos de cargas residenciais: potência instalada (W/kW), potência aparente (VA/kVA), correntes, conversões, consumo mensal e estimativa de custo pela tarifa informada. Valores padrão são sugestões documentadas; valores manuais válidos são respeitados e recalculados. Previsão residencial de iluminação e TUG disponível por seleção explícita, com escopo e limites documentados. Demanda Energisa residencial parametrizada disponível em escopo limitado e inventário explícito. Demanda automática do cadastro e dimensionamento final permanecem pendentes.",
 )
 app.include_router(auth_router)
 app.add_middleware(
@@ -240,6 +244,15 @@ def permanently_remove(
 @app.post(PREFIX + "/calculations/full", tags=["Cálculos"], response_model=CalculationResult)
 def full(data: CalculationInput):
     return calculate(data.model_dump(mode="json"))
+
+
+@app.post(
+    PREFIX + "/calculations/energisa-demand", tags=["Cálculos"], response_model=EnergisaDemandResult
+)
+def energisa_demand(data: EnergisaDemandInput):
+    """NDU-001 v7 residencial individual d1–d5, inventário explícito; sem dimensionamento final."""
+    result = calculate_energisa_demand(data.model_dump(mode="json"))
+    return {**result, "reference": asdict(ENERGISA_V7_EVIDENCE)}
 
 
 @app.get(PREFIX + "/equipment", tags=["Equipamentos"], response_model=list[CatalogItem])
@@ -417,6 +430,12 @@ def computational_rules(
         "coverage": normative_capabilities(utility, state),
         "mathematical": MATHEMATICAL_RULES,
         "normative": [asdict(rule) for rule in RULES],
+        "regional_methods": [
+            method
+            for method in REGIONAL_METHODS
+            if utility == "unconfirmed"
+            or (utility in method["supported_utilities"] and state in method["supported_states"])
+        ],
         "notice": "Validação matemática não implica conformidade normativa.",
     }
 

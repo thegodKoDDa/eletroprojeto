@@ -86,6 +86,8 @@ def source_files(root):
                     ".tgz",
                     ".7z",
                     ".bundle",
+                    ".pdf",
+                    ":zone.identifier",
                 )
             ):
                 continue

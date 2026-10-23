@@ -1,6 +1,8 @@
-# EletroProjeto 0.11.0
+# EletroProjeto 0.12.0
 
-Esta revisão acrescenta recuperação local de rascunhos, resolução guiada de conflitos, sessões de usuário para implantação HTTPS e catálogo persistente versionado. Projetos existentes permanecem locais e sem proprietário até atribuição administrativa explícita. Motor0.6.0 e cálculos normativos disponíveis mantidos; demanda/dimensionamento completo continuam pendentes de validação.
+Método parametrizado NDU-0017.0 disponível em POST `/api/v1/calculations/energisa-demand`, com exemplo na documentação da API. Escopo residencial limitado d1–d5 e inventário explícito; não calcula automaticamente a demanda dos projetos ao selecionar a distribuidora. Origem dos PDFs, condições, memória e limites em [standards.md](docs/standards.md) e [calculations.md](docs/calculations.md). Motor0.7.0; dados e históricos preservados.
+
+Desde0.11.0 há recuperação local de rascunhos, resolução guiada de conflitos, sessões de usuário para implantação HTTPS e catálogo persistente versionado. Projetos existentes permanecem locais e sem proprietário até atribuição administrativa explícita. Motor atual0.7.0; demanda automática do cadastro e dimensionamento completo continuam pendentes.
 
 Operação local, configuração de contas/HTTPS/CSRF e limites: [segurança](docs/security.md). Catálogo e migrações: [arquitetura](docs/architecture.md). Testes efetivos Linux/Windows/PostgreSQL, checkpoint/Git e pendências: [estado atual](docs/CURRENT_STATE.md). CI em `.github/workflows/quality.yml` precisa de repositório remoto para executar hospedado; nenhum push automático é feito. Backup GPG externo exige destino e fingerprint de chave pública escolhidos pelo responsável; teste em diretório temporário não é cópia externa real.
 

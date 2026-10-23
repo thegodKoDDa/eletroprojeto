@@ -1,5 +1,12 @@
 # Histórico de alterações
 
+## 0.12.0 — 23/10/2026
+
+- NDU-0017.0 fornecida pelo usuário revisada e registrada por arquivo/hash;6.3 mantida apenas como referência histórica substituída. PDFs não incorporados ao Git/ZIP de código.
+- Novo método API parametrizado de demanda residencial individual Energisa Sul-Sudeste/SP, d1–d5, tabelas5–8/10, faixas cumulativas, simultaneidade, reserva e memória por grupo/faixa; Decimal sem arredondamento intermediário.
+- Grupos especiais/centrais/escopos não suportados retornamnull; ausências precisam ser declaradas. Sem classificação automática dos projetos, potências presumidas, mudança de catálogo ou dimensionamento final.
+- Contratos e descoberta de métodos regionais atualizados. Motor0.7.0 rastreia a nova matemática; projetos/históricos preservados.
+
 ## 0.11.0 — 23/10/2026
 
 - Recuperação de rascunhos locais sem envio automático, slots independentes e separados por conta; falhas de armazenamento informadas. Conflito409 pausa autosave, mantém a edição e oferece cópia independente ou versão do servidor.

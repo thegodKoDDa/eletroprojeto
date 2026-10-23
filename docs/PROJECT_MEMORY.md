@@ -1,5 +1,7 @@
 # Memória duradoura — EletroProjeto
 
+0.12.0/motor0.7.0: usuário forneceu NDU0017.0 e6.3. Método parametrizado residencial d1–d5 implementado em `/calculations/energisa-demand`, separado da classificação automática dos projetos; condições/limites em standards/calculations. Fonte rastreada por hash/nome como exemplar enviado, sem alegar download oficial verificado.6.3 somente histórica; PDFs fora de Git/ZIP de código. Nenhuma carga/manual/catálogo/histórico regravado. Demanda automática no cadastro, grupos especiais e dimensionamento final continuam pendentes.
+
 Atualização0.11.0/23-10-2026: Git foi inicializado por autorização explícita do novo pedido; não repetir a afirmação histórica de que status é impossível sem conferir. Migrações0004 identidade/proprietário e0005 catálogo; legado preservado, sem atribuição automática. Modo local continua loopback; modo remoto exige HTTPS e contas/sessões/CSRF, isolando projetos por proprietário. Rascunhos locais recuperáveis e conflitos guiados disponíveis; limites/privacidade em security/forms-and-pdf. Catálogo é publicado em revisões persistidas e carregado na inicialização; editar projeto nunca o publica. PostgreSQL e backend Windows reais testados. CURRENT_STATE registra o trabalho amplo ainda em andamento; não declarar resolvidas as pendências normativas, físicas, hospedagem/CI ou cópia externa sem evidência.
 
 ## Produto e história recuperável

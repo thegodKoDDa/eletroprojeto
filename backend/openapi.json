@@ -2,8 +2,8 @@
   "openapi": "3.1.0",
   "info": {
     "title": "EletroProjeto",
-    "description": "Cálculos de cargas residenciais: potência instalada (W/kW), potência aparente (VA/kVA), correntes, conversões, consumo mensal e estimativa de custo pela tarifa informada. Valores padrão são sugestões documentadas; valores manuais válidos são respeitados e recalculados. Previsão residencial de iluminação e TUG disponível por seleção explícita, com escopo e limites documentados. Demanda da distribuidora permanece indisponível até conferência integral do método. Não constitui dimensionamento final.",
-    "version": "0.11.0"
+    "description": "Cálculos de cargas residenciais: potência instalada (W/kW), potência aparente (VA/kVA), correntes, conversões, consumo mensal e estimativa de custo pela tarifa informada. Valores padrão são sugestões documentadas; valores manuais válidos são respeitados e recalculados. Previsão residencial de iluminação e TUG disponível por seleção explícita, com escopo e limites documentados. Demanda Energisa residencial parametrizada disponível em escopo limitado e inventário explícito. Demanda automática do cadastro e dimensionamento final permanecem pendentes.",
+    "version": "0.12.0"
   },
   "paths": {
     "/api/v1/auth/session": {
@@ -628,6 +628,48 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/CalculationResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Entradas inválidas; avisos localizados quando disponíveis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InputValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/calculations/energisa-demand": {
+      "post": {
+        "tags": [
+          "Cálculos"
+        ],
+        "summary": "Energisa Demand",
+        "description": "NDU-001 v7 residencial individual d1–d5, inventário explícito; sem dimensionamento final.",
+        "operationId": "energisa_demand_api_v1_calculations_energisa_demand_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EnergisaDemandInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EnergisaDemandResult"
                 }
               }
             }
@@ -2137,6 +2179,440 @@
           "documents"
         ],
         "title": "DocumentRegistry"
+      },
+      "EnergisaDemandBand": {
+        "properties": {
+          "installed_band_w": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Installed Band W"
+          },
+          "factor": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Factor"
+          },
+          "demand_w": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Demand W"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "installed_band_w",
+          "factor",
+          "demand_w"
+        ],
+        "title": "EnergisaDemandBand"
+      },
+      "EnergisaDemandGroupResult": {
+        "properties": {
+          "group": {
+            "type": "string",
+            "enum": [
+              "d1",
+              "d2",
+              "d3",
+              "d4",
+              "d5",
+              "d6",
+              "d7"
+            ],
+            "title": "Group"
+          },
+          "quantity": {
+            "type": "integer",
+            "title": "Quantity"
+          },
+          "installed_power_w": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Installed Power W"
+          },
+          "factor": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Factor"
+          },
+          "demand_w": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Demand W"
+          },
+          "table": {
+            "type": "string",
+            "title": "Table"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "bands": {
+            "items": {
+              "$ref": "#/components/schemas/EnergisaDemandBand"
+            },
+            "type": "array",
+            "title": "Bands"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "group",
+          "quantity",
+          "installed_power_w",
+          "factor",
+          "demand_w",
+          "table",
+          "reason"
+        ],
+        "title": "EnergisaDemandGroupResult"
+      },
+      "EnergisaDemandInput": {
+        "properties": {
+          "utility": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Utility"
+          },
+          "state": {
+            "type": "string",
+            "pattern": "^[A-Z]{2}$",
+            "title": "State"
+          },
+          "unit_type": {
+            "type": "string",
+            "enum": [
+              "individual_residential",
+              "grouped",
+              "non_residential"
+            ],
+            "title": "Unit Type"
+          },
+          "inventory_reviewed": {
+            "type": "boolean",
+            "title": "Inventory Reviewed",
+            "description": "Confirma inventário completo, classificação de cada carga uma única vez, quantidades, potências adotadas e identificação das reservas (§9.1 notaVI)."
+          },
+          "has_signage_or_display_lighting": {
+            "type": "boolean",
+            "title": "Has Signage Or Display Lighting",
+            "description": "Letreiros/iluminação de vitrines não são abrangidos pela Tabela5; presença deixa este método fora de escopo."
+          },
+          "simultaneous_lighting_outlets": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Simultaneous Lighting Outlets"
+          },
+          "loads": {
+            "items": {
+              "$ref": "#/components/schemas/EnergisaDemandLoad"
+            },
+            "type": "array",
+            "maxItems": 1000,
+            "title": "Loads"
+          },
+          "confirmed_absent_groups": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "d1",
+                "d2",
+                "d3",
+                "d4",
+                "d5",
+                "d6",
+                "d7"
+              ]
+            },
+            "type": "array",
+            "maxItems": 7,
+            "title": "Confirmed Absent Groups"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "utility",
+          "state",
+          "unit_type",
+          "inventory_reviewed",
+          "has_signage_or_display_lighting",
+          "loads",
+          "confirmed_absent_groups"
+        ],
+        "title": "EnergisaDemandInput",
+        "examples": [
+          {
+            "confirmed_absent_groups": [
+              "d3",
+              "d4",
+              "d5",
+              "d6",
+              "d7"
+            ],
+            "has_signage_or_display_lighting": false,
+            "inventory_reviewed": true,
+            "loads": [
+              {
+                "group": "d1",
+                "name": "Iluminação/TUG — exemplo fictício",
+                "quantity": 1,
+                "unit_power_w": "1000"
+              },
+              {
+                "group": "d2",
+                "name": "Chuveiro — exemplo manual",
+                "quantity": 1,
+                "unit_power_w": "5500"
+              }
+            ],
+            "simultaneous_lighting_outlets": false,
+            "state": "SP",
+            "unit_type": "individual_residential",
+            "utility": "energisa_sul_sudeste"
+          }
+        ]
+      },
+      "EnergisaDemandLoad": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "group": {
+            "type": "string",
+            "enum": [
+              "d1",
+              "d2",
+              "d3",
+              "d4",
+              "d5",
+              "d6",
+              "d7"
+            ],
+            "title": "Group",
+            "description": "Classificação explícita §9.1: d1 iluminação/TUG; d2 aquecimento de água; d3 secadora de roupas/micro-ondas/lava-louças/hidromassagem; d4 fogão/forno elétrico; d5 AC janela/individual; d6 motores; d7 solda transformador/raios-X. Sem classificação automática."
+          },
+          "quantity": {
+            "type": "integer",
+            "maximum": 100000.0,
+            "minimum": 1.0,
+            "title": "Quantity"
+          },
+          "unit_power_w": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit Power W",
+            "description": "Potência elétrica por unidade, em W, adotada pelo responsável. Não informar VA normativo, potência térmica ou kWh. Valores manuais válidos prevalecem sobre referências."
+          },
+          "reserve": {
+            "type": "boolean",
+            "title": "Reserve",
+            "default": false
+          },
+          "air_conditioning_type": {
+            "type": "string",
+            "enum": [
+              "unconfirmed",
+              "window_or_individual",
+              "central_unit"
+            ],
+            "title": "Air Conditioning Type",
+            "default": "unconfirmed"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "name",
+          "group",
+          "quantity",
+          "unit_power_w"
+        ],
+        "title": "EnergisaDemandLoad"
+      },
+      "EnergisaDemandResult": {
+        "properties": {
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          },
+          "unit": {
+            "type": "string",
+            "const": "kVA",
+            "title": "Unit"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "calculated",
+              "estimated",
+              "pending",
+              "invalid",
+              "out_of_scope",
+              "awaiting_technical_validation"
+            ],
+            "title": "Status"
+          },
+          "installed_power_w": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Installed Power W"
+          },
+          "demanded_power_kw": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Demanded Power Kw"
+          },
+          "groups": {
+            "items": {
+              "$ref": "#/components/schemas/EnergisaDemandGroupResult"
+            },
+            "type": "array",
+            "title": "Groups"
+          },
+          "pending_checks": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Pending Checks"
+          },
+          "ignored_reserve_loads": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Ignored Reserve Loads"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Limitations"
+          },
+          "reference": {
+            "$ref": "#/components/schemas/ResearchEvidence"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "value",
+          "unit",
+          "status",
+          "installed_power_w",
+          "demanded_power_kw",
+          "groups",
+          "pending_checks",
+          "ignored_reserve_loads",
+          "limitations",
+          "reference"
+        ],
+        "title": "EnergisaDemandResult"
       },
       "Environment": {
         "properties": {
@@ -3654,6 +4130,68 @@
         ],
         "title": "ProjectInput"
       },
+      "RegionalMethodInfo": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "endpoint": {
+            "type": "string",
+            "title": "Endpoint"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "calculated",
+              "estimated",
+              "pending",
+              "invalid",
+              "out_of_scope",
+              "awaiting_technical_validation"
+            ],
+            "title": "Status"
+          },
+          "available": {
+            "type": "boolean",
+            "title": "Available"
+          },
+          "scope": {
+            "type": "string",
+            "title": "Scope"
+          },
+          "supported_utilities": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Supported Utilities"
+          },
+          "supported_states": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Supported States"
+          },
+          "reference": {
+            "$ref": "#/components/schemas/ResearchEvidence"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "code",
+          "endpoint",
+          "status",
+          "available",
+          "scope",
+          "supported_utilities",
+          "supported_states",
+          "reference"
+        ],
+        "title": "RegionalMethodInfo"
+      },
       "ResearchEvidence": {
         "properties": {
           "title": {
@@ -3674,7 +4212,8 @@
               "official_metadata",
               "official_index",
               "institutional_full_text",
-              "official_full_text"
+              "official_full_text",
+              "user_supplied_full_text"
             ],
             "title": "Access"
           },
@@ -3692,6 +4231,29 @@
               }
             ],
             "title": "Section"
+          },
+          "file_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "File Name"
+          },
+          "sha256": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sha256"
           }
         },
         "additionalProperties": false,
@@ -3748,6 +4310,29 @@
           "consulted_on": {
             "type": "string",
             "title": "Consulted On"
+          },
+          "source_file": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source File"
+          },
+          "sha256": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sha256"
           }
         },
         "additionalProperties": false,
@@ -4012,6 +4597,13 @@
       },
       "TechnicalRules": {
         "properties": {
+          "regional_methods": {
+            "items": {
+              "$ref": "#/components/schemas/RegionalMethodInfo"
+            },
+            "type": "array",
+            "title": "Regional Methods"
+          },
           "registry_version": {
             "type": "string",
             "title": "Registry Version"

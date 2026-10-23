@@ -4,7 +4,7 @@ import hashlib
 import json
 from dataclasses import asdict
 
-from .calculations.standards import RULES
+from .calculations.standards import ENERGISA_V7_EVIDENCE, RULES
 from .catalog import CATALOG
 from .version import ENGINE_VERSION
 
@@ -24,7 +24,9 @@ DOCUMENTS = [
         edition="7.0",
         effective_date="2024-11-01",
         source="https://www.energisa.com.br/normas-tecnicas",
-        status="portal_metadata_verified",
+        status="user_full_text_reviewed_limited_residential_method",
+        source_file=ENERGISA_V7_EVIDENCE.file_name,
+        sha256=ENERGISA_V7_EVIDENCE.sha256,
     ),
     dict(
         id="ged13",
@@ -59,6 +61,19 @@ DOCUMENTS = [
         status="official_full_text_method_review_pending",
     ),
 ]
+DOCUMENTS.append(
+    dict(
+        id="ndu001_legacy63",
+        title="Energisa NDU-001 — referência histórica substituída",
+        edition="6.3 (outubro/2020), com erratas/adendos até novembro/2023",
+        effective_date=None,
+        source="https://www.energisa.com.br/normas-tecnicas",
+        status="superseded_by_7.0_historical_comparison_only",
+        consulted_on="2026-10-23",
+        source_file="NDU 001 - Versão 6.3.pdf",
+        sha256="733fb17b8597e36ef325c0c5aefa7d54ebc27e97fc45298eb3073d27ae3253ba",
+    )
+)
 UTILITIES = [
     dict(
         id=code,
@@ -84,11 +99,25 @@ for document in DOCUMENTS:
     )
     if document["id"] == "elektro":
         document["consulted_on"] = "2026-10-23"
+    if document["id"] in ("ndu001", "ndu001_legacy63"):
+        document["consulted_on"] = "2026-10-23"
 for utility in UTILITIES:
     if utility["id"] == "neoenergia_elektro":
         utility["states"] = ["SP", "MS"]  # DIS-NOR-030 rev06 §5.1; no municipal inference.
 
 # These are state-level candidates, NOT a verified municipality/concession mapping.
+REGIONAL_METHODS = [
+    dict(
+        code="energisa_ndu001_v7_residential",
+        supported_utilities=["energisa_sul_sudeste"],
+        supported_states=["SP"],
+        endpoint="/api/v1/calculations/energisa-demand",
+        status="estimated",
+        available=True,
+        scope="Residência individual, Energisa Sul-Sudeste/SP, até75kW; d1–d5 classificados explicitamente, d6/d7 ausentes confirmados. Sem integração automática ao cadastro ou dimensionamento final.",
+        reference=asdict(ENERGISA_V7_EVIDENCE),
+    )
+]
 
 
 def snapshot():
@@ -101,6 +130,7 @@ def snapshot():
         rules=[asdict(rule) for rule in RULES],
         mathematical_rules=MATHEMATICAL_RULES,
         equipment=CATALOG,
+        regional_methods=REGIONAL_METHODS,
     )
 
 

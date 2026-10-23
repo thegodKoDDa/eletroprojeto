@@ -1,4 +1,18 @@
-# Estado atual — marco 0.11.0 verificado; pedido amplo ainda incompleto
+# Estado atual — 0.12.0 / motor0.7.0: NDU-001 fornecida e método parametrizado
+
+## Entrega NDU-001 — 23/10/2026
+
+Pedido atual: ler os dois PDFs da raiz, aproveitar conteúdo útil na API e descartar o que não serve. Arquivo de nome longo contém7.0/novembro2024,162p;6.3 contém189p com erratas/adendos até2023. §2 da7.0 substitui anteriores;6.3 registrada somente como histórica. Originais e hashes preservados; PDFs/Zone.Identifier ignorados no Git/ZIP de fonte, sem redistribuição. Identificação/escopo/fontes/condições/testes em standards.md; matemática em calculations.md.
+
+Implementado POST `/api/v1/calculations/energisa-demand`, entrada/saída tipadas e exemplo OpenAPI. Residência individual, Energisa Sul-Sudeste/SP, até75kW; inventário explícito, W unitários/quantidades, reservas e ausência dos grupos confirmadas. Tabelas5–8/10: d1 cumulativo por faixa/simultaneidade; d2–d5 por quantidade total e potências declaradas. Memória por grupo/faixa, Decimal40 sem arredondamento intermediário, kW/0,92→kVA. d6/d7/unidades centrais presentes, letreiros/vitrines, agrupamentos e outro escopo ficam null/out_of_scope; entradas incompletas null/pending. Não importa potências orientativas nem troca valores manuais.
+
+API `technical/rules.regional_methods` descobre o método; documentos/evidências trazem nomes/hashes, `user_supplied_full_text` e6.3superseded. Não afirmar download oficial bem-sucedido/igualdade binária: portal ainda403. Cadastro/relatórios existentes continuam sem demanda automática pela seleção da distribuidora; classificação e integração permanecem pendentes. Não há dimensionamento final/atendimento aprovado ou cobertura territorial nova. Motor/registro mudaram para rastrear a nova matemática; nenhum projeto/histórico foi regravado.
+
+Verificação final: **320pytest+85subtestes emSQLite/Linux, PostgreSQL18.6 eWindows11/Python3.13.15**, incluindo fronteira75kW e subtotal conhecido já acima do limite com outra potência desconhecida. Frontend90,12E2E locais e1E2EHTTPS aprovados; buildwebpack, contratos/types:sync, tipos/lint/formatação/Alembic/pipcheck e8continuidade aprovados. PDF extraído/renderizado apenas com ferramenta QA temporária; nada adicionado às dependências de execução. Windowsfrontend/build não repetidos nesta tarefa (não houve edição daUI), backendWindows executado. Banco real comparado integralmente ao checkpoint0.11: três tabelas preservadas,integridade/FKok,0005,9projetos/29históricos/7revisões. API real0.12.0/motor0.7.0 retornou6,913043478…kVA no exemplo6500Winstalados/6360Wdemandados;frontendHTTP200.
+
+Arquivos novos: calculations/energisa.py e test_energisa.py; schemas/main/technical/standards, versões/contratos/testes e continuidade/documentos atualizados. Nenhuma migração/catálogo/dependência de execução nova. Checkpoint/commit desta entrega a registrar após revisão final.
+
+## Marco anterior — 0.11.0
 
 Checkpoint final deste marco: `.checkpoints/20261023T172848011983Z` —154arquivos, hashesZIP/SQLite/Gitbundle e restauraçãoSQLite/clonagemGit isoladas aprovados;9projetos/29históricos/7revisões/0005. Histórico Git preservado até`9e66efa` (baseline`d5d8212` e incremento de continuidade). Caminho registrado após geração automática; registro/formatação documental posterior versionados separadamente. Sem exclusões/push/publicação ou cópia externa real. Checkpoint no mesmo disco não protege contra perda do computador.
 

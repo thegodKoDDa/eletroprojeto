@@ -674,9 +674,9 @@ async def test_version_and_documentation_groups_are_consistent(client):
         == frontend["version"]
         == backend["project"]["version"]
         == APP_VERSION
-        == "0.11.0"
+        == "0.12.0"
     )
-    assert health["engine_version"] == ENGINE_VERSION == "0.6.0"
+    assert health["engine_version"] == ENGINE_VERSION == "0.7.0"
     spec = (await client.get("/openapi.json")).json()
     assert spec["info"]["version"] == APP_VERSION
     assert spec["paths"]["/api/v1/reports/pdf"]["post"]["tags"] == ["Relatórios"]
@@ -1082,9 +1082,12 @@ async def test_research_is_exposed_as_coverage_not_as_project_errors(client, pay
         assert item["evidence"]
         for evidence in item["evidence"]:
             assert evidence["url"].startswith("https://")
-            assert evidence["consulted_on"] == "2026-10-22"
+            assert evidence["consulted_on"] == (
+                "2026-10-23" if evidence["access"] == "user_supplied_full_text" else "2026-10-22"
+            )
             assert evidence["access"] in (
                 "official_index",
+                "user_supplied_full_text",
                 "official_metadata",
                 "institutional_full_text",
                 "official_full_text",
@@ -1096,6 +1099,103 @@ async def test_research_is_exposed_as_coverage_not_as_project_errors(client, pay
         bool(rule["procedure"]) == bool(rule["tests"]) == (rule["code"] != "demand")
         for rule in registry["normative"]
     )
+
+
+@pytest.fixture
+def energisa_payload():
+    return dict(
+        utility="energisa_sul_sudeste",
+        state="SP",
+        unit_type="individual_residential",
+        inventory_reviewed=True,
+        has_signage_or_display_lighting=False,
+        simultaneous_lighting_outlets=False,
+        loads=[
+            dict(name="Iluminação/TUG", group="d1", quantity=1, unit_power_w="1000"),
+            dict(name="Chuveiro manual", group="d2", quantity=1, unit_power_w="5500"),
+        ],
+        confirmed_absent_groups=["d3", "d4", "d5", "d6", "d7"],
+    )
+
+
+async def test_energisa_endpoint_has_traceable_method_and_preserves_project_flow(
+    client, energisa_payload, payload
+):
+    from decimal import Decimal, localcontext
+
+    response = await client.post("/api/v1/calculations/energisa-demand", json=energisa_payload)
+    assert response.status_code == 200, response.text
+    data = response.json()
+    with localcontext() as context:
+        context.prec = 40
+        assert Decimal(data["value"]) == Decimal("6.36") / Decimal(".92")
+    assert data["status"] == "estimated" and data["unit"] == "kVA"
+    assert (
+        data["reference"]["sha256"]
+        == "940b4aab66afc741e2f1f20d88ef2630672dcac2499928af31d807ac8d7442e2"
+    )
+    assert data["reference"]["access"] == "user_supplied_full_text"
+    assert (await client.get("/api/v1/projects")).json() == []
+    registry = (
+        await client.get("/api/v1/technical/rules?utility=energisa_sul_sudeste&state=SP")
+    ).json()
+    assert registry["regional_methods"][0]["endpoint"].endswith("/calculations/energisa-demand")
+    payload["utility"] = "energisa_sul_sudeste"
+    normal = (await client.post("/api/v1/calculations/full", json=payload)).json()
+    assert (
+        normal["normative"]["demand"]["value"] is None
+    )  # no guessed classification of old projects
+
+
+@pytest.mark.parametrize(
+    "change", ["missing_power", "missing_absence", "review", "central", "motor", "foreign_utility"]
+)
+async def test_energisa_endpoint_pending_and_scope(client, energisa_payload, change):
+    if change == "missing_power":
+        energisa_payload["loads"][1]["unit_power_w"] = None
+    elif change == "missing_absence":
+        energisa_payload["confirmed_absent_groups"] = []
+    elif change == "review":
+        energisa_payload["inventory_reviewed"] = False
+    elif change == "foreign_utility":
+        energisa_payload["utility"] = "enel_sp"
+    else:
+        group = "d5" if change == "central" else "d6"
+        energisa_payload["confirmed_absent_groups"].remove(group)
+        energisa_payload["loads"].append(
+            dict(
+                name="Carga adicional",
+                group=group,
+                quantity=1,
+                unit_power_w="1000",
+                air_conditioning_type="central_unit",
+            )
+        )
+    response = await client.post("/api/v1/calculations/energisa-demand", json=energisa_payload)
+    assert response.status_code == 200
+    assert response.json()["value"] is None and response.json()["pending_checks"]
+
+
+@pytest.mark.parametrize(
+    "change",
+    ["contradiction", "duplicate_absence", "bool_quantity", "negative", "nan", "missing_scope"],
+)
+async def test_energisa_endpoint_rejects_bad_inputs(client, energisa_payload, change):
+    if change == "contradiction":
+        energisa_payload["confirmed_absent_groups"].append("d2")
+    elif change == "duplicate_absence":
+        energisa_payload["confirmed_absent_groups"].append("d3")
+    elif change == "bool_quantity":
+        energisa_payload["loads"][1]["quantity"] = True
+    elif change == "negative":
+        energisa_payload["loads"][1]["unit_power_w"] = "-1"
+    elif change == "nan":
+        energisa_payload["loads"][1]["unit_power_w"] = "NaN"
+    else:
+        energisa_payload.pop("unit_type")
+    assert (
+        await client.post("/api/v1/calculations/energisa-demand", json=energisa_payload)
+    ).status_code == 422
 
 
 @pytest.mark.parametrize(

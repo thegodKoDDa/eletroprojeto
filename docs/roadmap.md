@@ -1,4 +1,6 @@
-# Roadmap — estado 0.11.0
+# Roadmap — estado 0.12.0
+
+0.12.0: NDU0017.0 enviada pelo usuário permitiu método residencial parametrizado d1–d5 na API, com classificação e ausências explícitas. Integração ao cadastro, grupos especiais, dimensionamento e território completos continuam pendentes. Fontes/escopo/testes em standards.md; não confundir endpoint disponível com demanda automática ou conformidade final.
 
 ## Atualização 0.11.0 — 23/10/2026
 

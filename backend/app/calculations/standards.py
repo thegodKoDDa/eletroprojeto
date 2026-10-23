@@ -11,6 +11,20 @@ class ResearchEvidence:
     access: str
     consulted_on: str = "2026-10-22"
     section: str | None = None
+    file_name: str | None = None
+    sha256: str | None = None
+
+
+ENERGISA_V7_EVIDENCE = ResearchEvidence(
+    title="Energisa NDU-001 versão 7.0 — exemplar enviado pelo usuário",
+    url="https://www.energisa.com.br/sites/energisa/files/media/documents/2025-02/NDU%20001%20-%20Fornecimento%20de%20energia%20el%C3%A9trica%20em%20tens%C3%A3o%20secund%C3%A1ria%20a%20edifica%C3%A7%C3%B5es%20individuais%20ou%20agrupadas%20em%20at%C3%A9%20tr%C3%AAs%20unidades%20consumidoras.pdf",
+    finding="Exemplar local de 162 páginas identifica Energisa, versão 7.0/novembro2024; §§1/2/6/9.1 e tabelas/notas conferidos. Hash identifica o arquivo enviado, sem afirmar igualdade binária com download oficial bloqueado.",
+    access="user_supplied_full_text",
+    consulted_on="2026-10-23",
+    section="§§1/2,9.1 pp.56–57; tabelas5–8/10 pp.63–67; método residencial limitado d1–d5",
+    file_name="NDU 001 - Fornecimento de energia elétrica em tensão secundária a edificações individuais ou agrupadas em até três unidades consumidoras.pdf",
+    sha256="940b4aab66afc741e2f1f20d88ef2630672dcac2499928af31d807ac8d7442e2",
+)
 
 
 @dataclass(frozen=True)
@@ -114,11 +128,12 @@ RULES = (
         None,
         "https://www.energisa.com.br/normas-tecnicas",
         "awaiting_technical_validation",
-        "Método identificado na seção 9.1 em trechos indexados do PDF oficial; leitura integral das tabelas e condições ainda indisponível (HTTP 403).",
+        "Método residencial da seção 9.1 conferido no escopo d1–d5. Este cadastro ainda não possui classificação revisada para calcular demanda automaticamente; grupos especiais presentes exigem revisão própria.",
         ("utility", "loads", "demand_classification"),
         label="Demanda da distribuidora",
         purpose="Estimativa de potência demandada pelo método da distribuidora; não é potência instalada nem consumo mensal.",
         evidence=(
+            ENERGISA_V7_EVIDENCE,
             ResearchEvidence(
                 title="Portal oficial de normas Energisa",
                 url="https://www.energisa.com.br/normas-tecnicas",
@@ -134,10 +149,9 @@ RULES = (
             ),
         ),
         pending_checks=(
-            "Obter íntegra oficial e conferir vigência, erratas e escopo para a distribuidora/localidade.",
-            "Auditar tabelas, notas, faixas e classificação de cada carga, sem dupla contagem.",
-            "Revisar a base de iluminação/tomadas e as unidades de cada parcela.",
-            "Conferir exemplos independentes e testes de limites antes de habilitar o cálculo.",
+            "No método parametrizado, declarar inventário completo e classificação explícita, ausência dos grupos e reservas; base W distinta das previsões VA.",
+            "Revisar grupos d6/d7 e unidades centrais de ar-condicionado antes de ampliar o escopo.",
+            "Integrar classificação ao cadastro de projetos antes de habilitar cálculo automático pela seleção da distribuidora.",
         ),
     ),
 )

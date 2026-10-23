@@ -1,5 +1,28 @@
 # Referências e validação normativa
 
+## NDU-001 enviada pelo usuário — 0.12.0 / motor0.7.0, 23/10/2026
+
+Foram examinados os dois PDFs locais: identificação, escopo/vigência, demanda, tabelas/notas e erratas. Nome/metadados do arquivo não definem vigência:
+
+| Exemplar | Identificação e uso | SHA256 |
+| --- | --- | --- |
+| Nome longo, mencionando agrupadas até três unidades |162p; corpo **7.0/novembro2024**. §1: unidade individual até75kW, agrupamentos remetidos à NDU003; §2 revoga anteriores. Base do método limitado. |`940b4aab66afc741e2f1f20d88ef2630672dcac2499928af31d807ac8d7442e2`|
+| Versão6.3 |189p; corpo6.3/outubro2020, erratas/adendos até novembro2023. Título nos metadados diverge do conteúdo. Somente comparação histórica; nenhuma distribuidora seleciona essa edição no motor. |`733fb17b8597e36ef325c0c5aefa7d54ebc27e97fc45298eb3073d27ae3253ba`|
+
+Autoria Energisa identificada no exemplar enviado. Fontes oficiais indexadas corroboram título/edição/§9.1/tabelas; portal/download seguem403. Hash identifica a cópia local, **não comprova igualdade binária com o download oficial nem ausência de atualização posterior**. API registra `user_supplied_full_text`, arquivo/hash/data/seção, sem afirmar download oficial bem-sucedido. PDFs e Zone.Identifier são preservados localmente, excluídos de Git/ZIP de código, sem redistribuição pelo aplicativo.
+
+Implementado **POST `/api/v1/calculations/energisa-demand`** para residência individual, Energisa Sul-Sudeste/SP, inventário completo revisado e até75kW. Cada carga exige grupo, W unitários e quantidade; ausência de grupo é declaração explícita. Sem associação territorial automática, classificação por nome/catálogo ou atualização de potências pela Tabela4. Essa tabela é orientativa (notas p62), não substitui placa/fabricante; Tabela9 não é conversão BTU→W.
+
+Conferidos visualmente/implementados: §9.1 pp56–57 e tabelas5–8/10 pp63–67. d1 usa faixas residenciais **acumulativas** (Tabela5 notaIII), não fator da última faixa sobre toda a carga. Simultaneidade declarada exige100% (notaI); desconhecida deixa pendência. Letreiros/vitrines (notaII) ficam fora de escopo. d2 aquecimento de água; d3 secadora de roupas/micro-ondas/lava-louças/hidromassagem; d4 fogões/fornos; d5 AC janela/individual. Soma por grupo usa W×quantidade uma vez e quantidade total de aparelhos, inclusive potências heterogêneas. Reservas são excluídas da demanda por declaração explícita (9.1 notaVI); limite instalado conferido conservadoramente incluindo todas as cargas declaradas.
+
+Demanda emkVA = soma das parcelas emkW /0,92. Esse divisor pertence ao método; não é FP medido/universal dos aparelhos. VA da previsão NBR, BTU/h e kWh nunca são tratados como W. Sem arredondamentos intermediários, Decimal/contexto40. Resultado inclui memória por grupo/faixa, unidades e motivos. Não determina categoria de fornecimento, cabos, disjuntor, entrada ou aprovação final.
+
+Tabelas12–14/notas/exemplos lidos, mas d6/d7 presentes permanecem **null/out_of_scope** neste método; não se generalizou classificação/demanda de motores/solda/raios-X sem parâmetros próprios. Unidades centrais de AC (9.1 notaI) também ficam fora de escopo e não recebem automaticamente Tabela10. Grupos omitidos, potência desconhecida/zero em carga ativa ou inventário não revisado deixam totalnull/pending. Ausência explicitamente confirmada pode resultar emzero; nunca é preenchida silenciosamente.
+
+Cadastro geral/relatórios existentes ainda não têm classificação revisada suficiente: **selecionar a distribuidora não habilita demanda automática**. Método parametrizado é descobrível em `technical/rules.regional_methods`, separado dessa integração pendente. Projetos/históricos anteriores não são regravados; novo registro/motor afeta a consulta de revalidação.
+
+Exemplos manuais independentes em test_energisa.py: d1=4.500W→3.120W por faixas; d2=2×5.500W→8.250W; d3=1.400W; d4=7.000W; d5=2×800W×0,88→1.408W. Instalado25.500W; demandado21.178W; D=21,178/0,92=23,019565217…kVA. Exemplo simples1.000W luz/TUG +5.500W chuveiro→(0,860+5,500)/0,92=6,913043478…kVA. São exemplos próprios, não exemplos oficiais completos de instalação. Cobertos todos os limites das tabelas implementadas, simultaneidade, reservas, ausência/zero/desconhecido, modelos heterogêneos, extrapolação de75kW e aplicação indevida a outra distribuidora.
+
 ## Reconsulta de 23/10/2026 — demanda e território
 
 Dimensionamento/instalação: relidos no exemplar NBR identificado §§5.3.4–5.3.5,6.2.5–6.2.7,9.5.3–9.5.4 e7.3. Circuitos/traçados/materiais/agrupamentos/temperatura/curto-circuito/esquema de aterramento/dispositivos ainda não são modelados no produto. Implementação integral continua necessária; não foi inferida seção ou proteção pela somaW. Verificação física e ensaios exigem dados e inspeção da instalação, além do cadastro atual.

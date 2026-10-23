@@ -20,3 +20,12 @@ def test_official_neoenergia_metadata_does_not_enable_unreviewed_demand():
         item for item in normative_capabilities("enel_sp", "SP") if item["code"] == "demand"
     )
     assert all("neoenergia" not in item["url"] for item in enel["evidence"])
+
+
+def test_user_documents_are_traceable_and_legacy_is_never_applied():
+    active = next(item for item in DOCUMENTS if item["id"] == "ndu001")
+    legacy = next(item for item in DOCUMENTS if item["id"] == "ndu001_legacy63")
+    assert active["edition"] == "7.0" and len(active["sha256"]) == 64
+    assert "superseded" in legacy["status"]
+    assert active["sha256"] != legacy["sha256"]
+    assert all(legacy["id"] not in item["document_ids"] for item in UTILITIES)

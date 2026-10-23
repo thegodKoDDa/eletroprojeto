@@ -1,5 +1,11 @@
 # Cálculos disponíveis
 
+## Demanda Energisa parametrizada — motor0.7.0
+
+Implementação pura `calculations/energisa.py`, fonte/escopo/condições em [standards.md](standards.md). Endpoint tipado `/api/v1/calculations/energisa-demand`, inventário explícito e ausência dos grupos confirmada; sem inferir classificação do catálogo ou converter bases VA em W. d1 soma cada faixa da Tabela5; d2–d5 aplicam fator por quantidade total às potênciasW declaradas. Reservas não entram na demanda; todos os aparelhos declarados entram na conferência conservadora do limite instalado. Soma d[kW]/0,92 resulta em D[kVA]; divisor não altera FP cadastrado ou potência instalada dos projetos. Memória mostra faixas, base/fator/demanda por grupo, sem arredondamento intermediário.
+
+Dados insuficientes →null/pending; grupos especiais ou escopo incompatível →null/out_of_scope, sem resultado final parcial disfarçado. Zero exige ausência explícita. Testes independentes/limites em test_energisa.py e API; fonte6.3 histórica não executada. Método não está automaticamente ligado ao inventário de projetos nem ao dimensionamento final. Potência manual e relatórios existentes preservados; motor/registro novos requerem revalidação quando solicitada, sem regravar históricos.
+
 Operações em Python Decimal, contexto do motor com 40 algarismos significativos. Entradas de potência, área, perímetro e tensão têm até 18 dígitos e seis casas decimais. No procedimento residencial, blocos inteiros de área e frações de perímetro usam os critérios específicos documentados abaixo. A UI apresenta até três casas, preservando valores completos no JSON.
 
 - Potência nominal de cada carga: `P [W] = quantidade × potência unitária [W]`.

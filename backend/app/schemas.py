@@ -298,10 +298,119 @@ class ResearchEvidence(Schema):
     url: str
     finding: str
     access: Literal[
-        "official_metadata", "official_index", "institutional_full_text", "official_full_text"
+        "official_metadata",
+        "official_index",
+        "institutional_full_text",
+        "official_full_text",
+        "user_supplied_full_text",
     ]
     consulted_on: str
     section: str | None = None
+    file_name: str | None = None
+    sha256: str | None = Field(default=None, pattern="^[a-f0-9]{64}$")
+
+
+EnergisaGroup = Literal["d1", "d2", "d3", "d4", "d5", "d6", "d7"]
+
+
+class EnergisaDemandLoad(Schema):
+    name: Text
+    group: EnergisaGroup = Field(
+        description="Classificação explícita §9.1: d1 iluminação/TUG; d2 aquecimento de água; d3 secadora de roupas/micro-ondas/lava-louças/hidromassagem; d4 fogão/forno elétrico; d5 AC janela/individual; d6 motores; d7 solda transformador/raios-X. Sem classificação automática."
+    )
+    quantity: int = Field(ge=1, le=100000, strict=True)
+    unit_power_w: Nonnegative | None = Field(
+        description="Potência elétrica por unidade, em W, adotada pelo responsável. Não informar VA normativo, potência térmica ou kWh. Valores manuais válidos prevalecem sobre referências."
+    )
+    reserve: bool = Field(default=False, strict=True)
+    air_conditioning_type: Literal["unconfirmed", "window_or_individual", "central_unit"] = (
+        "unconfirmed"
+    )
+
+
+class EnergisaDemandInput(Schema):
+    model_config = ConfigDict(
+        json_schema_extra={
+            "examples": [
+                dict(
+                    utility="energisa_sul_sudeste",
+                    state="SP",
+                    unit_type="individual_residential",
+                    inventory_reviewed=True,
+                    has_signage_or_display_lighting=False,
+                    simultaneous_lighting_outlets=False,
+                    loads=[
+                        dict(
+                            name="Iluminação/TUG — exemplo fictício",
+                            group="d1",
+                            quantity=1,
+                            unit_power_w="1000",
+                        ),
+                        dict(
+                            name="Chuveiro — exemplo manual",
+                            group="d2",
+                            quantity=1,
+                            unit_power_w="5500",
+                        ),
+                    ],
+                    confirmed_absent_groups=["d3", "d4", "d5", "d6", "d7"],
+                )
+            ]
+        }
+    )
+    utility: str = Field(min_length=1, max_length=100)
+    state: str = Field(pattern="^[A-Z]{2}$")
+    unit_type: Literal["individual_residential", "grouped", "non_residential"]
+    inventory_reviewed: bool = Field(
+        strict=True,
+        description="Confirma inventário completo, classificação de cada carga uma única vez, quantidades, potências adotadas e identificação das reservas (§9.1 notaVI).",
+    )
+    has_signage_or_display_lighting: bool = Field(
+        strict=True,
+        description="Letreiros/iluminação de vitrines não são abrangidos pela Tabela5; presença deixa este método fora de escopo.",
+    )
+    simultaneous_lighting_outlets: bool | None = Field(default=None, strict=True)
+    loads: list[EnergisaDemandLoad] = Field(max_length=1000)
+    confirmed_absent_groups: list[EnergisaGroup] = Field(max_length=7)
+
+    @model_validator(mode="after")
+    def consistent_groups(self):
+        absent = self.confirmed_absent_groups
+        if len(absent) != len(set(absent)):
+            raise ValueError("Grupos ausentes duplicados.")
+        if set(absent) & {load.group for load in self.loads if not load.reserve}:
+            raise ValueError("Grupo declarado ausente contém cargas em operação.")
+        return self
+
+
+class EnergisaDemandBand(Schema):
+    installed_band_w: Decimal
+    factor: Decimal
+    demand_w: Decimal
+
+
+class EnergisaDemandGroupResult(Schema):
+    group: EnergisaGroup
+    quantity: int
+    installed_power_w: Decimal | None
+    factor: Decimal | None
+    demand_w: Decimal | None
+    table: str
+    reason: str | None
+    bands: list[EnergisaDemandBand] = Field(default_factory=list)
+
+
+class EnergisaDemandResult(Schema):
+    value: Decimal | None
+    unit: Literal["kVA"]
+    status: Status
+    installed_power_w: Decimal | None
+    demanded_power_kw: Decimal | None
+    groups: list[EnergisaDemandGroupResult]
+    pending_checks: list[str]
+    ignored_reserve_loads: list[str]
+    limitations: list[str]
+    reference: ResearchEvidence
 
 
 class NormativeCapability(Schema):
@@ -315,7 +424,19 @@ class NormativeCapability(Schema):
     pending_checks: list[str]
 
 
+class RegionalMethodInfo(Schema):
+    code: str
+    endpoint: str
+    status: Status
+    available: bool
+    scope: str
+    supported_utilities: list[str]
+    supported_states: list[str]
+    reference: ResearchEvidence
+
+
 class TechnicalRules(Schema):
+    regional_methods: list[RegionalMethodInfo] = Field(default_factory=list)
     registry_version: str
     mathematical: list[dict]
     normative: list[dict]
@@ -388,6 +509,8 @@ class TechnicalDocument(Schema):
     source: str
     status: str
     consulted_on: str
+    source_file: str | None = None
+    sha256: str | None = Field(default=None, pattern="^[a-f0-9]{64}$")
 
 
 class DocumentRegistry(Schema):

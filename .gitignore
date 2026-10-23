@@ -38,3 +38,5 @@ id_ed25519
 *.7z
 *.log
 *.bundle
+/NDU*.pdf
+*:Zone.Identifier
