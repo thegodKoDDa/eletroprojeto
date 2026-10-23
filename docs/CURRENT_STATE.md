@@ -1,5 +1,7 @@
 # Estado atual — marco 0.11.0 verificado; pedido amplo ainda incompleto
 
+Checkpoint final deste marco: `.checkpoints/20261023T172848011983Z` —154arquivos, hashesZIP/SQLite/Gitbundle e restauraçãoSQLite/clonagemGit isoladas aprovados;9projetos/29históricos/7revisões/0005. Histórico Git preservado até`9e66efa` (baseline`d5d8212` e incremento de continuidade). Caminho registrado após geração automática; registro/formatação documental posterior versionados separadamente. Sem exclusões/push/publicação ou cópia externa real. Checkpoint no mesmo disco não protege contra perda do computador.
+
 ## Resultado verificado — 23/10/2026, 14:23 -03
 
 Entregues e testados: rascunhos/conflitos guiados; autenticação HTTPS/CSRF/sessões revogáveis e proprietário exclusivo; catálogo global persistente/versionado; suporte testado a PostgreSQL; backend/frontend Windows reais; workflow CI completo preparado; Git local inicializado e primeiro commit revisado `d5d8212`. Sem remote/push. **Não está concluída toda a lista do usuário.**

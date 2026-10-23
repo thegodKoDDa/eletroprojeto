@@ -1,4 +1,4 @@
-# Roadmap — estado 0.9.0
+# Roadmap — estado 0.11.0
 
 ## Atualização 0.11.0 — 23/10/2026
 
