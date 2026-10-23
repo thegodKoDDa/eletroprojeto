@@ -25,3 +25,6 @@ Retomar por AGENTS e `python3 scripts/continuity.py retomar`; conferir processos
 ## Verificação final da organização
 
 Backend320 testes+85 subtestes, frontend90, continuidade/backup8, tipos/lint, Alembic check, links locais e hashes aprovados. Dados comparados integralmente ao checkpoint anterior e preservados. API8000 health0.12.0/motor0.7.0 e frontend3000 HTTP200 confirmados. Não repetidos build/E2E/PostgreSQL/Windows nesta alteração documental e de arquivos locais, sem mudanças no código de execução. Detalhes e limitações em SESSION_HISTORY.
+
+
+Checkpoint final da organização: `.checkpoints/20261023T182530510469Z`, 159 arquivos; hashes/ZIP/banco/bundle Git e restauração SQLite/clonagem Git isoladas aprovados. Commit da organização `2eaeb21`; registro do caminho feito após a geração, em commit documental separado. Banco preservado (9 projetos/29 históricos/7 revisões,0005). Sem push ou cópia externa; PDFs locais não integram o ZIP de código.
