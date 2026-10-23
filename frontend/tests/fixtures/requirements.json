@@ -1,0 +1,380 @@
+{
+  "project.name": {
+    "label": "Nome do projeto",
+    "purpose": "salvar projeto",
+    "when": null,
+    "minimum": null,
+    "maximum": null,
+    "integer": false,
+    "max_length": 200,
+    "required_for": ["installed", "apparent", "current", "normative"]
+  },
+  "project.municipality": {
+    "label": "Município",
+    "purpose": "salvar projeto",
+    "when": null,
+    "minimum": null,
+    "maximum": null,
+    "integer": false,
+    "max_length": 200,
+    "required_for": ["installed", "apparent", "current", "normative"]
+  },
+  "project.utility": {
+    "label": "Concessionária",
+    "purpose": "demanda da distribuidora",
+    "when": null,
+    "minimum": null,
+    "maximum": null,
+    "integer": false,
+    "max_length": null,
+    "required_for": []
+  },
+  "project.state": {
+    "label": "Estado",
+    "purpose": "localização",
+    "when": null,
+    "minimum": null,
+    "maximum": null,
+    "integer": false,
+    "max_length": null,
+    "required_for": ["installed", "apparent", "current", "normative"]
+  },
+  "project.built_area_m2": {
+    "label": "Área construída (m²)",
+    "purpose": "salvar projeto",
+    "when": null,
+    "minimum": 1e-6,
+    "maximum": null,
+    "integer": false,
+    "max_length": null,
+    "required_for": []
+  },
+  "project.residence_type": {
+    "label": "Tipo de residência",
+    "purpose": "salvar projeto",
+    "when": null,
+    "minimum": null,
+    "maximum": null,
+    "integer": false,
+    "max_length": 200,
+    "required_for": []
+  },
+  "project.floors": {
+    "label": "Pavimentos",
+    "purpose": "salvar projeto",
+    "when": null,
+    "minimum": 1,
+    "maximum": 100,
+    "integer": true,
+    "max_length": null,
+    "required_for": []
+  },
+  "project.reference_voltage_v": {
+    "label": "Tensão de referência (V)",
+    "purpose": "salvar projeto",
+    "when": null,
+    "minimum": 1e-6,
+    "maximum": null,
+    "integer": false,
+    "max_length": null,
+    "required_for": []
+  },
+  "environment.name": {
+    "label": "Nome",
+    "purpose": "identificar ambiente",
+    "when": null,
+    "minimum": null,
+    "maximum": null,
+    "integer": false,
+    "max_length": 200,
+    "required_for": ["installed", "apparent", "current", "normative"]
+  },
+  "environment.type": {
+    "label": "Tipo",
+    "purpose": "previsão normativa",
+    "when": null,
+    "minimum": null,
+    "maximum": null,
+    "integer": false,
+    "max_length": null,
+    "required_for": []
+  },
+  "environment.area_m2": {
+    "label": "Área (m²)",
+    "purpose": "previsão normativa de iluminação",
+    "when": null,
+    "minimum": 1e-6,
+    "maximum": null,
+    "integer": false,
+    "max_length": null,
+    "required_for": []
+  },
+  "environment.perimeter_m": {
+    "label": "Perímetro (m)",
+    "purpose": "previsão normativa de tomadas",
+    "when": null,
+    "minimum": 1e-6,
+    "maximum": null,
+    "integer": false,
+    "max_length": null,
+    "required_for": []
+  },
+  "environment.lighting_points": {
+    "label": "Pontos de luz",
+    "purpose": "conferir pontos cadastrados",
+    "when": null,
+    "minimum": 0,
+    "maximum": null,
+    "integer": true,
+    "max_length": null,
+    "required_for": []
+  },
+  "environment.outlets": {
+    "label": "Pontos de tomadas",
+    "purpose": "conferir pontos cadastrados",
+    "when": null,
+    "minimum": 0,
+    "maximum": null,
+    "integer": true,
+    "max_length": null,
+    "required_for": []
+  },
+  "load.name": {
+    "label": "Identificação da carga",
+    "purpose": "identificar carga",
+    "when": null,
+    "minimum": null,
+    "maximum": null,
+    "integer": false,
+    "max_length": 200,
+    "required_for": ["installed", "apparent", "current", "normative"]
+  },
+  "load.category": {
+    "label": "Categoria",
+    "purpose": "agrupamento cadastral",
+    "when": null,
+    "minimum": null,
+    "maximum": null,
+    "integer": false,
+    "max_length": 200,
+    "required_for": ["installed", "apparent", "current", "normative"]
+  },
+  "load.source": {
+    "label": "Fonte técnica",
+    "purpose": "rastreabilidade",
+    "when": null,
+    "minimum": null,
+    "maximum": null,
+    "integer": false,
+    "max_length": 1000,
+    "required_for": ["installed", "apparent", "current", "normative"]
+  },
+  "load.quantity": {
+    "label": "Quantidade",
+    "purpose": "potência instalada",
+    "when": null,
+    "minimum": 1,
+    "maximum": 100000,
+    "integer": true,
+    "max_length": null,
+    "required_for": ["installed", "apparent", "current", "normative"]
+  },
+  "load.unit_power_w": {
+    "label": "Potência unitária (W)",
+    "purpose": "potência instalada",
+    "when": {
+      "power_mode": "electrical"
+    },
+    "minimum": 1e-6,
+    "maximum": null,
+    "integer": false,
+    "max_length": null,
+    "required_for": ["installed", "apparent", "current", "normative"]
+  },
+  "load.parameters.mechanical_power": {
+    "label": "Potência mecânica de saída",
+    "purpose": "entrada elétrica do motor",
+    "when": {
+      "power_mode": "mechanical"
+    },
+    "minimum": 1e-6,
+    "maximum": null,
+    "integer": false,
+    "max_length": null,
+    "required_for": ["installed", "apparent", "current", "normative"]
+  },
+  "load.parameters.efficiency": {
+    "label": "Rendimento do motor (0 a 1)",
+    "purpose": "entrada elétrica do motor",
+    "when": {
+      "power_mode": "mechanical"
+    },
+    "minimum": 1e-6,
+    "maximum": 1,
+    "integer": false,
+    "max_length": null,
+    "required_for": ["installed", "apparent", "current", "normative"]
+  },
+  "load.voltage_v": {
+    "label": "Tensão nominal (V)",
+    "purpose": "corrente",
+    "when": null,
+    "minimum": 1e-6,
+    "maximum": null,
+    "integer": false,
+    "max_length": null,
+    "required_for": ["current"]
+  },
+  "load.parameters.configuration": {
+    "label": "Configuração para corrente",
+    "purpose": "corrente",
+    "when": null,
+    "minimum": null,
+    "maximum": null,
+    "integer": false,
+    "max_length": null,
+    "required_for": ["current"]
+  },
+  "load.power_factor": {
+    "label": "Fator de potência",
+    "purpose": "VA e corrente",
+    "when": {
+      "assume_resistive": false
+    },
+    "minimum": 1e-6,
+    "maximum": 1,
+    "integer": false,
+    "max_length": null,
+    "required_for": ["apparent", "current"]
+  },
+  "project.energy_tariff_brl_per_kwh": {
+    "label": "Tarifa de energia (R$/kWh)",
+    "purpose": "consistência de parâmetro opcional",
+    "when": null,
+    "minimum": 0,
+    "maximum": null,
+    "integer": false,
+    "max_length": null,
+    "required_for": []
+  },
+  "load.parameters.usage_hours_per_day": {
+    "label": "Horas de uso por dia",
+    "purpose": "consistência de parâmetro opcional",
+    "when": null,
+    "minimum": 0,
+    "maximum": 24,
+    "integer": false,
+    "max_length": null,
+    "required_for": []
+  },
+  "load.parameters.usage_days_per_month": {
+    "label": "Dias de uso por mês",
+    "purpose": "consistência de parâmetro opcional",
+    "when": null,
+    "minimum": 0,
+    "maximum": 31,
+    "integer": true,
+    "max_length": null,
+    "required_for": []
+  },
+  "project.notes": {
+    "label": "Observações",
+    "purpose": "consistência de parâmetro opcional",
+    "when": null,
+    "minimum": null,
+    "maximum": null,
+    "integer": false,
+    "max_length": 10000,
+    "required_for": []
+  },
+  "load.technology": {
+    "label": "Tecnologia / tipo",
+    "purpose": "consistência de parâmetro opcional",
+    "when": null,
+    "minimum": null,
+    "maximum": null,
+    "integer": false,
+    "max_length": 100,
+    "required_for": []
+  },
+  "load.parameters.cooling_capacity_btu_h": {
+    "label": "Capacidade térmica (BTU/h)",
+    "purpose": "consistência de parâmetro opcional",
+    "when": null,
+    "minimum": 1e-6,
+    "maximum": null,
+    "integer": false,
+    "max_length": null,
+    "required_for": []
+  },
+  "load.parameters.screen_inches": {
+    "label": "Tamanho da tela (polegadas)",
+    "purpose": "consistência de parâmetro opcional",
+    "when": null,
+    "minimum": 1e-6,
+    "maximum": null,
+    "integer": false,
+    "max_length": null,
+    "required_for": []
+  },
+  "load.parameters.monthly_energy_kwh": {
+    "label": "Consumo de energia (kWh/mês)",
+    "purpose": "consistência de parâmetro opcional",
+    "when": null,
+    "minimum": 0,
+    "maximum": null,
+    "integer": false,
+    "max_length": null,
+    "required_for": []
+  },
+  "load.parameters.maximum_power_w": {
+    "label": "Potência máxima informada (W)",
+    "purpose": "consistência de parâmetro opcional",
+    "when": null,
+    "minimum": 0,
+    "maximum": null,
+    "integer": false,
+    "max_length": null,
+    "required_for": []
+  },
+  "load.parameters.microwave_output_w": {
+    "label": "Potência de saída para aquecimento (W)",
+    "purpose": "consistência de parâmetro opcional",
+    "when": null,
+    "minimum": 0,
+    "maximum": null,
+    "integer": false,
+    "max_length": null,
+    "required_for": []
+  },
+  "load.parameters.nameplate_current_a": {
+    "label": "Corrente nominal da ficha/placa (A)",
+    "purpose": "consistência de parâmetro opcional",
+    "when": null,
+    "minimum": 0,
+    "maximum": null,
+    "integer": false,
+    "max_length": null,
+    "required_for": []
+  },
+  "load.parameters.starting_current_a": {
+    "label": "Corrente de partida informada (A)",
+    "purpose": "consistência de parâmetro opcional",
+    "when": null,
+    "minimum": 0,
+    "maximum": null,
+    "integer": false,
+    "max_length": null,
+    "required_for": []
+  },
+  "load.parameters.maximum_current_a": {
+    "label": "Corrente máxima da ficha (A)",
+    "purpose": "consistência de parâmetro opcional",
+    "when": null,
+    "minimum": 0,
+    "maximum": null,
+    "integer": false,
+    "max_length": null,
+    "required_for": []
+  }
+}

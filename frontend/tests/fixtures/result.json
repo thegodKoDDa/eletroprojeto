@@ -1,0 +1,209 @@
+{
+  "notifications": [],
+  "field_issues": [],
+  "technical_context": {},
+  "input_digest": "2f0fe57ba7f93e2742c66a23bc162eb5cf5a68d6b56196227d24b41552eb74c2",
+  "engine_version": "0.4.2",
+  "status": "awaiting_technical_validation",
+  "installed_power": {
+    "value": "9",
+    "unit": "W",
+    "status": "estimated"
+  },
+  "installed_power_kw": {
+    "value": "0.009",
+    "unit": "kW",
+    "status": "estimated"
+  },
+  "lighting_nominal": {
+    "value": "9",
+    "unit": "W",
+    "status": "estimated"
+  },
+  "by_environment_w": {
+    "11111111-1111-4111-8111-111111111111": "9"
+  },
+  "by_category_w": {
+    "Outros": "9"
+  },
+  "apparent_power": null,
+  "normative": {
+    "lighting": {
+      "value": null,
+      "unit": "VA",
+      "status": "awaiting_technical_validation",
+      "reference": {
+        "code": "lighting",
+        "document": "ABNT NBR 5410",
+        "edition": null,
+        "effective_date": null,
+        "clause": null,
+        "source": "https://www.abntcatalogo.com.br/",
+        "status": "awaiting_technical_validation",
+        "reason": "Edição vigente e critérios de iluminação ainda não conferidos em exemplar oficial.",
+        "inputs": ["environment.type", "environment.area_m2", "environment.lighting_points"],
+        "procedure": null,
+        "limits": "Não habilitada para cálculo normativo",
+        "tests": []
+      },
+      "reason": "Edição vigente e critérios de iluminação ainda não conferidos em exemplar oficial."
+    },
+    "outlets": {
+      "value": null,
+      "unit": "VA",
+      "status": "awaiting_technical_validation",
+      "reference": {
+        "code": "outlets",
+        "document": "ABNT NBR 5410",
+        "edition": null,
+        "effective_date": null,
+        "clause": null,
+        "source": "https://www.abntcatalogo.com.br/",
+        "status": "awaiting_technical_validation",
+        "reason": "Critérios por ambiente e parâmetros adicionais ainda não conferidos em fonte oficial.",
+        "inputs": [
+          "environment.type",
+          "environment.area_m2",
+          "environment.perimeter_m",
+          "environment.outlets"
+        ],
+        "procedure": null,
+        "limits": "Não habilitada para cálculo normativo",
+        "tests": []
+      },
+      "reason": "Critérios por ambiente e parâmetros adicionais ainda não conferidos em fonte oficial."
+    },
+    "demand": {
+      "value": null,
+      "unit": "kVA",
+      "status": "awaiting_technical_validation",
+      "reference": {
+        "code": "demand",
+        "document": "Energisa NDU-001",
+        "edition": "7.0",
+        "effective_date": "2024-11-01",
+        "clause": null,
+        "source": "https://www.energisa.com.br/normas-tecnicas",
+        "status": "awaiting_technical_validation",
+        "reason": "Portal oficial lista edição 7.0; parcelas, tabelas, limites e classificação ainda não auditados.",
+        "inputs": ["utility", "loads", "demand_classification"],
+        "procedure": null,
+        "limits": "Não habilitada para cálculo normativo",
+        "tests": []
+      },
+      "reason": "Portal oficial lista edição 7.0; parcelas, tabelas, limites e classificação ainda não auditados."
+    }
+  },
+  "memory": [
+    {
+      "rule_id": "installed_power",
+      "rule_version": "0.3.0",
+      "power_origin": null,
+      "manual_override": false,
+      "catalog_reference": null,
+      "calculation": "installed_power",
+      "load_id": "22222222-2222-4222-8222-222222222222",
+      "environment_id": "11111111-1111-4111-8111-111111111111",
+      "name": "LED",
+      "inputs": {
+        "quantity": 1,
+        "unit_power_w": "9"
+      },
+      "formula": "quantity * unit_power_w",
+      "result": {
+        "value": "9",
+        "unit": "W"
+      },
+      "status": "estimated",
+      "reference": null,
+      "source": "Informado pelo usuário"
+    }
+  ],
+  "warnings": [
+    "LED: Fator de potência desconhecido; não se presume FP=1.",
+    "LED: classificação normativa de demanda pendente.",
+    "Concessionária não confirmada; nenhum vínculo município/distribuidora foi presumido.",
+    "Previsão normativa e demanda pendentes. Não constitui dimensionamento final."
+  ],
+  "counting_policy": "Cada instância é somada uma vez. Iluminação é subconjunto da potência instalada. Previsão TUG/iluminação normativa e demanda são bases separadas. BTU/h, kWh/mês e saída do micro-ondas não são potências elétricas de entrada. Valores W com cargas pendentes são subtotais conhecidos; VA é soma escalar, não análise vetorial.",
+  "unknown_load_ids": [],
+  "load_results": [
+    {
+      "load_id": "22222222-2222-4222-8222-222222222222",
+      "name": "LED",
+      "electrical_input_w": "9",
+      "thermal_capacity_w": null,
+      "apparent_power_va": null,
+      "unit_current_a": null,
+      "status": "estimated",
+      "steps": [],
+      "warnings": ["Fator de potência desconhecido; não se presume FP=1."],
+      "energy_basis": "pending",
+      "monthly_energy_kwh": null,
+      "monthly_cost_brl": null
+    }
+  ],
+  "apparent_power_kva": null,
+  "aggregate_steps": [],
+  "normative_capabilities": [
+    {
+      "code": "lighting",
+      "label": "Previsão mínima de iluminação",
+      "purpose": "Previsão de carga e pontos de iluminação por ambiente; distinta da soma das lâmpadas cadastradas e de estudo de iluminância em lux.",
+      "available": false,
+      "status": "awaiting_technical_validation",
+      "reason": "Edição identificada no catálogo oficial; cláusulas, condições e limites de iluminação ainda não conferidos em exemplar autorizado.",
+      "evidence": [
+        {
+          "title": "Catálogo oficial ABNT",
+          "url": "https://www.abntcatalogo.com.br/",
+          "finding": "Identificação da ABNT NBR 5410:2004, versão corrigida de 2008. O catálogo não disponibilizou o texto autorizado completo para esta revisão.",
+          "access": "official_metadata",
+          "consulted_on": "2026-10-22",
+          "section": null
+        }
+      ],
+      "pending_checks": [
+        "Conferir texto autorizado completo, edição e eventuais atualizações.",
+        "Revisar cláusulas, condições de aplicação, exceções e limites.",
+        "Conferir exemplos independentes e testes de fronteira antes de habilitar o cálculo."
+      ]
+    },
+    {
+      "code": "outlets",
+      "label": "Previsão de tomadas",
+      "purpose": "Previsão de pontos e cargas de tomadas por ambiente; distinta da lista de eletrodomésticos cadastrados.",
+      "available": false,
+      "status": "awaiting_technical_validation",
+      "reason": "Critérios por ambiente e parâmetros adicionais ainda não conferidos em fonte oficial.",
+      "evidence": [
+        {
+          "title": "Catálogo oficial ABNT",
+          "url": "https://www.abntcatalogo.com.br/",
+          "finding": "Identificação da ABNT NBR 5410:2004, versão corrigida de 2008. O catálogo não disponibilizou o texto autorizado completo para esta revisão.",
+          "access": "official_metadata",
+          "consulted_on": "2026-10-22",
+          "section": null
+        }
+      ],
+      "pending_checks": [
+        "Conferir texto autorizado completo, edição e eventuais atualizações.",
+        "Revisar cláusulas, condições de aplicação, exceções e limites.",
+        "Conferir exemplos independentes e testes de fronteira antes de habilitar o cálculo."
+      ]
+    },
+    {
+      "code": "demand",
+      "label": "Demanda da distribuidora",
+      "purpose": "Estimativa de potência demandada pelo método da distribuidora; não é potência instalada nem consumo mensal.",
+      "available": false,
+      "status": "pending",
+      "reason": "Distribuidora não identificada; cálculo de demanda ainda indisponível neste estudo.",
+      "evidence": [],
+      "pending_checks": [
+        "Conferir a fonte oficial completa e o método específico desta distribuidora.",
+        "Validar condições, limites e exemplos independentes antes de implementar."
+      ]
+    }
+  ]
+}

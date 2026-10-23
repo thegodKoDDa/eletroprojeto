@@ -1,0 +1,368 @@
+'use client';
+import { safeReferenceUrl } from '@/lib/safe-url';
+import { useState } from 'react';
+import type { CalculationResult, ProjectInput } from '@/lib/api';
+import { format, formatCurrency } from '@/lib/format';
+import { CalculationNotices } from '@/components/calculations-notices';
+import { DemandSummary } from './DemandSummary';
+import { NormativeAvailability, normativeLabels as ruleLabels } from './NormativeAvailability';
+const statusLabels = {
+  calculated: 'Calculado',
+  estimated: 'Estimado',
+  pending: 'Pendente',
+  invalid: 'Inválido',
+  out_of_scope: 'Fora do escopo',
+  awaiting_technical_validation: 'Não validado normativamente',
+};
+
+export function ResultsPanel({
+  result,
+  loading,
+  stale,
+  scope,
+  onScopeChange,
+}: {
+  result?: CalculationResult;
+  loading: boolean;
+  stale: boolean;
+  scope: ProjectInput['analysis_scope'];
+  onScopeChange: (scope: ProjectInput['analysis_scope']) => void;
+}) {
+  const [technical, setTechnical] = useState(false);
+  const notices = result?.notifications ?? [];
+  const issues = notices.filter((item) => ['error', 'technical'].includes(item.category));
+  const demandAvailable =
+    result?.normative.demand?.value != null &&
+    ['calculated', 'estimated'].includes(String(result.normative.demand.status));
+  return (
+    <section id="results" className="panel min-h-64" aria-busy={loading} data-stale={stale}>
+      <header className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <p className="eyebrow">03 / CONFERÊNCIA</p>
+          <h2 className="text-lg font-semibold">Resultados e memória de cálculo</h2>
+          <p className="mt-2 text-sm muted">
+            Resultados disponíveis, operações e pendências em um só lugar.
+          </p>
+        </div>
+        <label>
+          Apresentação
+          <select
+            aria-label="Apresentação"
+            value={technical ? 'technical' : 'simple'}
+            onChange={(e) => setTechnical(e.target.value === 'technical')}
+          >
+            <option value="simple">Simples</option>
+            <option value="technical">Técnica</option>
+          </select>
+        </label>
+      </header>
+      <p className="mt-3 text-xs muted" role="status">
+        {loading
+          ? result
+            ? 'Recalculando · os valores anteriores estão desatualizados.'
+            : 'Calculando as entradas atuais…'
+          : stale
+            ? 'Valores desatualizados; confira as entradas ou a conexão. Exportação indisponível.'
+            : result
+              ? 'Resultados correspondem às entradas atuais.'
+              : 'Sem resultados atuais.'}
+      </p>
+      <label className="mt-5 max-w-sm">
+        Requisitos para
+        <select
+          aria-label="Requisitos para"
+          value={scope ?? 'installed'}
+          onChange={(e) => onScopeChange(e.target.value as ProjectInput['analysis_scope'])}
+        >
+          <option value="installed">Potência instalada (W)</option>
+          <option value="apparent">Potência aparente (VA)</option>
+          <option value="current">Corrente elétrica (A)</option>
+          <option value="normative">Previsão residencial (luz/TUG)</option>
+        </select>
+      </label>
+      {result ? (
+        <>
+          <div className="result-section">
+            <h3 className="result-section-title">A · Resumo dos resultados</h3>
+            <div
+              className={`grid gap-5 ${demandAvailable ? 'md:grid-cols-3' : 'md:grid-cols-2'}`}
+              aria-label="Resumo de resultados"
+            >
+              <div>
+                <p className="text-xs muted">
+                  {result.unknown_load_ids?.length
+                    ? 'Potência conhecida · total incompleto'
+                    : 'Potência instalada cadastrada'}
+                </p>
+                <p className="mt-2 text-3xl text-emerald-300">
+                  {format(result.installed_power_kw.value)}{' '}
+                  <span className="text-sm muted">kW</span>
+                </p>
+                <p className="mt-2 text-xs muted">
+                  {statusLabels[result.installed_power.status]} ·{' '}
+                  {format(result.installed_power.value)} W
+                </p>
+              </div>
+              <div>
+                <p className="text-xs muted">Iluminação nominal cadastrada</p>
+                <p className="mt-2 text-2xl">{format(result.lighting_nominal.value)} W</p>
+                <p className="mt-2 text-xs muted">Incluída na potência instalada.</p>
+              </div>
+              {demandAvailable && <DemandSummary demand={result.normative.demand} stale={stale} />}
+            </div>
+            <div className="mt-5 grid gap-4 md:grid-cols-2">
+              <div>
+                <p className="text-xs muted">Potência aparente · soma escalar</p>
+                <p className="mt-2 text-sm">
+                  {result.apparent_power
+                    ? `${format(result.apparent_power.value)} VA · ${format(result.apparent_power_kva?.value)} kVA`
+                    : 'Sem dados suficientes para VA. A soma em W é independente.'}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs muted">Potências por categoria</p>
+                {Object.entries(result.by_category_w).map(([category, power]) => (
+                  <p key={category} className="mt-1 flex justify-between gap-3 text-sm">
+                    <span>{category}</span>
+                    <span>{format(power)} W</span>
+                  </p>
+                ))}
+              </div>
+            </div>
+            <div className="mt-5 grid gap-4 md:grid-cols-2" aria-label="Consumo e custo mensais">
+              <div>
+                <p className="text-xs muted">
+                  Consumo mensal{' '}
+                  {result.energy_unknown_load_ids?.length ? '· subtotal conhecido' : '· estimativa'}
+                </p>
+                <p className="mt-2 text-lg">
+                  {result.monthly_energy
+                    ? `${format(result.monthly_energy.value)} kWh/mês`
+                    : 'Informe consumo ou horários nos equipamentos.'}
+                </p>
+                {!!result.energy_unknown_load_ids?.length && (
+                  <p className="mt-1 text-xs muted">
+                    {result.energy_unknown_load_ids.length} carga(s) sem consumo calculável. O
+                    subtotal não representa o projeto completo.
+                  </p>
+                )}
+                <p className="mt-1 text-xs muted">
+                  A estimativa cobre os equipamentos cadastrados. Horários devem representar
+                  funcionamento efetivo; não é medição nem inclui automaticamente standby ou
+                  aparelhos ausentes.
+                </p>
+              </div>
+              <div>
+                <p className="text-xs muted">Custo mensal da energia cadastrada</p>
+                <p className="mt-2 text-lg">
+                  {result.monthly_cost
+                    ? formatCurrency(result.monthly_cost.value)
+                    : 'Informe consumo e tarifa no projeto.'}
+                </p>
+                <p className="mt-1 text-xs muted">
+                  Estimativa pela tarifa informada; não é a fatura completa. Não inclui encargos
+                  fixos ou tributos adicionais.
+                </p>
+              </div>
+            </div>
+            <div className="mt-5 grid gap-3 sm:grid-cols-2">
+              {Object.entries(result.normative)
+                .filter(([key, rule]) => key !== 'demand' && rule.value != null)
+                .map(([key, rule]) => (
+                  <div key={key} className="text-xs muted">
+                    <p>{ruleLabels[key] ?? key}</p>
+                    <p className="mt-1">
+                      {rule.value != null
+                        ? `${format(rule.value)} ${String(rule.unit ?? '')}`
+                        : (statusLabels[String(rule.status) as keyof typeof statusLabels] ??
+                          'Indisponível')}
+                    </p>
+                  </div>
+                ))}
+            </div>
+          </div>
+          {scope === 'normative' && !stale && (
+            <div className="result-section" aria-label="Previsão residencial por ambiente">
+              <h3 className="result-section-title">Previsão residencial · iluminação e tomadas</h3>
+              <p className="text-sm muted">
+                Aplicável a ambientes de habitação. Valores em VA separados dos aparelhos em W. A
+                quantidade cadastrada é preservada. Este estudo não verifica localização, proteção,
+                circuitos ou conformidade integral da instalação.
+              </p>
+              {!result.normative_environments?.length && (
+                <p className="mt-3 text-sm">Adicione um ambiente para calcular.</p>
+              )}
+              <div className="mt-4 grid gap-4 md:grid-cols-2">
+                {result.normative_environments?.map((room) => (
+                  <article
+                    className="rounded-lg border border-slate-700 p-4 text-sm"
+                    key={room.environment_id}
+                  >
+                    <h4 className="font-semibold">{room.name}</h4>
+                    <p className="mt-2">
+                      Iluminação:{' '}
+                      {room.lighting_va == null
+                        ? 'Informe a área ou confira o tipo.'
+                        : `${format(room.lighting_va)} VA`}
+                    </p>
+                    <p className="mt-1">
+                      Pontos de luz: {room.registered_lighting_points} cadastrado(s) · mínimo{' '}
+                      {room.minimum_lighting_points ?? 'não avaliado'}
+                    </p>
+                    <p className="mt-2">
+                      TUG: {room.registered_outlet_points} cadastrado(s) · mínimo{' '}
+                      {room.minimum_outlet_points ?? 'não avaliado'}
+                    </p>
+                    <p className="mt-1">
+                      Previsão TUG:{' '}
+                      {room.outlets_va == null
+                        ? 'Dados ou classificação insuficientes.'
+                        : `${format(room.outlets_va)} VA · ${room.outlet_basis_points} ponto(s) considerados`}
+                    </p>
+                    {!!room.missing_fields.length && (
+                      <p className="mt-2 text-amber-200">
+                        Informe:{' '}
+                        {room.missing_fields
+                          .map((field) => (field === 'area_m2' ? 'área (m²)' : 'perímetro (m)'))
+                          .join(' e ')}
+                        .
+                      </p>
+                    )}
+                    {room.status === 'out_of_scope' && (
+                      <p className="mt-2 text-amber-200">{room.reason}</p>
+                    )}
+                    <details className="mt-3 text-xs muted">
+                      <summary className="cursor-pointer">
+                        Condições e limites deste ambiente
+                      </summary>
+                      {room.notes.map((note) => (
+                        <p className="mt-2" key={note}>
+                          {note}
+                        </p>
+                      ))}
+                    </details>
+                  </article>
+                ))}
+              </div>
+              <details className="mt-4 text-xs muted">
+                <summary className="cursor-pointer">Fontes dos critérios residenciais</summary>
+                {result.normative_capabilities
+                  ?.find((item) => item.code === 'lighting')
+                  ?.evidence.map(
+                    (source) =>
+                      safeReferenceUrl(source.url) && (
+                        <p className="mt-2" key={source.url}>
+                          <a
+                            className="underline"
+                            href={safeReferenceUrl(source.url)}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            {source.title}
+                          </a>{' '}
+                          · {source.section}
+                        </p>
+                      ),
+                  )}
+              </details>
+            </div>
+          )}
+          <h3 className="result-section result-section-title">B · Memória de cálculo</h3>
+          <details open={technical || undefined} className="mt-3">
+            <summary className="cursor-pointer text-sm">Memória por equipamento</summary>
+            <div className="divide-y divide-slate-700">
+              {result.memory.map((entry) => (
+                <div key={entry.load_id} className="py-4">
+                  <p className="font-medium">{entry.name}</p>
+                  <p className="mt-2 font-mono text-sm text-emerald-300">
+                    {entry.inputs.quantity} × {format(entry.inputs.unit_power_w)} W ={' '}
+                    {format(entry.result.value)} W
+                  </p>
+                  <p className="mt-2 text-xs muted">
+                    {statusLabels[entry.status]} ·{' '}
+                    {entry.manual_override ? 'Valor personalizado · ' : ''}
+                    {entry.source}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </details>
+          <details open={technical || undefined} className="mt-4">
+            <summary className="cursor-pointer text-sm">Memória das somas e conversões</summary>
+            {result.aggregate_steps?.map((step, index) => (
+              <div key={`${step.calculation}-${index}`} className="mt-4 text-sm">
+                <p>{step.calculation}</p>
+                <p className="mt-1 font-mono text-xs text-emerald-300">{step.formula}</p>
+                <p className="mt-1 break-words font-mono text-xs">{step.substituted}</p>
+                <p className="mt-1 text-xs muted">{step.assumptions}</p>
+              </div>
+            ))}
+          </details>
+          <details open={technical || undefined} className="mt-4">
+            <summary className="cursor-pointer text-sm">Grandezas por equipamento</summary>
+            {result.load_results?.map((item) => (
+              <div key={item.load_id} className="mt-4">
+                <p className="text-sm font-medium">{item.name}</p>
+                {item.steps.map((step) => (
+                  <div key={step.calculation} className="mt-2 text-xs">
+                    <p className="text-emerald-300">
+                      {step.calculation === 'thermal_capacity'
+                        ? 'Capacidade térmica'
+                        : step.calculation === 'current'
+                          ? 'Corrente por unidade'
+                          : step.calculation === 'motor_input'
+                            ? 'Entrada elétrica do motor'
+                            : step.calculation === 'monthly_energy'
+                              ? 'Consumo mensal da quantidade cadastrada'
+                              : step.calculation === 'monthly_cost'
+                                ? 'Custo mensal estimado'
+                                : 'Potência aparente'}
+                      : {format(step.value)} {step.unit}
+                    </p>
+                    <p className="mt-1 font-mono">{step.formula}</p>
+                    <p className="mt-1 font-mono">{step.substituted}</p>
+                    <p className="mt-1 muted">{step.assumptions}</p>
+                    {safeReferenceUrl(step.source) && (
+                      <a
+                        className="underline muted"
+                        href={safeReferenceUrl(step.source)}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        Referência de conversão
+                      </a>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ))}
+          </details>
+          <details open={technical || undefined} className="mt-4">
+            <summary className="cursor-pointer text-sm">Referências e rastreabilidade</summary>
+            <p className="mt-3 break-all text-xs muted">
+              Motor {result.engine_version} · Entradas SHA-256: {result.input_digest}
+            </p>
+          </details>
+          <details className="mt-4 text-xs muted">
+            <summary className="cursor-pointer">Critério de contagem das cargas</summary>
+            <p className="mt-2">{result.counting_policy}</p>
+          </details>
+          <div className="result-section">
+            <h3 className="result-section-title">C · Dados do projeto a revisar</h3>
+            <CalculationNotices notices={issues} stale={stale} />
+            {!issues.length && !stale && (
+              <p className="text-sm muted">Nenhum dado pendente para o cálculo selecionado.</p>
+            )}
+          </div>
+          <NormativeAvailability result={result} stale={stale} />
+        </>
+      ) : (
+        <p className="mt-6 text-sm muted">
+          {loading
+            ? 'Aguardando cálculo das entradas atuais…'
+            : 'Corrija os dados ou verifique a conexão com a API.'}
+        </p>
+      )}
+    </section>
+  );
+}

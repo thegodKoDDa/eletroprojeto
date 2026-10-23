@@ -1,0 +1,92 @@
+name: Quality
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 8 * * 1'
+permissions:
+  contents: read
+jobs:
+  checks:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            python: backend/.venv/bin/python
+          - os: windows-latest
+            python: backend/.venv/Scripts/python.exe
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 25
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: python -m venv backend/.venv
+      - run: ${{ matrix.python }} -m pip install -r backend/requirements.lock
+      - run: ${{ matrix.python }} -m pip check
+      - run: ${{ matrix.python }} -m ruff check backend/app backend/tests backend/accounts.py backend/catalog_admin.py scripts
+      - run: ${{ matrix.python }} -m ruff format --check backend/app backend/tests backend/accounts.py backend/catalog_admin.py scripts
+      - run: ${{ matrix.python }} scripts/check_migrations.py
+      - run: ${{ matrix.python }} -m pytest -q backend/tests
+        env:
+          PYTHONPATH: backend
+      - run: ${{ matrix.python }} -m unittest discover -s scripts -p 'test_*.py'
+      - run: npm ci
+        working-directory: frontend
+      - run: npm run types:sync
+        working-directory: frontend
+      - run: git diff --exit-code -- backend/openapi.json frontend/src/lib/api.generated.ts
+      - run: npm run lint && npm run format:check && npm run typecheck && npm test
+        working-directory: frontend
+      - run: npx playwright install --with-deps chromium
+        working-directory: frontend
+      - run: npm run test:e2e
+        working-directory: frontend
+      - run: npm run test:e2e:auth
+        if: runner.os == 'Linux'
+        working-directory: frontend
+      - run: npm run build:webpack
+        working-directory: frontend
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: browser-failure-${{ matrix.os }}
+          path: frontend/test-results/
+          retention-days: 7
+  postgres:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: qa
+          POSTGRES_PASSWORD: qa-only
+          POSTGRES_DB: eletroprojeto_qa
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U qa -d eletroprojeto_qa"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      TEST_DATABASE_URL: postgresql+psycopg://qa:qa-only@127.0.0.1:5432/eletroprojeto_qa
+      PYTHONPATH: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+      - run: pip install -r backend/requirements.lock
+      - run: python scripts/check_migrations.py
+      - run: python -m pytest -q backend/tests

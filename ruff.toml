@@ -1,0 +1,11 @@
+target-version = "py311"
+line-length = 100
+# Historical migrations stay byte-identical; validate them through Alembic.
+extend-exclude = ["backend/alembic/versions"]
+
+[lint]
+select = ["E4", "E7", "E9", "F", "I"]
+
+[lint.per-file-ignores]
+# Direct execution intentionally adds the backend directory to sys.path.
+"backend/tests/test_math.py" = ["E402"]

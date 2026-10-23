@@ -1,0 +1,4228 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "EletroProjeto",
+    "description": "Cálculos de cargas residenciais: potência instalada (W/kW), potência aparente (VA/kVA), correntes, conversões, consumo mensal e estimativa de custo pela tarifa informada. Valores padrão são sugestões documentadas; valores manuais válidos são respeitados e recalculados. Previsão residencial de iluminação e TUG disponível por seleção explícita, com escopo e limites documentados. Demanda da distribuidora permanece indisponível até conferência integral do método. Não constitui dimensionamento final.",
+    "version": "0.11.0"
+  },
+  "paths": {
+    "/api/v1/auth/session": {
+      "get": {
+        "tags": [
+          "Acesso"
+        ],
+        "summary": "Session Info",
+        "operationId": "session_info_api_v1_auth_session_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Entradas inválidas; avisos localizados quando disponíveis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InputValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "tags": [
+          "Acesso"
+        ],
+        "summary": "Login",
+        "operationId": "login_api_v1_auth_login_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Credentials"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Entradas inválidas; avisos localizados quando disponíveis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InputValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "tags": [
+          "Acesso"
+        ],
+        "summary": "Logout",
+        "operationId": "logout_api_v1_auth_logout_post",
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Entradas inválidas; avisos localizados quando disponíveis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InputValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/health": {
+      "get": {
+        "tags": [
+          "Estado e versão"
+        ],
+        "summary": "Health",
+        "operationId": "health_api_v1_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthInfo"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Entradas inválidas; avisos localizados quando disponíveis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InputValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/projects": {
+      "get": {
+        "tags": [
+          "Projetos"
+        ],
+        "summary": "Projects",
+        "operationId": "projects_api_v1_projects_get",
+        "parameters": [
+          {
+            "name": "archived",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Archived"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "maximum": 100,
+                  "minimum": 1
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 200,
+              "default": "",
+              "title": "Q"
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "recent",
+                "name"
+              ],
+              "type": "string",
+              "default": "recent",
+              "title": "Sort"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Project"
+                  },
+                  "title": "Response Projects Api V1 Projects Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Entradas inválidas; avisos localizados quando disponíveis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InputValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Projetos"
+        ],
+        "summary": "Create",
+        "operationId": "create_api_v1_projects_post",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProjectInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Project"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Entradas inválidas; avisos localizados quando disponíveis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InputValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{project_id}": {
+      "get": {
+        "tags": [
+          "Projetos"
+        ],
+        "summary": "Read",
+        "operationId": "read_api_v1_projects__project_id__get",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Project Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Project"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Entradas inválidas; avisos localizados quando disponíveis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InputValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Projetos"
+        ],
+        "summary": "Update",
+        "operationId": "update_api_v1_projects__project_id__put",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "expected_version",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Expected Version"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProjectInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Project"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Entradas inválidas; avisos localizados quando disponíveis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InputValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Projetos"
+        ],
+        "summary": "Remove",
+        "operationId": "remove_api_v1_projects__project_id__delete",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "expected_version",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Expected Version"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Entradas inválidas; avisos localizados quando disponíveis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InputValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{project_id}/restore": {
+      "post": {
+        "tags": [
+          "Projetos"
+        ],
+        "summary": "Restore",
+        "operationId": "restore_api_v1_projects__project_id__restore_post",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "expected_version",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "title": "Expected Version"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Project"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Entradas inválidas; avisos localizados quando disponíveis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InputValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{project_id}/permanent": {
+      "delete": {
+        "tags": [
+          "Projetos"
+        ],
+        "summary": "Permanently Remove",
+        "operationId": "permanently_remove_api_v1_projects__project_id__permanent_delete",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "expected_version",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "title": "Expected Version"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Entradas inválidas; avisos localizados quando disponíveis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InputValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/calculations/full": {
+      "post": {
+        "tags": [
+          "Cálculos"
+        ],
+        "summary": "Full",
+        "operationId": "full_api_v1_calculations_full_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CalculationInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalculationResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Entradas inválidas; avisos localizados quando disponíveis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InputValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/calculations/demand": {
+      "post": {
+        "tags": [
+          "Cálculos"
+        ],
+        "summary": "Full",
+        "operationId": "full_api_v1_calculations_demand_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CalculationInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalculationResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Entradas inválidas; avisos localizados quando disponíveis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InputValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/calculations/loads": {
+      "post": {
+        "tags": [
+          "Cálculos"
+        ],
+        "summary": "Full",
+        "operationId": "full_api_v1_calculations_loads_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CalculationInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalculationResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Entradas inválidas; avisos localizados quando disponíveis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InputValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/equipment": {
+      "get": {
+        "tags": [
+          "Equipamentos"
+        ],
+        "summary": "Equipment",
+        "operationId": "equipment_api_v1_equipment_get",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 200,
+              "default": "",
+              "title": "Q"
+            }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Category"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CatalogItem"
+                  },
+                  "title": "Response Equipment Api V1 Equipment Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Entradas inválidas; avisos localizados quando disponíveis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InputValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/utilities": {
+      "get": {
+        "tags": [
+          "Localização"
+        ],
+        "summary": "Utilities",
+        "operationId": "utilities_api_v1_utilities_get",
+        "parameters": [
+          {
+            "name": "state",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[A-Z]{2}$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "State"
+            }
+          },
+          {
+            "name": "municipality",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 200
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Municipality"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UtilityInfo"
+                  },
+                  "title": "Response Utilities Api V1 Utilities Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Entradas inválidas; avisos localizados quando disponíveis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InputValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/standards": {
+      "get": {
+        "tags": [
+          "Referências técnicas"
+        ],
+        "summary": "Standards",
+        "operationId": "standards_api_v1_standards_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Entradas inválidas; avisos localizados quando disponíveis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InputValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{project_id}/report": {
+      "get": {
+        "tags": [
+          "Projetos"
+        ],
+        "summary": "Report",
+        "operationId": "report_api_v1_projects__project_id__report_get",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Project Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Entradas inválidas; avisos localizados quando disponíveis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InputValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{project_id}/history": {
+      "get": {
+        "tags": [
+          "Projetos"
+        ],
+        "summary": "History",
+        "operationId": "history_api_v1_projects__project_id__history_get",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Project Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Entradas inválidas; avisos localizados quando disponíveis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InputValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/locations/states": {
+      "get": {
+        "tags": [
+          "Localização"
+        ],
+        "summary": "States",
+        "operationId": "states_api_v1_locations_states_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array",
+                  "title": "Response States Api V1 Locations States Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Entradas inválidas; avisos localizados quando disponíveis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InputValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/technical/documents": {
+      "get": {
+        "tags": [
+          "Referências técnicas"
+        ],
+        "summary": "Documents",
+        "operationId": "documents_api_v1_technical_documents_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentRegistry"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Entradas inválidas; avisos localizados quando disponíveis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InputValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/technical/applicability": {
+      "get": {
+        "tags": [
+          "Referências técnicas"
+        ],
+        "summary": "Applicable",
+        "operationId": "applicable_api_v1_technical_applicability_get",
+        "parameters": [
+          {
+            "name": "utility",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Utility"
+            }
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Z]{2}$",
+              "default": "SP",
+              "title": "State"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Entradas inválidas; avisos localizados quando disponíveis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InputValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/technical/integrity": {
+      "get": {
+        "tags": [
+          "Referências técnicas"
+        ],
+        "summary": "Validate Registry",
+        "operationId": "validate_registry_api_v1_technical_integrity_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Entradas inválidas; avisos localizados quando disponíveis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InputValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/technical/revisions": {
+      "get": {
+        "tags": [
+          "Referências técnicas"
+        ],
+        "summary": "Revisions",
+        "operationId": "revisions_api_v1_technical_revisions_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Entradas inválidas; avisos localizados quando disponíveis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InputValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/technical/revisions/{revision_id}": {
+      "get": {
+        "tags": [
+          "Referências técnicas"
+        ],
+        "summary": "Revision",
+        "operationId": "revision_api_v1_technical_revisions__revision_id__get",
+        "parameters": [
+          {
+            "name": "revision_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Revision Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Entradas inválidas; avisos localizados quando disponíveis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InputValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{project_id}/revalidation": {
+      "get": {
+        "tags": [
+          "Projetos"
+        ],
+        "summary": "Revalidation",
+        "operationId": "revalidation_api_v1_projects__project_id__revalidation_get",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Project Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Entradas inválidas; avisos localizados quando disponíveis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InputValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{project_id}/recalculate": {
+      "post": {
+        "tags": [
+          "Projetos"
+        ],
+        "summary": "Recalculate",
+        "operationId": "recalculate_api_v1_projects__project_id__recalculate_post",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "expected_version",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "title": "Expected Version"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Entradas inválidas; avisos localizados quando disponíveis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InputValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{project_id}/duplicate": {
+      "post": {
+        "tags": [
+          "Projetos"
+        ],
+        "summary": "Duplicate",
+        "operationId": "duplicate_api_v1_projects__project_id__duplicate_post",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Project Id"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Project"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Entradas inválidas; avisos localizados quando disponíveis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InputValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/technical/rules": {
+      "get": {
+        "tags": [
+          "Referências técnicas"
+        ],
+        "summary": "Computational Rules",
+        "operationId": "computational_rules_api_v1_technical_rules_get",
+        "parameters": [
+          {
+            "name": "utility",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 100,
+              "default": "unconfirmed",
+              "title": "Utility"
+            }
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Z]{2}$",
+              "default": "SP",
+              "title": "State"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TechnicalRules"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Entradas inválidas; avisos localizados quando disponíveis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InputValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/equipment/{equipment_id}": {
+      "get": {
+        "tags": [
+          "Equipamentos"
+        ],
+        "summary": "Equipment Reference",
+        "operationId": "equipment_reference_api_v1_equipment__equipment_id__get",
+        "parameters": [
+          {
+            "name": "equipment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Equipment Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogItem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Entradas inválidas; avisos localizados quando disponíveis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InputValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/validation/requirements": {
+      "get": {
+        "tags": [
+          "Validação"
+        ],
+        "summary": "Validation Requirements",
+        "operationId": "validation_requirements_api_v1_validation_requirements_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "$ref": "#/components/schemas/FieldRequirement"
+                  },
+                  "type": "object",
+                  "title": "Response Validation Requirements Api V1 Validation Requirements Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Entradas inválidas; avisos localizados quando disponíveis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InputValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/reports/pdf": {
+      "post": {
+        "tags": [
+          "Relatórios"
+        ],
+        "summary": "Export Pdf",
+        "operationId": "export_pdf_api_v1_reports_pdf_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PDFExportInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Relatório parcial das entradas enviadas e recalculadas no backend",
+            "content": {
+              "application/pdf": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Entradas inválidas; avisos localizados quando disponíveis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InputValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/reports/json": {
+      "post": {
+        "tags": [
+          "Relatórios"
+        ],
+        "summary": "Export Json",
+        "operationId": "export_json_api_v1_reports_json_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PDFExportInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Entradas inválidas; avisos localizados quando disponíveis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InputValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CalculationInput": {
+        "properties": {
+          "analysis_scope": {
+            "type": "string",
+            "enum": [
+              "installed",
+              "apparent",
+              "current",
+              "normative"
+            ],
+            "title": "Analysis Scope",
+            "default": "installed"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 200,
+            "title": "Name",
+            "default": ""
+          },
+          "municipality": {
+            "type": "string",
+            "maxLength": 200,
+            "title": "Municipality",
+            "default": ""
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "AC",
+              "AL",
+              "AP",
+              "AM",
+              "BA",
+              "CE",
+              "DF",
+              "ES",
+              "GO",
+              "MA",
+              "MT",
+              "MS",
+              "MG",
+              "PA",
+              "PB",
+              "PR",
+              "PE",
+              "PI",
+              "RJ",
+              "RN",
+              "RS",
+              "RO",
+              "RR",
+              "SC",
+              "SP",
+              "SE",
+              "TO"
+            ],
+            "title": "State",
+            "default": "SP"
+          },
+          "utility": {
+            "type": "string",
+            "enum": [
+              "energisa_sul_sudeste",
+              "cpfl_paulista",
+              "cpfl_piratininga",
+              "cpfl_santa_cruz",
+              "neoenergia_elektro",
+              "enel_sp",
+              "edp_sp",
+              "unconfirmed"
+            ],
+            "title": "Utility",
+            "default": "unconfirmed"
+          },
+          "residence_type": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Residence Type",
+            "default": "Casa"
+          },
+          "built_area_m2": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Built Area M2"
+          },
+          "floors": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 100.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Floors",
+            "default": 1
+          },
+          "reference_voltage_v": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reference Voltage V",
+            "default": "220"
+          },
+          "energy_tariff_brl_per_kwh": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Energy Tariff Brl Per Kwh"
+          },
+          "notes": {
+            "type": "string",
+            "maxLength": 10000,
+            "title": "Notes",
+            "default": ""
+          },
+          "environments": {
+            "items": {
+              "$ref": "#/components/schemas/Environment"
+            },
+            "type": "array",
+            "maxItems": 1000,
+            "title": "Environments"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "CalculationInput"
+      },
+      "CalculationResult": {
+        "properties": {
+          "normative_environments": {
+            "items": {
+              "$ref": "#/components/schemas/NormativeEnvironment"
+            },
+            "type": "array",
+            "title": "Normative Environments"
+          },
+          "normative_capabilities": {
+            "items": {
+              "$ref": "#/components/schemas/NormativeCapability"
+            },
+            "type": "array",
+            "title": "Normative Capabilities"
+          },
+          "notifications": {
+            "items": {
+              "$ref": "#/components/schemas/Notification"
+            },
+            "type": "array",
+            "title": "Notifications"
+          },
+          "field_issues": {
+            "items": {
+              "$ref": "#/components/schemas/FieldIssue"
+            },
+            "type": "array",
+            "title": "Field Issues"
+          },
+          "technical_context": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Technical Context"
+          },
+          "input_digest": {
+            "type": "string",
+            "title": "Input Digest"
+          },
+          "engine_version": {
+            "type": "string",
+            "title": "Engine Version"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "calculated",
+              "estimated",
+              "pending",
+              "invalid",
+              "out_of_scope",
+              "awaiting_technical_validation"
+            ],
+            "title": "Status"
+          },
+          "installed_power": {
+            "$ref": "#/components/schemas/Value"
+          },
+          "installed_power_kw": {
+            "$ref": "#/components/schemas/Value"
+          },
+          "lighting_nominal": {
+            "$ref": "#/components/schemas/Value"
+          },
+          "by_environment_w": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            "type": "object",
+            "title": "By Environment W"
+          },
+          "by_category_w": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            "type": "object",
+            "title": "By Category W"
+          },
+          "apparent_power": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Value"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "normative": {
+            "additionalProperties": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "object",
+            "title": "Normative"
+          },
+          "memory": {
+            "items": {
+              "$ref": "#/components/schemas/Memory"
+            },
+            "type": "array",
+            "title": "Memory"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings"
+          },
+          "counting_policy": {
+            "type": "string",
+            "title": "Counting Policy"
+          },
+          "unknown_load_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Unknown Load Ids"
+          },
+          "load_results": {
+            "items": {
+              "$ref": "#/components/schemas/LoadTechnicalResult"
+            },
+            "type": "array",
+            "title": "Load Results"
+          },
+          "apparent_power_kva": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Value"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "aggregate_steps": {
+            "items": {
+              "$ref": "#/components/schemas/TechnicalStep"
+            },
+            "type": "array",
+            "title": "Aggregate Steps"
+          },
+          "monthly_energy": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Value"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "monthly_cost": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Value"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "energy_unknown_load_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Energy Unknown Load Ids"
+          },
+          "energy_by_environment_kwh": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            "type": "object",
+            "title": "Energy By Environment Kwh"
+          },
+          "energy_by_category_kwh": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            "type": "object",
+            "title": "Energy By Category Kwh"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "input_digest",
+          "engine_version",
+          "status",
+          "installed_power",
+          "installed_power_kw",
+          "lighting_nominal",
+          "by_environment_w",
+          "by_category_w",
+          "apparent_power",
+          "normative",
+          "memory",
+          "warnings",
+          "counting_policy"
+        ],
+        "title": "CalculationResult"
+      },
+      "CatalogItem": {
+        "properties": {
+          "recommended_environments": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Recommended Environments"
+          },
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "selection_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Selection Name"
+          },
+          "selection_default": {
+            "type": "boolean",
+            "title": "Selection Default",
+            "default": true
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "lighting",
+              "general_use",
+              "specific_use"
+            ],
+            "title": "Kind"
+          },
+          "equipment_type": {
+            "type": "string",
+            "enum": [
+              "lighting",
+              "air_conditioner",
+              "shower",
+              "refrigeration",
+              "motor",
+              "microwave",
+              "television",
+              "appliance",
+              "custom"
+            ],
+            "title": "Equipment Type"
+          },
+          "technology": {
+            "type": "string",
+            "title": "Technology",
+            "default": ""
+          },
+          "brand": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Brand"
+          },
+          "model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model"
+          },
+          "reference_power_w": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reference Power W"
+          },
+          "unit": {
+            "type": "string",
+            "const": "W",
+            "title": "Unit",
+            "default": "W"
+          },
+          "voltage_v": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Voltage V"
+          },
+          "voltage_range": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Voltage Range"
+          },
+          "power_factor": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Power Factor"
+          },
+          "power_rating": {
+            "type": "string",
+            "enum": [
+              "nominal",
+              "maximum",
+              "estimated",
+              "unknown"
+            ],
+            "title": "Power Rating",
+            "default": "unknown"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source"
+          },
+          "source_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Url"
+          },
+          "document": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Document"
+          },
+          "verified_on": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Verified On"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "verified",
+              "pending"
+            ],
+            "title": "Status",
+            "default": "pending"
+          },
+          "note": {
+            "type": "string",
+            "title": "Note"
+          },
+          "parameters": {
+            "$ref": "#/components/schemas/TechnicalParameters"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "category",
+          "kind",
+          "equipment_type",
+          "note"
+        ],
+        "title": "CatalogItem"
+      },
+      "Credentials": {
+        "properties": {
+          "username": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Username"
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 1024,
+            "minLength": 1,
+            "title": "Password"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "username",
+          "password"
+        ],
+        "title": "Credentials"
+      },
+      "DocumentRegistry": {
+        "properties": {
+          "registry_version": {
+            "type": "string",
+            "title": "Registry Version"
+          },
+          "documents": {
+            "items": {
+              "$ref": "#/components/schemas/TechnicalDocument"
+            },
+            "type": "array",
+            "title": "Documents"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "registry_version",
+          "documents"
+        ],
+        "title": "DocumentRegistry"
+      },
+      "Environment": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "living",
+              "bedroom",
+              "kitchen",
+              "bathroom",
+              "laundry",
+              "garage",
+              "corridor",
+              "outdoor",
+              "office",
+              "other"
+            ],
+            "title": "Type",
+            "default": "other"
+          },
+          "area_m2": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Area M2"
+          },
+          "perimeter_m": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Perimeter M"
+          },
+          "lighting_points": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Lighting Points",
+            "default": 0
+          },
+          "outlets": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Outlets",
+            "default": 0
+          },
+          "loads": {
+            "items": {
+              "$ref": "#/components/schemas/Load"
+            },
+            "type": "array",
+            "maxItems": 1000,
+            "title": "Loads"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "Environment"
+      },
+      "FieldIssue": {
+        "properties": {
+          "target_id": {
+            "type": "string",
+            "title": "Target Id",
+            "default": ""
+          },
+          "location": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "solution": {
+            "type": "string",
+            "title": "Solution",
+            "default": ""
+          },
+          "affected_results": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Affected Results"
+          },
+          "path": {
+            "type": "string",
+            "title": "Path"
+          },
+          "field": {
+            "type": "string",
+            "title": "Field"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "purpose": {
+            "type": "string",
+            "title": "Purpose"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "invalid"
+            ],
+            "title": "Status"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "path",
+          "field",
+          "label",
+          "purpose",
+          "status",
+          "message"
+        ],
+        "title": "FieldIssue"
+      },
+      "FieldRequirement": {
+        "properties": {
+          "required_for": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Required For"
+          },
+          "max_length": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Length"
+          },
+          "minimum": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Minimum"
+          },
+          "maximum": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Maximum"
+          },
+          "integer": {
+            "type": "boolean",
+            "title": "Integer",
+            "default": false
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "purpose": {
+            "type": "string",
+            "title": "Purpose"
+          },
+          "when": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "boolean"
+                    }
+                  ]
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "When"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "label",
+          "purpose",
+          "when"
+        ],
+        "title": "FieldRequirement"
+      },
+      "HealthInfo": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "app_version": {
+            "type": "string",
+            "title": "App Version"
+          },
+          "api_version": {
+            "type": "string",
+            "title": "Api Version"
+          },
+          "engine_version": {
+            "type": "string",
+            "title": "Engine Version"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "status",
+          "app_version",
+          "api_version",
+          "engine_version"
+        ],
+        "title": "HealthInfo"
+      },
+      "InputValidationError": {
+        "properties": {
+          "detail": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              }
+            ],
+            "title": "Detail"
+          },
+          "notifications": {
+            "items": {
+              "$ref": "#/components/schemas/Notification"
+            },
+            "type": "array",
+            "title": "Notifications"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "detail"
+        ],
+        "title": "InputValidationError"
+      },
+      "Load": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "category": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Category",
+            "default": "Outros"
+          },
+          "technology": {
+            "type": "string",
+            "maxLength": 100,
+            "title": "Technology",
+            "default": ""
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "lighting",
+              "general_use",
+              "specific_use"
+            ],
+            "title": "Kind",
+            "default": "specific_use"
+          },
+          "quantity": {
+            "type": "integer",
+            "maximum": 100000.0,
+            "minimum": 1.0,
+            "title": "Quantity",
+            "default": 1
+          },
+          "unit_power_w": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit Power W"
+          },
+          "voltage_v": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Voltage V"
+          },
+          "power_factor": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Power Factor"
+          },
+          "power_origin": {
+            "type": "string",
+            "enum": [
+              "nameplate",
+              "manufacturer",
+              "user_estimate"
+            ],
+            "title": "Power Origin",
+            "default": "user_estimate"
+          },
+          "source": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 1,
+            "title": "Source",
+            "default": "Informado pelo usuário"
+          },
+          "demand_classification": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Demand Classification"
+          },
+          "equipment_type": {
+            "type": "string",
+            "enum": [
+              "lighting",
+              "air_conditioner",
+              "shower",
+              "refrigeration",
+              "motor",
+              "microwave",
+              "television",
+              "appliance",
+              "custom"
+            ],
+            "title": "Equipment Type",
+            "default": "custom"
+          },
+          "brand": {
+            "type": "string",
+            "maxLength": 100,
+            "title": "Brand",
+            "default": ""
+          },
+          "model": {
+            "type": "string",
+            "maxLength": 200,
+            "title": "Model",
+            "default": ""
+          },
+          "parameters": {
+            "$ref": "#/components/schemas/TechnicalParameters"
+          },
+          "catalog_reference": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CatalogItem"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "manual_override": {
+            "type": "boolean",
+            "title": "Manual Override",
+            "default": false
+          },
+          "power_user_edited": {
+            "type": "boolean",
+            "title": "Power User Edited",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "Load"
+      },
+      "LoadTechnicalResult": {
+        "properties": {
+          "load_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Load Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "electrical_input_w": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Electrical Input W"
+          },
+          "thermal_capacity_w": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Thermal Capacity W"
+          },
+          "apparent_power_va": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Apparent Power Va"
+          },
+          "monthly_energy_kwh": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Monthly Energy Kwh"
+          },
+          "monthly_cost_brl": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Monthly Cost Brl"
+          },
+          "energy_basis": {
+            "type": "string",
+            "enum": [
+              "stated",
+              "schedule",
+              "pending"
+            ],
+            "title": "Energy Basis",
+            "default": "pending"
+          },
+          "unit_current_a": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit Current A"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "calculated",
+              "estimated",
+              "pending",
+              "invalid",
+              "out_of_scope",
+              "awaiting_technical_validation"
+            ],
+            "title": "Status"
+          },
+          "steps": {
+            "items": {
+              "$ref": "#/components/schemas/TechnicalStep"
+            },
+            "type": "array",
+            "title": "Steps"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "load_id",
+          "name",
+          "electrical_input_w",
+          "thermal_capacity_w",
+          "apparent_power_va",
+          "unit_current_a",
+          "status",
+          "steps",
+          "warnings"
+        ],
+        "title": "LoadTechnicalResult"
+      },
+      "Memory": {
+        "properties": {
+          "rule_id": {
+            "type": "string",
+            "title": "Rule Id",
+            "default": "installed_power"
+          },
+          "rule_version": {
+            "type": "string",
+            "title": "Rule Version",
+            "default": "0.3.0"
+          },
+          "power_origin": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Power Origin"
+          },
+          "manual_override": {
+            "type": "boolean",
+            "title": "Manual Override",
+            "default": false
+          },
+          "catalog_reference": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CatalogItem"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "calculation": {
+            "type": "string",
+            "const": "installed_power",
+            "title": "Calculation"
+          },
+          "load_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Load Id"
+          },
+          "environment_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Environment Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "inputs": {
+            "$ref": "#/components/schemas/MemoryInputs"
+          },
+          "formula": {
+            "type": "string",
+            "title": "Formula"
+          },
+          "result": {
+            "$ref": "#/components/schemas/MemoryResult"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "calculated",
+              "estimated",
+              "pending",
+              "invalid",
+              "out_of_scope",
+              "awaiting_technical_validation"
+            ],
+            "title": "Status"
+          },
+          "reference": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reference"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "calculation",
+          "load_id",
+          "environment_id",
+          "name",
+          "inputs",
+          "formula",
+          "result",
+          "status",
+          "reference",
+          "source"
+        ],
+        "title": "Memory"
+      },
+      "MemoryInputs": {
+        "properties": {
+          "quantity": {
+            "type": "integer",
+            "title": "Quantity"
+          },
+          "unit_power_w": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Unit Power W"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "quantity",
+          "unit_power_w"
+        ],
+        "title": "MemoryInputs"
+      },
+      "MemoryResult": {
+        "properties": {
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Value"
+          },
+          "unit": {
+            "type": "string",
+            "const": "W",
+            "title": "Unit"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "value",
+          "unit"
+        ],
+        "title": "MemoryResult"
+      },
+      "NormativeCapability": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "lighting",
+              "outlets",
+              "demand"
+            ],
+            "title": "Code"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "purpose": {
+            "type": "string",
+            "title": "Purpose"
+          },
+          "available": {
+            "type": "boolean",
+            "title": "Available"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "calculated",
+              "estimated",
+              "pending",
+              "invalid",
+              "out_of_scope",
+              "awaiting_technical_validation"
+            ],
+            "title": "Status"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          },
+          "evidence": {
+            "items": {
+              "$ref": "#/components/schemas/ResearchEvidence"
+            },
+            "type": "array",
+            "title": "Evidence"
+          },
+          "pending_checks": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Pending Checks"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "code",
+          "label",
+          "purpose",
+          "available",
+          "status",
+          "reason",
+          "evidence",
+          "pending_checks"
+        ],
+        "title": "NormativeCapability"
+      },
+      "NormativeEnvironment": {
+        "properties": {
+          "environment_id": {
+            "type": "string",
+            "title": "Environment Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "calculated",
+              "estimated",
+              "pending",
+              "invalid",
+              "out_of_scope",
+              "awaiting_technical_validation"
+            ],
+            "title": "Status"
+          },
+          "lighting_va": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lighting Va"
+          },
+          "minimum_lighting_points": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Minimum Lighting Points"
+          },
+          "registered_lighting_points": {
+            "type": "integer",
+            "title": "Registered Lighting Points"
+          },
+          "lighting_points_missing": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lighting Points Missing"
+          },
+          "minimum_outlet_points": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Minimum Outlet Points"
+          },
+          "registered_outlet_points": {
+            "type": "integer",
+            "title": "Registered Outlet Points"
+          },
+          "outlet_points_missing": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Outlet Points Missing"
+          },
+          "outlet_basis_points": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Outlet Basis Points"
+          },
+          "outlets_va": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Outlets Va"
+          },
+          "missing_fields": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "area_m2",
+                "perimeter_m"
+              ]
+            },
+            "type": "array",
+            "title": "Missing Fields"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Notes"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "environment_id",
+          "name",
+          "status",
+          "lighting_va",
+          "minimum_lighting_points",
+          "registered_lighting_points",
+          "lighting_points_missing",
+          "minimum_outlet_points",
+          "registered_outlet_points",
+          "outlet_points_missing",
+          "outlet_basis_points",
+          "outlets_va",
+          "missing_fields",
+          "notes",
+          "reason"
+        ],
+        "title": "NormativeEnvironment"
+      },
+      "Notification": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "error",
+              "technical",
+              "normative",
+              "info",
+              "estimate"
+            ],
+            "title": "Category"
+          },
+          "location": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "problem": {
+            "type": "string",
+            "title": "Problem"
+          },
+          "solution": {
+            "type": "string",
+            "title": "Solution"
+          },
+          "affected_results": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Affected Results"
+          },
+          "target_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "category",
+          "location",
+          "problem",
+          "solution",
+          "affected_results"
+        ],
+        "title": "Notification"
+      },
+      "PDFExportInput": {
+        "properties": {
+          "saved_project_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Saved Project Id"
+          },
+          "saved_project_version": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Saved Project Version"
+          },
+          "project": {
+            "$ref": "#/components/schemas/CalculationInput"
+          },
+          "expected_input_digest": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Expected Input Digest"
+          },
+          "expected_registry_version": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Expected Registry Version"
+          },
+          "expected_engine_version": {
+            "type": "string",
+            "maxLength": 50,
+            "minLength": 1,
+            "title": "Expected Engine Version"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "project",
+          "expected_input_digest",
+          "expected_registry_version",
+          "expected_engine_version"
+        ],
+        "title": "PDFExportInput"
+      },
+      "Project": {
+        "properties": {
+          "analysis_scope": {
+            "type": "string",
+            "enum": [
+              "installed",
+              "apparent",
+              "current",
+              "normative"
+            ],
+            "title": "Analysis Scope",
+            "default": "installed"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "municipality": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Municipality"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "AC",
+              "AL",
+              "AP",
+              "AM",
+              "BA",
+              "CE",
+              "DF",
+              "ES",
+              "GO",
+              "MA",
+              "MT",
+              "MS",
+              "MG",
+              "PA",
+              "PB",
+              "PR",
+              "PE",
+              "PI",
+              "RJ",
+              "RN",
+              "RS",
+              "RO",
+              "RR",
+              "SC",
+              "SP",
+              "SE",
+              "TO"
+            ],
+            "title": "State",
+            "default": "SP"
+          },
+          "utility": {
+            "type": "string",
+            "enum": [
+              "energisa_sul_sudeste",
+              "cpfl_paulista",
+              "cpfl_piratininga",
+              "cpfl_santa_cruz",
+              "neoenergia_elektro",
+              "enel_sp",
+              "edp_sp",
+              "unconfirmed"
+            ],
+            "title": "Utility",
+            "default": "unconfirmed"
+          },
+          "residence_type": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Residence Type",
+            "default": "Casa"
+          },
+          "built_area_m2": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Built Area M2"
+          },
+          "floors": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 100.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Floors",
+            "default": 1
+          },
+          "reference_voltage_v": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reference Voltage V",
+            "default": "220"
+          },
+          "energy_tariff_brl_per_kwh": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Energy Tariff Brl Per Kwh"
+          },
+          "notes": {
+            "type": "string",
+            "maxLength": 10000,
+            "title": "Notes",
+            "default": ""
+          },
+          "environments": {
+            "items": {
+              "$ref": "#/components/schemas/Environment"
+            },
+            "type": "array",
+            "maxItems": 1000,
+            "title": "Environments"
+          },
+          "deleted_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Deleted At"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          },
+          "standards_version": {
+            "type": "string",
+            "title": "Standards Version"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "name",
+          "municipality",
+          "id",
+          "version",
+          "created_at",
+          "updated_at",
+          "standards_version"
+        ],
+        "title": "Project"
+      },
+      "ProjectInput": {
+        "properties": {
+          "analysis_scope": {
+            "type": "string",
+            "enum": [
+              "installed",
+              "apparent",
+              "current",
+              "normative"
+            ],
+            "title": "Analysis Scope",
+            "default": "installed"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "municipality": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Municipality"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "AC",
+              "AL",
+              "AP",
+              "AM",
+              "BA",
+              "CE",
+              "DF",
+              "ES",
+              "GO",
+              "MA",
+              "MT",
+              "MS",
+              "MG",
+              "PA",
+              "PB",
+              "PR",
+              "PE",
+              "PI",
+              "RJ",
+              "RN",
+              "RS",
+              "RO",
+              "RR",
+              "SC",
+              "SP",
+              "SE",
+              "TO"
+            ],
+            "title": "State",
+            "default": "SP"
+          },
+          "utility": {
+            "type": "string",
+            "enum": [
+              "energisa_sul_sudeste",
+              "cpfl_paulista",
+              "cpfl_piratininga",
+              "cpfl_santa_cruz",
+              "neoenergia_elektro",
+              "enel_sp",
+              "edp_sp",
+              "unconfirmed"
+            ],
+            "title": "Utility",
+            "default": "unconfirmed"
+          },
+          "residence_type": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Residence Type",
+            "default": "Casa"
+          },
+          "built_area_m2": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Built Area M2"
+          },
+          "floors": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 100.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Floors",
+            "default": 1
+          },
+          "reference_voltage_v": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reference Voltage V",
+            "default": "220"
+          },
+          "energy_tariff_brl_per_kwh": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Energy Tariff Brl Per Kwh"
+          },
+          "notes": {
+            "type": "string",
+            "maxLength": 10000,
+            "title": "Notes",
+            "default": ""
+          },
+          "environments": {
+            "items": {
+              "$ref": "#/components/schemas/Environment"
+            },
+            "type": "array",
+            "maxItems": 1000,
+            "title": "Environments"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "name",
+          "municipality"
+        ],
+        "title": "ProjectInput"
+      },
+      "ResearchEvidence": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "url": {
+            "type": "string",
+            "title": "Url"
+          },
+          "finding": {
+            "type": "string",
+            "title": "Finding"
+          },
+          "access": {
+            "type": "string",
+            "enum": [
+              "official_metadata",
+              "official_index",
+              "institutional_full_text",
+              "official_full_text"
+            ],
+            "title": "Access"
+          },
+          "consulted_on": {
+            "type": "string",
+            "title": "Consulted On"
+          },
+          "section": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Section"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "title",
+          "url",
+          "finding",
+          "access",
+          "consulted_on"
+        ],
+        "title": "ResearchEvidence"
+      },
+      "TechnicalDocument": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "edition": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Edition"
+          },
+          "effective_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Effective Date"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "consulted_on": {
+            "type": "string",
+            "title": "Consulted On"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "edition",
+          "effective_date",
+          "source",
+          "status",
+          "consulted_on"
+        ],
+        "title": "TechnicalDocument"
+      },
+      "TechnicalParameters": {
+        "properties": {
+          "power_mode": {
+            "type": "string",
+            "enum": [
+              "electrical",
+              "mechanical"
+            ],
+            "title": "Power Mode",
+            "default": "electrical"
+          },
+          "cooling_capacity_btu_h": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cooling Capacity Btu H"
+          },
+          "ac_type": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "split",
+                  "window",
+                  "portable",
+                  "other"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ac Type"
+          },
+          "compressor": {
+            "type": "string",
+            "enum": [
+              "inverter",
+              "conventional",
+              "unknown"
+            ],
+            "title": "Compressor",
+            "default": "unknown"
+          },
+          "screen_inches": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Screen Inches"
+          },
+          "monthly_energy_kwh": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Monthly Energy Kwh"
+          },
+          "usage_hours_per_day": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 24.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Usage Hours Per Day"
+          },
+          "usage_days_per_month": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 31.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Usage Days Per Month"
+          },
+          "maximum_power_w": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Maximum Power W"
+          },
+          "microwave_output_w": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Microwave Output W"
+          },
+          "mechanical_power": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mechanical Power"
+          },
+          "mechanical_unit": {
+            "type": "string",
+            "enum": [
+              "cv",
+              "hp"
+            ],
+            "title": "Mechanical Unit",
+            "default": "cv"
+          },
+          "efficiency": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Efficiency"
+          },
+          "configuration": {
+            "type": "string",
+            "enum": [
+              "unknown",
+              "single_phase",
+              "balanced_three_phase"
+            ],
+            "title": "Configuration",
+            "default": "unknown"
+          },
+          "assume_resistive": {
+            "type": "boolean",
+            "title": "Assume Resistive",
+            "default": false
+          },
+          "nameplate_current_a": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nameplate Current A"
+          },
+          "starting_current_a": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Starting Current A"
+          },
+          "maximum_current_a": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Maximum Current A"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "TechnicalParameters"
+      },
+      "TechnicalRules": {
+        "properties": {
+          "registry_version": {
+            "type": "string",
+            "title": "Registry Version"
+          },
+          "mathematical": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Mathematical"
+          },
+          "normative": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Normative"
+          },
+          "coverage": {
+            "items": {
+              "$ref": "#/components/schemas/NormativeCapability"
+            },
+            "type": "array",
+            "title": "Coverage"
+          },
+          "notice": {
+            "type": "string",
+            "title": "Notice"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "registry_version",
+          "mathematical",
+          "normative",
+          "coverage",
+          "notice"
+        ],
+        "title": "TechnicalRules"
+      },
+      "TechnicalStep": {
+        "properties": {
+          "calculation": {
+            "type": "string",
+            "title": "Calculation"
+          },
+          "formula": {
+            "type": "string",
+            "title": "Formula"
+          },
+          "substituted": {
+            "type": "string",
+            "title": "Substituted"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Value"
+          },
+          "unit": {
+            "type": "string",
+            "enum": [
+              "W",
+              "kW",
+              "VA",
+              "kVA",
+              "A",
+              "kWh",
+              "BRL"
+            ],
+            "title": "Unit"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source"
+          },
+          "assumptions": {
+            "type": "string",
+            "title": "Assumptions"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "calculation",
+          "formula",
+          "substituted",
+          "value",
+          "unit",
+          "assumptions"
+        ],
+        "title": "TechnicalStep"
+      },
+      "UtilityInfo": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "states": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "States"
+          },
+          "document_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Document Ids"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "calculated",
+              "estimated",
+              "pending",
+              "invalid",
+              "out_of_scope",
+              "awaiting_technical_validation"
+            ],
+            "title": "Status"
+          },
+          "municipality_mapping": {
+            "type": "string",
+            "const": "unverified",
+            "title": "Municipality Mapping"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "states",
+          "document_ids",
+          "status",
+          "municipality_mapping"
+        ],
+        "title": "UtilityInfo"
+      },
+      "Value": {
+        "properties": {
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Value"
+          },
+          "unit": {
+            "type": "string",
+            "enum": [
+              "W",
+              "kW",
+              "VA",
+              "kVA",
+              "A",
+              "kWh",
+              "BRL"
+            ],
+            "title": "Unit"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "calculated",
+              "estimated",
+              "pending",
+              "invalid",
+              "out_of_scope",
+              "awaiting_technical_validation"
+            ],
+            "title": "Status"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "value",
+          "unit",
+          "status"
+        ],
+        "title": "Value"
+      }
+    }
+  }
+}

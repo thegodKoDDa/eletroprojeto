@@ -1,0 +1,154 @@
+"""Reviewed normative procedures and explicit evidence for remaining gaps."""
+
+from dataclasses import asdict, dataclass
+
+
+@dataclass(frozen=True)
+class ResearchEvidence:
+    title: str
+    url: str
+    finding: str
+    access: str
+    consulted_on: str = "2026-10-22"
+    section: str | None = None
+
+
+@dataclass(frozen=True)
+class Rule:
+    code: str
+    document: str
+    edition: str | None
+    effective_date: str | None
+    clause: str | None
+    source: str
+    status: str
+    reason: str
+    inputs: tuple[str, ...]
+    procedure: str | None = None
+    limits: str = "Não habilitada para cálculo normativo"
+    tests: tuple[str, ...] = ()
+    label: str = ""
+    purpose: str = ""
+    evidence: tuple[ResearchEvidence, ...] = ()
+    pending_checks: tuple[str, ...] = ()
+
+
+ABNT_EVIDENCE = ResearchEvidence(
+    title="Catálogo oficial ABNT",
+    url="https://www.abntcatalogo.com.br/",
+    finding="Identificação da ABNT NBR 5410:2004, versão corrigida de 2008. O catálogo não disponibilizou o texto autorizado completo para esta revisão.",
+    access="official_metadata",
+)
+# Exact residential clauses reviewed in the government-hosted original, the
+# corrected edition hosted by PUC Goiás and PF's authored engineering guidance.
+RESIDENTIAL_EVIDENCE = (
+    ABNT_EVIDENCE,
+    ResearchEvidence(
+        title="NBR 5410 — acervo público IPAAM/AM",
+        url="https://www.ipaam.am.gov.br/wp-content/uploads/2021/01/NBR-05410-05-Instala%C3%A7%C3%B5es-El%C3%A9tricas-de-baixa-Tens%C3%A3o.pdf",
+        finding="Texto integral de 2004 consultado: escopo residencial, critérios de iluminação e pontos/cargas de tomadas. Sem redistribuição do documento pelo aplicativo.",
+        access="institutional_full_text",
+        section="9.5.1 e 9.5.2.1–9.5.2.2, pp. 182–184",
+    ),
+    ResearchEvidence(
+        title="NBR 5410 corrigida em 2008 — acervo docente PUC Goiás",
+        url="https://professor.pucgoias.edu.br/SiteDocente/admin/arquivosUpload/18451/material/nbr_5410.pdf",
+        finding="Capa e prefácio identificam correção de 17/03/2008; critérios residenciais cotejados com o original. Hospedagem institucional não representa licença de redistribuição.",
+        access="institutional_full_text",
+        section="9.5.1–9.5.2.2, pp. 182–184",
+    ),
+    ResearchEvidence(
+        title="Polícia Federal — Diretrizes de instalações elétricas 2021a",
+        url="https://www.gov.br/pf/pt-br/assuntos/licitacoes/2022/distrito-federal/tomadas-de-precos/tomada-de-precos-no-1-2022-sr-pf-df/edital-da-tomada-de-precos-no-1-2022-sr-pf-df-uasg-200228/1-1-7-anexo-vii-do-pb-diretrizes-projeto-executivo-e-obra-de-instalacoes-eletricas.pdf",
+        finding="Seções residenciais corroboram critérios; fatores próprios dos ambientes de trabalho da PF não foram incorporados.",
+        access="official_full_text",
+        section="5.1 e 5.3.2, pp. 17–21",
+    ),
+)
+
+RULES = (
+    Rule(
+        code="lighting",
+        document="ABNT NBR 5410",
+        edition="2004, versão corrigida 2008",
+        effective_date="2005-03-31",
+        clause="9.5.1; 9.5.2.1.1–9.5.2.1.2",
+        source="https://www.abntcatalogo.com.br/",
+        status="calculated",
+        reason="Procedimento de previsão residencial implementado e testado no escopo indicado; não certifica a instalação.",
+        inputs=("environment.type", "environment.area_m2", "environment.lighting_points"),
+        procedure="app.calculations.residential.lighting_minimum",
+        limits="Opt-in pelo escopo residencial. Ambientes internos classificados; externo/outro sem inferência. Somente quantidades/cargas em VA; sem localização, lux, circuitos ou conformidade integral.",
+        tests=("tests/test_residential.py",),
+        label="Previsão mínima de iluminação",
+        purpose="Previsão de carga e pontos de iluminação por ambiente; distinta da soma das lâmpadas cadastradas e de estudo de iluminância em lux.",
+        evidence=RESIDENTIAL_EVIDENCE,
+    ),
+    Rule(
+        code="outlets",
+        document="ABNT NBR 5410",
+        edition="2004, versão corrigida 2008",
+        effective_date="2005-03-31",
+        clause="9.5.1; 9.5.2.2.1–9.5.2.2.2",
+        source="https://www.abntcatalogo.com.br/",
+        status="calculated",
+        reason="Procedimento de previsão residencial implementado e testado no escopo indicado; não certifica a instalação.",
+        inputs=(
+            "environment.type",
+            "environment.area_m2",
+            "environment.perimeter_m",
+            "environment.outlets",
+        ),
+        procedure="app.calculations.residential.outlet_minimum/outlet_load",
+        limits="Opt-in residencial, ambientes internos classificados. Quantidade de pontos e VA; sem verificação de localização, distribuição ou circuitos. Método básico sem redução opcional para conjunto de áreas molhadas.",
+        tests=("tests/test_residential.py",),
+        label="Previsão de tomadas",
+        purpose="Previsão de pontos e cargas de tomadas por ambiente; distinta da lista de eletrodomésticos cadastrados.",
+        evidence=RESIDENTIAL_EVIDENCE,
+    ),
+    Rule(
+        "demand",
+        "Energisa NDU-001",
+        "7.0",
+        "2024-11-01",
+        None,
+        "https://www.energisa.com.br/normas-tecnicas",
+        "awaiting_technical_validation",
+        "Método identificado na seção 9.1 em trechos indexados do PDF oficial; leitura integral das tabelas e condições ainda indisponível (HTTP 403).",
+        ("utility", "loads", "demand_classification"),
+        label="Demanda da distribuidora",
+        purpose="Estimativa de potência demandada pelo método da distribuidora; não é potência instalada nem consumo mensal.",
+        evidence=(
+            ResearchEvidence(
+                title="Portal oficial de normas Energisa",
+                url="https://www.energisa.com.br/normas-tecnicas",
+                finding="Portal indexado identifica NDU-001 versão 7.0, vigência 01/11/2024.",
+                access="official_index",
+            ),
+            ResearchEvidence(
+                title="Energisa NDU-001 — PDF oficial",
+                url="https://www.energisa.com.br/sites/energisa/files/media/documents/2025-11/NDU%20001%20-%20Fornecimento%20de%20Energia%20El%C3%A9trica%20em%20Tens%C3%A3o%20Secund%C3%A1ria%20a%20Edifica%C3%A7%C3%B5es%20Individuais_0.pdf",
+                finding="Indexação identifica conceitos de carga instalada/demanda e método com sete parcelas por grupos. A leitura integral foi bloqueada; não autoriza executar fatores.",
+                access="official_index",
+                section="5.7/5.11 (p. 14) e 9.1 (p. 56), identificadas na indexação",
+            ),
+        ),
+        pending_checks=(
+            "Obter íntegra oficial e conferir vigência, erratas e escopo para a distribuidora/localidade.",
+            "Auditar tabelas, notas, faixas e classificação de cada carga, sem dupla contagem.",
+            "Revisar a base de iluminação/tomadas e as unidades de cada parcela.",
+            "Conferir exemplos independentes e testes de limites antes de habilitar o cálculo.",
+        ),
+    ),
+)
+
+
+def pending_rule(code: str) -> dict:
+    rule = next(rule for rule in RULES if rule.code == code)
+    return {
+        "value": None,
+        "unit": "kVA" if code == "demand" else "VA",
+        "status": "pending" if rule.procedure else rule.status,
+        "reference": asdict(rule),
+        "reason": rule.reason,
+    }
