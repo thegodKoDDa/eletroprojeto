@@ -34,6 +34,10 @@ def encrypt_checkpoint(checkpoint, destination, recipient, *, homedir=None):
         with tarfile.open(archive, "w") as bundle:
             for name in ("source.zip", "data.sqlite3", "manifest.json", "VERIFIED.json"):
                 bundle.add(checkpoint / name, arcname=f"{checkpoint.name}/{name}")
+            if (checkpoint / "repository.bundle").is_file():
+                bundle.add(
+                    checkpoint / "repository.bundle", arcname=f"{checkpoint.name}/repository.bundle"
+                )
         os.chmod(archive, 0o600)
         ciphertext = Path(directory, "checkpoint.gpg")
         command = ["gpg", "--batch"]

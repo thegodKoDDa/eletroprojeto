@@ -85,6 +85,7 @@ def source_files(root):
                     ".tar.gz",
                     ".tgz",
                     ".7z",
+                    ".bundle",
                 )
             ):
                 continue
@@ -203,6 +204,24 @@ def verify(folder):
                 if database_info(restored) != manifest["state"]["database"]:
                     raise ValueError("Estado restaurado divergente")
                 list(restored.iterdump())
+        if manifest.get("git_bundle_sha256"):
+            bundle = folder / "repository.bundle"
+            if digest(bundle.read_bytes()) != manifest["git_bundle_sha256"]:
+                raise ValueError("Hash do histórico Git divergente")
+            clone = target / "git-restore"
+            subprocess.run(
+                ["git", "clone", "--bare", str(bundle.resolve()), str(clone)],
+                check=True,
+                capture_output=True,
+            )
+            head = subprocess.run(
+                ["git", "-C", str(clone), "rev-parse", "HEAD"],
+                check=True,
+                capture_output=True,
+                text=True,
+            ).stdout.strip()
+            if head != manifest["state"]["git"]["commit"]:
+                raise ValueError("Commit restaurado divergente")
     return {
         "verified": True,
         "files": len(manifest["files"]),
@@ -248,9 +267,17 @@ def checkpoint(root):
         "limitations": [
             "Não captura buffers não salvos do editor.",
             "Não substitui cópia externa.",
-            "Não contém dependências instaladas, segredos ou arquivos .env privados.",
+            "Fonte exclui dependências e arquivos privados conhecidos; revisar também segredos no histórico Git.",
         ],
     }
+    if state["git"].get("available") and state["git"].get("commit"):
+        bundle = folder / "repository.bundle"
+        subprocess.run(
+            ["git", "-C", str(root), "bundle", "create", str(bundle.resolve()), "--all"],
+            check=True,
+            capture_output=True,
+        )
+        manifest["git_bundle_sha256"] = digest(bundle.read_bytes())
     (folder / "manifest.json").write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + "\n")
     for path in folder.iterdir():
         os.chmod(path, 0o600)

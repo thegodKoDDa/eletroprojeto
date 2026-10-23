@@ -37,3 +37,4 @@ id_ed25519
 *.tgz
 *.7z
 *.log
+*.bundle

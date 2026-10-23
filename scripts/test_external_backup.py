@@ -19,6 +19,24 @@ class EncryptedBackupTests(unittest.TestCase):
         self.addCleanup(fixture.doCleanups)
         import continuity
 
+        if shutil.which("git"):
+            for args in [
+                ("init",),
+                ("add", "AGENTS.md"),
+                (
+                    "-c",
+                    "user.name=QA",
+                    "-c",
+                    "user.email=qa@example.invalid",
+                    "commit",
+                    "-m",
+                    "QA baseline",
+                ),
+            ]:
+                subprocess.run(
+                    ["git", "-C", str(fixture.root), *args], check=True, capture_output=True
+                )
+
         result = continuity.checkpoint(fixture.root)
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)

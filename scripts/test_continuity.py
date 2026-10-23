@@ -1,5 +1,8 @@
 import importlib.util
+import os
+import shutil
 import sqlite3
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
@@ -31,7 +34,11 @@ class ContinuityTests(unittest.TestCase):
         self.db.execute("INSERT INTO alembic_version VALUES ('0003')")
         self.db.execute("INSERT INTO projects VALUES ('ativo', NULL), ('lixeira', '2026-10-22')")
         self.db.commit()
-        self.env = patch.dict("os.environ", {}, clear=True)
+        self.env = patch.dict(
+            "os.environ",
+            {key: os.environ[key] for key in ("PATH", "SYSTEMROOT") if key in os.environ},
+            clear=True,
+        )
         self.env.start()
         self.addCleanup(self.env.stop)
 
@@ -111,6 +118,31 @@ class ContinuityTests(unittest.TestCase):
         second = c.checkpoint(self.root)["checkpoint"]
         self.assertNotEqual(first, second)
         self.assertEqual(c.check(self.root)["database"]["counts"]["projects"], 2)
+
+    @unittest.skipUnless(shutil.which("git"), "Git não disponível")
+    def test_git_history_is_restored_and_corruption_rejected(self):
+        def git(*args):
+            return subprocess.run(
+                ["git", "-C", str(self.root), *args], check=True, capture_output=True, text=True
+            )
+
+        git("init")
+        git("add", "AGENTS.md")
+        git(
+            "-c",
+            "user.name=QA",
+            "-c",
+            "user.email=qa@example.invalid",
+            "commit",
+            "-m",
+            "QA baseline",
+        )
+        folder = Path(c.checkpoint(self.root)["checkpoint"])
+        self.assertTrue((folder / "repository.bundle").is_file())
+        self.assertTrue(c.verify(folder)["verified"])
+        (folder / "repository.bundle").write_bytes(b"corrupt")
+        with self.assertRaises(ValueError):
+            c.verify(folder)
 
 
 if __name__ == "__main__":
