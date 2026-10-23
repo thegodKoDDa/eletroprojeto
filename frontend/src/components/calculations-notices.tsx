@@ -35,7 +35,7 @@ export function focusField(id: string) {
 export function CalculationNotices({ notices, stale }: { notices: Notice[]; stale: boolean }) {
   if (stale) return <p className="text-xs muted">Revalidando avisos para as entradas atuais…</p>;
   return (
-    <div className="space-y-2" aria-label="Avisos do cálculo">
+    <div className="space-y-2" role="group" aria-label="Avisos do cálculo">
       {groups.map((group) => {
         const items = [
           ...new Map(

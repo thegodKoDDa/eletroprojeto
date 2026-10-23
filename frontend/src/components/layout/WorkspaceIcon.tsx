@@ -1,4 +1,5 @@
-export type WorkspaceIconName = 'home' | 'new' | 'library' | 'trash' | 'project' | 'copy';
+export type WorkspaceIconName =
+  'home' | 'new' | 'library' | 'trash' | 'project' | 'copy' | 'save' | 'download';
 
 export function WorkspaceIcon({ name }: { name: WorkspaceIconName }) {
   return (
@@ -14,6 +15,17 @@ export function WorkspaceIcon({ name }: { name: WorkspaceIconName }) {
       aria-hidden="true"
       focusable="false"
     >
+      {name === 'save' && (
+        <>
+          <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h12l4 4v12a2 2 0 0 1-2 2Z" />
+          <path d="M7 3v6h10V3M7 21v-8h10v8" />
+        </>
+      )}
+      {name === 'download' && (
+        <>
+          <path d="M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5" />
+        </>
+      )}
       {name === 'copy' && (
         <>
           <rect x="8" y="8" width="12" height="13" rx="2" />

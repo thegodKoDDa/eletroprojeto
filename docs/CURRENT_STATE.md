@@ -1,36 +1,37 @@
-# Estado atual — EletroProjeto 0.13.0 / motor 0.8.0
+# Estado atual — EletroProjeto 0.13.1 / motor 0.8.0
 
 ## Escopo vigente
 
-Decisão explícita do usuário em23/10/2026: uso LOCAL. Publicação/infraestrutura remota, CI hospedado, impressão física e backup externo foram retirados do trabalho atual. Não solicitar recursos nem bloquear a evolução por esses itens. Recursos existentes de segurança/backup/CI ficam preservados; checkpoints locais continuam em uso.
+Uso LOCAL por decisão explícita do usuário. Publicação/infraestrutura remota, CI hospedado, impressão física e backup externo fora do trabalho atual. Preservar checkpoints locais, recursos existentes, dados e produto; não cobrar esses itens descartados.
 
-## Entrega — demanda integrada ao projeto
+## Entrega — polimento geral da interface, 23/10/2026
 
-Painel opcional de demanda NDU-0017.0 entre ambientes e resultados. Classificação explícita por carga, reservas e tipo AC; confirmação de unidade, letreiros/vitrines, simultaneidade luz/TUG e grupos ausentes. O mesmo motor puro d1–d5 atende endpoint parametrizado e cadastro/PDF/JSON, sem fórmulas no frontend ou alteração dos fatores já conferidos.
+Etapas01/02/03 padronizadas com SectionHeading (marcador, título e descrição); revisão Energisa segue a mesma hierarquia. Campos, selects, checkboxes, disclosures, botões, bordas, raios, espaçamentos, hover/foco, ativo/aberto/desativado e opções do catálogo revisados. Tema escuro e organização principal preservados.
 
-Revisão vinculada por SHA256 ao inventário/escopo. Mudanças de cargas, potências, quantidades, classificação, reservas, IDs ou declarações invalidam a revisão, inclusive via API ou após salvar/reabrir. Não há classificação presumida pelo catálogo nem conversão de previsãoVA/BTU/kWh emW. Inventário vazio, dados desconhecidos, inconsistências ou falta de revisão mantêm valor nulo. Reservas não entram na demanda, mas entram na conferência de instalada/75kW.
+Checkboxes não herdam mais padding de campos de texto:18px, padding zero, rótulo clicável/alinhado e foco visível. Salvamento automático está sempre visível em cartão próprio, com estado Após salvar/Ativado/Desativado/Pausado/Salvando e explicação. Mantidos debounce1,5s, primeiro salvamento manual, pausa em renomeação/conflito e proteção contra repetição de falhas. Preferência continua da sessão, sem novo armazenamento.
 
-Escopo: residência individual Energisa Sul-Sudeste/SP até75kW, d1–d5. d6/d7, centrais presentes, agrupamentos, outra distribuidora/UF e demais condições incompatíveis permanecem fora do escopo. Não há dimensionamento final ou aprovação da concessionária. Fontes/condições em standards.md e matemática em calculations.md.
+Observações em área própria sempre visível, cinco linhas redimensionáveis, limite10.000, contador e descrição acessível. Outros dados mantém apenas campos complementares. Mais ações tem ícones alinhados, seta/estado aberto, lixeira separada, títulos explicativos e fechamento por Escape/foco/clique fora; bloqueio inclui salvamento/exportação. Avisos ganharam role group compatível com aria-label. Indicador Next de desenvolvimento desativado por sobrepor controles no celular; erros continuam visíveis.
 
-Relatórios PDF/JSON1.3 trazem inventário, declarações/revisão, grupos, fatores/faixas, demanda e pendências. Resumo oculta demanda anterior durante recálculo; guard de exportação inclui configurações novas no digest. Contratos gerados por types:sync; API/frontend0.13.0, motor0.8.0, schema0005 sem nova migração.
+## Funcionalidades preservadas
 
-## Dados e verificação observada
+Projetos/biblioteca/lixeira/histórico, rascunhos/conflitos, catálogo persistente, valores manuais, consumo/custo, previsão residencial luz/TUG e demandaNDU7.0 d1–d5 com inventário/classificação/revisão explícitos. Revisão de demanda vinculada ao digest: alteração relevante invalida confirmação; resultado antigo oculto durante recálculo e exportação exige snapshot atual. Escopo residencial individual Energisa Sul-Sudeste/SP até75kW, sem d6/d7/centrais presentes/agrupamentos. Sem dimensionamento final ou aprovação da concessionária. Fontes/regras em standards/calculations; UI em forms-and-pdf.
 
-9 projetos (8 ativos/1 na lixeira),29 históricos,7 revisões técnicas. Todas as colunas dessas três tabelas comparadas ao checkpoint anterior e idênticas; SQLite íntegro/FK sem violações. Nenhum projeto legado regravado/classificado/revisado automaticamente; catálogo e potências manuais preservados.
+API/frontend0.13.1, motor0.8.0 e JSON1.3; schema0005, sem migração. Nenhuma fórmula/norma/catálogo ou dependência runtime alterada; locks comparados estruturalmente ao Git, somente versão própria mudou. Contratos gerados por types:sync; instalação editável Python atualizada.
 
-- Backend345 testes+85 subtestes; continuidade/backup8 (execução conjunta353+85 aprovada).
-- Frontend92; tipos/lint/formatação; Ruff; Alembic check e pip check aprovados.
-- Suíte local13E2E aprovada; repetição direcionada do fluxo final de demanda aprovada, incluindo axe com painel ativo, PDF/JSON, reabertura, edição, exclusão por escopo e telas320/768/1440.
-- Build webpack aprovado após alterações finais de frontend. Contratos sincronizados. PDF baixado no navegador, extraído/renderizado independentemente e página de demanda inspecionada, sem cortes observados no exemplo de três páginas.
-- Smoke API real:6,913043478…kVA para1000W d1+5500W d2 revisados. Health0.13.0/motor0.8.0; frontend3000 HTTP200 e navegador real sem pageerrors/versão correta. API PID567673/sessão73185; frontend existente preservado. Revalidar processos em cada retomada.
+## Dados e verificações desta entrega
 
-PostgreSQL, Windows e E2EHTTPS não repetidos nesta entrega local; evidências anteriores continuam históricas. Sem nova migração ou dependência de execução. Instalação editável Python atualizada para0.13.0 com build isolado temporário; tentativa sem isolamento falhou por setuptools ausente, resolvida sem adicioná-lo ao runtime.
+Banco inicial desta tarefa:9projetos (8ativos/1lixeira),30históricos,8revisões técnicas. Todas as colunas das três tabelas comparadas ao checkpoint inicial e idênticas; SQLite íntegro/FK sem violações. Testes de gravação usaram banco QA isolado, não os projetos reais.
 
-## Continuidade e próximos passos
+- Backend345+85subtestes e continuidade8 (353+85 conjuntos),92frontend aprovados.
+- 14E2E locais aprovados; repetição final de interface.spec após ocultar indicadorNext também aprovada.
+- Teste novo verifica autosave desligado semPUT/ligado com persistência real QA, observações multilinha, tipografia dos três cabeçalhos, menu por teclado/Escape/clique fora, axe e telas320/390/768/1024/1440, sem overflow horizontal. Checkbox18px/textarea>130px conferidos.
+- Capturas desktop/celular inspecionadas em/tmp/eletroprojeto-{project,actions}-polish-{390,1440}.png; não representam banco real nem backup.
+- Tipos/lint/formatação/buildwebpack/Ruff/contratos/Alembiccheck/pipcheck/npm ls aprovados. Sem alterações em cálculos; PostgreSQL/Windows/E2EHTTPS não repetidos nesta entrega visual local.
 
-Checkpoint anterior à mudança: `.checkpoints/20261023T184620161249Z`, verificado com hashes, restauraçãoSQLite e recuperaçãoGit. Inventários/referências/revisões organizados conforme docs/README.md; PDFs locais em references/energisa, fora de Git/ZIP de código. Caminho do checkpoint final será registrado após geração.
+API reiniciada PID573356/sessão24451 para carregar versão0.13.1; frontend existente preservado e reiniciado automaticamente pelo Next ao mudar configuração. Smoke final no navegador real: versão0.13.1, checkbox18×18px, sem overflow em390px ou pageerrors; health API0.13.1/motor0.8.0 confirmado. Conferir PIDs/portas em cada retomada, sem iniciar duplicados.
 
-Próximas prioridades locais: ampliar exceções normativas somente após fontes/testes próprios; dimensionamento de circuitos/cabos/proteções/queda de tensão/entrada; geometria/localização dos pontos e associação territorial oficial completa. Ver roadmap/KNOWN_ISSUES. Leitor de tela real ainda não conferido. Retomar por AGENTS e `python3 scripts/continuity.py retomar`; não recriar produto ou regravar dados antigos para atualizar regras. Sem push/publicação.
+## Continuidade e próximo passo
 
+Checkpoint inicial `.checkpoints/20261023T191637169089Z`:163arquivos e restaurações SQLite/Git verificadas. Caminho do checkpoint final a registrar após geração. PDFs locais em references/energisa, fora do Git/ZIP de código. Sem push/publicação.
 
-Checkpoint final0.13.0 verificado: `.checkpoints/20261023T190612580807Z`,163arquivos, hashes/ZIP/banco/bundleGit e restauraçãoSQLite/clonagemGit isoladas aprovados. Commit funcional `07b28ab`; registro do caminho posterior à geração preservado em commit documental separado. Banco0005,9projetos/29históricos/7revisões preservados. Sem push/publicação; escopo local conforme decisão do usuário.
+Próximas prioridades locais no roadmap: ampliar exceções normativas somente após fontes/testes próprios; dimensionamento e geometria completos; associação territorial oficial. Leitor de tela real ainda não conferido. Retomar por AGENTS e `python3 scripts/continuity.py retomar`; preservar este polimento e o motor único existente.

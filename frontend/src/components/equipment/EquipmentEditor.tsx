@@ -595,9 +595,9 @@ export function EquipmentEditor({
             (specific === 'appliance' && load.category === 'Aquecimento de água') ||
             (specific === 'lighting' &&
               ['Incandescente', 'Halógena'].includes(load.technology))) && (
-            <label className="self-center">
+            <label className="checkbox-option self-center">
               <input
-                className="mr-2 !w-auto"
+                className="resistive-checkbox"
                 type="checkbox"
                 checked={params.assume_resistive}
                 onChange={(e) =>

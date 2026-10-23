@@ -1,4 +1,5 @@
 'use client';
+import { SectionHeading } from '@/components/ui/SectionHeading';
 
 import type { CalculationResult, Environment, Load, ProjectInput } from '@/lib/api';
 import { format } from '@/lib/format';
@@ -30,12 +31,12 @@ export function DemandReview({ input, result, onChange, onLoadChange }: Props) {
     onChange({ ...defaults, ...settings, ...patch });
   }
   return (
-    <section className="panel" aria-label="Revisão da demanda Energisa">
-      <h2 className="text-lg font-semibold">Demanda Energisa — revisão do inventário</h2>
-      <p className="mt-2 text-sm muted">
-        NDU-001 7.0: residência individual Energisa Sul-Sudeste/SP, até 75 kW, grupos d1–d5.
-        Selecione o grupo de cada carga e confirme o escopo. Não dimensiona circuitos ou entrada.
-      </p>
+    <section className="panel demand-review" aria-label="Revisão da demanda Energisa">
+      <SectionHeading
+        eyebrow="REVISÃO / NDU-001"
+        title="Demanda Energisa — revisão do inventário"
+        description="Residência individual Energisa Sul-Sudeste/SP, até 75 kW, grupos d1–d5. Classifique as cargas e confirme o escopo; este estudo não dimensiona circuitos ou entrada."
+      />
       <label className="mt-4 flex items-center gap-2">
         <input
           type="checkbox"
@@ -122,7 +123,7 @@ export function DemandReview({ input, result, onChange, onLoadChange }: Props) {
                   });
                 }
                 return (
-                  <fieldset className="rounded-lg border border-white/10 p-3" key={load.id}>
+                  <fieldset className="demand-load" key={load.id}>
                     <legend>
                       {room.name} / {load.name}
                     </legend>

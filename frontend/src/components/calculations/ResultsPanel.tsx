@@ -1,4 +1,5 @@
 'use client';
+import { SectionHeading } from '@/components/ui/SectionHeading';
 import { safeReferenceUrl } from '@/lib/safe-url';
 import { useState } from 'react';
 import type { CalculationResult, ProjectInput } from '@/lib/api';
@@ -36,14 +37,12 @@ export function ResultsPanel({
     ['calculated', 'estimated'].includes(String(result.normative.demand.status));
   return (
     <section id="results" className="panel min-h-64" aria-busy={loading} data-stale={stale}>
-      <header className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <p className="eyebrow">03 / CONFERÊNCIA</p>
-          <h2 className="text-lg font-semibold">Resultados e memória de cálculo</h2>
-          <p className="mt-2 text-sm muted">
-            Resultados disponíveis, operações e pendências em um só lugar.
-          </p>
-        </div>
+      <header className="section-header">
+        <SectionHeading
+          eyebrow="03 / CONFERÊNCIA"
+          title="Resultados e memória de cálculo"
+          description="Confira os resultados, a memória e as informações a revisar."
+        />
         <label>
           Apresentação
           <select

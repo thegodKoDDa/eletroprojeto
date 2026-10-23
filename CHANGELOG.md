@@ -1,5 +1,13 @@
 # Histórico de alterações
 
+## 0.13.1 — 23/10/2026
+
+- Polimento geral: títulos das etapas, formulários, seleções, checkboxes, disclosures, botões, bordas, raios, espaçamentos, hover/foco e estados desativados.
+- Salvamento automático visível com estado e explicação; observações maiores, sempre visíveis e com contador. Comportamento de salvamento preservado.
+- Mais ações alinhado, com ícones, estado aberto e fechamento por clique fora/Escape; agrupamento de avisos acessível corrigido.
+- Indicador Next de desenvolvimento retirado para não sobrepor controles locais. Motor0.8.0, normas e dados preservados.
+
+
 ## 0.13.0 — 23/10/2026
 
 - Demanda NDU-0017.0 d1–d5 integrada ao inventário do projeto, com classificação e revisão explícitas, reservas e confirmações de escopo/ausências.

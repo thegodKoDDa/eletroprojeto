@@ -40,7 +40,7 @@ function EquipmentOptions({
           if (template) onAdd(template);
         }}
       >
-        <option value="">＋ Adicionar equipamento</option>
+        <option value="">Adicionar equipamento…</option>
         {relevant.map((item) => (
           <option key={item.id} value={item.id}>
             {item.selection_name ?? item.name}
@@ -48,7 +48,7 @@ function EquipmentOptions({
         ))}
       </select>
       <button
-        className="mt-2 text-xs muted underline"
+        className="picker-toggle"
         aria-pressed={all}
         onClick={() => setAll((value) => !value)}
       >

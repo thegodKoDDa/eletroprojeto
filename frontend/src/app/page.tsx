@@ -17,6 +17,7 @@ import { draftKey, readDrafts, writeDraft, type Draft } from '@/lib/drafts';
 import { AccessBoundary } from '@/components/projects/AccessBoundary';
 import { WorkspaceIcon } from '@/components/layout/WorkspaceIcon';
 import { useCalculation } from '@/lib/use-calculation';
+import { SectionHeading } from '@/components/ui/SectionHeading';
 import { DemandReview } from '@/components/calculations/DemandReview';
 import { EquipmentEditor } from '@/components/equipment/EquipmentEditor';
 import { Field, RequirementsContext, CalculationScopeContext } from '@/components/ui/Field';
@@ -872,9 +873,16 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                   </p>
                 )}
                 <section id="project" className="panel mb-6">
-                  <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-                    <h2 className="font-semibold">01 &nbsp; Dados do projeto</h2>
-                    <span className="text-xs muted">
+                  <header className="section-header">
+                    <SectionHeading
+                      eyebrow="01 / PROJETO"
+                      title="Dados do projeto"
+                      description="Identifique a residência e ajuste as preferências do estudo."
+                    />
+                    <span
+                      className="status-pill"
+                      data-state={saved && !dirty ? 'saved' : 'pending'}
+                    >
                       {saved
                         ? dirty
                           ? 'Alterações não salvas'
@@ -883,8 +891,8 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                           ? 'Rascunho não salvo'
                           : 'Novo projeto'}
                     </span>
-                  </div>
-                  <p className="mb-3 text-xs muted">
+                  </header>
+                  <p className="project-context">
                     {saved
                       ? `Editando projeto salvo: ${saved.name}. Para preservar este registro e criar outro, use Salvar como novo.`
                       : 'Novo projeto independente · o primeiro salvamento criará um registro.'}
@@ -940,10 +948,7 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                           ))}
                       </select>
                     </Field>
-                    <p className="text-xs muted md:col-span-3">
-                      Distribuidoras são candidatas por estado; município e endereço ainda exigem
-                      confirmação. Regras específicas permanecem pendentes de validação.
-                    </p>
+
                     <Field field="project.built_area_m2" label="Área construída (m²)">
                       <input
                         type="number"
@@ -954,19 +959,57 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                       />
                     </Field>
                   </div>
-                  <details className="mt-3">
-                    <summary className="cursor-pointer text-xs muted">
-                      Outros dados do projeto
-                    </summary>
-                    <label className="mt-3 flex items-center gap-2">
-                      <input
-                        className="w-auto"
-                        type="checkbox"
-                        checked={autosave}
-                        onChange={(e) => setAutosave(e.target.checked)}
-                      />
-                      Salvar automaticamente após o primeiro salvamento
-                    </label>
+                  <p className="field-hint mt-3">
+                    A seleção por estado indica distribuidoras candidatas. Confirme qual atende ao
+                    endereço; a demanda depende da revisão no painel Energisa.
+                  </p>
+                  <div className="project-preferences">
+                    <div className="preference-row">
+                      <label className="checkbox-option" htmlFor="project-autosave">
+                        <input
+                          id="project-autosave"
+                          type="checkbox"
+                          checked={autosave}
+                          aria-describedby="autosave-description"
+                          onChange={(e) => setAutosave(e.target.checked)}
+                        />
+                        <span>Salvar automaticamente após o primeiro salvamento</span>
+                      </label>
+                      <span
+                        className="status-pill"
+                        data-state={
+                          !autosave
+                            ? 'neutral'
+                            : !saved || input.name !== saved.name || conflictPending
+                              ? 'pending'
+                              : 'saved'
+                        }
+                      >
+                        {!autosave
+                          ? 'Desativado'
+                          : !saved
+                            ? 'Após salvar'
+                            : input.name !== saved.name || conflictPending
+                              ? 'Pausado'
+                              : saving
+                                ? 'Salvando…'
+                                : 'Ativado'}
+                      </span>
+                    </div>
+                    <p id="autosave-description" className="field-hint">
+                      {!saved
+                        ? 'Salve o projeto uma vez para iniciar o salvamento automático.'
+                        : !autosave
+                          ? 'As próximas alterações serão salvas somente ao escolher Salvar projeto.'
+                          : conflictPending
+                            ? 'Pausado: resolva o conflito de edição antes de continuar.'
+                            : input.name !== saved.name
+                              ? 'Pausado enquanto o nome está alterado. Escolha renomear o projeto ou salvar como novo.'
+                              : 'As alterações são salvas após uma breve pausa na edição. Aguarde a confirmação de salvamento.'}
+                    </p>
+                  </div>
+                  <details className="project-extra disclosure">
+                    <summary>Outros dados do projeto</summary>
                     <div className="mt-3 grid gap-4 md:grid-cols-3">
                       <Field field="project.floors" label="Pavimentos">
                         <input
@@ -980,12 +1023,6 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                         />
                       </Field>
 
-                      {input.reference_voltage_v != null && (
-                        <p className="text-xs muted">
-                          Tensão de referência cadastrada: {input.reference_voltage_v} V
-                          (informativa). Cada equipamento utiliza sua própria tensão.
-                        </p>
-                      )}
                       <Field field="project.residence_type" label="Tipo de residência">
                         <input
                           value={input.residence_type ?? ''}
@@ -1007,29 +1044,47 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                           }
                         />
                       </Field>
-                      <Field field="project.notes" label="Observações" className="md:col-span-2">
-                        <textarea
-                          rows={1}
-                          value={input.notes}
-                          onChange={(e) => change('notes', e.target.value)}
-                        />
-                      </Field>
                     </div>
+                    {input.reference_voltage_v != null && (
+                      <p className="field-hint mt-3">
+                        Tensão de referência cadastrada: {input.reference_voltage_v} V
+                        (informativa). Cada equipamento utiliza sua própria tensão.
+                      </p>
+                    )}
                   </details>
+                  <div className="project-notes">
+                    <Field field="project.notes" label="Observações">
+                      <textarea
+                        rows={5}
+                        maxLength={10000}
+                        placeholder="Registre condições do estudo, equipamentos a conferir e informações úteis para o projeto."
+                        aria-describedby="project-notes-description"
+                        value={input.notes}
+                        onChange={(e) => change('notes', e.target.value)}
+                      />
+                    </Field>
+                    <div className="field-caption">
+                      <p id="project-notes-description" className="field-hint">
+                        Informações complementares que também aparecem no relatório.
+                      </p>
+                      <span className="field-hint">
+                        {input.notes?.length ?? 0} / 10.000 caracteres
+                      </span>
+                    </div>
+                  </div>
                 </section>
                 <section
                   id="environments"
                   className="environments-section"
                   aria-labelledby="environments-title"
                 >
-                  <header className="environments-toolbar">
-                    <div>
-                      <p className="eyebrow">02 / AMBIENTES</p>
-                      <h2 id="environments-title" className="text-lg font-semibold">
-                        Ambientes e equipamentos
-                      </h2>
-                      <p className="mt-1 text-xs muted">Organize cada cômodo e suas cargas.</p>
-                    </div>
+                  <header className="environments-toolbar section-header">
+                    <SectionHeading
+                      eyebrow="02 / AMBIENTES"
+                      title="Ambientes e equipamentos"
+                      id="environments-title"
+                      description="Organize cada cômodo e suas cargas."
+                    />
                     <button
                       className="btn primary add-environment"
                       onClick={addRoom}
@@ -1231,7 +1286,7 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                           />
                           {!catalog.length && (
                             <button className="btn" onClick={() => addLoad(room)}>
-                              ＋ Carga personalizada
+                              <WorkspaceIcon name="new" /> Carga personalizada
                             </button>
                           )}
                           <span className="ml-auto text-sm text-emerald-300">

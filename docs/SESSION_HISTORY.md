@@ -302,3 +302,18 @@ Banco0005,9projetos/29históricos/7revisões: comparação integral nas três ta
 
 
 Checkpoint final0.13.0 verificado: `.checkpoints/20261023T190612580807Z`,163arquivos, hashes/ZIP/banco/bundleGit e restauraçãoSQLite/clonagemGit isoladas aprovados. Commit funcional `07b28ab`; registro do caminho posterior à geração preservado em commit documental separado. Banco0005,9projetos/29históricos/7revisões preservados. Sem push/publicação; escopo local conforme decisão do usuário.
+
+
+## Polimento geral da interface — 0.13.1, 23/10/2026
+
+Pedido de revisão de toda a aparência, com foco em salvamento automático, observações, títulos01/02/03, caixas de seleção e Mais ações. Checkpoint inicial `.checkpoints/20261023T191637169089Z` verificado; banco já tinha9projetos/30históricos/8revisões/0005 ao iniciar, sem depender das contagens anteriores.
+
+Padronizados SectionHeading/page/ResultsPanel/DemandReview; CSS de controles/checkbox/seleções/disclosures/botões/estados e raios; preferências/observações reorganizadas; Field preserva aria-describedby junto de erros; menu com ícones/Escape/clique fora/estado aberto e bloqueio durante saving; agrupamento CalculationNotices com role group. Checkbox herdava padding de campo de texto, causa corrigida na base. Indicador Next oculto para não sobrepor campos no celular. Não alterados autosave/debounce/cancelamento/revisão de demanda/valores manuais nem matemática. Motor0.8.0 e JSON1.3 preservados, sem migração ou dependência nova.
+
+Verificações:345backend+85subtestes,8continuidade (353+85 conjuntos),92frontend,14E2E e repetição final do novo teste de interface com axe, autosave real QA on/off, notas multilinha, menu/teclado/fechamento, dimensões e layouts320/390/768/1024/1440. Tipos/lint/formatação/build/Ruff/contratos/Alembiccheck/pipcheck/npm ls aprovados. Capturas desktop/mobile inspecionadas, sem overflow nos casos testados; artefatos fictícios em/tmp/eletroprojeto-{project,actions}-polish-{390,1440}.png. Windows/PostgreSQL/HTTPS não repetidos para este polimento local.
+
+Primeira rodada E2E aprovou13 mas encontrou aria-label sem role no agrupamento de avisos, corrigido e14aprovados. Tipagem apontou declaração duplicada de aria-describedby, removida antes da rodada final. Chamadas iniciais de ferramentas usaram cwd incorreto e foram interrompidas/corrigidas. Revisão do diff encontrou substituição textual ampla de0.13.0 afetando metadados ESLint/engines do lock; reconstruídos package/lock a partir do Git alterando somente a versão própria. Comparação estrutural comprovou dependências/locks preservados e npm ls aprovado; nenhuma atualização de dependência entregue.
+
+Banco real comparado integralmente ao checkpoint inicial: três tabelas idênticas,9projetos/30históricos/8revisões,integridade/FKok; nenhuma gravação pela tarefa. API atualizada para0.13.1/PID573356/sessão24451; frontend existente mantido, config recarregada automaticamente. Escopo local e exclusões anteriores permanecem; sem push/publicação. Commit/checkpoint final a registrar após revisão.
+
+Smoke final real aprovado: frontend0.13.1, checkbox18×18px, sem overflow390px/pageerrors; API health0.13.1/motor0.8.0. Navegador isolado criou somente rascunho local temporário, sem salvar no servidor.

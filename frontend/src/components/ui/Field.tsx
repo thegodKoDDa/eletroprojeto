@@ -96,7 +96,10 @@ export function Field({
         required,
         'aria-required': required,
         'aria-invalid': !!error,
-        'aria-describedby': error ? `${path}-error` : undefined,
+        'aria-describedby':
+          [props['aria-describedby'], ...(error ? [`${path}-error`] : [])]
+            .filter(Boolean)
+            .join(' ') || undefined,
       }),
     };
   });

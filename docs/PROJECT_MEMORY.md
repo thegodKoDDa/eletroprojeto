@@ -1,5 +1,8 @@
 # Memória duradoura — EletroProjeto
 
+0.13.1: polimento geral de interface; SectionHeading padroniza etapas, checkbox não herda padding de texto, salvamento automático visível com estado contextual, observações separadas/maiores e Mais ações com teclado/Escape/clique fora. Motor0.8.0 e regras intactos. Não reintroduzir estilos isolados de cabeçalho nem padding em checkbox; observações e autosave não ficam escondidos em Outros dados. Detalhes em forms-and-pdf.md.
+
+
 Decisão vigente — 23/10/2026: foco em uso LOCAL. Publicação/infraestrutura remota e CI hospedado, impressão física e backup externo estão fora do escopo atual por escolha explícita do usuário; não cobrar nem bloquear entregas por esses itens. Preservar checkpoints locais e proteções existentes.0.13.0/motor0.8.0 integra NDU7.0 d1–d5 ao cadastro e relatórios com revisão vinculada por hash; nomes/classificações não são inferidos do catálogo. Mudança de inventário/escopo invalida revisão. Registros de versões abaixo são históricos e não substituem CURRENT_STATE/roadmap.
 
 

@@ -122,3 +122,16 @@ No modo remoto HTTPS, o editor só é montado após autenticação; sair desmont
 ## Demanda integrada — 0.13.0
 
 Painel de revisão NDU7.0 entre ambientes e resultados, com ativação opcional, classificação explícita por carga, reserva, tipo AC, escopo/ausências/simultaneidade e confirmação de inventário. Confirmação é vinculada ao digest emitido pelo backend; alterações invalidam a revisão e ocultam demanda antiga no recálculo. PDF/JSON1.3 incluem declarações, inventário e memória por grupo/faixa, além de pendências/limites. PDF usa rótulos em português para declarações. As fórmulas permanecem no motor único. Decisão do usuário: operação local; impressão física fora do escopo.
+
+
+## Polimento geral da interface — 0.13.1, 23/10/2026
+
+Padronização visual mantendo tema escuro, estrutura, dados e motor0.8.0. SectionHeading reúne marcador/etapa, título e descrição; Dados do projeto, Ambientes, Conferência e revisão Energisa usam a mesma hierarquia. CSS consolida raios e estilos de campos, selects com seta consistente, foco, hover, seleção, avisos/erros e desativados; botões mantêm área mínima e disclosures usam indicadores uniformes.
+
+Causa dos checkboxes desarrumados: seletor global de input aplicava padding de campo de texto. Campos de texto agora excluem checkbox; caixas nativas têm18px, padding zero, alinhamento superior e rótulo inteiro clicável, inclusive demanda e hipótese resistiva. Salvamento automático está visível no cartão de preferências, com indicação Após salvar/Ativado/Desativado/Pausado/Salvando e explicação contextual. Mantidos debounce1,5s, pausa em renomeação/conflito e proteção contra repetição de falha; preferências continuam da sessão, sem novo armazenamento.
+
+Observações passaram a área própria sempre visível, cinco linhas redimensionáveis, limite10.000, contador e descrição acessível preservada pelo Field junto com erros. Campos complementares ficam em Outros dados sem intercalar textos no grid principal. Valores e conteúdo não são regravados por layout.
+
+Mais ações mantém details nativo/teclado; rótulo/seta alinhados, estado aberto explícito, opções com ícones e lixeira separada. Fecha por Escape, saída de foco e clique fora; callbacks mantêm retorno de foco ao acionador. Bloqueio inclui saving/busy/exporting e exportações respeitam cálculo atual; títulos explicam indisponibilidade. Role do agrupamento de avisos corrigido para group após axe encontrar aria-label num div sem papel. Indicador Next de desenvolvimento desativado por sobrepor controles no celular; erros de compilação/execução continuam visíveis.
+
+Regressão E2E interface.spec.ts verifica autosave desligado/ligado com consulta real ao banco QA, observações multilinha, cabeçalhos, teclado/Escape/clique fora, axe e layouts320/390/768/1024/1440. Capturas QA em/tmp/eletroprojeto-{project,actions}-polish-{390,1440}.png. Testes e verificações finais no CURRENT_STATE/SESSION_HISTORY. Sem alteração de fórmulas, fontes normativas, migrações ou catálogo.
