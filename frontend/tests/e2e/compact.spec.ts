@@ -1,0 +1,81 @@
+import { test, expect } from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
+
+test('home hides sidebar and equipment disclosures stay compact and functional', async ({
+  page,
+}) => {
+  await page.goto('/');
+  const sidebar = page.locator('.workspace-sidebar');
+  await expect(sidebar).toHaveCount(0);
+  await expect(page.locator('.home-brandbar .brand-name')).toHaveText('EletroProjeto');
+  await expect(page.locator('.workspace-footer')).toContainText('Estudo preliminar');
+  expect(
+    (await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze())
+      .violations,
+  ).toEqual([]);
+  for (const width of [320, 390, 768, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+      true,
+    );
+    if (width === 1440)
+      expect(
+        (await page.locator('.workspace-footer').boundingBox())!.y +
+          (await page.locator('.workspace-footer').boundingBox())!.height,
+      ).toBeLessThanOrEqual(900);
+    if (width === 390 || width === 1440) {
+      await page.evaluate(() => window.scrollTo(0, 0));
+      await page.screenshot({
+        path: `/tmp/eletroprojeto-home-compact-${width}.png`,
+        fullPage: true,
+      });
+    }
+  }
+  await page.getByRole('button', { name: /^Acessar lixeira/ }).click();
+  await expect(sidebar).toBeVisible();
+  await sidebar.getByRole('button', { name: 'Início', exact: true }).click();
+  await expect(sidebar).toHaveCount(0);
+  await page.getByRole('button', { name: /^Abrir projetos salvos/ }).click();
+  await expect(sidebar).toBeVisible();
+  await sidebar.getByRole('button', { name: 'Início', exact: true }).click();
+  await page.getByRole('button', { name: /^Criar novo projeto/ }).click();
+  await expect(sidebar).toBeVisible();
+  await page.getByRole('button', { name: 'Adicionar primeiro ambiente' }).click();
+  await page
+    .getByLabel('Adicionar equipamento em Novo ambiente', { exact: true })
+    .selectOption('philips-led-929001195311');
+  await expect(page.getByTestId('calculation-status')).toContainText('Resultados atualizados');
+  const equipment = page.getByTestId('equipment-editor');
+  const summaries = equipment.locator('.equipment-options > details > summary');
+  await expect(summaries).toHaveCount(3);
+  const geometry = await summaries.evaluateAll((nodes) =>
+    nodes.map((node) => ({
+      y: node.getBoundingClientRect().y,
+      height: node.getBoundingClientRect().height,
+    })),
+  );
+  expect(geometry.every((item) => item.height <= 34)).toBe(true);
+  expect(
+    Math.max(...geometry.map((item) => item.y)) - Math.min(...geometry.map((item) => item.y)),
+  ).toBeLessThan(2);
+  for (const key of ['equipment-advanced', 'equipment-energy', 'equipment-reference']) {
+    const disclosure = equipment.getByTestId(key);
+    await disclosure.locator('summary').click();
+    await expect(disclosure).toHaveAttribute('open', '');
+    await disclosure.locator('summary').click();
+    await expect(disclosure).not.toHaveAttribute('open', '');
+  }
+  for (const width of [320, 390, 768, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+      true,
+    );
+    if (width === 390 || width === 1440)
+      await equipment.screenshot({ path: `/tmp/eletroprojeto-equipment-compact-${width}.png` });
+  }
+  await sidebar.getByRole('button', { name: 'Início', exact: true }).click();
+  await expect(sidebar).toHaveCount(0);
+  await page.getByRole('button', { name: 'Continuar edição', exact: true }).click();
+  await expect(sidebar).toBeVisible();
+  await expect(page.getByTestId('equipment-editor')).toHaveCount(1);
+});

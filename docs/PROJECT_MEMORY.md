@@ -2,9 +2,11 @@
 
 ## Estado e escopo vigentes
 
-Aplicação local de estudo/cálculo elétrico residencial, para leigos, estudantes e profissionais. Preservar produto, dados, funcionalidades e identidade visual; não recriar. API/frontend0.14.0, motor0.8.0, JSON de relatório1.3, banco/schema0005. Versões e testes atuais em CURRENT_STATE; roadmap/KNOWN_ISSUES descrevem o que realmente falta. Registros anteriores foram preservados em SESSION_HISTORY, CHANGELOG, Git e checkpoints; não tratar limitações históricas como atuais.
+Aplicação local de estudo/cálculo elétrico residencial, para leigos, estudantes e profissionais. Preservar produto, dados, funcionalidades e identidade visual; não recriar. API/frontend0.14.1, motor0.8.0, JSON de relatório1.3, banco/schema0005. Versões e testes atuais em CURRENT_STATE; roadmap/KNOWN_ISSUES descrevem o que realmente falta. Registros anteriores foram preservados em SESSION_HISTORY, CHANGELOG, Git e checkpoints; não tratar limitações históricas como atuais.
 
 Usuário autorizou otimizar armazenamento, salvamento, continuidade, estrutura e limpeza, mantendo funcionalidade. Publicação/infraestrutura remota/CI hospedado, impressão física e backup externo foram retirados do escopo atual; não voltar a cobrá-los. Manter mecanismos existentes e checkpoints locais. Rotinas de terminal/testes/contratos/migrações/serviços são executadas pelo agente, sem delegar ao usuário. Restrições obrigatórias do ambiente continuam válidas; nunca push sem autorização.
+
+Início0.14.1 sem navegação lateral, com marca/logo/rodapé preservados. Aside aparece ao criar/abrir projetos ou lixeira e some ao voltar ao início. Interface compacta, especialmente disclosures nativos de equipamentos; preservar campos, teclado e estado de edição.
 
 ## Invariantes de produto
 

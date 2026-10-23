@@ -32,7 +32,7 @@ test('reviewed demand persists, exports and becomes pending after editing', asyn
   });
   expect(saved.ok()).toBeTruthy();
   await page.goto('/');
-  await page.locator('aside').getByRole('button', { name: 'Projetos salvos', exact: true }).click();
+  await page.getByRole('button', { name: /^Abrir projetos salvos/ }).click();
   await page.getByRole('button', { name, exact: true }).click();
   const panel = page.getByRole('region', { name: 'Revisão da demanda Energisa' });
   await expect(panel).toContainText('Demanda pendente de revisão');
@@ -46,7 +46,7 @@ test('reviewed demand persists, exports and becomes pending after editing', asyn
   await expect(page.getByTestId('project-message')).toContainText('Projeto salvo');
   await page.reload();
   // A saved project remains in the library after reload.
-  await page.locator('aside').getByRole('button', { name: 'Projetos salvos', exact: true }).click();
+  await page.getByRole('button', { name: /^Abrir projetos salvos/ }).click();
   await page.getByRole('button', { name, exact: true }).click();
   await expect(panel).toContainText('Demanda estimada: 6,913 kVA');
   await expect(review).toBeChecked();

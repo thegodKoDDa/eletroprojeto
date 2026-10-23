@@ -512,7 +512,7 @@ test('removes recent projects and loads the library only when requested', async 
   });
   expect(screen.queryByText('Recentes')).toBeNull();
   expect(fetch.mock.calls.some(([url]) => url.includes('/projects/summaries?'))).toBe(false);
-  fireEvent.click(screen.getByRole('button', { name: 'Projetos salvos' }));
+  fireEvent.click(screen.getByRole('button', { name: /^Abrir projetos salvos/ }));
   await act(async () => {
     await vi.advanceTimersByTimeAsync(250);
   });

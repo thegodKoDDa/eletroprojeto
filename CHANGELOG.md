@@ -1,5 +1,11 @@
 # Histórico de alterações
 
+## 0.14.1 — 23/10/2026
+
+- Tela inicial sem barra lateral; marca, logo, saída da conta e rodapé preservados. Navegação lateral aparece ao entrar em criação, biblioteca ou lixeira; edição mantida ao voltar.
+- Espaçamentos e controles mais compactos. Configurações avançadas, consumo mensal e referências dos equipamentos agrupados em disclosures menores com quebra responsiva, sem retirar conteúdo.
+- Regressão:348backend+85subtestes,92frontend,16E2E,1E2EHTTPS, contratos/tipos/lint/formatação/build e Alembiccheck aprovados. Sem mudanças de dependências, dados, fórmulas ou migrações.
+
 ## 0.14.0 — 23/10/2026
 
 - Biblioteca SQL leve, busca compartilhada por nome/município, projeto completo só ao abrir; listagem real328.785→2.827bytes (-99,14%).

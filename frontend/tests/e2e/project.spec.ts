@@ -146,7 +146,7 @@ test('full reference workflow, stable editing, persistence and mobile layout', a
   await page.getByRole('button', { name: 'Salvar projeto', exact: true }).click();
   await expect(page.getByTestId('project-message')).toContainText('Projeto salvo');
   await page.reload();
-  await page.locator('aside').getByRole('button', { name: 'Projetos salvos', exact: true }).click();
+  await page.getByRole('button', { name: /^Abrir projetos salvos/ }).click();
   await page
     .getByRole('region', { name: 'Projetos salvos' })
     .getByRole('button', { name: projectName, exact: true })
@@ -202,11 +202,11 @@ test('five saved projects survive reload, library navigation and independent upd
     await expect(page.getByTestId('project-message')).toContainText('Projeto salvo');
   }
   expect(new Set(ids).size).toBe(5);
-  const workspace = page.locator('aside');
+  const workspace = page.locator('.workspace-sidebar');
   await expect(workspace.locator('article')).toHaveCount(0);
   await page.reload();
   await expect(workspace.locator('article')).toHaveCount(0);
-  await workspace.getByRole('button', { name: 'Projetos salvos' }).click();
+  await page.getByRole('button', { name: /^Abrir projetos salvos/ }).click();
   const library = page.getByRole('region', { name: 'Projetos salvos' });
   await library.getByLabel('Pesquisar projetos').fill(prefix);
   await expect(library.locator('article')).toHaveCount(5);
@@ -276,7 +276,7 @@ test('home, draft continuity, library, duplication, trash and exports work toget
     potencia_conhecida_w: '27',
   });
   expect(json.emissao.fuso).toBe('America/Sao_Paulo');
-  const sidebar = page.locator('aside');
+  const sidebar = page.locator('.workspace-sidebar');
   await sidebar.getByRole('button', { name: 'Projetos salvos', exact: true }).click();
   const library = page.getByRole('region', { name: 'Projetos salvos' });
   await library.getByLabel('Pesquisar projetos').fill(name);
@@ -288,7 +288,7 @@ test('home, draft continuity, library, duplication, trash and exports work toget
   await expect(
     page.getByRole('heading', { name: 'Seu próximo projeto começa aqui.' }),
   ).toBeVisible();
-  await sidebar.getByRole('button', { name: 'Lixeira', exact: true }).click();
+  await page.getByRole('button', { name: /^Acessar lixeira/ }).click();
   const trash = page.getByRole('region', { name: 'Lixeira' });
   await trash.getByRole('button', { name: `Restaurar ${name}`, exact: true }).click();
   await expect(trash.locator('article')).toHaveCount(0);
@@ -296,10 +296,10 @@ test('home, draft continuity, library, duplication, trash and exports work toget
   const restored = await (await request.get(`http://127.0.0.1:8010/api/v1/projects/${id}`)).json();
   expect(restored.environments[0].loads[0].quantity).toBe(3);
   // Delete only this test's restored record, then exercise the confirmed purge flow.
-  await sidebar.getByRole('button', { name: 'Projetos salvos', exact: true }).click();
+  await page.getByRole('button', { name: /^Abrir projetos salvos/ }).click();
   await library.getByRole('button', { name: `Excluir ${name}`, exact: true }).click();
   await sidebar.getByRole('button', { name: 'Início', exact: true }).click();
-  await sidebar.getByRole('button', { name: 'Lixeira', exact: true }).click();
+  await page.getByRole('button', { name: /^Acessar lixeira/ }).click();
   await trash.getByRole('button', { name: `Excluir definitivamente ${name}`, exact: true }).click();
   await expect(trash.locator('article')).toHaveCount(0);
   await sidebar.getByRole('button', { name: 'Início', exact: true }).click();
@@ -309,9 +309,7 @@ test('home, draft continuity, library, duplication, trash and exports work toget
     expect(
       await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
     ).toBe(true);
-    expect(await sidebar.evaluate((element) => element.scrollWidth <= element.clientWidth)).toBe(
-      true,
-    );
+    await expect(sidebar).toHaveCount(0);
   }
   await page.setViewportSize({ width: 390, height: 844 });
   await page.screenshot({ path: '/tmp/eletroprojeto-home-mobile.png', fullPage: true });
@@ -321,9 +319,9 @@ test('workspace buttons remain usable between sections, with clear focus and bus
   page,
 }) => {
   await page.goto('/');
-  const sidebar = page.locator('aside');
+  const sidebar = page.locator('.workspace-sidebar');
   await expect(sidebar.getByText('Recentes', { exact: true })).toHaveCount(0);
-  await sidebar.getByRole('button', { name: 'Projetos salvos', exact: true }).click();
+  await page.getByRole('button', { name: /^Abrir projetos salvos/ }).click();
   await expect(page.getByRole('heading', { name: 'Projetos salvos', exact: true })).toBeFocused();
   await page.getByLabel('Pesquisar projetos').fill('Filtro sem correspondência');
   await sidebar.getByRole('button', { name: 'Lixeira', exact: true }).click();
@@ -423,7 +421,7 @@ test('monthly energy, cost, manual recalculation and saved schedules stay consis
   await page.getByRole('button', { name: 'Salvar projeto', exact: true }).click();
   await expect(page.getByTestId('project-message')).toContainText('Projeto salvo');
   await page.reload();
-  await page.locator('aside').getByRole('button', { name: 'Projetos salvos', exact: true }).click();
+  await page.getByRole('button', { name: /^Abrir projetos salvos/ }).click();
   await page.getByRole('button', { name, exact: true }).click();
   await expect(page.getByLabel('Consumo e custo mensais')).toContainText('12 kWh/mês');
   await load.getByText('Consumo mensal (opcional)', { exact: true }).click();

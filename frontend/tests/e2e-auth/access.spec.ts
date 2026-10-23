@@ -31,7 +31,7 @@ test('HTTPS sessions isolate projects and local drafts across two accounts', asy
   await page.getByRole('button', { name: 'Sair da conta' }).click();
   await login('bob');
   await expect(page.getByRole('region', { name: 'Rascunhos recuperados' })).toHaveCount(0);
-  await page.getByRole('button', { name: 'Projetos salvos', exact: true }).click();
+  await page.getByRole('button', { name: /^Abrir projetos salvos/ }).click();
   await expect(page.getByText('Casa privada de Alice', { exact: true })).toHaveCount(0);
   await page.getByRole('button', { name: 'Sair da conta' }).click();
   await login('alice');

@@ -24,7 +24,7 @@ export function EnergyFields({
       params.usage_days_per_month >= 0 &&
       params.usage_days_per_month <= 31);
   return (
-    <details className="mt-3" data-testid="equipment-energy">
+    <details data-testid="equipment-energy">
       <summary className="cursor-pointer text-xs muted">Consumo mensal (opcional)</summary>
       <p className="mt-2 text-xs muted">
         Informe o consumo mensal por unidade da etiqueta ou medição. Se não souber, informe as horas

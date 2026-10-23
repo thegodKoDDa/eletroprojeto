@@ -178,7 +178,7 @@ export function EquipmentEditor({
   const specific = load.equipment_type;
   return (
     <div className="equipment-card" data-testid="equipment-editor">
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-6" data-testid="equipment-essential">
+      <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-6" data-testid="equipment-essential">
         <label className="sm:col-span-2">
           Equipamento
           <select
@@ -354,267 +354,271 @@ export function EquipmentEditor({
           necessariamente seu consumo.
         </p>
       )}
-      <details className="mt-3" data-testid="equipment-advanced">
-        <summary className="cursor-pointer text-xs muted">
-          Configurações avançadas
-          {!load.name.trim() || !load.category?.trim() || !load.source?.trim()
-            ? ' · identificação/fonte pendente'
-            : ''}
-          {['apparent', 'current'].includes(scope) && missingFp
-            ? ' · FP necessário para o cálculo selecionado'
-            : scope === 'current' && missingCurrent
-              ? ' · dados necessários para corrente'
+      <div className="equipment-options">
+        <details data-testid="equipment-advanced">
+          <summary className="cursor-pointer text-xs muted">
+            Configurações avançadas
+            {!load.name.trim() || !load.category?.trim() || !load.source?.trim()
+              ? ' · identificação/fonte pendente'
               : ''}
-        </summary>
-        <div className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          {variants.length > 1 && (
-            <label className="sm:col-span-2">
-              Variante de referência
-              <select
-                aria-label="Variante de referência"
-                value={ref?.id ?? ''}
-                onChange={(event) => {
-                  const variant = variants.find((item) => item.id === event.target.value);
-                  if (variant) onChange(applyVariantReference(load, variant));
-                }}
-              >
-                {!variants.some((item) => item.id === ref?.id) && (
-                  <option value={ref?.id}>Referência salva</option>
-                )}
-                {variants.map((item) => (
-                  <option key={item.id} value={item.id}>
-                    {item.name} · {item.reference_power_w ?? '—'} W
-                    {item.voltage_v ? ` · ${item.voltage_v} V` : ''}
-                  </option>
-                ))}
-              </select>
-              <span className="mt-1 block text-xs muted">
-                A variante atualiza as sugestões técnicas. Potência editada manualmente e dados de
-                consumo são preservados.
-              </span>
-            </label>
-          )}
-          {scope !== 'current' && (
-            <>
-              <Field
-                field="load.voltage_v"
-                label="Tensão nominal (V)"
-                path={`load.${load.id}.voltage_v`}
-                parameters={params}
-              >
-                <input
-                  type="number"
-                  min="1"
-                  step="any"
-                  placeholder="Desconhecida"
-                  value={load.voltage_v ?? ''}
-                  onChange={(e) => edit({ voltage_v: e.target.value || null })}
-                />
-              </Field>
-            </>
-          )}
-          <Field
-            field="load.power_factor"
-            label="Fator de potência"
-            path={`load.${load.id}.power_factor`}
-            parameters={params}
-          >
-            <input
-              type="number"
-              min="0.000001"
-              max="1"
-              step="any"
-              placeholder="Desconhecido"
-              value={load.power_factor ?? ''}
-              onChange={(e) =>
-                edit({
-                  power_factor: e.target.value || null,
-                  parameters: { ...params, assume_resistive: false },
-                })
-              }
-            />
-          </Field>
-          <label>
-            Tipo de equipamento
-            <select
-              value={specific}
-              onChange={(e) =>
-                edit({
-                  equipment_type: e.target.value as Load['equipment_type'],
-                  name: types[e.target.value as Load['equipment_type']],
-                  kind:
-                    e.target.value === 'lighting'
-                      ? 'lighting'
-                      : load.kind === 'lighting'
-                        ? 'specific_use'
-                        : load.kind,
-                  unit_power_w: null,
-                  power_factor: null,
-                  power_origin: 'user_estimate',
-                  model: '',
-                  power_user_edited: false,
-                  source: 'Tipo alterado; parâmetros precisam ser confirmados',
-                  parameters: technicalDefaults(),
-                })
-              }
-            >
-              {Object.entries(types).map(([value, text]) => (
-                <option key={value} value={value}>
-                  {text}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label>
-            Natureza
-            <select
-              disabled={specific === 'lighting'}
-              value={load.kind}
-              onChange={(e) => edit({ kind: e.target.value as Load['kind'] })}
-            >
-              {(specific === 'lighting' || load.kind === 'lighting') && (
-                <option value="lighting">Iluminação</option>
-              )}
-              <option value="general_use">Uso geral</option>
-              <option value="specific_use">Uso específico</option>
-            </select>
-          </label>
-          <label>
-            Origem da potência
-            <select
-              value={load.power_origin}
-              onChange={(e) => edit({ power_origin: e.target.value as Load['power_origin'] })}
-            >
-              <option value="user_estimate">Estimativa do usuário</option>
-              <option value="nameplate">Placa do equipamento</option>
-              <option value="manufacturer">Fabricante</option>
-            </select>
-          </label>
-          {specific !== 'custom' && (
+            {['apparent', 'current'].includes(scope) && missingFp
+              ? ' · FP necessário para o cálculo selecionado'
+              : scope === 'current' && missingCurrent
+                ? ' · dados necessários para corrente'
+                : ''}
+          </summary>
+          <div className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            {variants.length > 1 && (
+              <label className="sm:col-span-2">
+                Variante de referência
+                <select
+                  aria-label="Variante de referência"
+                  value={ref?.id ?? ''}
+                  onChange={(event) => {
+                    const variant = variants.find((item) => item.id === event.target.value);
+                    if (variant) onChange(applyVariantReference(load, variant));
+                  }}
+                >
+                  {!variants.some((item) => item.id === ref?.id) && (
+                    <option value={ref?.id}>Referência salva</option>
+                  )}
+                  {variants.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.name} · {item.reference_power_w ?? '—'} W
+                      {item.voltage_v ? ` · ${item.voltage_v} V` : ''}
+                    </option>
+                  ))}
+                </select>
+                <span className="mt-1 block text-xs muted">
+                  A variante atualiza as sugestões técnicas. Potência editada manualmente e dados de
+                  consumo são preservados.
+                </span>
+              </label>
+            )}
+            {scope !== 'current' && (
+              <>
+                <Field
+                  field="load.voltage_v"
+                  label="Tensão nominal (V)"
+                  path={`load.${load.id}.voltage_v`}
+                  parameters={params}
+                >
+                  <input
+                    type="number"
+                    min="1"
+                    step="any"
+                    placeholder="Desconhecida"
+                    value={load.voltage_v ?? ''}
+                    onChange={(e) => edit({ voltage_v: e.target.value || null })}
+                  />
+                </Field>
+              </>
+            )}
             <Field
-              field="load.name"
-              label="Identificação da carga"
-              path={`load.${load.id}.name`}
+              field="load.power_factor"
+              label="Fator de potência"
+              path={`load.${load.id}.power_factor`}
               parameters={params}
-              className="sm:col-span-2"
             >
-              <input value={load.name} onChange={(e) => edit({ name: e.target.value })} />
-            </Field>
-          )}
-          <Field
-            field="load.category"
-            label="Categoria"
-            path={`load.${load.id}.category`}
-            parameters={params}
-          >
-            <input value={load.category} onChange={(e) => edit({ category: e.target.value })} />
-          </Field>
-          <Field
-            field="load.source"
-            label="Fonte técnica"
-            path={`load.${load.id}.source`}
-            parameters={params}
-            className="sm:col-span-2"
-          >
-            <input value={load.source} onChange={(e) => edit({ source: e.target.value })} />
-          </Field>
-          {specific === 'lighting' ? (
-            <label>
-              Tecnologia da lâmpada
-              <select
-                value={load.technology}
-                onChange={(e) =>
-                  edit({
-                    technology: e.target.value,
-                    unit_power_w: null,
-                    power_factor: null,
-                    power_origin: 'user_estimate',
-                    source: 'Tecnologia alterada; selecione uma referência ou informe a placa',
-                  })
-                }
-              >
-                <option value="">Não informada</option>
-                {['LED', 'Incandescente', 'Fluorescente', 'Halógena', 'Outra'].map((value) => (
-                  <option key={value}>{value}</option>
-                ))}
-              </select>
-            </label>
-          ) : null}
-          {specific === 'air_conditioner' && (
-            <>
-              <label>
-                Tipo de ar-condicionado
-                <select
-                  value={params.ac_type ?? ''}
-                  onChange={(e) =>
-                    technical({
-                      ac_type: (e.target.value as TechnicalParameters['ac_type']) || null,
-                    })
-                  }
-                >
-                  <option value="">Não informado</option>
-                  <option value="split">Split</option>
-                  <option value="window">Janela</option>
-                  <option value="portable">Portátil</option>
-                  <option value="other">Outro</option>
-                </select>
-              </label>
-              <label>
-                Compressor
-                <select
-                  value={params.compressor}
-                  onChange={(e) =>
-                    technical({ compressor: e.target.value as TechnicalParameters['compressor'] })
-                  }
-                >
-                  <option value="unknown">Desconhecido</option>
-                  <option value="inverter">Inverter</option>
-                  <option value="conventional">Convencional</option>
-                </select>
-              </label>
-            </>
-          )}
-          <Field
-            field="load.parameters.configuration"
-            label="Configuração para corrente"
-            path={`load.${load.id}.parameters.configuration`}
-            parameters={params}
-          >
-            <select
-              value={params.configuration}
-              onChange={(e) =>
-                technical({ configuration: e.target.value as TechnicalParameters['configuration'] })
-              }
-            >
-              <option value="unknown">Não informada</option>
-              <option value="single_phase">Monofásica · tensão nos terminais</option>
-              <option value="balanced_three_phase">Trifásica equilibrada · tensão de linha</option>
-            </select>
-          </Field>
-          {(specific === 'shower' ||
-            (specific === 'appliance' && load.category === 'Aquecimento de água') ||
-            (specific === 'lighting' &&
-              ['Incandescente', 'Halógena'].includes(load.technology))) && (
-            <label className="checkbox-option self-center">
               <input
-                className="resistive-checkbox"
-                type="checkbox"
-                checked={params.assume_resistive}
+                type="number"
+                min="0.000001"
+                max="1"
+                step="any"
+                placeholder="Desconhecido"
+                value={load.power_factor ?? ''}
                 onChange={(e) =>
                   edit({
-                    parameters: { ...params, assume_resistive: e.target.checked },
-                    ...(e.target.checked ? { power_factor: null } : {}),
+                    power_factor: e.target.value || null,
+                    parameters: { ...params, assume_resistive: false },
                   })
                 }
               />
-              Adotar hipótese de carga resistiva (FP=1)
+            </Field>
+            <label>
+              Tipo de equipamento
+              <select
+                value={specific}
+                onChange={(e) =>
+                  edit({
+                    equipment_type: e.target.value as Load['equipment_type'],
+                    name: types[e.target.value as Load['equipment_type']],
+                    kind:
+                      e.target.value === 'lighting'
+                        ? 'lighting'
+                        : load.kind === 'lighting'
+                          ? 'specific_use'
+                          : load.kind,
+                    unit_power_w: null,
+                    power_factor: null,
+                    power_origin: 'user_estimate',
+                    model: '',
+                    power_user_edited: false,
+                    source: 'Tipo alterado; parâmetros precisam ser confirmados',
+                    parameters: technicalDefaults(),
+                  })
+                }
+              >
+                {Object.entries(types).map(([value, text]) => (
+                  <option key={value} value={value}>
+                    {text}
+                  </option>
+                ))}
+              </select>
             </label>
-          )}
-        </div>
-      </details>
-      <EnergyFields load={load} onChange={technical} />
-      <div className="mt-3 flex flex-wrap items-start gap-x-4 gap-y-2 text-xs muted">
-        <details className="min-w-0 flex-1" data-testid="equipment-reference">
+            <label>
+              Natureza
+              <select
+                disabled={specific === 'lighting'}
+                value={load.kind}
+                onChange={(e) => edit({ kind: e.target.value as Load['kind'] })}
+              >
+                {(specific === 'lighting' || load.kind === 'lighting') && (
+                  <option value="lighting">Iluminação</option>
+                )}
+                <option value="general_use">Uso geral</option>
+                <option value="specific_use">Uso específico</option>
+              </select>
+            </label>
+            <label>
+              Origem da potência
+              <select
+                value={load.power_origin}
+                onChange={(e) => edit({ power_origin: e.target.value as Load['power_origin'] })}
+              >
+                <option value="user_estimate">Estimativa do usuário</option>
+                <option value="nameplate">Placa do equipamento</option>
+                <option value="manufacturer">Fabricante</option>
+              </select>
+            </label>
+            {specific !== 'custom' && (
+              <Field
+                field="load.name"
+                label="Identificação da carga"
+                path={`load.${load.id}.name`}
+                parameters={params}
+                className="sm:col-span-2"
+              >
+                <input value={load.name} onChange={(e) => edit({ name: e.target.value })} />
+              </Field>
+            )}
+            <Field
+              field="load.category"
+              label="Categoria"
+              path={`load.${load.id}.category`}
+              parameters={params}
+            >
+              <input value={load.category} onChange={(e) => edit({ category: e.target.value })} />
+            </Field>
+            <Field
+              field="load.source"
+              label="Fonte técnica"
+              path={`load.${load.id}.source`}
+              parameters={params}
+              className="sm:col-span-2"
+            >
+              <input value={load.source} onChange={(e) => edit({ source: e.target.value })} />
+            </Field>
+            {specific === 'lighting' ? (
+              <label>
+                Tecnologia da lâmpada
+                <select
+                  value={load.technology}
+                  onChange={(e) =>
+                    edit({
+                      technology: e.target.value,
+                      unit_power_w: null,
+                      power_factor: null,
+                      power_origin: 'user_estimate',
+                      source: 'Tecnologia alterada; selecione uma referência ou informe a placa',
+                    })
+                  }
+                >
+                  <option value="">Não informada</option>
+                  {['LED', 'Incandescente', 'Fluorescente', 'Halógena', 'Outra'].map((value) => (
+                    <option key={value}>{value}</option>
+                  ))}
+                </select>
+              </label>
+            ) : null}
+            {specific === 'air_conditioner' && (
+              <>
+                <label>
+                  Tipo de ar-condicionado
+                  <select
+                    value={params.ac_type ?? ''}
+                    onChange={(e) =>
+                      technical({
+                        ac_type: (e.target.value as TechnicalParameters['ac_type']) || null,
+                      })
+                    }
+                  >
+                    <option value="">Não informado</option>
+                    <option value="split">Split</option>
+                    <option value="window">Janela</option>
+                    <option value="portable">Portátil</option>
+                    <option value="other">Outro</option>
+                  </select>
+                </label>
+                <label>
+                  Compressor
+                  <select
+                    value={params.compressor}
+                    onChange={(e) =>
+                      technical({ compressor: e.target.value as TechnicalParameters['compressor'] })
+                    }
+                  >
+                    <option value="unknown">Desconhecido</option>
+                    <option value="inverter">Inverter</option>
+                    <option value="conventional">Convencional</option>
+                  </select>
+                </label>
+              </>
+            )}
+            <Field
+              field="load.parameters.configuration"
+              label="Configuração para corrente"
+              path={`load.${load.id}.parameters.configuration`}
+              parameters={params}
+            >
+              <select
+                value={params.configuration}
+                onChange={(e) =>
+                  technical({
+                    configuration: e.target.value as TechnicalParameters['configuration'],
+                  })
+                }
+              >
+                <option value="unknown">Não informada</option>
+                <option value="single_phase">Monofásica · tensão nos terminais</option>
+                <option value="balanced_three_phase">
+                  Trifásica equilibrada · tensão de linha
+                </option>
+              </select>
+            </Field>
+            {(specific === 'shower' ||
+              (specific === 'appliance' && load.category === 'Aquecimento de água') ||
+              (specific === 'lighting' &&
+                ['Incandescente', 'Halógena'].includes(load.technology))) && (
+              <label className="checkbox-option self-center">
+                <input
+                  className="resistive-checkbox"
+                  type="checkbox"
+                  checked={params.assume_resistive}
+                  onChange={(e) =>
+                    edit({
+                      parameters: { ...params, assume_resistive: e.target.checked },
+                      ...(e.target.checked ? { power_factor: null } : {}),
+                    })
+                  }
+                />
+                Adotar hipótese de carga resistiva (FP=1)
+              </label>
+            )}
+          </div>
+        </details>
+        <EnergyFields load={load} onChange={technical} />
+        <details data-testid="equipment-reference">
           <summary className="cursor-pointer">
             {ref ? 'Valor de referência' : 'Origem dos dados'}
             {load.power_origin === 'user_estimate' ? ' · estimado' : ''}
@@ -667,6 +671,8 @@ export function EquipmentEditor({
             )}
           </div>
         </details>
+      </div>
+      <div className="equipment-meta text-xs muted">
         {ref && (
           <button
             className="hover:text-emerald-300"

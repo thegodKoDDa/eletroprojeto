@@ -644,77 +644,88 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
       setExporting(false);
     }
   }
+  const brand = (
+    <div className="workspace-brand">
+      <span className="brand-mark" aria-hidden="true">
+        ϟ
+      </span>
+      <div>
+        <p className="brand-name">EletroProjeto</p>
+        <p className="brand-caption">Estudos elétricos residenciais</p>
+      </div>
+    </div>
+  );
+  const exitAccount = logout && (
+    <button
+      className="btn subtle"
+      disabled={busy || exporting}
+      onClick={async () => {
+        try {
+          await logout();
+        } catch {
+          setMessage('Não foi possível encerrar a sessão. Tente novamente.');
+        }
+      }}
+    >
+      Sair da conta
+    </button>
+  );
   return (
     <RequirementsContext.Provider value={requirements}>
       <CalculationScopeContext.Provider value={input.analysis_scope ?? 'installed'}>
-        <div className="app-shell">
+        <div className={`app-shell${view === 'home' ? ' app-shell-home' : ''}`}>
           <a className="skip-link" href="#workspace-main">
             Ir para o conteúdo
           </a>
-          <aside className="workspace-sidebar">
-            <div className="workspace-brand">
-              <span className="brand-mark" aria-hidden="true">
-                ϟ
-              </span>
-              <div>
-                <p className="brand-name">EletroProjeto</p>
-                <p className="brand-caption">Estudos elétricos residenciais</p>
-              </div>
-            </div>
-            <p className="sidebar-label">ESPAÇO DE TRABALHO</p>
-            <SectionNavigation
-              active={view}
-              busy={busy || exporting}
-              hasProject={hasProject}
-              projectName={input.name}
-              dirty={dirty || !saved}
-              onHome={showHome}
-              onNew={newProject}
-              onProject={() => navigate('project')}
-              onLibrary={showLibrary}
-              onTrash={showTrash}
-            />
-            {view === 'project' && (
-              <div className="sidebar-actions">
-                <p className="eyebrow">AÇÕES DO PROJETO</p>
+          {view === 'home' ? (
+            <header className="home-brandbar">
+              {brand}
+              {exitAccount}
+            </header>
+          ) : (
+            <aside className="workspace-sidebar" aria-label="Navegação do espaço de trabalho">
+              {brand}
+              <p className="sidebar-label">ESPAÇO DE TRABALHO</p>
+              <SectionNavigation
+                active={view}
+                busy={busy || exporting}
+                hasProject={hasProject}
+                projectName={input.name}
+                dirty={dirty || !saved}
+                onHome={showHome}
+                onNew={newProject}
+                onProject={() => navigate('project')}
+                onLibrary={showLibrary}
+                onTrash={showTrash}
+              />
+              {view === 'project' && (
+                <div className="sidebar-actions">
+                  <p className="eyebrow">AÇÕES DO PROJETO</p>
 
-                <ProjectActions
-                  hideNew
-                  saved={!!saved}
-                  busy={busy}
-                  saving={saving}
-                  exporting={exporting}
-                  canExport={!!currentResult?.technical_context?.registry_version}
-                  canExportPdf={!!currentResult?.technical_context?.registry_version}
-                  onNew={newProject}
-                  onSave={() => save()}
-                  onSaveAs={() => save(false, true)}
-                  onPdf={() => exportReport('pdf')}
-                  onJson={() => exportReport('json')}
-                  onDelete={() => remove()}
-                  onCheck={checkReferences}
-                />
-              </div>
-            )}
-            <p className="sidebar-note">
-              Estudo de cargas · consulte o alcance de cada resultado na memória de cálculo.
-            </p>
-            {logout && (
-              <button
-                className="btn"
-                disabled={busy || exporting}
-                onClick={async () => {
-                  try {
-                    await logout();
-                  } catch {
-                    setMessage('Não foi possível encerrar a sessão. Tente novamente.');
-                  }
-                }}
-              >
-                Sair da conta
-              </button>
-            )}
-          </aside>
+                  <ProjectActions
+                    hideNew
+                    saved={!!saved}
+                    busy={busy}
+                    saving={saving}
+                    exporting={exporting}
+                    canExport={!!currentResult?.technical_context?.registry_version}
+                    canExportPdf={!!currentResult?.technical_context?.registry_version}
+                    onNew={newProject}
+                    onSave={() => save()}
+                    onSaveAs={() => save(false, true)}
+                    onPdf={() => exportReport('pdf')}
+                    onJson={() => exportReport('json')}
+                    onDelete={() => remove()}
+                    onCheck={checkReferences}
+                  />
+                </div>
+              )}
+              <p className="sidebar-note">
+                Estudo de cargas · consulte o alcance de cada resultado na memória de cálculo.
+              </p>
+              {exitAccount}
+            </aside>
+          )}
           <main id="workspace-main" className="workspace-main">
             {draftIssue && (
               <p role="alert" className="panel mb-5">

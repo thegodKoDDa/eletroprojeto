@@ -674,7 +674,7 @@ async def test_version_and_documentation_groups_are_consistent(client):
         == frontend["version"]
         == backend["project"]["version"]
         == APP_VERSION
-        == "0.14.0"
+        == "0.14.1"
     )
     assert health["engine_version"] == ENGINE_VERSION == "0.8.0"
     spec = (await client.get("/openapi.json")).json()

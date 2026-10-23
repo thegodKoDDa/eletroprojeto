@@ -142,3 +142,10 @@ Regressão E2E interface.spec.ts verifica autosave desligado/ligado com consulta
 Biblioteca leve com payload completo somente ao abrir. Rascunhos por conta/aba conservam schema1 e createId opcional, escrita agrupada250ms e flush em pagehide/beforeunload/visibility hidden/desmontagem e antes de trocar contexto. Antes do POST o identificador é persistido imediatamente. Primeiro envio repetido não duplica; se houve nova edição após a resposta perdida, editor recupera o projeto já criado e mantém o input atual para o próximo PUT. PUT idêntico na mesma revisão não gera histórico/versão.
 
 Teste de navegador simula POST recebido com resposta abortada, edição, recarga imediata antes do debounce, recuperação sem envio, reenvio e atualização: um projeto, duas versões reais e notas preservadas. Backend valida ausências de IDs/colisão entre proprietários e biblioteca leve. Sem envio na saída da página, promessa de proteção contra limpeza do navegador/queda abrupta sem eventos ou mudança das regras normativas. Últimas edições anteriores ao flush podem ser perdidas em término abrupto; eventos normais de saída foram testados.
+
+
+## Início e equipamentos compactos — 0.14.1
+
+Home desmonta somente a navegação lateral, mantendo o estado do editor no componente principal. Marca e logout passam ao cabeçalho inicial; rodapé continua presente. Entrar em criar/biblioteca/lixeira revela aside; retorno ao início o oculta. Cartões iniciais usam ícone lateral e menor espaçamento. Main inicial sobrescreve min-height para evitar empurrar o rodapé para fora da janela por herdar100dvh.
+
+EquipmentEditor agrupa três details nativos em equipment-options flex com quebra, sem alterar cálculos/valores ou conteúdos. Resumos30px desktop/mínimo34px celular; abertos ocupam a linha inteira e crescem com conteúdo. Ações do equipamento em faixa própria com borda. Controles gerais/painéis/títulos recebem espaçamento menor, mantendo estados e foco. compact.spec.ts verifica navegação, recuperação da edição em memória, altura/alinhamento, abertura dos três grupos, axe e overflow320–1440px. Artefatos fictícios em/tmp/eletroprojeto-{home,equipment}-compact-{390,1440}.png.

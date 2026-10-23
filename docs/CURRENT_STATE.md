@@ -1,10 +1,20 @@
-# Estado atual — EletroProjeto 0.14.0 / motor 0.8.0
+# Estado atual — EletroProjeto 0.14.1 / motor 0.8.0
 
 ## Escopo e dados
 
-Uso LOCAL. Publicação, CI hospedado, impressão física e backup externo fora do trabalho atual. Recursos existentes preservados; sem push. API/frontend0.14.0, motor0.8.0, JSON1.3 e schema0005, sem nova migração ou fórmula/regra/catálogo alterados.
+Uso LOCAL. Publicação, CI hospedado, impressão física e backup externo fora do trabalho atual. Recursos existentes preservados; sem push. API/frontend0.14.1, motor0.8.0, JSON1.3 e schema0005, sem nova migração ou fórmula/regra/catálogo alterados.
 
 9 projetos (8 ativos/1 na lixeira),30 históricos e8 revisões técnicas. Todas as colunas dessas três tabelas comparadas ao checkpoint inicial `.checkpoints/20261023T194010017686Z` e idênticas após a tarefa. SQLite íntegro/FK sem violações. Testes de gravação usaram bancos QA isolados; nada foi regravado nos projetos reais.
+
+## Interface compacta — 0.14.1
+
+Início sem aside: marca/logo e saída de conta no cabeçalho, informações e rodapé preservados. Criar projeto, projetos salvos e lixeira abrem o espaço com navegação lateral; voltar ao início a oculta novamente. Estado da edição permanece ao continuar. Cartões iniciais e espaçamentos gerais de controles/painéis reduzidos, sem retirar campos.
+
+Equipamentos agrupam Configurações avançadas, Consumo mensal e Valores de referência em disclosures nativos compactos, alinhados no desktop e com quebra no celular. Resumos de30px no desktop/ mínimo34px no celular, ações separadas por borda e espaçamento menor. Conteúdo aberto sem altura fixa; foco, hover, desabilitados e teclado preservados.
+
+Validação desta entrega:348 testes backend+85 subtestes,92 frontend,16E2E e1E2EHTTPS de duas contas aprovados. Contratos/tipos/lint/formatação/buildwebpack/Alembiccheck aprovados. Novo E2E confere Home sem aside, rodapé dentro da janela1440×900, navegação, edição preservada, três disclosures funcionais, axe e ausência de overflow320/390/768/1440. Capturas QA desktop/celular inspecionadas. Smoke localhost confirmou API0.14.1/motor0.8.0, comportamento da barra e nenhum pageerror. API reiniciada PID594371; frontend3000 existente preservado. Conferir processos ao retomar.
+
+Banco real comparado integralmente ao checkpoint `.checkpoints/20261023T214013315521Z`:9projetos/30históricos/8revisões idênticos, nenhuma gravação pela tarefa. Nenhuma dependência, fórmula, migração ou catálogo alterados; locks comparados estruturalmente, somente versão própria mudou. PostgreSQL, Windows e testes unitários dos scripts não repetidos nesta entrega visual; evidências abaixo são da0.14.0. Encerramento final verifica novamente fonte, hashes e restauração isolada.
 
 ## Otimização entregue
 
@@ -16,7 +26,7 @@ Uso LOCAL. Publicação, CI hospedado, impressão física e backup externo fora 
 - Regras AGENTS/continuidade simplificadas: ler docs atuais + cauda de registros, retomar compacto, um commit revisado final e só então checkpoint. latest.json elimina commit/checkpoint extra só para registrar caminho. Memória/guia consolidados; SESSION_HISTORY preservado.
 - maintenance.py doctor/clean auditam instalações/permissões/serviços e limpam apenas gerados por allowlist, com simulação/manifest. Cerca50MB de caches/saídas QA removidos. Preservados venvs Linux/Windows, node_modules, Next ativo/cache/build, dados, backups, normas e Git.28 checkpoints anteriores integralmente verificados e distintos, nenhum apagado. Três arquivos privados corrigidos para0600; fontes sem escrita global. Não alterar ACL/política global por suposição.
 
-## Verificações efetivas
+## Verificações da otimização 0.14.0 (histórico)
 
 - Linux:348 testes backend+85 subtestes e15 scripts de continuidade/manutenção (363+85 conjuntos).
 - Frontend92;15E2E locais; repetição final do fluxo de resposta perdida/recarga/cópia;1E2EHTTPS de duas contas aprovado. Tipos/lint/formatação/contratos/buildwebpack/Ruff/Alembiccheck/pipcheck/npm ls aprovados.
