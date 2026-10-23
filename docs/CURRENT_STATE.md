@@ -35,3 +35,6 @@ API reiniciada PID573356/sessão24451 para carregar versão0.13.1; frontend exis
 Checkpoint inicial `.checkpoints/20261023T191637169089Z`:163arquivos e restaurações SQLite/Git verificadas. Caminho do checkpoint final a registrar após geração. PDFs locais em references/energisa, fora do Git/ZIP de código. Sem push/publicação.
 
 Próximas prioridades locais no roadmap: ampliar exceções normativas somente após fontes/testes próprios; dimensionamento e geometria completos; associação territorial oficial. Leitor de tela real ainda não conferido. Retomar por AGENTS e `python3 scripts/continuity.py retomar`; preservar este polimento e o motor único existente.
+
+
+Checkpoint final do polimento verificado: `.checkpoints/20261023T192927917260Z`,165arquivos; hashes/ZIP/banco/bundleGit e restauraçãoSQLite/clonagemGit isoladas aprovados. Commit funcional `e9377a1`; caminho registrado após geração em commit documental separado.9projetos/30históricos/8revisões/schema0005 preservados; sem push/publicação.

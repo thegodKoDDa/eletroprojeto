@@ -317,3 +317,6 @@ Primeira rodada E2E aprovou13 mas encontrou aria-label sem role no agrupamento d
 Banco real comparado integralmente ao checkpoint inicial: três tabelas idênticas,9projetos/30históricos/8revisões,integridade/FKok; nenhuma gravação pela tarefa. API atualizada para0.13.1/PID573356/sessão24451; frontend existente mantido, config recarregada automaticamente. Escopo local e exclusões anteriores permanecem; sem push/publicação. Commit/checkpoint final a registrar após revisão.
 
 Smoke final real aprovado: frontend0.13.1, checkbox18×18px, sem overflow390px/pageerrors; API health0.13.1/motor0.8.0. Navegador isolado criou somente rascunho local temporário, sem salvar no servidor.
+
+
+Checkpoint final do polimento verificado: `.checkpoints/20261023T192927917260Z`,165arquivos; hashes/ZIP/banco/bundleGit e restauraçãoSQLite/clonagemGit isoladas aprovados. Commit funcional `e9377a1`; caminho registrado após geração em commit documental separado.9projetos/30históricos/8revisões/schema0005 preservados; sem push/publicação.
