@@ -1229,3 +1229,65 @@ textarea[aria-invalid='true'] {
     scroll-behavior: auto !important;
   }
 }
+
+.knowledge-result {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  width: 100%;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-control);
+  background: var(--surface);
+  text-align: left;
+}
+.knowledge-result:hover,
+.knowledge-result[aria-pressed='true'] {
+  border-color: var(--accent);
+}
+.knowledge-reader {
+  margin-top: 1.25rem;
+}
+.knowledge-page {
+  margin-top: 1rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--line);
+}
+.knowledge-text {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 0.875rem;
+  line-height: 1.8;
+}
+
+.knowledge-diagram {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-top: 1rem;
+  border-radius: var(--radius-inner);
+}
+
+.knowledge-markdown {
+  white-space: normal;
+}
+.knowledge-markdown > * + * {
+  margin-top: 0.9rem;
+}
+.knowledge-markdown ul,
+.knowledge-markdown ol {
+  padding-left: 1.25rem;
+}
+.knowledge-markdown ul {
+  list-style: disc;
+}
+.knowledge-markdown ol {
+  list-style: decimal;
+}
+.knowledge-markdown li + li {
+  margin-top: 0.3rem;
+}
+.knowledge-markdown code {
+  font-size: 0.8rem;
+  overflow-wrap: anywhere;
+}

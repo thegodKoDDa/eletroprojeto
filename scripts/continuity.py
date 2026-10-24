@@ -59,6 +59,7 @@ def source_files(root):
             d
             for d in dirs
             if d not in EXCLUDED
+            and (Path(directory) / d).relative_to(root).as_posix() != "references/library/objects"
             and not d.endswith((".egg-info", ".dist-info"))
             and not (Path(directory) / d).is_symlink()
         )
@@ -249,7 +250,14 @@ def database_info(connection):
     tables = {r[0] for r in connection.execute("SELECT name FROM sqlite_master WHERE type='table'")}
     counts = {
         name: connection.execute(f'SELECT COUNT(*) FROM "{name}"').fetchone()[0]
-        for name in ("projects", "calculation_history", "technical_revisions")
+        for name in (
+            "projects",
+            "calculation_history",
+            "technical_revisions",
+            "knowledge_documents",
+            "knowledge_pages",
+            "knowledge_sources",
+        )
         if name in tables
     }
     if "projects" in tables:

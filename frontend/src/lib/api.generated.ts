@@ -55,6 +55,108 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/knowledge/stats": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Stats */
+        get: operations["stats_api_v1_knowledge_stats_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/knowledge/documents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Documents */
+        get: operations["documents_api_v1_knowledge_documents_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/knowledge/documents/{document_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Document */
+        get: operations["document_api_v1_knowledge_documents__document_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/knowledge/documents/{document_id}/pages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Pages */
+        get: operations["pages_api_v1_knowledge_documents__document_id__pages_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/knowledge/documents/{document_id}/file": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** File */
+        get: operations["file_api_v1_knowledge_documents__document_id__file_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/knowledge/sources": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Sources */
+        get: operations["sources_api_v1_knowledge_sources_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/health": {
         parameters: {
             query?: never;
@@ -1043,6 +1145,105 @@ export interface components {
             /** Notifications */
             notifications?: components["schemas"]["Notification"][];
         };
+        /** KnowledgeDocument */
+        KnowledgeDocument: {
+            /** Id */
+            id: string;
+            /** Title */
+            title: string;
+            /** Kind */
+            kind: string;
+            /** Collection */
+            collection: string;
+            /** Review State */
+            review_state: string;
+            /** Media Type */
+            media_type: string;
+            /** Byte Size */
+            byte_size: number;
+            /** Page Count */
+            page_count: number;
+            /** Text Pages */
+            text_pages: number;
+            provenance: components["schemas"]["KnowledgeProvenance"];
+        };
+        /** KnowledgePage */
+        KnowledgePage: {
+            /** Number */
+            number: number;
+            /** Body */
+            body: string;
+        };
+        /** KnowledgeProvenance */
+        KnowledgeProvenance: {
+            /** Origins */
+            origins: string[];
+            /** Urls */
+            urls: string[];
+            /** Groups */
+            groups: string[];
+            /** States Catalogued */
+            states_catalogued: string[];
+            /** Editions Candidates */
+            editions_candidates: string[];
+            /** Validation */
+            validation: string;
+            /** Territory */
+            territory: string;
+        };
+        /** KnowledgeSearch */
+        KnowledgeSearch: {
+            /** Items */
+            items: components["schemas"]["KnowledgeDocument"][];
+            /** Next Offset */
+            next_offset: number | null;
+            /**
+             * Notice
+             * @default Acervo de consulta. Importação não valida vigência, aplicabilidade territorial ou regras de cálculo.
+             */
+            notice: string;
+        };
+        /** KnowledgeSource */
+        KnowledgeSource: {
+            /** Id */
+            id: string;
+            /** Document Id */
+            document_id: string | null;
+            /** Title */
+            title: string;
+            /** Url */
+            url: string;
+            /** Outcome */
+            outcome: string;
+            /** Provenance */
+            provenance: {
+                [key: string]: unknown;
+            };
+        };
+        /** KnowledgeStats */
+        KnowledgeStats: {
+            /** Documents */
+            documents: number;
+            /** Pages */
+            pages: number;
+            /** Text Pages */
+            text_pages: number;
+            /** Sources */
+            sources: number;
+            /** Kinds */
+            kinds: {
+                [key: string]: number;
+            };
+            /** Review States */
+            review_states: {
+                [key: string]: number;
+            };
+            /**
+             * Notice
+             * @default Acervo de consulta. Importação não valida vigência, aplicabilidade territorial ou regras de cálculo.
+             */
+            notice: string;
+        };
         /** Load */
         Load: {
             energisa_demand?: components["schemas"]["EnergisaLoadClassification"] | null;
@@ -1845,6 +2046,201 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Entradas inválidas; avisos localizados quando disponíveis. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InputValidationError"];
+                };
+            };
+        };
+    };
+    stats_api_v1_knowledge_stats_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["KnowledgeStats"];
+                };
+            };
+            /** @description Entradas inválidas; avisos localizados quando disponíveis. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InputValidationError"];
+                };
+            };
+        };
+    };
+    documents_api_v1_knowledge_documents_get: {
+        parameters: {
+            query?: {
+                q?: string;
+                kind?: string;
+                state?: string;
+                offset?: number;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["KnowledgeSearch"];
+                };
+            };
+            /** @description Entradas inválidas; avisos localizados quando disponíveis. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InputValidationError"];
+                };
+            };
+        };
+    };
+    document_api_v1_knowledge_documents__document_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                document_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["KnowledgeDocument"];
+                };
+            };
+            /** @description Entradas inválidas; avisos localizados quando disponíveis. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InputValidationError"];
+                };
+            };
+        };
+    };
+    pages_api_v1_knowledge_documents__document_id__pages_get: {
+        parameters: {
+            query?: {
+                offset?: number;
+                limit?: number;
+                q?: string;
+            };
+            header?: never;
+            path: {
+                document_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["KnowledgePage"][];
+                };
+            };
+            /** @description Entradas inválidas; avisos localizados quando disponíveis. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InputValidationError"];
+                };
+            };
+        };
+    };
+    file_api_v1_knowledge_documents__document_id__file_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                document_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Entradas inválidas; avisos localizados quando disponíveis. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InputValidationError"];
+                };
+            };
+        };
+    };
+    sources_api_v1_knowledge_sources_get: {
+        parameters: {
+            query?: {
+                document_id?: string;
+                outcome?: string;
+                offset?: number;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["KnowledgeSource"][];
+                };
             };
             /** @description Entradas inválidas; avisos localizados quando disponíveis. */
             422: {

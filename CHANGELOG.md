@@ -1,5 +1,12 @@
 # Histórico de alterações
 
+## 0.15.0 — 23/10/2026
+
+- Biblioteca técnica local integrada à API e interface:2.281documentos,83.461unidades de leitura e3.788fontes. Busca por texto/metadados, filtros, leitura paginada, originais, guias/modelos formatados e diagramas.
+- Importação deduplicada por SHA-256, rastreabilidade de arquivos/ZIPs e fontes. Pastas de entrada elétrica/normas excluídas após testes e verificações integrais;2.395objetos únicos preservados.
+- Migração0006 independente de projetos/cálculos. Regras novas continuam pendentes de validação; páginas sem texto explicitadas. Checkpoint inclui banco/inventários,exclui objetos do ZIP de código.
+-354backend+85subtestes,92frontend,17E2E,1HTTPS,99PostgreSQLQA,15scripts; contratos/tipos/lint/formatação/build/migrações aprovados.
+
 ## 0.14.1 — 23/10/2026
 
 - Corrigido deslocamento dos botões de equipamento ao abrir opções: cabeçalhos permanecem na primeira linha, conteúdo expandido abaixo em largura completa, inclusive com os três painéis abertos.

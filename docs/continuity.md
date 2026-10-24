@@ -52,3 +52,8 @@ Não apagar pontos únicos automaticamente. O limite de14 sinaliza revisão, nã
 6. repository.bundle recupera commits/refs com clone isolado; source.zip cobre o disco no instante da captura. Git não contém banco e bundle não contém buffers ou .env. Verificação de hashes não prova ausência de segredos/normas corretas.
 
 Fonte/PDFs locais enviados em references não integram ZIP; preservar os originais no projeto. Recursos já existentes external_backup.py/GPG e Windows QA ficam disponíveis, mas publicação, impressão física e cópia externa foram retiradas do trabalho atual pelo usuário. Mesmo disco não protege contra perda física; não há agendamento automático fora das sessões.
+
+
+### Biblioteca técnica0.15.0
+
+O banco0006 contém documentos,páginas e fontes; as contagens knowledge_* aparecem no relatório. O ZIP de fonte inclui inventory.json/import-result.json/verification.json como auditoria,mas exclui references/library/objects,mesmo com nomes sem extensão. Git ignora toda a library. Objetos originais são necessários para servir PDFs/SVG/modelos e não devem ser apagados como cache. As pastas de entrada elétrica/normas foram excluídas por pedido específico após transferência e verificação; essa autorização não se estende à library. Não repetir collect sem novas entradas. Verificar o acervo com knowledge_admin.py verify,além da restauração SQLite/Git do checkpoint.

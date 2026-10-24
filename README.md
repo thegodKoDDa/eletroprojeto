@@ -1,4 +1,6 @@
-# EletroProjeto 0.14.1
+# EletroProjeto 0.15.0
+
+Biblioteca técnica local integrada: busca em guias, modelos, diagramas e PDFs, leitura por páginas, originais e rastreabilidade das fontes. A importação não habilita regras de cálculo sem revisão. Inventário e uso em [referências](references/README.md).
 
 NDU-001 7.0 integrada ao cadastro e aos relatórios: ative o painel de demanda, confirme o escopo, classifique cada carga e revise o inventário. No escopo residencial individual Energisa Sul-Sudeste/SP até75kW, d1–d5, o motor calcula a demanda estimada. Qualquer mudança relevante exige nova revisão. Selecionar a concessionária sozinho não habilita resultado. Limites/fontes em [standards](docs/standards.md); não há dimensionamento final.
 

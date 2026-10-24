@@ -22,6 +22,7 @@ from .calculations.standards import ENERGISA_V7_EVIDENCE, RULES
 from .catalog import CATALOG
 from .catalog_store import initialize_catalog
 from .database import HistoryRow, ProjectRow, TechnicalRevisionRow, get_session, utcnow
+from .knowledge import router as knowledge_router
 from .projects import (
     ProjectValidationError,
     brasilia_time,
@@ -85,6 +86,7 @@ app = FastAPI(
     description="Cálculos de cargas residenciais: potência instalada (W/kW), potência aparente (VA/kVA), correntes, conversões, consumo mensal e estimativa de custo pela tarifa informada. Valores padrão são sugestões documentadas; valores manuais válidos são respeitados e recalculados. Previsão residencial de iluminação e TUG disponível por seleção explícita, com escopo e limites documentados. Demanda Energisa residencial parametrizada disponível em escopo limitado e inventário explícito. Demanda automática do cadastro e dimensionamento final permanecem pendentes.",
 )
 app.include_router(auth_router)
+app.include_router(knowledge_router)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=cors_origins(

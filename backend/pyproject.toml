@@ -4,11 +4,12 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "eletroprojeto-api"
-version = "0.14.1"
+version = "0.15.0"
 requires-python = ">=3.11"
 dependencies = ["fastapi>=0.115,<1", "pydantic>=2.10,<3", "sqlalchemy>=2.0,<2.1", "alembic>=1.14,<2", "uvicorn>=0.34,<1", "pwdlib[argon2]>=0.3,<1", "psycopg[binary]>=3.2,<4", "tzdata>=2026.5; sys_platform == 'win32'"]
 
 [project.optional-dependencies]
+ingest = ["pymupdf>=1.26,<2"]
 dev = ["pytest>=8,<10", "httpx>=0.28,<1", "ruff>=0.15,<1"]
 
 [tool.pytest.ini_options]

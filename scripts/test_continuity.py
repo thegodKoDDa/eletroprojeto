@@ -42,6 +42,15 @@ class ContinuityTests(unittest.TestCase):
         self.env.start()
         self.addCleanup(self.env.stop)
 
+    def test_imported_library_objects_are_not_source_code(self):
+        library = self.root / "references" / "library" / "objects"
+        library.mkdir(parents=True)
+        (library / "opaque-hash").write_text("local source, not code")
+        (library.parent / "inventory.json").write_text('{"audit": true}')
+        names = {p.relative_to(self.root).as_posix() for p in c.source_files(self.root)}
+        self.assertNotIn("references/library/objects/opaque-hash", names)
+        self.assertIn("references/library/inventory.json", names)
+
     def test_checkpoint_restores_committed_wal_and_preserves_original(self):
         before = self.db.execute("SELECT * FROM projects").fetchall()
         result = c.checkpoint(self.root)

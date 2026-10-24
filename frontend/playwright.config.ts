@@ -11,7 +11,13 @@ export default defineConfig({
       command: 'node scripts/e2e-api.mjs',
       url: 'http://127.0.0.1:8010/api/v1/health',
       reuseExistingServer: false,
-      env: { DATABASE_URL: databaseUrl, CORS_ORIGINS: 'http://127.0.0.1:3010', AUTH_MODE: 'local' },
+      env: {
+        DATABASE_URL: databaseUrl,
+        CORS_ORIGINS: 'http://127.0.0.1:3010',
+        AUTH_MODE: 'local',
+        ELETROPROJETO_QA_LIBRARY: '1',
+        KNOWLEDGE_ROOT: join(tmpdir(), `eletroprojeto-library-e2e-${process.pid}`),
+      },
     },
     {
       command: 'npm run dev -- --port 3010',

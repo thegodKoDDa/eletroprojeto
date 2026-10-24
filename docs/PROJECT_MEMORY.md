@@ -2,7 +2,7 @@
 
 ## Estado e escopo vigentes
 
-Aplicação local de estudo/cálculo elétrico residencial, para leigos, estudantes e profissionais. Preservar produto, dados, funcionalidades e identidade visual; não recriar. API/frontend0.14.1, motor0.8.0, JSON de relatório1.3, banco/schema0005. Versões e testes atuais em CURRENT_STATE; roadmap/KNOWN_ISSUES descrevem o que realmente falta. Registros anteriores foram preservados em SESSION_HISTORY, CHANGELOG, Git e checkpoints; não tratar limitações históricas como atuais.
+Aplicação local de estudo/cálculo elétrico residencial, para leigos, estudantes e profissionais. Preservar produto, dados, funcionalidades e identidade visual; não recriar. API/frontend0.15.0, motor0.8.0, JSON de relatório1.3, banco/schema0006. Versões e testes atuais em CURRENT_STATE; roadmap/KNOWN_ISSUES descrevem o que realmente falta. Registros anteriores foram preservados em SESSION_HISTORY, CHANGELOG, Git e checkpoints; não tratar limitações históricas como atuais.
 
 Usuário autorizou otimizar armazenamento, salvamento, continuidade, estrutura e limpeza, mantendo funcionalidade. Publicação/infraestrutura remota/CI hospedado, impressão física e backup externo foram retirados do escopo atual; não voltar a cobrá-los. Manter mecanismos existentes e checkpoints locais. Rotinas de terminal/testes/contratos/migrações/serviços são executadas pelo agente, sem delegar ao usuário. Restrições obrigatórias do ambiente continuam válidas; nunca push sem autorização.
 
@@ -13,7 +13,7 @@ Correção da0.14.1: usuário pediu restaurar APENAS a aparência antiga do iní
 - Um único motor Python em backend/app/calculations atende apresentações simples/técnica e relatórios. Frontend só valida/formata; Decimal e unidades explícitas, sem fatores inventados nem arredondamento intermediário.
 - W/VA/kWh/BTU/h e potência mecânica são distintos; dados desconhecidos/regras não verificadas ficam null com motivo. Corrente por equipamento não dimensiona circuito. Não afirmar conformidade final ou aprovação da concessionária.
 - Referências do catálogo são sugestões documentadas, não potências universais. Preservar valores manuais válidos e snapshots; editar instância nunca altera catálogo global. Fonte/cálculos/normas/arquitetura nos documentos responsáveis, sem duplicá-los.
-- Dados reais em backend/eletroprojeto.db por padrão ou DATABASE_URL absoluto. Alembic0001–0005 e histórico preservados; não resetar banco ou regravar projetos antigos para atualizar regra/referência. PostgreSQL portátil e já validado em entregas anteriores.
+- Dados reais em backend/eletroprojeto.db por padrão ou DATABASE_URL absoluto. Alembic0001–0006 e histórico preservados; não resetar banco ou regravar projetos antigos para atualizar regra/referência. PostgreSQL portátil e já validado em entregas anteriores.
 
 ## Fluxo funcional
 
@@ -24,6 +24,8 @@ Rascunhos locais por conta/aba/slot, sem envio automático ao recuperá-los. Esc
 Cálculo tem debounce400ms, cancelamento e rejeição de respostas antigas. Exportações exigem snapshot atual. Alteração de metadados não deve refazer matemática sem necessidade. PDF principal/JSON secundário usam nome do projeto, resumo/consumo/custo/equipamentos, pendências e demanda; JSON não é backup completo. Horários públicos usam America/Sao_Paulo; armazenamento/checkpoints UTC.
 
 NDU-0017.0 fornecida pelo usuário e rastreada por hash permite demanda d1–d5 com classificação/inventário/escopo explícitos e revisão vinculada por digest. Só residência individual Energisa Sul-Sudeste/SP até75kW; d6/d7/centrais presentes e outros escopos ficam bloqueados. Reservas excluídas da demanda, incluídas na instalada do limite. Não inferir grupo por catálogo nem converter previsãoVA/BTU/energia emW. PDFs em references/energisa;6.3 só histórica; ambos fora de Git/ZIP de código. Fontes/condições em standards.md e cálculos em calculations.md.
+
+Biblioteca técnica0.15.0 integra2.281documentos/83.461unidades de leitura/3.788fontes em knowledge_documents/pages/sources,com busca/leitura e originais por hash. Entradas references/elétrica e references/normas excluídas após importação/verificação por pedido expresso. Conteúdo único preservado em references/library/objects; não é cache. SQLite e inventários de auditoria entram no checkpoint; objetos fora do Git/ZIP.2.466páginas sem texto/OCR e revisão técnica integral pendentes. Importação não habilita normas nem mapeamento territorial. Administração em references/README.md.
 
 ## Estrutura e continuidade
 

@@ -43,3 +43,6 @@ id_ed25519
 
 # Exemplares normativos locais; índice público sem redistribuir PDFs
 /references/**/*.pdf
+
+# Biblioteca importada local: objetos e inventário não são código redistribuível
+/references/library/

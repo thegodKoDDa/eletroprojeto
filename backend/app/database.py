@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from fastapi import Request
-from sqlalchemy import JSON, DateTime, ForeignKey, Integer, String, create_engine, event
+from sqlalchemy import JSON, DateTime, ForeignKey, Integer, String, Text, create_engine, event
 from sqlalchemy.orm import (
     DeclarativeBase,
     Mapped,
@@ -140,3 +140,40 @@ class TechnicalRevisionRow(Base):
     payload: Mapped[dict] = mapped_column(JSON)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     review_status: Mapped[str] = mapped_column(String(50))
+
+
+class KnowledgeDocumentRow(Base):
+    __tablename__ = "knowledge_documents"
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    title: Mapped[str] = mapped_column(String(1000))
+    kind: Mapped[str] = mapped_column(String(32), index=True)
+    collection: Mapped[str] = mapped_column(String(40), index=True)
+    review_state: Mapped[str] = mapped_column(String(40), index=True)
+    media_type: Mapped[str] = mapped_column(String(100))
+    byte_size: Mapped[int] = mapped_column(Integer)
+    page_count: Mapped[int] = mapped_column(Integer)
+    text_pages: Mapped[int] = mapped_column(Integer)
+    search_text: Mapped[str] = mapped_column(Text)
+    provenance: Mapped[dict] = mapped_column(JSON)
+
+
+class KnowledgePageRow(Base):
+    __tablename__ = "knowledge_pages"
+    document_id: Mapped[str] = mapped_column(
+        ForeignKey("knowledge_documents.id", ondelete="CASCADE"), primary_key=True
+    )
+    number: Mapped[int] = mapped_column(Integer, primary_key=True)
+    body: Mapped[str] = mapped_column(Text)
+    search_text: Mapped[str] = mapped_column(Text)
+
+
+class KnowledgeSourceRow(Base):
+    __tablename__ = "knowledge_sources"
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    document_id: Mapped[str | None] = mapped_column(
+        ForeignKey("knowledge_documents.id"), index=True
+    )
+    title: Mapped[str] = mapped_column(String(1000))
+    url: Mapped[str] = mapped_column(Text)
+    outcome: Mapped[str] = mapped_column(String(80), index=True)
+    provenance: Mapped[dict] = mapped_column(JSON)

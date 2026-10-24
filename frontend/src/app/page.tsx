@@ -24,6 +24,7 @@ import { Field, RequirementsContext, CalculationScopeContext } from '@/component
 import type { components } from '@/lib/api.generated';
 import { RoomEquipmentPicker } from '@/components/equipment/RoomEquipmentPicker';
 import { SectionNavigation } from '@/components/projects/SectionNavigation';
+import { KnowledgeLibrary } from '@/components/projects/KnowledgeLibrary';
 import { WorkspaceHome } from '@/components/projects/WorkspaceHome';
 import { ProjectWorkspace } from '@/components/projects/ProjectWorkspace';
 import { CalculationNotices, focusField } from '@/components/calculations-notices';
@@ -75,7 +76,7 @@ export default function Home() {
 }
 
 function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => Promise<void> }) {
-  const [view, setView] = useState<'home' | 'project' | 'library' | 'trash'>('home');
+  const [view, setView] = useState<'home' | 'project' | 'library' | 'trash' | 'knowledge'>('home');
   const [hasProject, setHasProject] = useState(false);
   const [connectionAttempt, setConnectionAttempt] = useState(0);
   const [initializationIssues, setInitializationIssues] = useState<string[]>([]);
@@ -673,6 +674,7 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
               onProject={() => navigate('project')}
               onLibrary={showLibrary}
               onTrash={showTrash}
+              onKnowledge={() => navigate('knowledge')}
             />
             {view === 'project' && (
               <div className="sidebar-actions">
@@ -876,6 +878,7 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                 </button>
               </div>
             )}
+            {view === 'knowledge' && <KnowledgeLibrary />}
             {view === 'home' && (
               <WorkspaceHome
                 busy={busy || exporting}

@@ -3,7 +3,7 @@
   "info": {
     "title": "EletroProjeto",
     "description": "Cálculos de cargas residenciais: potência instalada (W/kW), potência aparente (VA/kVA), correntes, conversões, consumo mensal e estimativa de custo pela tarifa informada. Valores padrão são sugestões documentadas; valores manuais válidos são respeitados e recalculados. Previsão residencial de iluminação e TUG disponível por seleção explícita, com escopo e limites documentados. Demanda Energisa residencial parametrizada disponível em escopo limitado e inventário explícito. Demanda automática do cadastro e dimensionamento final permanecem pendentes.",
-    "version": "0.14.1"
+    "version": "0.15.0"
   },
   "paths": {
     "/api/v1/auth/session": {
@@ -84,6 +84,371 @@
         "responses": {
           "204": {
             "description": "Successful Response"
+          },
+          "422": {
+            "description": "Entradas inválidas; avisos localizados quando disponíveis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InputValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/knowledge/stats": {
+      "get": {
+        "tags": [
+          "Biblioteca técnica"
+        ],
+        "summary": "Stats",
+        "operationId": "stats_api_v1_knowledge_stats_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KnowledgeStats"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Entradas inválidas; avisos localizados quando disponíveis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InputValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/knowledge/documents": {
+      "get": {
+        "tags": [
+          "Biblioteca técnica"
+        ],
+        "summary": "Documents",
+        "operationId": "documents_api_v1_knowledge_documents_get",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 160,
+              "default": "",
+              "title": "Q"
+            }
+          },
+          {
+            "name": "kind",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 32,
+              "default": "",
+              "title": "Kind"
+            }
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 40,
+              "default": "",
+              "title": "State"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100000,
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 50,
+              "minimum": 1,
+              "default": 20,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KnowledgeSearch"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Entradas inválidas; avisos localizados quando disponíveis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InputValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/knowledge/documents/{document_id}": {
+      "get": {
+        "tags": [
+          "Biblioteca técnica"
+        ],
+        "summary": "Document",
+        "operationId": "document_api_v1_knowledge_documents__document_id__get",
+        "parameters": [
+          {
+            "name": "document_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Document Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KnowledgeDocument"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Entradas inválidas; avisos localizados quando disponíveis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InputValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/knowledge/documents/{document_id}/pages": {
+      "get": {
+        "tags": [
+          "Biblioteca técnica"
+        ],
+        "summary": "Pages",
+        "operationId": "pages_api_v1_knowledge_documents__document_id__pages_get",
+        "parameters": [
+          {
+            "name": "document_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Document Id"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 20,
+              "minimum": 1,
+              "default": 10,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 160,
+              "default": "",
+              "title": "Q"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/KnowledgePage"
+                  },
+                  "title": "Response Pages Api V1 Knowledge Documents  Document Id  Pages Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Entradas inválidas; avisos localizados quando disponíveis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InputValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/knowledge/documents/{document_id}/file": {
+      "get": {
+        "tags": [
+          "Biblioteca técnica"
+        ],
+        "summary": "File",
+        "operationId": "file_api_v1_knowledge_documents__document_id__file_get",
+        "parameters": [
+          {
+            "name": "document_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Document Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Entradas inválidas; avisos localizados quando disponíveis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InputValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/knowledge/sources": {
+      "get": {
+        "tags": [
+          "Biblioteca técnica"
+        ],
+        "summary": "Sources",
+        "operationId": "sources_api_v1_knowledge_sources_get",
+        "parameters": [
+          {
+            "name": "document_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 64,
+              "default": "",
+              "title": "Document Id"
+            }
+          },
+          {
+            "name": "outcome",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 80,
+              "default": "",
+              "title": "Outcome"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 50,
+              "minimum": 1,
+              "default": 20,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/KnowledgeSource"
+                  },
+                  "title": "Response Sources Api V1 Knowledge Sources Get"
+                }
+              }
+            }
           },
           "422": {
             "description": "Entradas inválidas; avisos localizados quando disponíveis.",
@@ -3091,6 +3456,267 @@
           "detail"
         ],
         "title": "InputValidationError"
+      },
+      "KnowledgeDocument": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "collection": {
+            "type": "string",
+            "title": "Collection"
+          },
+          "review_state": {
+            "type": "string",
+            "title": "Review State"
+          },
+          "media_type": {
+            "type": "string",
+            "title": "Media Type"
+          },
+          "byte_size": {
+            "type": "integer",
+            "title": "Byte Size"
+          },
+          "page_count": {
+            "type": "integer",
+            "title": "Page Count"
+          },
+          "text_pages": {
+            "type": "integer",
+            "title": "Text Pages"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/KnowledgeProvenance"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "kind",
+          "collection",
+          "review_state",
+          "media_type",
+          "byte_size",
+          "page_count",
+          "text_pages",
+          "provenance"
+        ],
+        "title": "KnowledgeDocument"
+      },
+      "KnowledgePage": {
+        "properties": {
+          "number": {
+            "type": "integer",
+            "title": "Number"
+          },
+          "body": {
+            "type": "string",
+            "title": "Body"
+          }
+        },
+        "type": "object",
+        "required": [
+          "number",
+          "body"
+        ],
+        "title": "KnowledgePage"
+      },
+      "KnowledgeProvenance": {
+        "properties": {
+          "origins": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Origins"
+          },
+          "urls": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Urls"
+          },
+          "groups": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Groups"
+          },
+          "states_catalogued": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "States Catalogued"
+          },
+          "editions_candidates": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Editions Candidates"
+          },
+          "validation": {
+            "type": "string",
+            "title": "Validation"
+          },
+          "territory": {
+            "type": "string",
+            "title": "Territory"
+          }
+        },
+        "type": "object",
+        "required": [
+          "origins",
+          "urls",
+          "groups",
+          "states_catalogued",
+          "editions_candidates",
+          "validation",
+          "territory"
+        ],
+        "title": "KnowledgeProvenance"
+      },
+      "KnowledgeSearch": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/KnowledgeDocument"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "next_offset": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Offset"
+          },
+          "notice": {
+            "type": "string",
+            "title": "Notice",
+            "default": "Acervo de consulta. Importação não valida vigência, aplicabilidade territorial ou regras de cálculo."
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "next_offset"
+        ],
+        "title": "KnowledgeSearch"
+      },
+      "KnowledgeSource": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "document_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Document Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "url": {
+            "type": "string",
+            "title": "Url"
+          },
+          "outcome": {
+            "type": "string",
+            "title": "Outcome"
+          },
+          "provenance": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Provenance"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "document_id",
+          "title",
+          "url",
+          "outcome",
+          "provenance"
+        ],
+        "title": "KnowledgeSource"
+      },
+      "KnowledgeStats": {
+        "properties": {
+          "documents": {
+            "type": "integer",
+            "title": "Documents"
+          },
+          "pages": {
+            "type": "integer",
+            "title": "Pages"
+          },
+          "text_pages": {
+            "type": "integer",
+            "title": "Text Pages"
+          },
+          "sources": {
+            "type": "integer",
+            "title": "Sources"
+          },
+          "kinds": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Kinds"
+          },
+          "review_states": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Review States"
+          },
+          "notice": {
+            "type": "string",
+            "title": "Notice",
+            "default": "Acervo de consulta. Importação não valida vigência, aplicabilidade territorial ou regras de cálculo."
+          }
+        },
+        "type": "object",
+        "required": [
+          "documents",
+          "pages",
+          "text_pages",
+          "sources",
+          "kinds",
+          "review_states"
+        ],
+        "title": "KnowledgeStats"
       },
       "Load": {
         "properties": {
