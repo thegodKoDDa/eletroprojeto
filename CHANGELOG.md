@@ -1,5 +1,12 @@
 # Histórico de alterações
 
+## Interface e integração — 24/10/2026 (versão funcional mantida)
+
+- Padronizados títulos, descrições, controles, cores de feedback, erros e paginações, com componentes compartilhados e sem alterar o início/fluxo simples.
+- Exportações agora mostram diagnósticos localizados/Corrigir informação como o salvamento. Completar consumo leva ao dado realmente faltante; leitura/fontes podem ser repetidas sem perder seleção/filtros.
+- Identificação acessível de seções e controles, totais e horários de rascunhos unificados. Estados técnicos permanecem recolhidos; nenhum cálculo/regra/dado foi alterado.
+-394backend+85subtestes,103frontend,22E2E e1HTTPS aprovados;contratos/tipos/lint/formatação/build aprovados. Dados reais preservados;detalhes e limites em CURRENT_STATE/audit.
+
 ## Organização e continuidade — 24/10/2026 (versão funcional mantida)
 
 - Retomada reúne GitHub/Git, banco, dependências, HTTP e último ponto. Encerramento com `--sync` confirma o repositório privado, envia commits revisados sem divergência/force-push e preserva checkpoint local mesmo sem rede.

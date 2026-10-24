@@ -18,6 +18,8 @@ import { draftKey, readDrafts, writeDraft, type Draft } from '@/lib/drafts';
 import { AccessBoundary } from '@/components/projects/AccessBoundary';
 import { WorkspaceIcon } from '@/components/layout/WorkspaceIcon';
 import { useCalculation } from '@/lib/use-calculation';
+import { PageHeading } from '@/components/ui/PageHeading';
+import { Feedback, type FeedbackTone } from '@/components/ui/Feedback';
 import { SectionHeading } from '@/components/ui/SectionHeading';
 import { DemandReview } from '@/components/calculations/DemandReview';
 import { EquipmentEditor } from '@/components/equipment/EquipmentEditor';
@@ -32,7 +34,7 @@ import { ProjectWorkspace } from '@/components/projects/ProjectWorkspace';
 import { CalculationNotices, focusField } from '@/components/calculations-notices';
 import { ProjectActions } from '@/components/layout/ProjectActions';
 import { ResultsPanel } from '@/components/calculations/ResultsPanel';
-import { format } from '@/lib/format';
+import { format, formatDate } from '@/lib/format';
 import { exportFilename } from '@/lib/export';
 import { APP_VERSION } from '@/lib/version';
 import { newLoad, selectionCatalog } from '@/lib/equipment';
@@ -169,7 +171,15 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
     }
   }, [pendingRoom]);
   const [libraryRevision, setLibraryRevision] = useState(0);
-  const [message, setMessage] = useState('');
+  const [feedback, setFeedback] = useState<{ text: string; tone: FeedbackTone }>({
+    text: '',
+    tone: 'info',
+  });
+  const message = feedback.text;
+  const setMessage = useCallback(
+    (text: string, tone: FeedbackTone = 'info') => setFeedback({ text, tone }),
+    [],
+  );
   const [operationIssues, setOperationIssues] = useState<{
     input: ProjectInput;
     notices: components['schemas']['Notification'][];
@@ -264,7 +274,7 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
       };
     });
     setPendingRoom(id);
-    setMessage('Ambiente duplicado. A cópia pode ser editada independentemente.');
+    setMessage('Ambiente duplicado. A cópia pode ser editada independentemente.', 'success');
   }
   function addRoom() {
     const room: Environment = {
@@ -351,6 +361,7 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
             : automatic
               ? 'Alterações salvas automaticamente.'
               : 'Projeto salvo com histórico do cálculo parcial e suas pendências.',
+          currentInput.current !== startedInput ? 'warning' : 'success',
         );
         await refresh();
       } catch (e) {
@@ -390,15 +401,15 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
           }
         } else if (e instanceof APIError && e.notifications.length) {
           setOperationIssues({ input: startedInput, notices: e.notifications });
-          setMessage('Não foi possível salvar. Corrija os campos indicados.');
-        } else setMessage((e as Error).message);
+          setMessage('Não foi possível salvar. Corrija os campos indicados.', 'error');
+        } else setMessage((e as Error).message, 'error');
       } finally {
         writeInFlight.current = false;
         setBusy(false);
         setSaving(false);
       }
     },
-    [input, saved, refresh, conflictPending],
+    [input, saved, refresh, conflictPending, setMessage],
   );
   useEffect(() => {
     if (!autosave || !saved || !dirty || busy || conflictPending || input.name !== saved.name)
@@ -440,7 +451,7 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
       setMessage('');
       return true;
     } catch (e) {
-      setMessage((e as Error).message);
+      setMessage((e as Error).message, 'error');
       return false;
     } finally {
       setBusy(false);
@@ -491,9 +502,9 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
         }
       }
       await refresh();
-      setMessage('Projeto movido para excluídos. Seu histórico foi preservado.');
+      setMessage('Projeto movido para excluídos. Seu histórico foi preservado.', 'success');
     } catch (e) {
-      setMessage((e as Error).message);
+      setMessage((e as Error).message, 'error');
     } finally {
       setBusy(false);
     }
@@ -504,9 +515,12 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
     try {
       await request<Project>(`/projects/${project.id}/duplicate`, { method: 'POST' });
       await refresh();
-      setMessage('Cópia criada na área de trabalho. O projeto em edição foi preservado.');
+      setMessage(
+        'Cópia criada na área de trabalho. O projeto em edição foi preservado.',
+        'success',
+      );
     } catch (e) {
-      setMessage((e as Error).message);
+      setMessage((e as Error).message, 'error');
     } finally {
       setBusy(false);
     }
@@ -519,9 +533,9 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
         method: 'POST',
       });
       await refresh();
-      setMessage('Projeto restaurado com seu histórico.');
+      setMessage('Projeto restaurado com seu histórico.', 'success');
     } catch (e) {
-      setMessage((e as Error).message);
+      setMessage((e as Error).message, 'error');
     } finally {
       setBusy(false);
     }
@@ -552,7 +566,7 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
           : 'Referências correspondem à revisão registrada. Consulte o alcance normativo nos resultados.',
       );
     } catch (e) {
-      setMessage((e as Error).message);
+      setMessage((e as Error).message, 'error');
     } finally {
       setBusy(false);
     }
@@ -569,10 +583,13 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
       setSaved(project);
       if (currentInput.current === snapshot) setInput(projectInputs(project));
       setReview(undefined);
-      setMessage('Revalidação registrada em nova versão. Histórico e valores manuais preservados.');
+      setMessage(
+        'Revalidação registrada em nova versão. Histórico e valores manuais preservados.',
+        'success',
+      );
       await refresh();
     } catch (reason) {
-      setMessage((reason as Error).message);
+      setMessage((reason as Error).message, 'error');
     } finally {
       setBusy(false);
     }
@@ -591,9 +608,9 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
         method: 'DELETE',
       });
       await refresh();
-      setMessage('Projeto e histórico excluídos definitivamente.');
+      setMessage('Projeto e histórico excluídos definitivamente.', 'success');
     } catch (e) {
-      setMessage((e as Error).message);
+      setMessage((e as Error).message, 'error');
     } finally {
       setBusy(false);
     }
@@ -602,6 +619,7 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
     if (busy || exporting || !currentResult || !currentResult.technical_context?.registry_version)
       return;
     const snapshot = input;
+    setOperationIssues(undefined);
     setExporting(true);
     try {
       const blob = await requestReport(format, {
@@ -623,9 +641,13 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
         currentInput.current === snapshot
           ? `${format.toUpperCase()} exportado com as entradas calculadas.`
           : `${format.toUpperCase()} exportado com os dados do início da exportação; há alterações posteriores.`,
+        currentInput.current === snapshot ? 'success' : 'warning',
       );
     } catch (e) {
-      setMessage((e as Error).message);
+      if (e instanceof APIError && e.notifications.length) {
+        setOperationIssues({ input: snapshot, notices: e.notifications });
+        setMessage('Não foi possível exportar. Corrija os campos indicados.', 'error');
+      } else setMessage((e as Error).message, 'error');
     } finally {
       setExporting(false);
     }
@@ -704,9 +726,9 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
           </aside>
           <main id="workspace-main" className="workspace-main">
             {draftIssue && (
-              <p role="alert" className="panel mb-5">
+              <Feedback tone="warning" role="alert" className="mb-5">
                 {draftIssue}
-              </p>
+              </Feedback>
             )}
             {recoverableDrafts.length > 0 && (
               <section aria-label="Rascunhos recuperados" className="panel mb-5">
@@ -718,7 +740,7 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                 {recoverableDrafts.map(({ key, draft }) => (
                   <div key={key} className="mt-3 flex flex-wrap items-center gap-3">
                     <span>
-                      {draft.input.name} · {new Date(draft.updatedAt).toLocaleString('pt-BR')}
+                      {draft.input.name} · {formatDate(draft.updatedAt)} · Brasília
                     </span>
                     <button
                       className="btn"
@@ -775,7 +797,12 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
               </section>
             )}
             {conflictPending && (
-              <section role="alert" className="panel mb-5" aria-label="Resolver conflito de edição">
+              <section
+                role="alert"
+                className="panel feedback mb-5"
+                data-tone="warning"
+                aria-label="Resolver conflito de edição"
+              >
                 <h2 className="text-lg font-semibold">Projeto alterado em outra sessão</h2>
                 <p>Sua edição local está preservada. Escolha como continuar.</p>
                 {conflict && (
@@ -839,16 +866,12 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
               </section>
             )}
             {message && (
-              <p
-                role="status"
-                data-testid="project-message"
-                className="mb-5 whitespace-pre-wrap rounded-lg border border-slate-600 p-4 text-sm"
-              >
+              <Feedback tone={feedback.tone} data-testid="project-message" className="mb-5">
                 {message}
-              </p>
+              </Feedback>
             )}
             {!!initializationIssues.length && (
-              <div role="alert" className="panel mb-5 text-sm">
+              <Feedback tone="error" className="mb-5">
                 <p>{initializationIssues.join(' ')}</p>
                 <button
                   className="btn mt-3"
@@ -860,7 +883,7 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                 >
                   Tentar conexão novamente
                 </button>
-              </div>
+              </Feedback>
             )}
             {view === 'knowledge' && <KnowledgeLibrary />}
             {view === 'home' && (
@@ -900,20 +923,11 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                     />
                   )}
                 <header className="page-header">
-                  <div>
-                    <p className="eyebrow">SEU CONSUMO EM 3 PASSOS</p>
-                    <h1
-                      data-workspace-heading
-                      tabIndex={-1}
-                      className="text-3xl font-semibold tracking-tight"
-                    >
-                      Consumo da residência
-                    </h1>
-                    <p className="mt-2 text-sm muted">
-                      Adicione os aparelhos que você usa ou planeja usar e estime o consumo da sua
-                      casa.
-                    </p>
-                  </div>
+                  <PageHeading
+                    title="Consumo da residência"
+                    eyebrow="SEU CONSUMO EM 3 PASSOS"
+                    description="Adicione os aparelhos que você usa ou planeja usar e estime o consumo da sua casa."
+                  />
                 </header>
                 {operationIssues?.input === input && !error && (
                   <CalculationNotices
@@ -943,16 +957,14 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                 </p>
                 {error && <CalculationNotices notices={notifications} stale={false} />}
                 {error && !notifications.length && (
-                  <p
-                    role="alert"
-                    className="mb-5 whitespace-pre-wrap rounded-lg border border-red-800 bg-red-900/10 p-4 text-sm text-red-300"
-                  >
+                  <Feedback tone="error" className="mb-5">
                     {error}
-                  </p>
+                  </Feedback>
                 )}
-                <section id="project" className="panel mb-6">
+                <section id="project" aria-labelledby="project-heading" className="panel mb-6">
                   <header className="section-header">
                     <SectionHeading
+                      id="project-heading"
                       eyebrow="01 / PROJETO"
                       title="Dados do projeto"
                       description="Dê um nome ao estudo. Para estimar o custo, informe também a tarifa da sua conta de luz."
@@ -1383,7 +1395,7 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                           />
                           {!catalog.length && (
                             <button className="btn" onClick={() => addLoad(room)}>
-                              <WorkspaceIcon name="new" /> Carga personalizada
+                              <WorkspaceIcon name="new" /> Equipamento personalizado
                             </button>
                           )}
                           <span className="ml-auto text-sm text-emerald-300">
@@ -1403,6 +1415,7 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                   loading={loading}
                   stale={stale}
                   scope={input.analysis_scope}
+                  environments={input.environments}
                   onScopeChange={(value) => change('analysis_scope', value)}
                 />
                 <details key={`technical-${calculationScope}`} className="technical-tools mt-6">

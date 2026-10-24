@@ -38,6 +38,8 @@ test('three-step consumption journey stays simple and technical studies remain o
   await complete.click();
   await expect(equipment.getByLabel('Horas de uso por dia', { exact: true })).toBeFocused();
   await equipment.getByLabel('Horas de uso por dia', { exact: true }).fill('3');
+  await complete.click();
+  await expect(equipment.getByLabel('Dias de uso por mês', { exact: true })).toBeFocused();
   await equipment.getByLabel('Dias de uso por mês', { exact: true }).fill('20');
   const summary = page.getByLabel('Consumo e custo mensais', { exact: true });
   await expect(summary).toContainText('1,2 kWh/mês');

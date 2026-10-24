@@ -119,7 +119,7 @@ export function Field({
       )}
       {rendered.map((item) => item.node)}
       {error && (
-        <span id={`${path}-error`} className="mt-1 block text-xs text-amber-200">
+        <span id={`${path}-error`} className="field-error">
           {error}
         </span>
       )}

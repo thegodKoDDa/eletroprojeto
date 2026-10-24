@@ -61,7 +61,7 @@ export function CalculationNotices({ notices, stale }: { notices: Notice[]; stal
                   </p>
                   {item.target_id && (
                     <button
-                      className="text-emerald-300 underline"
+                      className="text-action"
                       aria-label={`Corrigir informação: ${item.location.join(' → ')} · ${item.problem}`}
                       onClick={() => focusField(item.target_id!)}
                     >

@@ -1,5 +1,7 @@
 'use client';
 import { useEffect, useState, type ReactNode, type FormEvent } from 'react';
+import { PageHeading } from '@/components/ui/PageHeading';
+import { Feedback } from '@/components/ui/Feedback';
 import { request, setSessionCsrf } from '@/lib/api';
 import type { components } from '@/lib/api.generated';
 
@@ -72,48 +74,57 @@ export function AccessBoundary({
       setAccess({ ...access, authenticated: false, csrf: null });
     });
   return (
-    <main className="mx-auto max-w-lg p-8">
-      <h1 className="text-2xl font-semibold">Entrar no EletroProjeto</h1>
-      {error && (
-        <p role="alert" className="my-4">
-          {error}
-        </p>
-      )}
-      {!access ? (
-        error ? (
-          <button
-            className="btn"
-            onClick={() => {
-              setError('');
-              setAttempt((value) => value + 1);
-            }}
-          >
-            Tentar consultar acesso novamente
-          </button>
+    <main className="access-page">
+      <section className="panel access-panel" aria-labelledby="access-heading">
+        <header className="page-header">
+          <PageHeading
+            id="access-heading"
+            title="Entrar no EletroProjeto"
+            eyebrow="ACESSO"
+            description="Entre para acessar seus projetos salvos."
+          />
+        </header>
+        {error && (
+          <Feedback tone="error" className="my-4">
+            {error}
+          </Feedback>
+        )}
+        {!access ? (
+          error ? (
+            <button
+              className="btn"
+              onClick={() => {
+                setError('');
+                setAttempt((value) => value + 1);
+              }}
+            >
+              Tentar consultar acesso novamente
+            </button>
+          ) : (
+            <p role="status">Consultando acesso…</p>
+          )
         ) : (
-          <p role="status">Consultando acesso…</p>
-        )
-      ) : (
-        <form onSubmit={login} className="mt-6 grid gap-4">
-          <label>
-            Usuário
-            <input name="username" autoComplete="username" required maxLength={200} />
-          </label>
-          <label>
-            Senha
-            <input
-              name="password"
-              type="password"
-              autoComplete="current-password"
-              required
-              maxLength={1024}
-            />
-          </label>
-          <button className="btn" disabled={busy}>
-            {busy ? 'Entrando…' : 'Entrar'}
-          </button>
-        </form>
-      )}
+          <form onSubmit={login} className="mt-6 grid gap-4">
+            <label>
+              Usuário
+              <input name="username" autoComplete="username" required maxLength={200} />
+            </label>
+            <label>
+              Senha
+              <input
+                name="password"
+                type="password"
+                autoComplete="current-password"
+                required
+                maxLength={1024}
+              />
+            </label>
+            <button className="btn primary" disabled={busy}>
+              {busy ? 'Entrando…' : 'Entrar'}
+            </button>
+          </form>
+        )}
+      </section>
     </main>
   );
 }

@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import type { components } from '@/lib/api.generated';
 import type { ProjectInput, CalculationResult } from '@/lib/api';
 import { safeReferenceUrl } from '@/lib/safe-url';
@@ -37,6 +37,7 @@ function Ratings({
   value: (number | string)[];
   onChange: (value: (number | string)[]) => void;
 }) {
+  const errorId = useId();
   const signature = JSON.stringify(value);
   const [draft, setDraft] = useState({ signature, text: value.join('; ') });
   const text = draft.signature === signature ? draft.text : value.join('; ');
@@ -55,6 +56,7 @@ function Ratings({
       <input
         value={text}
         aria-invalid={invalid || undefined}
+        aria-describedby={invalid ? errorId : undefined}
         placeholder="Valores dos produtos consultados"
         onChange={(event) => {
           const raw = event.target.value;
@@ -68,7 +70,7 @@ function Ratings({
         }}
       />
       {invalid && (
-        <span className="text-xs text-red-300">
+        <span id={errorId} className="field-error">
           Use correntes positivas separadas por ponto e vírgula.
         </span>
       )}
@@ -238,10 +240,11 @@ export function CircuitStudy({
       <section className="panel circuit-study mb-6" aria-labelledby="circuits-heading">
         <SectionHeading
           eyebrow="ESTUDO OPCIONAL"
+          id="circuits-heading"
           title="Estudo de circuitos"
           description="Associe cargas e confira corrente, seção, sobrecarga e queda de tensão no escopo suportado."
         />
-        <p id="circuits-heading" className="mt-3 text-xs muted">
+        <p className="mt-3 text-xs muted">
           Cobre/PVC70°C, métodos B1/B2, dois condutores carregados, 50/60Hz. Resultados
           condicionados às informações reais; partida, harmônicas, curto térmico, proteção contra
           choque e seletividade exigem verificação específica.
@@ -578,10 +581,11 @@ export function CircuitStudy({
       <section className="panel circuit-study mb-6" aria-labelledby="entry-heading">
         <SectionHeading
           eyebrow="ESTUDO OPCIONAL"
+          id="entry-heading"
           title="Referência de padrão de entrada"
           description="Enquadramento limitado à Energisa Sul-Sudeste/SP, rede 220/127V, unidade residencial individual até75kW."
         />
-        <p id="entry-heading" className="mt-3 text-xs muted">
+        <p className="mt-3 text-xs muted">
           Tabela16 da NDU-0017.0. Seções mínimas de tabela não concluem dimensionamento. A aprovação
           do atendimento depende da distribuidora.
         </p>

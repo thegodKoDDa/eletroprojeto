@@ -38,7 +38,7 @@ Acervo local:2.196objetos técnicos,2.082documentos/51.324unidades/3.788fontes. 
 
 ## Estrutura e continuidade
 
-Backend: REST/main, schemas/contratos, projects/histórico, database/ORM, reports, calculations. Frontend: page orquestra; componentes projects/equipment/calculations/layout e hooks em lib. `use-workspace-resources` carrega recursos independentemente; cliente centraliza erros/cabeçalhos/CSRF. Modo local loopback e autenticação remota/HTTPS/isolamento já implementados são preservados.
+Backend: REST/main, schemas/contratos, projects/histórico, database/ORM, reports, calculations. Frontend: page orquestra; componentes projects/equipment/calculations/layout e hooks em lib. PageHeading/SectionHeading/Feedback/Pagination e tokens CSS padronizam páginas,seções,avisos e navegação; reutilizar esses padrões. Erros de exportação preservam notificações localizadas como no salvamento; leitura/fontes possuem retry sem perder filtros. `use-workspace-resources` carrega recursos independentemente; cliente centraliza erros/cabeçalhos/CSRF. Modo local loopback e autenticação remota/HTTPS/isolamento já implementados são preservados.
 
 Fonte de dependências são manifests/locks. Reutilizar `.venv`, `.venv-windows` e node_modules; não reinstalar por hábito. Contratos somente por `npm run types:sync`. Não rodar build e E2E simultaneamente; QA usa bancos/portas e diretórios próprios.
 

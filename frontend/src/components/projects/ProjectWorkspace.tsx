@@ -3,6 +3,9 @@
 import { useEffect, useId, useState } from 'react';
 import { formatDate } from '@/lib/format';
 import { request, type ProjectSummary as Project } from '@/lib/api';
+import { PageHeading } from '@/components/ui/PageHeading';
+import { Feedback } from '@/components/ui/Feedback';
+import { Pagination } from '@/components/ui/Pagination';
 import { WorkspaceIcon } from '@/components/layout/WorkspaceIcon';
 
 type Props = {
@@ -76,22 +79,16 @@ export function ProjectWorkspace({
   return (
     <section aria-labelledby={titleId} className="workspace-library">
       <header className="page-header">
-        <div>
-          <p className="eyebrow">ESPAÇO DE TRABALHO</p>
-          <h1
-            id={titleId}
-            data-workspace-heading
-            tabIndex={-1}
-            className="text-3xl font-semibold tracking-tight"
-          >
-            {title}
-          </h1>
-          <p className="mt-3 text-sm leading-6 muted">
-            {archived
+        <PageHeading
+          id={titleId}
+          title={title}
+          eyebrow="ESPAÇO DE TRABALHO"
+          description={
+            archived
               ? 'Recupere projetos excluídos ou remova-os definitivamente, junto com seu histórico.'
-              : 'Encontre um projeto para continuar ou organize os estudos que você já salvou.'}
-          </p>
-        </div>
+              : 'Encontre um projeto para continuar ou organize os estudos que você já salvou.'
+          }
+        />
         <button
           className="btn"
           disabled={busy || loading}
@@ -130,7 +127,7 @@ export function ProjectWorkspace({
           </p>
         )}
         {error && (
-          <div role="alert" className="workspace-empty">
+          <Feedback tone="error">
             <p>{error}</p>
             <button
               className="btn mt-4"
@@ -139,7 +136,7 @@ export function ProjectWorkspace({
             >
               Tentar carregar novamente
             </button>
-          </div>
+          </Feedback>
         )}
         <div className="workspace-list" aria-busy={loading}>
           {rows.slice(0, 20).map((project) => (
@@ -177,7 +174,7 @@ export function ProjectWorkspace({
                       Restaurar
                     </button>
                     <button
-                      className="quiet danger"
+                      className="btn subtle danger"
                       disabled={busy || loading}
                       onClick={() => onPurge(project)}
                       aria-label={`Excluir definitivamente ${project.name}`}
@@ -188,7 +185,7 @@ export function ProjectWorkspace({
                 ) : (
                   <>
                     <button
-                      className="quiet"
+                      className="btn subtle"
                       disabled={busy || loading}
                       onClick={() => onDuplicate(project)}
                       aria-label={`Duplicar ${project.name}`}
@@ -196,7 +193,7 @@ export function ProjectWorkspace({
                       Duplicar
                     </button>
                     <button
-                      className="quiet danger"
+                      className="btn subtle danger"
                       disabled={busy || loading}
                       onClick={() => onDelete(project)}
                       aria-label={`Excluir ${project.name}`}
@@ -226,7 +223,7 @@ export function ProjectWorkspace({
                 ? 'Tente outro nome ou município, ou limpe a pesquisa.'
                 : archived
                   ? 'Os projetos que você excluir aparecerão aqui.'
-                  : 'Crie seu primeiro projeto para começar seu estudo de cargas.'}
+                  : 'Crie seu primeiro projeto para estimar o consumo da sua casa.'}
             </p>
             {filters.query ? (
               <button className="btn mt-5" disabled={busy} onClick={() => search('')}>
@@ -241,23 +238,15 @@ export function ProjectWorkspace({
             )}
           </div>
         )}
-        <footer className="workspace-pagination">
-          <button
-            className="btn"
-            disabled={busy || loading || !!error || !filters.offset}
-            onClick={() => setFilters((old) => ({ ...old, offset: Math.max(0, old.offset - 20) }))}
-          >
-            Anterior
-          </button>
-          <span>Página {Math.floor(filters.offset / 20) + 1}</span>
-          <button
-            className="btn"
-            disabled={busy || loading || !!error || rows.length <= 20}
-            onClick={() => setFilters((old) => ({ ...old, offset: old.offset + 20 }))}
-          >
-            Próxima
-          </button>
-        </footer>
+        <Pagination
+          label={archived ? 'Paginação da lixeira' : 'Paginação dos projetos'}
+          offset={filters.offset}
+          pageSize={20}
+          hasNext={!error && rows.length > 20}
+          busy={busy || loading || !!error}
+          onPrevious={() => setFilters((old) => ({ ...old, offset: Math.max(0, old.offset - 20) }))}
+          onNext={() => setFilters((old) => ({ ...old, offset: old.offset + 20 }))}
+        />
       </div>
     </section>
   );

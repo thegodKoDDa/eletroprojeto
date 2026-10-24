@@ -1,4 +1,5 @@
 'use client';
+import { format } from '@/lib/format';
 import { EnergyFields } from './EnergyFields';
 import { safeReferenceUrl } from '@/lib/safe-url';
 import { useContext } from 'react';
@@ -638,12 +639,7 @@ export function EquipmentEditor({
                 </p>
                 <p>{ref.note}</p>
                 {sourceUrl && (
-                  <a
-                    className="text-emerald-300 underline"
-                    href={sourceUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
+                  <a className="text-action" href={sourceUrl} target="_blank" rel="noreferrer">
                     {ref.source} · {ref.document} · consulta {ref.verified_on}
                   </a>
                 )}
@@ -700,7 +696,7 @@ export function EquipmentEditor({
         </button>
         <span className="text-emerald-300" data-stale={stale}>
           {!stale && memory && memory.status !== 'pending'
-            ? `Total: ${Number(memory.result.value).toLocaleString('pt-BR', { maximumFractionDigits: 3 })} W`
+            ? `Total: ${format(memory.result.value)} W`
             : stale
               ? 'Atualizando…'
               : 'Total pendente'}

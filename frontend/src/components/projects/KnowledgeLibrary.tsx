@@ -2,6 +2,10 @@
 import { useEffect, useRef, useState } from 'react';
 import type { components } from '@/lib/api.generated';
 import { API, request } from '@/lib/api';
+import { SectionHeading } from '@/components/ui/SectionHeading';
+import { PageHeading } from '@/components/ui/PageHeading';
+import { Feedback } from '@/components/ui/Feedback';
+import { Pagination } from '@/components/ui/Pagination';
 import { safeReferenceUrl } from '@/lib/safe-url';
 
 type Document = components['schemas']['KnowledgeDocument'];
@@ -94,7 +98,8 @@ function DocumentReader({ document, onClose }: { document: Document; onClose: ()
   const [pageState, setPageState] = useState<{ key: string; pages?: Page[]; error?: string }>();
   const [offset, setOffset] = useState(0);
   const [pageQuery, setPageQuery] = useState('');
-  const pageKey = JSON.stringify([offset, pageQuery]);
+  const [attempt, setAttempt] = useState(0);
+  const pageKey = JSON.stringify([document.id, offset, pageQuery, attempt]);
   const pages = pageState?.key === pageKey ? pageState.pages : undefined;
   const error = pageState?.key === pageKey ? pageState.error : undefined;
   const heading = useRef<HTMLHeadingElement>(null);
@@ -120,14 +125,13 @@ function DocumentReader({ document, onClose }: { document: Document; onClose: ()
   return (
     <section className="panel knowledge-reader" aria-labelledby="reference-title">
       <div className="flex flex-wrap items-start justify-between gap-3">
-        <h2
-          ref={heading}
-          tabIndex={-1}
+        <SectionHeading
+          eyebrow="LEITURA / REFERÊNCIA"
           id="reference-title"
-          className="text-lg font-semibold break-words"
-        >
-          {document.title}
-        </h2>
+          headingRef={heading}
+          tabIndex={-1}
+          title={document.title}
+        />
         <button className="btn subtle" onClick={onClose}>
           Fechar leitura
         </button>
@@ -202,9 +206,18 @@ function DocumentReader({ document, onClose }: { document: Document; onClose: ()
         <p className="mt-3 muted">Nenhuma página encontrada para este termo.</p>
       )}
       {error && (
-        <p role="alert" className="mt-3">
-          {error}
-        </p>
+        <Feedback tone="error" className="mt-3">
+          <p>{error}</p>
+          <button
+            className="btn subtle mt-3"
+            onClick={() => {
+              setAttempt((value) => value + 1);
+              heading.current?.focus();
+            }}
+          >
+            Tentar leitura novamente
+          </button>
+        </Feedback>
       )}
       {!pages && !error && (
         <p role="status" className="mt-3 muted">
@@ -236,22 +249,18 @@ function DocumentReader({ document, onClose }: { document: Document; onClose: ()
           </div>
         </article>
       ))}
-      <div className="mt-3 flex flex-wrap gap-2" aria-label="Páginas da referência">
-        <button
-          className="btn subtle"
-          disabled={offset === 0 || !pages}
-          onClick={() => setOffset(Math.max(0, offset - 5))}
-        >
-          Páginas anteriores
-        </button>
-        <button
-          className="btn subtle"
-          disabled={!pages || pages.length < 5 || (!pageQuery && offset + 5 >= document.page_count)}
-          onClick={() => setOffset(offset + 5)}
-        >
-          Próximas páginas
-        </button>
-      </div>
+      <Pagination
+        label="Páginas da referência"
+        caption={pages ? `${pages.length} página(s) carregada(s)` : 'Leitura'}
+        offset={offset}
+        pageSize={5}
+        hasNext={!!pages && pages.length >= 5 && (!!pageQuery || offset + 5 < document.page_count)}
+        busy={!pages || !!error}
+        onPrevious={() => setOffset(Math.max(0, offset - 5))}
+        onNext={() => setOffset(offset + 5)}
+        previousLabel="Páginas anteriores"
+        nextLabel="Próximas páginas"
+      />
     </section>
   );
 }
@@ -260,7 +269,8 @@ function SourceRegistry() {
   const [opened, setOpened] = useState(false);
   const [offset, setOffset] = useState(0);
   const [outcome, setOutcome] = useState('falha_download');
-  const sourceKey = JSON.stringify([offset, outcome]);
+  const [attempt, setAttempt] = useState(0);
+  const sourceKey = JSON.stringify([offset, outcome, attempt]);
   const [rows, setRows] = useState<{ key: string; items?: Source[]; error?: string }>();
   const items = rows?.key === sourceKey ? rows.items : undefined;
   const error = rows?.key === sourceKey ? rows.error : undefined;
@@ -307,7 +317,14 @@ function SourceRegistry() {
           </option>
         </select>
       </label>
-      {error && <p role="alert">{error}</p>}
+      {error && (
+        <Feedback tone="error" className="mt-3">
+          <p>{error}</p>
+          <button className="btn subtle mt-3" onClick={() => setAttempt((value) => value + 1)}>
+            Tentar fontes novamente
+          </button>
+        </Feedback>
+      )}
       {opened && !items && !error && <p role="status">Consultando fontes…</p>}
       <ul className="mt-2 space-y-3 text-sm">
         {items?.map((source) => (
@@ -327,22 +344,17 @@ function SourceRegistry() {
         ))}
       </ul>
       {items?.length === 0 && <p className="mt-2 text-sm muted">Nenhum registro nesta página.</p>}
-      <div className="mt-3 flex gap-2">
-        <button
-          className="btn subtle"
-          disabled={offset === 0 || !items}
-          onClick={() => setOffset(Math.max(0, offset - 20))}
-        >
-          Fontes anteriores
-        </button>
-        <button
-          className="btn subtle"
-          disabled={!items || items.length < 20}
-          onClick={() => setOffset(offset + 20)}
-        >
-          Próximas fontes
-        </button>
-      </div>
+      <Pagination
+        label="Paginação das fontes"
+        offset={offset}
+        pageSize={20}
+        hasNext={!!items && items.length >= 20}
+        busy={!items || !!error}
+        onPrevious={() => setOffset(Math.max(0, offset - 20))}
+        onNext={() => setOffset(offset + 20)}
+        previousLabel="Fontes anteriores"
+        nextLabel="Próximas fontes"
+      />
     </details>
   );
 }
@@ -366,7 +378,9 @@ export function KnowledgeLibrary() {
   useEffect(() => {
     const controller = new AbortController();
     request<Stats>('/knowledge/stats', { signal: controller.signal })
-      .then(setStats)
+      .then((value) => {
+        if (!controller.signal.aborted) setStats(value);
+      })
       .catch(() => {});
     return () => controller.abort();
   }, [attempt]);
@@ -390,20 +404,12 @@ export function KnowledgeLibrary() {
   return (
     <section className="workspace-library" aria-labelledby="knowledge-heading">
       <header className="page-header">
-        <div>
-          <p className="eyebrow">CONSULTA / REFERÊNCIAS</p>
-          <h1
-            id="knowledge-heading"
-            data-workspace-heading
-            tabIndex={-1}
-            className="text-3xl font-semibold"
-          >
-            Biblioteca técnica
-          </h1>
-          <p className="mt-2 text-sm muted">
-            Guias, modelos, diagramas e documentos do acervo local.
-          </p>
-        </div>
+        <PageHeading
+          id="knowledge-heading"
+          title="Biblioteca técnica"
+          eyebrow="CONSULTA / REFERÊNCIAS"
+          description="Guias, modelos, diagramas e documentos do acervo local."
+        />
       </header>
       <p className="panel text-sm muted">
         Acervo de consulta. Importar documentos não valida vigência, aplicabilidade territorial ou
@@ -465,12 +471,12 @@ export function KnowledgeLibrary() {
         </label>
       </div>
       {error && (
-        <div role="alert" className="panel mt-4">
+        <Feedback tone="error" className="mt-4">
           <p>{error}</p>
           <button className="btn mt-2" onClick={() => setAttempt(attempt + 1)}>
             Tentar consulta novamente
           </button>
-        </div>
+        </Feedback>
       )}
       {!results && !error && (
         <p role="status" className="mt-4 muted">
@@ -500,22 +506,16 @@ export function KnowledgeLibrary() {
               Nenhuma referência encontrada. Tente outro termo ou filtro.
             </p>
           )}
-          <div className="mt-3 flex gap-2" aria-label="Paginação do acervo">
-            <button
-              className="btn subtle"
-              disabled={offset === 0}
-              onClick={() => setOffset(Math.max(0, offset - 20))}
-            >
-              Anteriores
-            </button>
-            <button
-              className="btn subtle"
-              disabled={results.next_offset === null}
-              onClick={() => setOffset(results.next_offset ?? 0)}
-            >
-              Próximas
-            </button>
-          </div>
+          <Pagination
+            label="Paginação do acervo"
+            offset={offset}
+            pageSize={20}
+            hasNext={results.next_offset !== null}
+            onPrevious={() => setOffset(Math.max(0, offset - 20))}
+            onNext={() => setOffset(results.next_offset ?? offset)}
+            previousLabel="Anteriores"
+            nextLabel="Próximas"
+          />
         </>
       )}
       <SourceRegistry />

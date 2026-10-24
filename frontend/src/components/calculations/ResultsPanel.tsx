@@ -21,24 +21,54 @@ export function ResultsPanel({
   loading,
   stale,
   scope,
+  environments,
   onScopeChange,
 }: {
   result?: CalculationResult;
   loading: boolean;
   stale: boolean;
   scope: ProjectInput['analysis_scope'];
+  environments?: ProjectInput['environments'];
   onScopeChange: (scope: ProjectInput['analysis_scope']) => void;
 }) {
   const [technical, setTechnical] = useState(false);
   const notices = result?.notifications ?? [];
   const issues = notices.filter((item) => ['error', 'technical'].includes(item.category));
+  function completeEnergy() {
+    const id = result?.energy_unknown_load_ids?.[0];
+    if (!id) return;
+    const load = environments?.flatMap((room) => room.loads ?? []).find((item) => item.id === id);
+    const params = load?.parameters;
+    let field = 'parameters.usage_hours_per_day';
+    if (result?.unknown_load_ids?.includes(id)) {
+      field =
+        params?.power_mode === 'mechanical'
+          ? params.mechanical_power == null
+            ? 'parameters.mechanical_power'
+            : 'parameters.efficiency'
+          : 'unit_power_w';
+    } else if (params?.usage_hours_per_day != null) {
+      field =
+        params.usage_days_per_month == null
+          ? 'parameters.usage_days_per_month'
+          : 'parameters.monthly_energy_kwh';
+    }
+    focusField(`load.${id}.${field}`);
+  }
   const demandAvailable =
     result?.normative.demand?.value != null &&
     ['calculated', 'estimated'].includes(String(result.normative.demand.status));
   return (
-    <section id="results" className="panel min-h-64" aria-busy={loading} data-stale={stale}>
+    <section
+      id="results"
+      aria-labelledby="results-heading"
+      className="panel min-h-64"
+      aria-busy={loading}
+      data-stale={stale}
+    >
       <header className="section-header">
         <SectionHeading
+          id="results-heading"
           eyebrow="03 / CONFERÊNCIA"
           title="Confira sua estimativa"
           description="Veja o consumo e o custo mensal dos aparelhos cadastrados."
@@ -84,14 +114,7 @@ export function ResultsPanel({
                       {result.energy_unknown_load_ids.length} aparelho(s) sem consumo informado. O
                       subtotal não representa a moradia completa.
                     </p>
-                    <button
-                      className="mt-2 text-sm text-emerald-300 underline"
-                      onClick={() =>
-                        focusField(
-                          `load.${result.energy_unknown_load_ids![0]}.parameters.usage_hours_per_day`,
-                        )
-                      }
-                    >
+                    <button className="text-action mt-2" onClick={completeEnergy}>
                       Completar consumo dos aparelhos
                     </button>
                   </div>

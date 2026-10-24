@@ -276,3 +276,27 @@ Pedido: simplificar retorno/encerramento, backups, atualizações e permissões;
 Resultado de armazenamento:1.354.702.848bytes de duplicação física SQLite +155.320.686bytes de gerados. Nenhum banco ativo, original, dependência útil, migração ou registro de recuperação apagado. Checkpoints continuam no mesmo disco e originais fora do ZIP/Git; não são promessa de cópia externa dos dados privados.
 
 Regressões:27testes de scripts, com Git bare temporário, arquivos não revisados, destino público/inesperado, divergência remota, offline com checkpoint, compartilhamento/fallback e corrupção antes de compactar; Ruff/formatação63arquivos. A inspeção de segredos é de nomes/padrões/conteúdo revisado, não certificação universal. Não repetidas as suítes elétricas/UI sem mudança funcional. Resultado de envio e checkpoint final deve ser confirmado pela execução/ponteiro, sem commit extra pelo identificador.
+
+
+## Padronização da interface e revisão backend/frontend — 24/10/2026
+
+Escopo solicitado: uniformizar interface e conferir funcionalidades do backend com o frontend, mantendo simplicidade. Inventário OpenAPI revisado:38caminhos/41operações HTTP. Não foram criados formulários para rotas de compatibilidade/diagnóstico ou administração; o usuário continua no percurso01Projeto→02Ambientes→03Conferência.
+
+| Funcionalidade / grupo de API | Integração conferida |
+| --- | --- |
+| Health, estados, distribuidoras e requisitos | use-workspace-resources carrega recursos independentes, apresenta falhas/retry e conserva edição. Município não infere concessionária. |
+| Catálogo/equipment e referência por ID | Endpoints compartilham revisão publicada carregada no startup; UI usa catálogo inteiro/snapshots. Seleção/variante/restauração/manual e horários preservados; editor não publica catálogo. |
+| calculations/full, aliases loads/demand e energisa-demand | UI usa full com debounce/cancelamento/digest; aliases/API regional permanecem compatíveis. Potência/energia/custo/VA/corrente/previsões e estudos opcionais mantidos no motor único. |
+| Projetos/lista/summaries/GET/POST/PUT | Biblioteca leve, busca/ordenação/paginação, abertura completa, primeiro salvamento idempotente, versão otimista, autosave e preservação de edição durante envio. |
+| Duplicação/exclusão/restauração/purga | Ações da biblioteca/lixeira usam IDs/versões corretos, confirmação e bloqueio durante operação. QA isolado exercitou fluxos sem tocar projetos reais. |
+| Histórico/report/revalidation/recalculate | API mantém histórico e documentos legados; UI mostra versão e prévia/revalidação explícita. Consultas brutas/diagnósticos seguem acessíveis pela API, sem poluir o fluxo básico. |
+| reports/pdf e reports/json | Backend recalcula/confere snapshot, versão, motor e registro. Corrigido frontend que antes convertia erro localizado em texto simples:agora mostra campos/Corrigir informação como salvamento. E2E adulterou somente o corpo QA de exportação para32dias,recebeu422real daAPI e conferiu foco/reexportação. |
+| Knowledge stats/documents/pages/file/sources | Busca/filtros/paginação, leitor/originais/diagramas/fontes e edição preservada. Acrescentado retry de leitura/fontes sem perder seleção/filtros; erros não exigem fechar a referência. |
+| Auth session/login/logout | Modo local e HTTPS de duas contas conferidos; página de acesso/erros recebeu os mesmos padrões. Cookies/CSRF/isolamento e rascunhos por conta não alterados. |
+| Standards/documents/applicability/integrity/revisions/rules | Rotas de metadados/diagnóstico preservadas; a apresentação recebe cobertura/fontes/contexto pelo resultado integrado. Não transformar cada rota técnica em etapa obrigatória. |
+
+Padronizados títulos, descrições, paginações de projetos/acervo/leitura/fontes, botões, alturas, bordas, mensagens/cores de informação/sucesso/aviso/erro, identificação das seções e erros de campo. Campos/ações comuns40px; compactos32px. Criados PageHeading/Feedback/Pagination,SectionHeading reutilizado também em leitor/revalidação; estilos quiet obsoletos removidos. Corrigido seletor de estado vazio detectado na inspeção visual; alinhamento central preservado. Formatação de totais e datas de rascunhos passou a usar helpers comuns/Brasília.
+
+Completar consumo deixou de apontar sempre para horas:escolhe potência/dado mecânico ou horário/dias faltantes a partir da pendência daAPI e das entradas. Não há fórmula, fator, horário, tarifa ou classificação normativa nova. Dados, catálogo, contratos, backend, migrações e dependências permaneceram sem alteração.
+
+Verificações efetivas:394backend+85subtestes,103frontend,22E2E completos e1HTTPS de duas contas;contratos regenerados sem diff,tipos/lint/formatação/buildwebpack aprovados. Novos testes de interface validam geometria compartilhada,422real/foco,recuperação de falhas e filtros. A primeira injeção de falha foi consumida pelo cancelamento inicial doStrictMode;teste passou a manter indisponibilidade até retryexplícito. Seletor de situação da coleta usa papel/nome acessível. Nenhum teste desativado. Capturas320/390/768/1440px/Axe e smoke real somente leitura,sem pageerrors/overflow/tentativas de escrita.12tabelas reais iguais ao checkpoint183220286645Z. Sem certificação de ausência universal de bugs ou conformidade elétrica;PostgreSQL/Windows/leitor de tela real não repetidos nesta revisão.

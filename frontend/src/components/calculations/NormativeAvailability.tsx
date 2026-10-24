@@ -70,7 +70,7 @@ export function NormativeAvailability({
                           <p>
                             {safeReferenceUrl(evidence.url) ? (
                               <a
-                                className="text-emerald-300 underline"
+                                className="text-action"
                                 href={safeReferenceUrl(evidence.url)}
                                 target="_blank"
                                 rel="noreferrer"

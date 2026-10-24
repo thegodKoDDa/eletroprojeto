@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import type { components } from '@/lib/api.generated';
+import { SectionHeading } from '@/components/ui/SectionHeading';
 import { format } from '@/lib/format';
 
 type Review = components['schemas']['ProjectRevalidation'];
@@ -23,9 +24,13 @@ export function ProjectRevalidation({
   return (
     <section className="panel mb-5" aria-labelledby="revalidation-heading">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 id="revalidation-heading" ref={heading} tabIndex={-1} className="text-lg font-semibold">
-          Revisão das referências do projeto
-        </h2>
+        <SectionHeading
+          eyebrow="REVISÃO OPCIONAL"
+          id="revalidation-heading"
+          headingRef={heading}
+          tabIndex={-1}
+          title="Revisão das referências do projeto"
+        />
         <button className="btn subtle" disabled={busy} onClick={onClose}>
           Fechar revisão
         </button>
