@@ -35,6 +35,8 @@ Revisão0.17.0:assinatura de exportações inclui circuitos/proteções/entrada;
 
 ## Estrutura e continuidade
 
+GitHub privado criado e envio inicial autorizado em24/10/2026: https://github.com/thegodKoDDa/eletroprojeto . RemotooriginHTTPS,main→origin/main; credencial pelo Git Credential Manager doWindows,sem tokens versionados. Actions desativado;workflow preservado. Repositório contém fonte/histórico,excluiSQLite,checkpoints,.env privado eobjetos do acervo; não substitui sua preservação local. Não confundir este envio de fonte com implantação do site ou autorização indiscriminada de pushes futuros.
+
 Frontend: page.tsx orquestra; components/projects, equipment, calculations e layout dividem responsabilidades; lib guarda cliente/contratos/hooks/rascunhos. SectionHeading padroniza etapas; checkbox não recebe padding de texto. Observações/autosave visíveis, Mais ações com foco/Escape/clique fora. Tema escuro e polimento0.13.1 preservados.
 
 Backend: main REST /api/v1 e health, schemas contratos, projects snapshots/histórico, database ORM/escopo por proprietário, reports documentos, calculations motor. Modo local é loopback; autenticação/HTTPS/CSRF/isolamento já implementados permanecem, sem implantação remota ativa. Catálogo global persistente em revisões próprias.

@@ -1,5 +1,7 @@
 # EletroProjeto 0.17.0
 
+Repositório privado: [thegodKoDDa/eletroprojeto](https://github.com/thegodKoDDa/eletroprojeto). Contém código e histórico; banco de projetos, configurações privadas, checkpoints e acervo local não são versionados. GitHub Actions está desativado; uso local preservado.
+
 Estimativa de consumo elétrico residencial para quem quer entender o uso de energia da sua casa, pronta ou em construção. Fluxo principal: **01 Projeto → 02 Ambientes → 03 Conferência**. Cadastre aparelhos, informe horários ou o consumo da etiqueta e, se souber, a tarifa para obter uma estimativa mensal. Nenhum horário ou consumo é presumido.
 
 Circuitos, demanda e entrada de energia ficam em **Estudos técnicos (opcional)**, após a conferência. Detalhes, memória e previsões também ficam recolhidos; dados e estudos existentes são preservados.

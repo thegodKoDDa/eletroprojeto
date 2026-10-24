@@ -1,5 +1,13 @@
 # Estado atual — EletroProjeto0.17.0 / motor0.9.1
 
+## GitHub privado — 24/10/2026
+
+Usuário autorizou criar repositório privado com o EletroProjeto e fazer o envio inicial. Criado `https://github.com/thegodKoDDa/eletroprojeto`, privacidade confirmada pela API (`private:true`, `visibility:private`). Remoto `origin` via HTTPS, branch `main` rastreando `origin/main`; primeiro push do histórico concluído. A autenticação disponível vem do Git Credential Manager do Windows já configurado, sem copiar token para arquivos, URL do remoto ou documentação; CLIgh continua sem sessão própria persistida.
+
+Código, documentação, testes, contratos, locks, migrações e histórico enviados. Revisão do índice e caminhos históricos sem arquivos privados indevidamente versionados;493blobs históricos verificados por padrões de credenciais conhecidos,sem detecção. Essa inspeção não é certificação universal de ausência de segredos. Banco, `.env` privado, checkpoints, dependências/builds e acervo técnico local permanecem excluídos conforme `.gitignore` e AGENTS. Repositório de fonte não contém os projetos salvos noSQLite nem os objetos do acervo. Nenhum dado local foi excluído.
+
+GitHub Actions desativado no repositório, mantendo o workflow versionado e a preferência de não executar CI hospedado. Não houve implantação/publicação do site. Sem alteração funcional ou de banco; testes gerais da simplificação anterior não repetidos. Verificação final de hash remoto/clonagem e checkpoint devem ser confirmadas pelos resultados da execução e`.checkpoints/latest.json`,sem presumir sucesso futuro. Próximo passo funcional permanece o refinamento da experiência simples de consumo. Operações futuras de envio seguem a autorização aplicável do usuário; a existência deorigin não exige push em toda tarefa.
+
 ## Simplificação para consumo residencial — 24/10/2026
 
 Direção do usuário: EletroProjeto deve servir primeiro a leigos e depois a profissionais, para estimar o consumo geral de uma moradia pronta ou planejada. Restaurado o percurso **01 Projeto → 02 Ambientes → 03 Conferência**, com início de três cartões, sidebar e identidade visual preservados. Demanda, circuitos e entrada continuam compatíveis e disponíveis depois dos resultados em **Estudos técnicos (opcional)**, recolhidos inicialmente inclusive nos projetos existentes. Nenhum estudo/dado foi apagado.
