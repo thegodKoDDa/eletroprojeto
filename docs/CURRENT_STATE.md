@@ -1,5 +1,13 @@
 # Estado atual — EletroProjeto0.17.0 / motor0.9.1
 
+## Encerramento solicitado — 24/10/2026
+
+Sessão encerrada por solicitação do usuário. Conferência final: Git inicialmente limpo, disco com cerca de935GiB livres, SQLite íntegro e sem violações FK,10projetos/33históricos/9revisões/schema0007. A Casa do CODEX — Vila Ipê já estava na versão3 nesta conferência;as versões2/3 foram observadas no banco antes de qualquer alteração desta etapa e foram preservadas. Os números e arquivosPDF/JSON da seção de criação abaixo correspondem à versão1;para a edição atual,abrir o projeto salvo e exportar novamente pela interface.
+
+Nenhuma alteração de código/cálculos/dados neste encerramento. Atualizados apenas estado e histórico;sem exclusões/push/limpeza/reinstalação. API0.17.0/motor0.9.1 em8000 efrontend3000 responderam;processos preservados. Testes gerais não repetidos,pois não houve mudança funcional;resultados anteriores e limites permanecem registrados abaixo. Buffers de editor e rascunhos não enviados não são verificáveis pelo checkpoint.
+
+Próxima sessão:pedir RETOMAR ELETROPROJETO,ler os documentos eexecutar continuity retomar;seguir prioridades do roadmap sem ampliar regras não verificadas. Consultar.checkpoints/latest.json para o checkpoint final produzido após o commit documental e a restauração isolada;nenhum caminho futuro é presumido neste registro.
+
 ## Cadastro adicional pela interface — Casa do CODEX — Vila Ipê
 
 Pedido do usuário: criar outra residência clicando em Criar novo projeto e preenchendo como usuário. Criada e salva pela UI em24/10/2026,ID`e256b91c-08f2-4515-a3fe-a25c90af2e78`,versão1:casatérrea fictícia80m²,3moradores,8ambientes/72m²úteis,25cadastros/31unidades,10circuitos em rascunho com associação exclusiva de todas as cargas. Sem confirmação fictícia de método,proteção/aterramento ou fornecimento;distribuidora não confirmada,dimensionamento pendente.
