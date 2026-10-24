@@ -14,34 +14,33 @@
 - Não exibir resultado antigo para entradas novas. Preservar debounce e cancelamento de requisições.
 - Priorizar Etapa 1. Não declarar conformidade ou dimensionamento final enquanto houver pendências normativas.
 
-## Execução local — preferência do usuário
+## Produto e execução
 
-- Autorização permanente do usuário: executar autonomamente todos os testes e verificações necessários (backend, frontend, API, E2E, build, contratos e banco), sincronizações, migrações e inicialização/reinicialização dos serviços relacionados à tarefa. Não pedir confirmação novamente para essas rotinas. Agrupar verificações e usar permissões persistentes adequadamente delimitadas quando disponíveis. Respeitar restrições obrigatórias do ambiente; esta autorização não permite contorná-las nem autoriza apagar dados ou fazer push.
+- Prioridade: leigos primeiro, profissionais depois; estimativa de consumo de moradia pronta ou planejada. Preservar início/sidebar e fluxo 01 Projeto → 02 Ambientes → 03 Conferência. Estudos técnicos permanecem opcionais e recolhidos.
+- O agente executa as rotinas de terminal. Autorização permanente revisada em24/10/2026: testes proporcionais, contratos, migrações sem reset, serviços, limpeza de gerados permitidos, compactação de backups idênticos e sincronização normal de commits revisados com o repositório PRIVADO `thegodKoDDa/eletroprojeto`. Não pedir confirmação novamente para essas rotinas.
+- A autorização não inclui apagar dados/referências/pontos únicos de recuperação, force-push, reescrever histórico, mudar destino/visibilidade, publicar o site ou alterar políticas globais de segurança. Restrições obrigatórias do ambiente permanecem válidas.
+- Usar instalações e serviços existentes. Não reinstalar, atualizar versões ou repetir baterias aprovadas sem mudança relevante/falha. Atualizações usam manifests/locks e revisão; nunca `audit fix --force` ou reset do banco.
+- Permissões privadas POSIX0700/0600; não alterar fontes/.git/ACL/política Windows indiscriminadamente. Não fechar programas à força ou desligar o computador.
 
-- O agente executa os comandos de atualização, sincronização de contratos, migração e inicialização/reinicialização dos serviços necessários à tarefa; não delegar rotinas de terminal ao usuário.
-- Após alterações, verificar os serviços existentes antes de iniciar outros, preservar dados e entregar links localhost confirmados quando o ambiente permitir.
-- Se o ambiente bloquear processos, rede ou portas, informar o impedimento de forma breve e honesta; não declarar que um localhost está ativo sem verificação.
+## RETOMAR ELETROPROJETO
 
-## Identidade e continuidade permanente
+1. Ler AGENTS, `docs/CURRENT_STATE.md` e `docs/PROJECT_MEMORY.md`. Consultar roadmap/KNOWN_ISSUES e a cauda dos registros somente conforme o trabalho atual; versões e limitações históricas não são o estado atual.
+2. Executar `python3 scripts/continuity.py retomar`: Git/banco/dependências, consulta do origin, serviços e último checkpoint. Fetch não mescla ou sobrescreve a edição. Sem rede, continuar localmente e informar a pendência; `--offline` evita a consulta.
+3. Seguir o próximo passo registrado/pedido atual. Antes de iniciar serviços, conferir os existentes; entregar localhost somente após HTTP confirmado. Doctor apenas para diagnóstico quando necessário.
 
-EletroProjeto é uma ferramenta de estudo/cálculo elétrico residencial para leigos, estudantes e profissionais. Um único motor Python atende as apresentações simples e técnica. Preservar o produto, os dados e funcionalidades corretas; não recriar sem autorização explícita. Referências são sugestões, não potências universais: respeitar valores manuais válidos. Não esconder erros com remendos; preservar segurança e rastreabilidade.
+## Durante o trabalho
 
-### Início de toda sessão / RETOMAR ELETROPROJETO
+- Preservar produto, dados, funcionalidades corretas, migrações e história dos projetos. Editar instância não altera catálogo; valores manuais válidos prevalecem sobre sugestões.
+- Atualizar o documento responsável e CURRENT_STATE após mudanças relevantes; SESSION_HISTORY é cumulativo, CHANGELOG registra entregas. Não duplicar arquitetura/cálculos/normas em novos arquivos.
+- Registrar causa/correção de bugs, verificações efetivas e limites. Regras elétricas exigem fonte/edição/condições/testes/projetos afetados. Checkpoint antes de mudanças estruturais e em marcos relevantes.
+- Código/docs ficam no GitHub; SQLite, `.env`, checkpoints e acervo técnico permanecem locais e ignorados. Nunca versionar banco, backup, token ou credencial. GitHub não contém projetos salvos nem originais do acervo.
 
-Ler este arquivo, `docs/PROJECT_MEMORY.md`, `docs/CURRENT_STATE.md`, `docs/roadmap.md`, `docs/KNOWN_ISSUES.md` e os últimos registros de CHANGELOG/SESSION_HISTORY (começar por `tail -n 60`, ampliar somente se necessário). Executar `python3 scripts/continuity.py retomar`: saída compacta de Git, banco e dependências, sem repetir os documentos já lidos. `.checkpoints/latest.json` aponta para o último ponto publicado; marcador/hash do manifest não substituem restauração completa com verificar. Conferir serviços existentes antes de iniciar outros. Executar doctor quando dependências, permissões, ambiente ou falhas exigirem revisão; não reinstalar nem repetir baterias já aprovadas sem mudança relevante. Continuar pelo próximo passo registrado, sem depender da conversa anterior.
+## ENCERRAR SESSÃO DO ELETROPROJETO
 
+1. Conferir disco/Git/arquivos novos e executar somente verificações proporcionais. Atualizar CURRENT_STATE com o que foi feito, limites e próximo passo; acrescentar SESSION_HISTORY e atualizar documentos responsáveis.
+2. Quando houver gerados dispensáveis, `python3 scripts/maintenance.py clean` simula; `--apply --qa-builds` remove somente a lista permitida e com portas QA livres. Não fazer limpeza/doctor completo em todo encerramento por hábito. Dependências úteis, dados, fontes e pontos únicos ficam preservados.
+3. Revisar nomes/conteúdo/segredos e criar um único commit revisado de código/docs, se houver alterações. Não adicionar arquivos privados ou incluir alterações alheias sem revisão.
+4. Executar `python3 scripts/continuity.py encerrar --sync`. Confirma destino privado, envia apenas commits na main sem divergência remota e confere o hash. Em seguida cria/revalida checkpoint local com restauração SQLite/Git isolada. Falha de rede ainda preserva checkpoint local e retorna pendência; não anunciar sincronização concluída se falhou.
+5. Conferir resultado/status e relatar brevemente alterações, preservações/exclusões, verificações e pendências. `.checkpoints/latest.json` é a referência do ponto final; não criar commit extra só para copiar seu caminho. Buffers externos e rascunhos não enviados do navegador não são verificáveis pelo checkpoint.
 
-### Durante o desenvolvimento
-
-Depois de alterações relevantes, atualizar o documento responsável e CURRENT_STATE; registrar decisões, bugs/causas/regressões, testes efetivos e limitações. Registrar norma/edição/condições/testes/projetos afetados ao alterar regras. Antes de interromper, escrever o que foi feito, arquivos, o que falta e verificações pendentes. Checkpoints periódicos após marcos estáveis, especialmente antes de mudanças estruturais. Não duplicar arquitetura/cálculos/normas em arquivos novos: usar documentos existentes em minúsculas.
-
-### ENCERRAR SESSÃO DO ELETROPROJETO
-
-1. Conferir disco, Git e arquivos novos; buffers não salvos de editor externo não são verificáveis.
-2. Atualizar CURRENT_STATE e acrescentar SESSION_HISTORY sem apagar registros; atualizar documentos responsáveis. Registrar somente verificações efetivas, limitações e próximo passo. Usar `.checkpoints/latest.json` como referência persistente do checkpoint final, sem prometer sucesso antes da execução.
-3. Executar verificações proporcionais às mudanças. Preservar dados e migrações; não repetir testes/instalações sem mudança, falha ou preocupação concreta. Limpeza com `python3 scripts/maintenance.py clean` primeiro simula; `--apply` remove apenas gerados permitidos e `--qa-builds` inclui saídas QA com portas livres. Nunca remover dependências úteis, dados, fontes, normas ou pontos únicos de recuperação para obter estado limpo.
-4. Revisar segredos nos nomes/conteúdo antes de versionar. Nunca adicionar .env privado, banco, backup, token ou credencial. Revisar e criar um único commit local de código/docs quando Git estiver disponível e autorizado; nenhum push. Não modificar histórico nem contornar proteção de .git.
-5. Depois do commit, executar `python3 scripts/continuity.py encerrar`. O checkpoint deve incluir o commit final, hashes, fonte e restaurações SQLite/Git isoladas; só então atualizará latest.json atomicamente. Sem mudanças, reutiliza o último ponto após revalidá-lo por completo; `--force-new` força cópia distinta. Falha não é sucesso: o ponteiro anterior permanece e o agente deve resolver/relatar o erro. Não fazer outro commit apenas para copiar o caminho do checkpoint para os docs; consultar o ponteiro evita ciclo de commits/checkpoints redundantes.
-6. Conferir status final e relatar preservação, exclusões, verificações, checkpoint retornado e como retomar. Sem Git, registrar ausência de commit e usar arquivo de fonte verificado. Não fechar programas à força, interromper gravações ou desligar o computador.
-
-Uso local definido pelo usuário em23/10/2026: publicação, impressão física e backup externo fora do trabalho atual; não cobrar esses itens. Checkpoint no mesmo disco não cobre perda física. Scripts não substituem análise/leitura dos documentos e não executam fora da sessão. Procedimento e recuperação em docs/continuity.md.
+Detalhes de manutenção e recuperação em `docs/continuity.md`. `verificar` restaura o último checkpoint isoladamente; marker/hash do manifest não substitui essa verificação. Checkpoints antigos são preservados e bancos idênticos compartilham armazenamento por hardlink quando suportado, sem apagar versões. Publicação do site, CI hospedado, impressão física e cópia externa de dados seguem fora do escopo. Os scripts só executam durante a sessão; não há trabalho em segundo plano prometido.

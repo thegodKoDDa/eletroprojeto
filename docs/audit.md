@@ -254,3 +254,25 @@ Pedido: priorizar leigos e estimativa geral de consumo da moradia pronta ou plan
 | Biblioteca/relatórios/persistência | Preservar consultas, fontes, PDF/JSON, revisões, rascunhos, conflitos, lixeira e histórico. Nenhuma regravação de projeto/catálogo, regra nova ou migração. |
 
 Limites: revisão visual/funcional e acessibilidade automática não equivalem a teste de usabilidade com pessoas leigas ou leitor de tela real. Consumo depende de aparelhos e uso cadastrados; não há ciclos, standby, tarifas ou fatores presumidos. Testes efetivos desta entrega em CURRENT_STATE/SESSION_HISTORY.
+
+
+## Organização e continuidade com GitHub — 24/10/2026
+
+Pedido: simplificar retorno/encerramento, backups, atualizações e permissões; revisar árvore, arquivos e instalações, descartando o dispensável. Não houve recriação do produto ou reorganização arbitrária de imports/rotas para mudar nomes.
+
+| Área inspecionada | Destino e critério |
+| --- | --- |
+| Código/API/motor/UI | Manter organização backend/frontend por responsabilidade, contratos, testes e migrações. Sem nova regra/campo/coeficiente ou mudança funcional. |
+| Git/GitHub | Fonte/histórico no privado existente; sincronização normal autorizada no encerramento, main limpa/privacidade conferida/hash remoto, sem force-push/merge ou credencial gravada. |
+| Checkpoints |39restaurações completas antes de compactar;15estados SQLite distintos/24cópias redundantes compartilhadas, sem remover ponto. Formato, manifests/hashes e recuperação preservados; novos pontos deduplicam o banco automaticamente. |
+| Caches/QA | Simular e remover somente lista permitida, portas QA livres.155.320.686bytes em caches, relatórios e E2E/HTTPS/qa-simple inativos; Next ativo/cache útil preservado. |
+| Instalações | Linux .venv, Windows .venv-windows e node_modules válidos/reutilizados; nenhuma reinstalação/desinstalação global ou atualização automática de versões. |
+| Referências |2.196objetos técnicos/3.597.033.481bytes e originais Energisa mantidos. Inventários e auditorias preservados; não descartados por não pertencerem a uma regra habilitada. |
+| Dados/histórico |12tabelas iguais ao checkpoint anterior;10projetos/33históricos/9revisões/FKok/schema0007. Dois backups antigos e todos os pontos únicos preservados. |
+| Documentação | Estado atual conciso, README/memória/continuidade/segurança com orientação vigente; procedimentos detalhados concentrados em continuity, registros históricos em SESSION_HISTORY/CHANGELOG/Git. |
+| Ferramentas sem uso | Exportador GPG opcional externo e teste removidos, pois transferência criptografada de dados não faz parte da rotina autorizada. Implementação anterior permanece no Git. Wrappers Windows/QA úteis mantidos. |
+| Pastas administrativas | `.agents`, `.aws`, `.codex` removidas somente porque vazias; allowlist nunca remove conteúdo privado ou configurações. |
+
+Resultado de armazenamento:1.354.702.848bytes de duplicação física SQLite +155.320.686bytes de gerados. Nenhum banco ativo, original, dependência útil, migração ou registro de recuperação apagado. Checkpoints continuam no mesmo disco e originais fora do ZIP/Git; não são promessa de cópia externa dos dados privados.
+
+Regressões:27testes de scripts, com Git bare temporário, arquivos não revisados, destino público/inesperado, divergência remota, offline com checkpoint, compartilhamento/fallback e corrupção antes de compactar; Ruff/formatação63arquivos. A inspeção de segredos é de nomes/padrões/conteúdo revisado, não certificação universal. Não repetidas as suítes elétricas/UI sem mudança funcional. Resultado de envio e checkpoint final deve ser confirmado pela execução/ponteiro, sem commit extra pelo identificador.

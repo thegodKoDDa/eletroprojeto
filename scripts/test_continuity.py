@@ -196,3 +196,52 @@ class ContinuityTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+def test_unchanged_database_is_shared_across_distinct_source_snapshots():
+    fixture = ContinuityTests()
+    fixture.setUp()
+    try:
+        first = Path(c.checkpoint(fixture.root)["checkpoint"])
+        (fixture.root / "README.md").write_text("source update")
+        second = Path(c.checkpoint(fixture.root)["checkpoint"])
+        assert first != second
+        assert c.verify(first)["verified"] and c.verify(second)["verified"]
+        assert c.file_digest(first / "data.sqlite3") == c.file_digest(second / "data.sqlite3")
+        if os.name == "posix":
+            assert (first / "data.sqlite3").stat().st_ino == (second / "data.sqlite3").stat().st_ino
+    finally:
+        fixture.doCleanups()
+
+
+def test_unsupported_hardlinks_keep_an_independent_verified_backup():
+    fixture = ContinuityTests()
+    fixture.setUp()
+    try:
+        first = Path(c.checkpoint(fixture.root)["checkpoint"])
+        with patch.object(c.os, "link", side_effect=OSError("unsupported")):
+            second = Path(c.checkpoint(fixture.root, force_new=True)["checkpoint"])
+        assert c.verify(first)["verified"] and c.verify(second)["verified"]
+        assert first != second
+    finally:
+        fixture.doCleanups()
+
+
+def test_offline_close_still_publishes_a_verified_local_checkpoint():
+    fixture = ContinuityTests()
+    fixture.setUp()
+    try:
+        with (
+            patch.object(c, "ROOT", fixture.root),
+            patch.object(c, "synchronize", return_value={"ok": False, "reason": "offline"}),
+            patch("sys.argv", ["continuity.py", "encerrar", "--sync"]),
+        ):
+            try:
+                c.main()
+            except SystemExit as error:
+                assert error.code == 1
+            else:
+                raise AssertionError("Offline synchronization must be reported")
+        assert c.verify(c.latest_checkpoint(fixture.root))["verified"]
+    finally:
+        fixture.doCleanups()

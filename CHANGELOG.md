@@ -1,5 +1,12 @@
 # Histórico de alterações
 
+## Organização e continuidade — 24/10/2026 (versão funcional mantida)
+
+- Retomada reúne GitHub/Git, banco, dependências, HTTP e último ponto. Encerramento com `--sync` confirma o repositório privado, envia commits revisados sem divergência/force-push e preserva checkpoint local mesmo sem rede.
+- Checkpoints novos compartilham bancos idênticos; compactação dos39pontos antigos preservou todas as restaurações e recuperou1.354.702.848bytes. Limpeza permitida recuperou155.320.686bytes de gerados e removeu apenas pastas administrativas vazias.
+- README, estado/memória e procedimentos consolidados; histórico preservado. Exportador GPG fora de uso e teste retirados. Instalações úteis, dados, migrações, acervo e serviços mantidos.
+-27testes de scripts e Ruff/formatação de63arquivos aprovados; sem alteração funcional/elétrica, migração ou atualização de dependências. Verificações operacionais finais em CURRENT_STATE/SESSION_HISTORY.
+
 ## Simplificação da experiência — 24/10/2026 (versão funcional 0.17.0 mantida)
 
 - Restaurado o percurso 01 Projeto → 02 Ambientes → 03 Conferência. Demanda, circuitos e entrada preservados em Estudos técnicos, opcionais e recolhidos após os resultados.

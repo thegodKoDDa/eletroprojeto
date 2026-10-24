@@ -1,4 +1,4 @@
-"""Local continuity: stdlib only; never stops services or commits/pushes files."""
+"""Resume locally; close with a verified checkpoint and optional private GitHub sync."""
 
 import argparse
 import hashlib
@@ -14,6 +14,11 @@ import zipfile
 from contextlib import closing, contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
+from urllib.error import URLError
+from urllib.request import urlopen
+
+from repository import status as repository_status
+from repository import synchronize
 
 ROOT = Path(__file__).resolve().parents[1]
 DOCS = [
@@ -363,6 +368,59 @@ def verify(folder):
     }
 
 
+def share_database(database, original):
+    """Atomically share identical immutable backups; no new format or lost restore point."""
+    if database.is_symlink() or original.is_symlink():
+        raise ValueError("Backup compartilhado não aceita symlink.")
+    before, existing = database.stat(), original.stat()
+    if (before.st_dev, before.st_ino) == (existing.st_dev, existing.st_ino):
+        return False
+    if before.st_size != existing.st_size or file_digest(database) != file_digest(original):
+        raise ValueError("Backups diferentes não podem compartilhar armazenamento.")
+    try:
+        with tempfile.TemporaryDirectory(prefix=".link-", dir=database.parent) as directory:
+            link = Path(directory) / "data.sqlite3"
+            os.link(original, link)
+            os.replace(link, database)
+    except OSError:
+        return False  # Unsupported filesystems keep the independent, valid copy.
+    return True
+
+
+def reuse_database(database, store, expected_hash):
+    for folder in sorted(store.iterdir(), reverse=True):
+        if folder.is_symlink() or not (folder / "VERIFIED.json").is_file():
+            continue
+        try:
+            manifest = json.loads((folder / "manifest.json").read_text(encoding="utf-8"))
+            original = folder / "data.sqlite3"
+            if (
+                manifest.get("database_sha256") == expected_hash
+                and not original.is_symlink()
+                and file_digest(original) == expected_hash
+            ):
+                return share_database(database, original)
+        except (OSError, ValueError, KeyError):
+            continue
+    return False
+
+
+def service_status():
+    result = {}
+    for name, url in (
+        ("api", "http://127.0.0.1:8000/api/v1/health"),
+        ("frontend", "http://127.0.0.1:3000"),
+    ):
+        try:
+            with urlopen(url, timeout=2) as response:
+                result[name] = {"status": response.status}
+                if name == "api":
+                    result[name]["health"] = json.loads(response.read(4096))
+        except (OSError, URLError, ValueError):
+            result[name] = {"status": "parado ou indisponível"}
+    return result
+
+
 def checkpoint(root, *, force_new=False):
     store = root / ".checkpoints"
     if store.is_symlink():
@@ -423,6 +481,7 @@ def _checkpoint(root, *, force_new=False):
                     "reused": True,
                     "elapsed_ms": round((time.perf_counter() - started) * 1000, 2),
                 }
+    database_shared = reuse_database(db, store, database_hash)
     manifest = {
         "created_at": stamp,
         "state": state,
@@ -469,7 +528,7 @@ def _checkpoint(root, *, force_new=False):
         "reused": False,
         "elapsed_ms": round((time.perf_counter() - started) * 1000, 2),
         "capture_ms": round((capture_done - started) * 1000, 2),
-        "retention_review": len(list(store.glob("*/VERIFIED.json"))) > 14,
+        "database_shared": database_shared,
     }
 
 
@@ -481,19 +540,31 @@ def main():
         "--force-new", action="store_true", help="Criar novo ponto mesmo sem mudanças."
     )
     parser.add_argument(
-        "--documents",
+        "--sync",
         action="store_true",
-        help="Também imprimir estado e pendências; leitura completa continua obrigatória pelo agente.",
+        help="Enviar commits revisados ao origin privado ao encerrar.",
     )
+    parser.add_argument("--offline", action="store_true", help="Retomar sem consultar o GitHub.")
     args = parser.parse_args()
+    if args.sync and args.command != "encerrar":
+        parser.error("--sync é usado somente com encerrar")
     if args.command == "encerrar":
+        remote = synchronize(ROOT) if args.sync else None
         result = checkpoint(ROOT, force_new=args.force_new)
+        if remote is not None:
+            result["github"] = remote
     elif args.command == "verificar":
-        if args.checkpoint is None:
-            parser.error("--checkpoint é obrigatório")
-        result = verify(args.checkpoint)
+        selected = args.checkpoint or latest_checkpoint(ROOT)
+        if selected is None:
+            parser.error(
+                "Nenhum checkpoint disponível; informe --checkpoint para um ponto anterior."
+            )
+        result = verify(selected)
     else:
         result = check(ROOT)
+        result.pop("documents", None)
+        result["repository"] = repository_status(ROOT, refresh=not args.offline)
+        result["services"] = service_status()
         latest = latest_checkpoint(ROOT)
         result["latest_checkpoint"] = str(latest) if latest else None
         result["checkpoint_verification"] = (
@@ -501,10 +572,9 @@ def main():
             if latest
             else "Sem ponteiro latest.json válido; pontos anteriores permanecem no diretório de checkpoints."
         )
-        if args.documents:
-            for name in ("docs/CURRENT_STATE.md", "docs/KNOWN_ISSUES.md"):
-                print((ROOT / name).read_text())
     print(json.dumps(result, indent=2, ensure_ascii=False))
+    if args.sync and not result["github"]["ok"]:
+        parser.exit(1, "Checkpoint local preservado; sincronização GitHub pendente.\n")
 
 
 if __name__ == "__main__":

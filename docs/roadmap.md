@@ -1,6 +1,6 @@
 # Roadmap — uso local, 0.17.0
 
-Decisão do usuário em 23/10/2026: operar localmente. Publicação/infraestrutura remota, execução hospedada de CI, impressão física e backup externo foram retirados do escopo atual; não tratá-los como bloqueios ou cobrar recursos para essas tarefas. Código funcional de autenticação, CI e backup já existente fica preservado para evitar regressões.
+Decisão do usuário em 23/10/2026: operar localmente. Publicação/infraestrutura remota, execução hospedada de CI, impressão física e backup externo foram retirados do escopo atual; não tratá-los como bloqueios ou cobrar recursos para essas tarefas. Autenticação e workflow continuam preservados; GitHub privado agora recebe a fonte e o encerramento autorizado. Checkpoints locais continuam protegendo SQLite/fonte/Git, com armazenamento compartilhado de cópias idênticas.
 
 0.14.0: biblioteca leve, salvamento idempotente/sem gravação redundante, rascunhos com flush, checkpoints atômicos/reutilizáveis e auditoria/limpeza local. Procedimento em continuity.md; testes atuais em CURRENT_STATE.
 

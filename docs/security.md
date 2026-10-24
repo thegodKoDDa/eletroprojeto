@@ -10,7 +10,7 @@ Consultas ORM dos projetos são filtradas pelo proprietário no escopo da requis
 
 Frontend remoto exige `NEXT_PUBLIC_AUTH_MODE=remote` e URL HTTPS da API; backend exige `AUTH_MODE=remote` e CORS_ORIGINS HTTPS explícito. Login/sair e escopo de rascunhos por conta implementados; tokens de sessão não são persistidos em localStorage. Rascunhos contêm dados pessoais em armazenamento local do perfil do navegador, sem criptografia própria; recuperação é oferecida antes de carregar, sem envio automático. O usuário autorizou recuperação neste pedido; em dispositivo compartilhado, apagar rascunhos locais e usar perfis separados. Slots independentes evitam sobrescrita entre abas; armazenamento bloqueado/cheio é informado.
 
-`scripts/external_backup.py` prepara cópia GPG para fingerprint completo e destino escolhido, verifica o checkpoint antes de criptografar e o hash após transferência, recusa sobrescrita. Teste com chave temporária fez ida/volta, decriptação e restauração SQLite isolada com sucesso. A cópia real externa ainda depende de destino/chave do usuário; teste em /tmp não é cópia externa nem restauração da chave real. Fontes de implementação: [FastAPI/pwdlib e Argon2](https://fastapi.tiangolo.com/tutorial/security/oauth2-jwt/). A aplicação usa sessões revogáveis, não o JWT do exemplo.
+Código/histórico são sincronizados com o repositório GitHub privado autorizado; dados e originais permanecem locais. Sincronização exige destino fixo, main limpa, privacidade conferida e ausência de commits remotos a revisar. Não usa force-push, não armazena token e não publica o site. O antigo exportador GPG opcional foi retirado; recuperação atual e limites em [continuity](continuity.md).
 
 ## Proteções implementadas
 
@@ -23,7 +23,7 @@ Frontend remoto exige `NEXT_PUBLIC_AUTH_MODE=remote` e URL HTTPS da API; backend
 
 ## Recuperação e migração
 
-A migração 0003 apenas acrescenta `deleted_at` e seu índice, sem apagar payloads ou histórico. Antes da aplicação local foi criado backup SQLite íntegro em `/tmp/eletroprojeto-before-0003.db`. `/tmp` é temporário: retenção permanente e cópias externas ainda devem ser configuradas no ambiente de implantação.
+A migração 0003 apenas acrescenta `deleted_at` e seu índice, sem apagar payloads ou histórico. Antes da aplicação local foi criado backup SQLite íntegro em `/tmp/eletroprojeto-before-0003.db`. Esse registro é histórico; a operação atual mantém checkpoints privados datados.
 
 O utilitário `backend/technical_admin.py backup` usa a API de backup SQLite e verifica integridade, recusando sobrescrever o destino. A restauração de projetos é feita pela interface de projetos excluídos ou `POST /api/v1/projects/{id}/restore?expected_version=N`.
 
@@ -35,29 +35,16 @@ O limite de bytes reduz risco de grandes corpos; não substitui limites de conco
 
 Em24/10/2026, npm audit online e pip-audit sobre requirements.lock não apontaram vulnerabilidades conhecidas. Isso não é pentest nem garantia de ausência de vulnerabilidades futuras; verificações efetivas da entrega em CURRENT_STATE.
 
-## Checkpoints privados — 22/10/2026
+## Continuidade e manutenção
 
-Procedimento atual em [continuity.md](continuity.md): backups nomeados em .checkpoints, SQLite API, integrity/FK e restauração isolada, hashes de fonte e banco, permissões POSIX e exclusão de segredos/dependências por nome. Não há criptografia nem cópia externa automática; revisar segredos no conteúdo antes de compartilhar. Informações acima sobre retenção permanente ausente são históricas: cópias locais datadas agora existem, proteção externa continua pendente. Listagem de projetos já possui paginação; purga definitiva está disponível e não deve ser confundida com exclusão lógica reversível.
+Procedimento responsável em [continuity.md](continuity.md). Checkpoints preservam fonte, SQLite, Git e auditoria; hashes e restauração isolada são conferidos antes de publicar latest.json. Cópias SQLite idênticas podem compartilhar armazenamento, mantendo cada ponto e sua restauração. Originais do acervo, buffers externos e rascunhos ainda não enviados não ficam no arquivo de fonte.
 
-## Revisão 0.7.0 — proteções atuais e ordem dos próximos passos
+GitHub protege a fonte/histórico fora deste computador, mas não recebe banco/credenciais/checkpoints/objetos do acervo. Não há implantação ou cópia externa automática dos dados privados. Esse limite não é tratado como tarefa pendente do usuário. GitHub Actions permanece desativado e o workflow é preservado.
 
-1. **Proteção dos dados e do código:** manter o serviço restrito a loopback; obter Git utilizável sem substituir histórico recuperável e cópia externa protegida/criptografada do checkpoint. Testar restauração periodicamente. `.checkpoints` continua no mesmo disco; não há cópia externa configurada nesta instalação. Cache Ruff e metadados `.egg-info/.dist-info` agora são excluídos dos novos arquivos de fonte dos checkpoints, além das exclusões privadas já existentes. Não se apagam checkpoints antigos.
-2. **Antes de uso remoto/multiusuário:** autenticação com mecanismo de sessão estabelecido, autorização de proprietário em TODOS os endpoints de projetos, históricos, relatórios, cópias, lixeira e purga; migração não destrutiva de proprietário e testes de acesso entre dois usuários. Definir política de contas/recuperação antes de implantar; não improvisar chave fixa no frontend. Se usar cookies, HttpOnly/Secure/SameSite e proteção CSRF nas operações mutáveis. CORS não substitui essas medidas.
-3. **Implantação:** reverse proxy/TLS, hosts/origens permitidos, quotas por usuário, limites de concorrência/tempo em cálculos/PDF, rate limiting no ingresso e paginação/resumos obrigatórios em coleções grandes. Limite de corpo já existe, mas não limita sozinho trabalho computacional ou tamanho de respostas. Não expor servidores dev de Next/Vitest.
-4. **Prevenção de regressões:** CI com pytest, lint/formatação, typecheck, types:sync sem divergência, Alembic, E2E isolado e auditorias periódicas. `package-lock.json` já fixa o frontend; preparar lock Python reproduzível com hashes para implantação, atualização controlada e inventário de dependências. Ruff/pip-audit usados nesta sessão em venv separado em /tmp; provisionar essas ferramentas de forma reproduzível no CI.
-5. **Continuidade do usuário:** recuperação de rascunhos com consentimento/escopo local, tratamento de conflitos e política de retenção/limpeza em dispositivos compartilhados. Não registrar payloads pessoais/credenciais em logs de operação. Observabilidade de erros/latência e testes reais de backup/PDF/PostgreSQL completam a operação.
-6. **Cabeçalhos de produção:** CSP com política testada para os scripts Next e API configurada; avaliar nonce e impacto na renderização/cache. HSTS apenas após TLS efetivo. Não adicionar política permissiva só para dizer que há CSP.
+Doctor inspeciona dependências/permissões/serviços sem reinstalar ou revelar credenciais. fix-permissions atua apenas nos privados conhecidos, sem symlinks, chmod de fontes/.git ou alteração global de políticas. POSIX0600/0700 não equivalem a auditoria de ACL Windows. Limpeza limita-se a gerados permitidos e pastas vazias conhecidas; compactação restaura todos os pontos antes de compartilhar arquivos idênticos.
 
-Entregue agora: links de referência salvos são filtrados para HTTP(S) sem credenciais; protocolos `javascript:`, `data:` e `file:` não viram links. Frontend com nosniff, X-Frame-Options DENY, Referrer-Policy no-referrer e Permissions-Policy sem câmera/microfone/geolocalização. Headers conferidos no E2E. Backend conserva no-store/nosniff, fronteira de corpo, validação estrita, SQLAlchemy e versionamento otimista.
+## Evolução somente quando aplicável
 
-Auditoria npm inicial encontrou dois alertas críticos e um moderado em ferramentas de teste. Vitest atualizado para 4.1.12, com correções publicadas pelo [mantenedor](https://github.com/vitest-dev/vitest/security/advisories/GHSA-qxg6-89mg-rqv8). Dependência transitiva braces com alerta foi evitada removendo eslint-config-next; ESLint 10 + typescript-eslint/react-hooks mantêm lint sem essa cadeia. Sem overrides ou `audit fix --force` para mascarar compatibilidade. Auditoria npm após instalações e pip-audit do inventário instalado sem alertas conhecidos na consulta desta sessão; isso não é teste de invasão, SAST completo ou garantia futura. Pacote local editável é código próprio e não é validado por bancos de vulnerabilidades de terceiros.
+Uso remoto futuro exige TLS/proxy confiável, rate limiting, limites de concorrência/tempo, monitoramento e backup adequado ao banco. Modo local não deve ser publicado por proxy. Autenticação/isolamento já implementados não substituem preparação operacional. Não solicitar esses recursos para bloquear a operação local atual.
 
-
-Decisão de escopo em23/10/2026: usuário manterá operação local e retirou publicação remota/CI hospedado, impressão física e backup externo do trabalho atual. Não solicitar destino/chave nem bloquear entregas por esses itens. Mecanismos existentes permanecem preservados; checkpoints locais continuam verificados. Limitações físicas de armazenamento local permanecem verdadeiras, sem constituir tarefa ativa de cópia externa.
-
-
-## Manutenção local — 0.14.0
-
-Doctor inspeciona toolchain/instalações, SQLite/Git, HTTP local e modos privados, sem imprimir conteúdo de .env/credenciais. fix-permissions restringe apenas arquivos conhecidos ao dono (POSIX0600/0700), não segue symlinks nem altera código/.git/política global. Três arquivos privados nesta instalação foram ajustados; fontes sem escrita global. ACL Windows não é validada por chmod. QA Windows usou permissão de execução somente no processo temporário, sem mudar ExecutionPolicy global.
-
-Summaries mantém isolamento por proprietário inclusive filtros; tentativa de reutilizar chave de criação de outra conta responde409 sem retornar payload. Idempotency-Key não autentica nem substitui CSRF. Fluxos de sessão/HTTPS existentes preservados, sem implantação remota ativa. Limpeza estritamente por allowlist, nunca dados/backups/venvs/node_modules; detalhes em continuity.md.
+Atualizações de dependências são controladas pelos manifests/locks e verificações pertinentes; não executar `audit fix --force` nem tratar auditoria sem alertas como pentest. Histórico de auditorias e entregas está em SESSION_HISTORY/audit; resultados da sessão atual em CURRENT_STATE.

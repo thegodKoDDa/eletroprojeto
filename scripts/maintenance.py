@@ -11,10 +11,18 @@ import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
-from urllib.error import URLError
-from urllib.request import urlopen
 
-from continuity import ROOT, atomic_json, check, source_files
+from continuity import (
+    ROOT,
+    atomic_json,
+    check,
+    checkpoint_lock,
+    file_digest,
+    service_status,
+    share_database,
+    source_files,
+    verify,
+)
 
 
 def private_paths(root):
@@ -98,18 +106,10 @@ def doctor(root, *, fix_permissions=False):
         "frontend_packages": command([npm, "ls", "--depth=0", "--json"], root / "frontend"),
         "git": command(["git", "--version"], root),
     }
-    services = {}
-    for name, url in (
-        ("api", "http://127.0.0.1:8000/api/v1/health"),
-        ("frontend", "http://127.0.0.1:3000"),
-    ):
-        try:
-            with urlopen(url, timeout=5) as response:
-                services[name] = {"status": response.status}
-                if name == "api":
-                    services[name]["health"] = json.loads(response.read(4096))
-        except (OSError, URLError) as error:
-            services[name] = {"unavailable": str(error)}
+    packages = commands["frontend_packages"]
+    if packages["ok"]:
+        installed = json.loads(packages["output"])
+        packages["output"] = f"{len(installed.get('dependencies', {}))} pacotes diretos instalados."
     return dict(
         state=check(root),
         checkpoint_work={
@@ -118,7 +118,7 @@ def doctor(root, *, fix_permissions=False):
         },
         installations=commands,
         permissions=permissions(root, fix=fix_permissions),
-        services=services,
+        services=service_status(),
     )
 
 
@@ -136,6 +136,7 @@ def cleanup(root, *, apply=False, qa_builds=False):
     paths = [
         root / name
         for name in (
+            ".pytest_cache",
             ".ruff_cache",
             "backend/.ruff_cache",
             "backend/.pytest_cache",
@@ -162,7 +163,14 @@ def cleanup(root, *, apply=False, qa_builds=False):
     if not qa_busy:
         paths += [root / "frontend/test-results", root / "frontend/playwright-report"]
         if qa_builds:
-            paths += [root / "frontend/.next/e2e", root / "frontend/.next/e2e-auth"]
+            paths += [
+                root / f"frontend/.next/{name}"
+                for name in ("e2e", "e2e-auth", "qa-build", "qa-simple")
+            ]
+    empty_directories = [root / name for name in (".agents", ".aws", ".codex")]
+    for path in empty_directories:
+        if path.is_dir() and safe_generated(root, path) and not any(path.iterdir()):
+            paths.append(path)
     entries = []
     for path in paths:
         if not path.exists() or not safe_generated(root, path):
@@ -174,7 +182,9 @@ def cleanup(root, *, apply=False, qa_builds=False):
         )
         entries.append(dict(path=str(path.relative_to(root)), bytes=size))
         if apply:
-            if path.is_dir():
+            if path in empty_directories:
+                path.rmdir()
+            elif path.is_dir():
                 shutil.rmtree(path)
             else:
                 path.unlink()
@@ -202,18 +212,67 @@ def cleanup(root, *, apply=False, qa_builds=False):
     return result
 
 
+def compact(root, *, apply=False):
+    """Share identical SQLite copies without deleting any historical checkpoint."""
+    store = root / ".checkpoints"
+    if not store.is_dir():
+        return {"applied": apply, "verified_checkpoints": 0, "shared": 0, "saved_bytes": 0}
+    if not safe_generated(root, store):
+        raise ValueError("Diretório de checkpoints inválido.")
+    with checkpoint_lock(store):
+        points = sorted(
+            folder for folder in store.iterdir() if (folder / "VERIFIED.json").is_file()
+        )
+        groups = {}
+        # Prove every restore point before replacing any redundant physical copy.
+        for folder in points:
+            verify(folder)
+            database = folder / "data.sqlite3"
+            groups.setdefault(file_digest(database), []).append(database)
+
+        def storage():
+            sizes = {}
+            for group in groups.values():
+                for path in group:
+                    info = path.stat()
+                    sizes[(info.st_dev, info.st_ino)] = info.st_size
+            return sum(sizes.values())
+
+        before = storage()
+        expected = sum(group[0].stat().st_size for group in groups.values())
+        shared = 0
+        if apply:
+            for group in groups.values():
+                for path in group[1:]:
+                    shared += share_database(path, group[0])
+        result = {
+            "applied": apply,
+            "verified_checkpoints": len(points),
+            "unique_databases": len(groups),
+            "shared": shared,
+            "saved_bytes": before - storage() if apply else 0,
+            "reclaimable_bytes": before - expected,
+            "historical_points_removed": 0,
+        }
+        if apply:
+            stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
+            atomic_json(store / f"compact-{stamp}.json", result)
+        return result
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=["doctor", "clean"])
+    parser.add_argument("command", choices=["doctor", "clean", "compact"])
     parser.add_argument("--apply", action="store_true")
     parser.add_argument("--qa-builds", action="store_true")
     parser.add_argument("--fix-permissions", action="store_true")
     args = parser.parse_args()
-    result = (
-        doctor(ROOT, fix_permissions=args.fix_permissions)
-        if args.command == "doctor"
-        else cleanup(ROOT, apply=args.apply, qa_builds=args.qa_builds)
-    )
+    if args.command == "doctor":
+        result = doctor(ROOT, fix_permissions=args.fix_permissions)
+    elif args.command == "compact":
+        result = compact(ROOT, apply=args.apply)
+    else:
+        result = cleanup(ROOT, apply=args.apply, qa_builds=args.qa_builds)
     print(json.dumps(result, indent=2, ensure_ascii=False))
     if args.command == "doctor" and any(
         not item["ok"] for item in result["installations"].values()
