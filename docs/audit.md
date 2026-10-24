@@ -235,3 +235,22 @@ Revisados contratos e fluxos de cálculo, cadastro, persistência/concorrência,
 Verificações efetivas:394backend+85subtestes em SQLite e394+85 em PostgreSQLQA,16scripts,103frontend,19E2E e1HTTPS. Último ajuste de nominais/escopo validado por103frontend e2E2E dirigidos;tipos/lint/formatação/buildwebpack aprovados. Ruff61arquivos,migraçõesSQLite/PG,contratos gerados,pipcheck echecagemTS sem locais/parâmetros não utilizados aprovados. Npm audit e pip-audit do lock sem vulnerabilidades conhecidas. Teste E2E de revalidação força somente a flag histórica para exercitar o botão;prévia,registro,histórico e preservação do valor123,456789W×3=370,370367W usam API/bancoQA reais. Smoke local de consulta real sem gravação,sem pageerrors/overflow390px;capturas inspecionadas.
 
 Dados reais comparados integralmente nas12tabelas com checkpoint20261024T042034311554Z,sem divergência:9projetos/30históricos/8revisões e acervo preservados. Dependências de execução não mudaram;sem nova migração,sem exclusão de dados,sem push/publicação. Não executados Windows/leitor de tela real/inspeção elétrica física,pentest ou teste de carga nesta revisão. Pendências técnicas e normativas permanecem no roadmap/KNOWN_ISSUES.
+
+
+## Revisão de simplicidade — 24/10/2026
+
+Pedido: priorizar leigos e estimativa geral de consumo da moradia pronta ou planejada, restaurar três etapas e retirar a exposição principal dos novos estudos técnicos. Revisados início/navegação, cadastro, equipamentos, resultados, estudos, biblioteca, salvamento/recuperação e relatórios. Funcionalidades úteis e dados foram mantidos; não houve exclusão de API/motor/acervo.
+
+| Área | Decisão e motivo |
+| --- | --- |
+| Início e identidade | Preservar sidebar, marca, três cartões e tema; linguagem sobre consumo residencial. |
+| Percurso | Apenas 01 Projeto, 02 Ambientes e 03 Conferência; estudos técnicos depois dos resultados, recolhidos por padrão, inclusive ao reabrir projeto. |
+| Projeto | Tarifa visível junto de identificação; distribuidora/área/pavimentos/tipo em dados extras. Município/UF continuam exigidos pelo contrato existente. Observações visíveis com altura menor e autosave preservado. |
+| Ambientes | Nome/tipo e aparelhos no fluxo comum; medidas/pontos opcionais em disclosure. Remover fixação do cabeçalho que sobrepunha campos durante rolagem. |
+| Aparelhos | Preservar potência manual, quantidade, variantes e fontes; consumo mensal passa ao primeiro disclosure. Horários/etiqueta são entradas explícitas, nunca padrões inventados. |
+| Conferência | Consumo/custo primeiro; botão leva ao horário do primeiro aparelho pendente. Consumo por aparelho usa diretamente monthly_energy_kwh/monthly_cost_brl da API, incluindo quantidade já calculada no motor. Potência e detalhes técnicos recolhidos. |
+| Circuitos/demanda/entrada | Manter estudos e dados existentes, sem etapas numeradas no percurso principal. Uso básico não exige confirmar métodos ou fornecimento. |
+| Memória e avisos | Preservar rastreabilidade, diagnósticos acionáveis e escopos. Ocultar números enquanto desatualizados sem desmontar a memória; não repetir exportações inválidas. |
+| Biblioteca/relatórios/persistência | Preservar consultas, fontes, PDF/JSON, revisões, rascunhos, conflitos, lixeira e histórico. Nenhuma regravação de projeto/catálogo, regra nova ou migração. |
+
+Limites: revisão visual/funcional e acessibilidade automática não equivalem a teste de usabilidade com pessoas leigas ou leitor de tela real. Consumo depende de aparelhos e uso cadastrados; não há ciclos, standby, tarifas ou fatores presumidos. Testes efetivos desta entrega em CURRENT_STATE/SESSION_HISTORY.

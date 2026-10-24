@@ -1,0 +1,72 @@
+import { test, expect } from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
+
+test('three-step consumption journey stays simple and technical studies remain optional', async ({
+  page,
+}) => {
+  const errors: string[] = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+  await page.goto('/');
+  await expect(page.locator('.workspace-options > button')).toHaveCount(3);
+  await page.getByRole('button', { name: /^Criar novo projeto/ }).click();
+  await page.getByLabel('Nome do projeto', { exact: true }).fill('Minha casa · exemplo de consumo');
+  await page.getByLabel('Município', { exact: true }).fill('Cidade de exemplo');
+  await page.getByLabel('Tarifa de energia (R$/kWh)', { exact: true }).fill('0.8');
+  await expect(page.getByText('01 / PROJETO', { exact: true })).toBeVisible();
+  await expect(page.getByText('02 / AMBIENTES', { exact: true })).toBeVisible();
+  await expect(page.getByText('03 / CONFERÊNCIA', { exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Estudo de circuitos', exact: true })).toHaveCount(
+    0,
+  );
+  await expect(page.getByLabel('Concessionária', { exact: true })).toBeHidden();
+  await page.getByRole('button', { name: 'Adicionar primeiro ambiente', exact: true }).click();
+  const room = page.locator('#environments article').first();
+  await room.getByLabel('Nome', { exact: true }).fill('Sala');
+  await expect(room.getByLabel('Área (m²)', { exact: true })).toBeHidden();
+  await room
+    .getByLabel('Adicionar equipamento em Sala', { exact: true })
+    .selectOption('philips-led-929001195311');
+  const equipment = room.getByTestId('equipment-editor');
+  // Explicit fictional scenario: two 10 W lamps, three hours/day, twenty days/month.
+  await equipment.getByLabel('Quantidade', { exact: true }).fill('2');
+  await equipment.getByLabel('Potência unitária (W)', { exact: true }).fill('10');
+  const complete = page.getByRole('button', {
+    name: 'Completar consumo dos aparelhos',
+    exact: true,
+  });
+  await expect(complete).toBeVisible();
+  await complete.click();
+  await expect(equipment.getByLabel('Horas de uso por dia', { exact: true })).toBeFocused();
+  await equipment.getByLabel('Horas de uso por dia', { exact: true }).fill('3');
+  await equipment.getByLabel('Dias de uso por mês', { exact: true }).fill('20');
+  const summary = page.getByLabel('Consumo e custo mensais', { exact: true });
+  await expect(summary).toContainText('1,2 kWh/mês');
+  await expect(summary).toContainText('R$ 0,96');
+  await expect(complete).toHaveCount(0);
+  await expect(page.getByLabel('Apresentação', { exact: true })).toBeHidden();
+  await expect(page.getByText('Potência aparente · soma escalar', { exact: true })).toBeHidden();
+  await expect(
+    page.getByText('Estudos técnicos (opcional)', { exact: true }).locator('..'),
+  ).not.toHaveAttribute('open', '');
+  await expect(equipment.getByTestId('equipment-advanced')).not.toHaveAttribute('open', '');
+  // Updating usage hides previous figures until the backend answers, and then shows the new estimate.
+  await equipment.getByLabel('Horas de uso por dia', { exact: true }).fill('4');
+  await expect(page.locator('#results')).toHaveAttribute('data-stale', 'true');
+  await expect(summary).toBeHidden();
+  await expect(summary).toContainText('1,6 kWh/mês');
+  await expect(summary).toBeVisible();
+  expect(
+    (await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze())
+      .violations,
+  ).toEqual([]);
+  for (const width of [320, 390, 768, 1440]) {
+    await page.setViewportSize({ width, height: 1000 });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+      true,
+    );
+    if (width === 390 || width === 1440) {
+      await page.screenshot({ path: `/tmp/eletroprojeto-simple-${width}.png`, fullPage: true });
+    }
+  }
+  expect(errors).toEqual([]);
+});

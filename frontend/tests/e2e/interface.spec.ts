@@ -69,7 +69,7 @@ test('section hierarchy, notes, autosave and action menu stay usable across view
   await expect(page.locator('.action-menu')).not.toHaveAttribute('open', '');
   await expect(menu).toBeFocused();
   await menu.click();
-  await page.getByRole('heading', { name: 'Cargas da residência' }).click();
+  await page.getByRole('heading', { name: 'Consumo da residência' }).click();
   await expect(page.locator('.action-menu')).not.toHaveAttribute('open', '');
   await menu.click();
   await expect(page.getByRole('button', { name: 'Salvar como novo', exact: true })).toBeVisible();
@@ -86,7 +86,7 @@ test('section hierarchy, notes, autosave and action menu stay usable across view
     expect(checkbox!.width).toBeGreaterThanOrEqual(18);
     expect(checkbox!.width).toBeLessThanOrEqual(22);
     expect(checkbox!.height).toBeLessThanOrEqual(22);
-    expect((await notes.boundingBox())!.height).toBeGreaterThanOrEqual(130);
+    expect((await notes.boundingBox())!.height).toBeGreaterThanOrEqual(80);
     if (width === 390 || width === 1440) {
       await page
         .locator('#project')

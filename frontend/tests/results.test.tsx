@@ -78,7 +78,7 @@ it('shows incomplete monthly consumption and estimated cost from the API', () =>
   );
   expect(screen.getByText('85,4 kWh/mês')).toBeVisible();
   expect(screen.getByText('R$ 68,32')).toBeVisible();
-  expect(screen.getByText(/1 carga\(s\) sem consumo calculável/)).toBeVisible();
+  expect(screen.getByText(/1 aparelho\(s\) sem consumo informado/)).toBeVisible();
 });
 
 it('separates unavailable features from correctable inputs without repeating warning cards', () => {
@@ -91,12 +91,13 @@ it('separates unavailable features from correctable inputs without repeating war
       onScopeChange={vi.fn()}
     />,
   );
-  expect(screen.getByText('C · Dados do projeto a revisar')).toBeVisible();
+  expect(screen.getByText('Dados do projeto a revisar')).toBeVisible();
   expect(screen.getByText('Nenhum dado pendente para o cálculo selecionado.')).toBeVisible();
   expect(screen.queryByText('Procedimento não validado')).toBeNull();
   expect(screen.queryByText('Demanda normativa')).toBeNull();
   const coverage = screen.getByLabelText('Cobertura normativa');
   expect(coverage.querySelector('details')?.open).toBe(false);
+  fireEvent.click(screen.getByText('Detalhes dos cálculos e previsões técnicas'));
   fireEvent.click(screen.getByText('Recursos normativos ainda indisponíveis (3)'));
   expect(screen.getByText(/Não indicam erros na sua instalação/)).toBeVisible();
   expect(screen.getByRole('heading', { name: 'Previsão mínima de iluminação' })).toBeVisible();
@@ -144,8 +145,7 @@ it('keeps real missing inputs actionable while hiding stale coverage details', (
       onScopeChange={vi.fn()}
     />,
   );
-  fireEvent.click(screen.getByText('Recursos normativos ainda indisponíveis (3)'));
-  expect(screen.getByText('Atualizando a cobertura para as entradas atuais…')).toBeVisible();
+  expect(screen.getByText('Atualizando a cobertura para as entradas atuais…')).not.toBeVisible();
   expect(screen.queryByRole('link', { name: 'Catálogo oficial ABNT' })).toBeNull();
 });
 

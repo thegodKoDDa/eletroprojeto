@@ -684,7 +684,7 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
               </div>
             )}
             <p className="sidebar-note">
-              Estudo de cargas · consulte o alcance de cada resultado na memória de cálculo.
+              Estimativa de consumo a partir dos aparelhos e do uso que você informar.
             </p>
             {logout && (
               <button
@@ -901,16 +901,17 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                   )}
                 <header className="page-header">
                   <div>
-                    <p className="eyebrow">PROJETOS / ESTUDO DE CARGAS</p>
+                    <p className="eyebrow">SEU CONSUMO EM 3 PASSOS</p>
                     <h1
                       data-workspace-heading
                       tabIndex={-1}
                       className="text-3xl font-semibold tracking-tight"
                     >
-                      Cargas da residência
+                      Consumo da residência
                     </h1>
                     <p className="mt-2 text-sm muted">
-                      Cadastre as cargas, confira os resultados e gere seu relatório.
+                      Adicione os aparelhos que você usa ou planeja usar e estime o consumo da sua
+                      casa.
                     </p>
                   </div>
                 </header>
@@ -928,13 +929,13 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                   />
                 )}
                 <p
-                  className="mb-3 min-h-5 text-xs muted"
+                  className={loading || error ? 'mb-3 text-xs muted' : 'sr-only'}
                   role="status"
                   data-testid="calculation-status"
                 >
                   {loading
                     ? result
-                      ? 'Recalculando… Os valores abaixo são do último cálculo e estão desatualizados.'
+                      ? 'Recalculando… Resultados desatualizados ficam ocultos até a atualização.'
                       : 'Recalculando as entradas atuais…'
                     : error
                       ? 'Entradas inválidas ou erro na API. Valores anteriores desatualizados; exportação indisponível.'
@@ -954,7 +955,7 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                     <SectionHeading
                       eyebrow="01 / PROJETO"
                       title="Dados do projeto"
-                      description="Identifique a residência e ajuste as preferências do estudo."
+                      description="Dê um nome ao estudo. Para estimar o custo, informe também a tarifa da sua conta de luz."
                     />
                     <span
                       className="status-pill"
@@ -974,12 +975,12 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                       ? `Editando projeto salvo: ${saved.name}. Para preservar este registro e criar outro, use Salvar como novo.`
                       : 'Novo projeto independente · o primeiro salvamento criará um registro.'}
                   </p>
-                  <div className="grid gap-4 md:grid-cols-3">
+                  <div className="grid gap-4 md:grid-cols-2">
                     <Field field="project.name" label="Nome do projeto">
                       <input value={input.name} onChange={(e) => change('name', e.target.value)} />
                     </Field>
                     {saved && input.name !== saved.name && (
-                      <p className="text-xs text-amber-200 md:col-span-3">
+                      <p className="text-xs text-amber-200 md:col-span-2">
                         Nome alterado: use Salvar projeto para renomear este registro ou Salvar como
                         novo para criar outro. O salvamento automático está pausado.
                       </p>
@@ -1008,37 +1009,25 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                         onChange={(e) => change('municipality', e.target.value)}
                       />
                     </Field>
-                    <Field field="project.utility" label="Concessionária">
-                      <select
-                        value={input.utility}
-                        onChange={(e) =>
-                          change('utility', e.target.value as ProjectInput['utility'])
-                        }
-                      >
-                        <option value="unconfirmed">Não confirmada</option>
-                        {utilities
-                          .filter((item) => item.states.includes(input.state ?? 'SP'))
-                          .map((item) => (
-                            <option key={item.id} value={item.id}>
-                              {item.name} · seleção manual
-                            </option>
-                          ))}
-                      </select>
-                    </Field>
-
-                    <Field field="project.built_area_m2" label="Área construída (m²)">
+                    <Field
+                      field="project.energy_tariff_brl_per_kwh"
+                      label="Tarifa de energia (R$/kWh)"
+                    >
                       <input
                         type="number"
-                        min="0.001"
+                        min="0"
                         step="any"
-                        value={input.built_area_m2 ?? ''}
-                        onChange={(e) => change('built_area_m2', e.target.value || null)}
+                        placeholder="Opcional · informe sua tarifa"
+                        value={input.energy_tariff_brl_per_kwh ?? ''}
+                        onChange={(e) =>
+                          change('energy_tariff_brl_per_kwh', e.target.value || null)
+                        }
                       />
                     </Field>
                   </div>
                   <p className="field-hint mt-3">
-                    A seleção por estado indica distribuidoras candidatas. Confirme qual atende ao
-                    endereço; a demanda depende da revisão no painel Energisa.
+                    Tarifa opcional, em R$/kWh, disponível na conta de luz. Não sabe? Você ainda
+                    pode estimar o consumo.
                   </p>
                   <div className="project-preferences">
                     <div className="preference-row">
@@ -1088,6 +1077,34 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                   <details className="project-extra disclosure">
                     <summary>Outros dados do projeto</summary>
                     <div className="mt-3 grid gap-4 md:grid-cols-3">
+                      <Field field="project.utility" label="Concessionária">
+                        <select
+                          value={input.utility}
+                          onChange={(e) =>
+                            change('utility', e.target.value as ProjectInput['utility'])
+                          }
+                        >
+                          <option value="unconfirmed">Não confirmada</option>
+                          {utilities
+                            .filter((item) => item.states.includes(input.state ?? 'SP'))
+                            .map((item) => (
+                              <option key={item.id} value={item.id}>
+                                {item.name} · seleção manual
+                              </option>
+                            ))}
+                        </select>
+                      </Field>
+
+                      <Field field="project.built_area_m2" label="Área construída (m²)">
+                        <input
+                          type="number"
+                          min="0.001"
+                          step="any"
+                          value={input.built_area_m2 ?? ''}
+                          onChange={(e) => change('built_area_m2', e.target.value || null)}
+                        />
+                      </Field>
+
                       <Field field="project.floors" label="Pavimentos">
                         <input
                           type="number"
@@ -1106,21 +1123,6 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                           onChange={(e) => change('residence_type', e.target.value || null)}
                         />
                       </Field>
-                      <Field
-                        field="project.energy_tariff_brl_per_kwh"
-                        label="Tarifa de energia (R$/kWh)"
-                      >
-                        <input
-                          type="number"
-                          min="0"
-                          step="any"
-                          placeholder="Opcional · informe sua tarifa"
-                          value={input.energy_tariff_brl_per_kwh ?? ''}
-                          onChange={(e) =>
-                            change('energy_tariff_brl_per_kwh', e.target.value || null)
-                          }
-                        />
-                      </Field>
                     </div>
                     {input.reference_voltage_v != null && (
                       <p className="field-hint mt-3">
@@ -1132,7 +1134,7 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                   <div className="project-notes">
                     <Field field="project.notes" label="Observações">
                       <textarea
-                        rows={5}
+                        rows={3}
                         maxLength={10000}
                         placeholder="Registre condições do estudo, equipamentos a conferir e informações úteis para o projeto."
                         aria-describedby="project-notes-description"
@@ -1160,7 +1162,7 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                       eyebrow="02 / AMBIENTES"
                       title="Ambientes e equipamentos"
                       id="environments-title"
-                      description="Organize cada cômodo e suas cargas."
+                      description="Adicione os cômodos, escolha os aparelhos e informe como costuma usá-los."
                     />
                     <button
                       className="btn primary add-environment"
@@ -1174,16 +1176,17 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                     <div className="panel py-12 text-center">
                       <p className="text-lg">Comece pelos ambientes</p>
                       <p className="mt-2 text-sm muted">
-                        Cadastre dimensões, pontos e equipamentos de cada cômodo.
+                        Adicione um cômodo e os aparelhos que você usa ou planeja instalar.
                       </p>
                       <button className="btn primary mt-5" onClick={addRoom}>
                         Adicionar primeiro ambiente
                       </button>
                     </div>
                   )}
-                  <p className="mb-3 text-xs muted">
-                    Para conferir os mínimos de luz e tomadas dos ambientes internos, selecione
-                    Previsão residencial (luz/TUG) em Requisitos para, nos resultados.
+                  <p className="mb-4 text-sm muted">
+                    As potências do catálogo são referências. Ajuste para o seu aparelho e abra
+                    <strong> Consumo mensal</strong> para informar horários ou o consumo da
+                    etiqueta.
                   </p>
                   <label className="mb-4 max-w-sm">
                     Pesquisar catálogo
@@ -1274,70 +1277,81 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                               ))}
                             </select>
                           </Field>
-                          <Field
-                            field="environment.area_m2"
-                            label="Área (m²)"
-                            path={`room.${room.id}.area_m2`}
-                          >
-                            <input
-                              type="number"
-                              min="0.001"
-                              step="any"
-                              value={room.area_m2 ?? ''}
-                              onChange={(e) =>
-                                updateRoom(room.id!, { area_m2: e.target.value || null })
-                              }
-                            />
-                          </Field>
-                          <Field
-                            field="environment.perimeter_m"
-                            label="Perímetro (m)"
-                            path={`room.${room.id}.perimeter_m`}
-                          >
-                            <input
-                              type="number"
-                              min="0.001"
-                              step="any"
-                              value={room.perimeter_m ?? ''}
-                              onChange={(e) =>
-                                updateRoom(room.id!, { perimeter_m: e.target.value || null })
-                              }
-                            />
-                          </Field>
-                          <Field
-                            field="environment.lighting_points"
-                            label="Pontos de luz"
-                            path={`room.${room.id}.lighting_points`}
-                          >
-                            <input
-                              type="number"
-                              min="0"
-                              value={Number.isNaN(room.lighting_points) ? '' : room.lighting_points}
-                              onChange={(e) =>
-                                updateRoom(room.id!, {
-                                  lighting_points:
-                                    e.target.value === '' ? NaN : Number(e.target.value),
-                                })
-                              }
-                            />
-                          </Field>
-                          <Field
-                            field="environment.outlets"
-                            label="Pontos de tomadas"
-                            path={`room.${room.id}.outlets`}
-                          >
-                            <input
-                              type="number"
-                              min="0"
-                              value={Number.isNaN(room.outlets) ? '' : room.outlets}
-                              onChange={(e) =>
-                                updateRoom(room.id!, {
-                                  outlets: e.target.value === '' ? NaN : Number(e.target.value),
-                                })
-                              }
-                            />
-                          </Field>
                         </div>
+                        <details className="room-measurements mt-3">
+                          <summary>Medidas, iluminação e tomadas (opcional)</summary>
+                          <p className="mt-2 text-xs muted">
+                            Usados na previsão de pontos de luz e tomadas. Não são necessários para
+                            estimar o consumo dos aparelhos.
+                          </p>
+                          <div className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                            <Field
+                              field="environment.area_m2"
+                              label="Área (m²)"
+                              path={`room.${room.id}.area_m2`}
+                            >
+                              <input
+                                type="number"
+                                min="0.001"
+                                step="any"
+                                value={room.area_m2 ?? ''}
+                                onChange={(e) =>
+                                  updateRoom(room.id!, { area_m2: e.target.value || null })
+                                }
+                              />
+                            </Field>
+                            <Field
+                              field="environment.perimeter_m"
+                              label="Perímetro (m)"
+                              path={`room.${room.id}.perimeter_m`}
+                            >
+                              <input
+                                type="number"
+                                min="0.001"
+                                step="any"
+                                value={room.perimeter_m ?? ''}
+                                onChange={(e) =>
+                                  updateRoom(room.id!, { perimeter_m: e.target.value || null })
+                                }
+                              />
+                            </Field>
+                            <Field
+                              field="environment.lighting_points"
+                              label="Pontos de luz"
+                              path={`room.${room.id}.lighting_points`}
+                            >
+                              <input
+                                type="number"
+                                min="0"
+                                value={
+                                  Number.isNaN(room.lighting_points) ? '' : room.lighting_points
+                                }
+                                onChange={(e) =>
+                                  updateRoom(room.id!, {
+                                    lighting_points:
+                                      e.target.value === '' ? NaN : Number(e.target.value),
+                                  })
+                                }
+                              />
+                            </Field>
+                            <Field
+                              field="environment.outlets"
+                              label="Pontos de tomadas"
+                              path={`room.${room.id}.outlets`}
+                            >
+                              <input
+                                type="number"
+                                min="0"
+                                value={Number.isNaN(room.outlets) ? '' : room.outlets}
+                                onChange={(e) =>
+                                  updateRoom(room.id!, {
+                                    outlets: e.target.value === '' ? NaN : Number(e.target.value),
+                                  })
+                                }
+                              />
+                            </Field>
+                          </div>
+                        </details>
                         <div className="mt-4 space-y-2">
                           {(room.loads ?? []).map((load) => (
                             <EquipmentEditor
@@ -1373,28 +1387,17 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                             </button>
                           )}
                           <span className="ml-auto text-sm text-emerald-300">
-                            {result
-                              ? `${format(result.by_environment_w[room.id!])} W${room.loads?.some((load) => result.unknown_load_ids?.includes(load.id!)) ? ' · subtotal conhecido' : ''}`
-                              : '—'}
+                            {currentResult
+                              ? `${format(currentResult.by_environment_w[room.id!])} W${room.loads?.some((load) => currentResult.unknown_load_ids?.includes(load.id!)) ? ' · subtotal conhecido' : ''}`
+                              : loading
+                                ? 'Atualizando…'
+                                : '—'}
                           </span>
                         </div>
                       </article>
                     ))}
                   </div>
                 </section>
-                <DemandReview
-                  input={input}
-                  result={currentResult}
-                  onChange={(value) => change('energisa_demand', value)}
-                  onLoadChange={updateLoad}
-                />
-                <CircuitStudy
-                  key={calculationScope}
-                  input={input}
-                  result={currentResult}
-                  onChange={(value) => change('circuits', value)}
-                  onEntryChange={(value) => change('service_entry', value)}
-                />
                 <ResultsPanel
                   result={result}
                   loading={loading}
@@ -1402,6 +1405,33 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                   scope={input.analysis_scope}
                   onScopeChange={(value) => change('analysis_scope', value)}
                 />
+                <details key={`technical-${calculationScope}`} className="technical-tools mt-6">
+                  <summary>Estudos técnicos (opcional)</summary>
+                  <p className="mt-3 mb-4 text-sm muted">
+                    Para quem precisa estudar a instalação: demanda, circuitos e entrada de energia.
+                    Estes dados não são necessários para estimar o consumo mensal. Estudos salvos
+                    são mantidos.
+                  </p>
+                  <details className="mb-4">
+                    <summary>Demanda da residência · Energisa</summary>
+                    <DemandReview
+                      input={input}
+                      result={currentResult}
+                      onChange={(value) => change('energisa_demand', value)}
+                      onLoadChange={updateLoad}
+                    />
+                  </details>
+                  <details>
+                    <summary>Circuitos e entrada de energia</summary>
+                    <CircuitStudy
+                      key={calculationScope}
+                      input={input}
+                      result={currentResult}
+                      onChange={(value) => change('circuits', value)}
+                      onEntryChange={(value) => change('service_entry', value)}
+                    />
+                  </details>
+                </details>
               </>
             )}
             <footer className="workspace-footer">

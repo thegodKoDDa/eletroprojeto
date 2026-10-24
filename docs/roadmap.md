@@ -20,6 +20,8 @@ Decisão do usuário em 23/10/2026: operar localmente. Publicação/infraestrutu
 
 ## Prioridades locais seguintes
 
+Direção de produto reafirmada em 24/10/2026: simplicidade para leigos antes da ampliação de estudos profissionais. O percurso principal permanece 01 Projeto → 02 Ambientes → 03 Conferência, com consumo/custo em destaque; circuitos/entrada/demanda são opcionais e recolhidos. Melhorias futuras devem reduzir esforço de cadastro e explicar estimativas usando os dados/fontes realmente disponíveis, sem inventar horários, tarifas ou fatores. Os itens normativos abaixo são evolução técnica posterior, não exigências para o uso básico.
+
 1. Manter regressões de cálculos, cadastro, relatórios, acessibilidade automática, contratos, tipos, lint e build conforme as mudanças.
 2. Ampliar a cobertura de demanda somente com revisão específica de grupos especiais, centrais de ar-condicionado e demais exceções. Não aplicar fatores de outra distribuidora.
 3. Ampliar os estudos de circuitos, condutores/proteções e entrada além do subconjunto entregue em0.16.0, somente após conferir fontes, condições, limites e exemplos.

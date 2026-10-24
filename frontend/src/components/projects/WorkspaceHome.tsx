@@ -24,8 +24,8 @@ export function WorkspaceHome({ busy, projectName, onNew, onLibrary, onTrash, on
           Seu próximo projeto começa aqui.
         </h1>
         <p className="mt-4 max-w-xl text-sm leading-6 muted">
-          Crie um estudo de cargas residenciais, continue um projeto salvo ou recupere um projeto da
-          lixeira.
+          Estime o consumo de energia da sua casa, pronta ou em construção. Comece um novo estudo ou
+          continue um projeto salvo.
         </p>
       </header>
       <div className="workspace-options">
@@ -83,8 +83,8 @@ export function WorkspaceHome({ busy, projectName, onNew, onLibrary, onTrash, on
         </div>
       )}
       <p className="mt-8 text-xs leading-6 muted">
-        Os cálculos e a memória de cálculo ficam dentro de cada projeto. Os resultados disponíveis
-        compõem um estudo preliminar de cargas.
+        Cadastre os aparelhos e seus horários de uso para ter uma estimativa mensal. Você pode
+        ajustar o estudo sempre que precisar.
       </p>
     </section>
   );

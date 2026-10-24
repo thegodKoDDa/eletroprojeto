@@ -1,5 +1,12 @@
 # Histórico de alterações
 
+## Simplificação da experiência — 24/10/2026 (versão funcional 0.17.0 mantida)
+
+- Restaurado o percurso 01 Projeto → 02 Ambientes → 03 Conferência. Demanda, circuitos e entrada preservados em Estudos técnicos, opcionais e recolhidos após os resultados.
+- Consumo/custo mensal em destaque, tarifa visível e ação para completar horários dos aparelhos. Consumo por aparelho exibido a partir da API; potência, memória, VA/corrente/previsões em detalhes.
+- Medidas/pontos e dados extras recolhidos; observações menores, instruções mais simples e cabeçalho dos ambientes sem sobreposição durante a rolagem. Início com três cartões e sidebar preservados.
+- Resultados desatualizados ocultos, mantendo memória montada e foco/debounce/cancelamento. Sem alteração de fórmulas, regras, catálogo, schema ou projetos.
+
 ## 0.17.0 — 24/10/2026
 
 - Corrigida assinatura de exportações para incluir circuitos/proteções/entrada; motor0.9.1,sem nova regra elétrica. Último histórico ordenado por versão,mesmo com timestamps iguais.

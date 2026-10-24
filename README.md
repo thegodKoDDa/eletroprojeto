@@ -1,5 +1,9 @@
 # EletroProjeto 0.17.0
 
+Estimativa de consumo elétrico residencial para quem quer entender o uso de energia da sua casa, pronta ou em construção. Fluxo principal: **01 Projeto → 02 Ambientes → 03 Conferência**. Cadastre aparelhos, informe horários ou o consumo da etiqueta e, se souber, a tarifa para obter uma estimativa mensal. Nenhum horário ou consumo é presumido.
+
+Circuitos, demanda e entrada de energia ficam em **Estudos técnicos (opcional)**, após a conferência. Detalhes, memória e previsões também ficam recolhidos; dados e estudos existentes são preservados.
+
 Estudo condicionado de circuitos e entrada ESS disponível no projeto,com cálculos no motorPython e resultados/pendências emJSON/PDF. Escopos em [normas](docs/standards.md); não constitui dimensionamento final universal.
 
 Biblioteca técnica local integrada: busca em guias, modelos, diagramas e PDFs, leitura por páginas, originais e rastreabilidade das fontes. A importação não habilita regras de cálculo sem revisão. Inventário e uso em [referências](references/README.md).

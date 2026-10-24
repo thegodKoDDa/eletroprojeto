@@ -2,6 +2,8 @@
 
 ## Estado e escopo vigentes
 
+Direção explicitada pelo usuário em 24/10/2026: atender primeiro leigos e depois profissionais, com estimativa geral de consumo residencial (moradia pronta ou planejada). Preservar aparência anterior e o fluxo 01 Projeto → 02 Ambientes → 03 Conferência. Circuitos/entrada/demanda são estudos opcionais recolhidos depois da conferência, não etapas obrigatórias. Não voltar a promover esses estudos ao percurso principal sem pedido. Consumo/custo recebem prioridade; tarifa e instruções de uso são visíveis, medidas/pontos e dados extras são secundários. A biblioteca técnica apoia funcionalidades verificadas, sem justificar novos formulários obrigatórios ou parâmetros presumidos.
+
 Aplicação local de estudo/cálculo elétrico residencial, para leigos, estudantes e profissionais. Preservar produto, dados, funcionalidades e identidade visual; não recriar. API/frontend0.17.0, motor0.9.1, JSON de relatório1.4, banco/schema0007. Versões e testes atuais em CURRENT_STATE; roadmap/KNOWN_ISSUES descrevem o que realmente falta. Registros anteriores foram preservados em SESSION_HISTORY, CHANGELOG, Git e checkpoints; não tratar limitações históricas como atuais.
 
 Usuário autorizou otimizar armazenamento, salvamento, continuidade, estrutura e limpeza, mantendo funcionalidade. Publicação/infraestrutura remota/CI hospedado, impressão física e backup externo foram retirados do escopo atual; não voltar a cobrá-los. Manter mecanismos existentes e checkpoints locais. Rotinas de terminal/testes/contratos/migrações/serviços são executadas pelo agente, sem delegar ao usuário. Restrições obrigatórias do ambiente continuam válidas; nunca push sem autorização.

@@ -711,9 +711,6 @@ fieldset {
   margin-bottom: 1.5rem;
 }
 .environments-toolbar {
-  position: sticky;
-  top: 0.75rem;
-  z-index: 10;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -724,7 +721,6 @@ fieldset {
   border: 1px solid #354759;
   border-radius: var(--radius-card);
   background: #14202e;
-  box-shadow: 0 8px 24px #0002;
 }
 
 .add-environment {
@@ -1007,7 +1003,7 @@ fieldset {
   border-top: 1px solid var(--line);
 }
 .project-notes textarea {
-  min-height: 8.5rem;
+  min-height: 5.5rem;
   line-height: 1.65;
 }
 .demand-review {
@@ -1302,4 +1298,31 @@ textarea[aria-invalid='true'] {
 
 .circuit-study {
   overflow-wrap: anywhere;
+}
+
+/* The primary flow is project, appliances and consumption; technical studies stay secondary. */
+.consumption-summary > div {
+  min-width: 0;
+  padding: 1rem;
+  border-radius: var(--radius-inner);
+  background: var(--field);
+}
+.technical-tools {
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--line);
+}
+.technical-tools > summary {
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+.technical-tools .panel {
+  margin-top: 1rem;
+}
+.room-measurements > summary {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+#results .result-details > summary {
+  color: var(--muted);
+  font-size: 0.875rem;
 }

@@ -355,6 +355,7 @@ export function EquipmentEditor({
         </p>
       )}
       <div className="equipment-options">
+        <EnergyFields load={load} onChange={technical} />
         <details data-testid="equipment-advanced">
           <summary className="cursor-pointer text-xs muted">
             Configurações avançadas
@@ -617,7 +618,6 @@ export function EquipmentEditor({
             )}
           </div>
         </details>
-        <EnergyFields load={load} onChange={technical} />
         <details data-testid="equipment-reference">
           <summary className="cursor-pointer">
             {ref ? 'Valor de referência' : 'Origem dos dados'}
@@ -699,9 +699,11 @@ export function EquipmentEditor({
           Remover
         </button>
         <span className="text-emerald-300" data-stale={stale}>
-          {memory && memory.status !== 'pending'
-            ? `${stale ? 'Último total' : 'Total'}: ${Number(memory.result.value).toLocaleString('pt-BR', { maximumFractionDigits: 3 })} W`
-            : 'Total pendente'}
+          {!stale && memory && memory.status !== 'pending'
+            ? `Total: ${Number(memory.result.value).toLocaleString('pt-BR', { maximumFractionDigits: 3 })} W`
+            : stale
+              ? 'Atualizando…'
+              : 'Total pendente'}
         </span>
       </div>
     </div>

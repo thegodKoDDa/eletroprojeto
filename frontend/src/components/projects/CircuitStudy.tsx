@@ -237,7 +237,7 @@ export function CircuitStudy({
     <>
       <section className="panel circuit-study mb-6" aria-labelledby="circuits-heading">
         <SectionHeading
-          eyebrow="03 / CIRCUITOS"
+          eyebrow="ESTUDO OPCIONAL"
           title="Estudo de circuitos"
           description="Associe cargas e confira corrente, seção, sobrecarga e queda de tensão no escopo suportado."
         />
@@ -577,7 +577,7 @@ export function CircuitStudy({
       </section>
       <section className="panel circuit-study mb-6" aria-labelledby="entry-heading">
         <SectionHeading
-          eyebrow="04 / ENTRADA"
+          eyebrow="ESTUDO OPCIONAL"
           title="Referência de padrão de entrada"
           description="Enquadramento limitado à Energisa Sul-Sudeste/SP, rede 220/127V, unidade residencial individual até75kW."
         />

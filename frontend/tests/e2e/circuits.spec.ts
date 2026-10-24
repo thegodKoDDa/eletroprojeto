@@ -70,6 +70,8 @@ test('circuits and entry calculate on server, survive saving and export with pen
   await page.goto('/');
   await page.getByRole('button', { name: /^Abrir projetos salvos/ }).click();
   await page.getByRole('button', { name: 'Circuitos QA', exact: true }).click();
+  await page.getByText('Estudos técnicos (opcional)', { exact: true }).click();
+  await page.getByText('Circuitos e entrada de energia', { exact: true }).click();
   const editor = page.getByTestId('circuit-editor');
   await expect(editor.getByTestId('circuit-result')).toContainText('fase: 4 mm²');
   await expect(editor.getByTestId('circuit-result')).toContainText('Ib: 20 A');
@@ -115,6 +117,8 @@ test('circuits and entry calculate on server, survive saving and export with pen
   await page.reload();
   await page.getByRole('button', { name: /^Abrir projetos salvos/ }).click();
   await page.getByRole('button', { name: 'Circuitos QA', exact: true }).click();
+  await page.getByText('Estudos técnicos (opcional)', { exact: true }).click();
+  await page.getByText('Circuitos e entrada de energia', { exact: true }).click();
   await expect(page.getByTestId('circuit-editor').getByTestId('circuit-result')).toContainText(
     'fase: 4 mm²',
   );

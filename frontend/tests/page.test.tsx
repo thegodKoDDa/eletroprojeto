@@ -60,7 +60,7 @@ test('memory DOM and input focus survive recalculation; previous values are labe
   });
   const memory = container.querySelector('#results .divide-y > div');
   expect(memory).not.toBeNull();
-  const details = container.querySelector('#results > details')!;
+  const details = container.querySelector('#results .result-details')!;
   details.setAttribute('open', '');
   fireEvent.click(screen.getByText(/Configurações avançadas/));
   fireEvent.change(screen.getByLabelText('Fator de potência'), { target: { value: '0.9' } });

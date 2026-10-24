@@ -80,6 +80,7 @@ test('full reference workflow, stable editing, persistence and mobile layout', a
   await expect(page.getByLabel('Resumo de resultados')).toContainText('1,296');
 
   // A mounted row, focused input and expanded memory survive debounce/recalculation.
+  await page.getByText('Detalhes dos cálculos e previsões técnicas', { exact: true }).click();
   await page.locator('#results').getByText('Referências e rastreabilidade').click();
   await page.evaluate(() => {
     const section = document.querySelector('#results')!;
@@ -94,8 +95,9 @@ test('full reference workflow, stable editing, persistence and mobile layout', a
   await expect(page.getByRole('button', { name: 'Exportar JSON' })).toBeDisabled();
   await expect(
     page
-      .locator('#results details')
-      .filter({ has: page.getByText('Referências e rastreabilidade', { exact: true }) }),
+      .locator('#results')
+      .getByText('Referências e rastreabilidade', { exact: true })
+      .locator('..'),
   ).toHaveAttribute('open', '');
   await expect(page.locator('#results')).toHaveAttribute('data-stale', 'false');
   expect(
@@ -243,6 +245,7 @@ test('home, draft continuity, library, duplication, trash and exports work toget
   await page.getByRole('button', { name: 'Adicionar primeiro ambiente' }).click();
   const room = page.locator('main article').first();
   await room.getByLabel('Nome', { exact: true }).fill('Sala');
+  await room.getByText('Medidas, iluminação e tomadas (opcional)', { exact: true }).click();
   await room.getByLabel('Área (m²)', { exact: true }).fill('12.5');
   await room.getByLabel('Perímetro (m)', { exact: true }).fill('15');
   await room.getByLabel('Pontos de luz', { exact: true }).fill('2');
@@ -443,6 +446,7 @@ test('research coverage is informative while real input problems remain correcta
   await page.goto('/');
   await page.getByRole('button', { name: /^Criar novo projeto/ }).click();
   await page.getByLabel('Município', { exact: true }).fill('Cidade de teste');
+  await page.getByText('Outros dados do projeto', { exact: true }).click();
   await page.getByLabel('Concessionária', { exact: true }).selectOption('energisa_sul_sudeste');
   await page.getByRole('button', { name: 'Adicionar primeiro ambiente' }).click();
   const room = page.locator('main article').first();
@@ -457,6 +461,9 @@ test('research coverage is informative while real input problems remain correcta
   await expect(page.locator('#results')).not.toContainText('Procedimento não validado');
   const coverage = page.getByLabel('Cobertura normativa');
   await expect(coverage).toHaveCount(0);
+  await expect(page.getByRole('region', { name: 'Revisão da demanda Energisa' })).toHaveCount(0);
+  await page.getByText('Estudos técnicos (opcional)', { exact: true }).click();
+  await page.getByText('Demanda da residência · Energisa', { exact: true }).click();
   await expect(page.getByRole('region', { name: 'Revisão da demanda Energisa' })).toBeVisible();
   const registry = await (
     await request.get(
@@ -489,6 +496,7 @@ test('research coverage is informative while real input problems remain correcta
   await expect(coverage.getByRole('link', { name: 'Energisa NDU-001 — PDF oficial' })).toHaveCount(
     0,
   );
+  await page.getByText('Detalhes dos cálculos e previsões técnicas', { exact: true }).click();
   await expect(coverage.locator('details').first()).not.toHaveAttribute('open', '');
   await coverage.getByText('Recursos normativos ainda indisponíveis (1)', { exact: true }).click();
   await expect(coverage).toContainText('Não indicam erros na sua instalação');
@@ -520,10 +528,12 @@ test('residential prevision recalculates geometry and manual points, and exports
   const room = page.locator('main article').first();
   await room.getByLabel('Nome', { exact: true }).fill('Quarto residencial');
   await room.getByLabel('Tipo', { exact: true }).selectOption('bedroom');
+  await page.getByText('Detalhes dos cálculos e previsões técnicas', { exact: true }).click();
   await page.getByLabel('Requisitos para').selectOption('normative');
   await expect(
     page.locator('#results').getByRole('button', { name: /Corrigir informação:.*Área/ }),
   ).toBeVisible();
+  await room.getByText('Medidas, iluminação e tomadas (opcional)', { exact: true }).click();
   await room.getByLabel('Área (m²)', { exact: true }).fill('12');
   await room.getByLabel('Perímetro (m)', { exact: true }).fill('14');
   await room.getByLabel('Pontos de tomadas', { exact: true }).fill('5');
@@ -570,6 +580,7 @@ test('room duplication preserves manual data, creates independent IDs and surviv
   const rooms = page.locator('#environments > .space-y-5 > article');
   const original = rooms.nth(0);
   await original.getByLabel('Nome', { exact: true }).fill('Quarto');
+  await original.getByText('Medidas, iluminação e tomadas (opcional)', { exact: true }).click();
   await original.getByLabel('Área (m²)', { exact: true }).fill('12');
   await original.getByLabel('Perímetro (m)', { exact: true }).fill('14');
   await original.getByLabel('Pontos de tomadas', { exact: true }).fill('5');
@@ -633,16 +644,18 @@ test('PDF and JSON exports carry energy coverage, use assumptions and residentia
   const name = `Relatório de consumo ${Date.now()}`;
   await page.getByLabel('Nome do projeto', { exact: true }).fill(name);
   await page.getByLabel('Município', { exact: true }).fill('Cidade');
-  await page.getByLabel('Concessionária', { exact: true }).selectOption('energisa_sul_sudeste');
   await page.getByText('Outros dados do projeto', { exact: true }).click();
+  await page.getByLabel('Concessionária', { exact: true }).selectOption('energisa_sul_sudeste');
   await page.getByLabel('Tarifa de energia (R$/kWh)').fill('0.8');
   await page.getByRole('button', { name: 'Adicionar primeiro ambiente' }).click();
   const room = page.locator('#environments article').first();
   await room.getByLabel('Nome', { exact: true }).fill('Quarto');
   await room.getByLabel('Tipo', { exact: true }).selectOption('bedroom');
+  await room.getByText('Medidas, iluminação e tomadas (opcional)', { exact: true }).click();
   await room.getByLabel('Área (m²)', { exact: true }).fill('12');
   await room.getByLabel('Perímetro (m)', { exact: true }).fill('14');
   await room.getByLabel('Pontos de tomadas', { exact: true }).fill('5');
+  await page.getByText('Detalhes dos cálculos e previsões técnicas', { exact: true }).click();
   await page.getByLabel('Requisitos para').selectOption('normative');
   const picker = room.getByRole('combobox', { name: 'Adicionar equipamento em Quarto' });
   await picker.selectOption('philips-led-929001195311');
