@@ -24,6 +24,7 @@ import { Field, RequirementsContext, CalculationScopeContext } from '@/component
 import type { components } from '@/lib/api.generated';
 import { RoomEquipmentPicker } from '@/components/equipment/RoomEquipmentPicker';
 import { SectionNavigation } from '@/components/projects/SectionNavigation';
+import { CircuitStudy } from '@/components/projects/CircuitStudy';
 import { KnowledgeLibrary } from '@/components/projects/KnowledgeLibrary';
 import { WorkspaceHome } from '@/components/projects/WorkspaceHome';
 import { ProjectWorkspace } from '@/components/projects/ProjectWorkspace';
@@ -1387,6 +1388,12 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                   result={currentResult}
                   onChange={(value) => change('energisa_demand', value)}
                   onLoadChange={updateLoad}
+                />
+                <CircuitStudy
+                  input={input}
+                  result={currentResult}
+                  onChange={(value) => change('circuits', value)}
+                  onEntryChange={(value) => change('service_entry', value)}
                 />
                 <ResultsPanel
                   result={result}

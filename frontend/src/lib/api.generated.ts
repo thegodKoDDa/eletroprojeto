@@ -662,6 +662,9 @@ export interface components {
     schemas: {
         /** CalculationInput */
         CalculationInput: {
+            service_entry?: components["schemas"]["ServiceEntryInput"] | null;
+            /** Circuits */
+            circuits?: components["schemas"]["CircuitInput"][];
             energisa_demand?: components["schemas"]["ProjectEnergisaDemandSettings"] | null;
             /**
              * Analysis Scope
@@ -720,6 +723,9 @@ export interface components {
         };
         /** CalculationResult */
         CalculationResult: {
+            service_entry?: components["schemas"]["ServiceEntryResult"] | null;
+            /** Circuit Results */
+            circuit_results?: components["schemas"]["CircuitResult"][];
             energisa_demand?: components["schemas"]["ProjectEnergisaDemandResult"] | null;
             /** Normative Environments */
             normative_environments?: components["schemas"]["NormativeEnvironment"][];
@@ -859,6 +865,175 @@ export interface components {
             /** Note */
             note: string;
             parameters?: components["schemas"]["TechnicalParameters"];
+        };
+        /** CircuitInput */
+        CircuitInput: {
+            protections?: components["schemas"]["CircuitProtectionInput"] | null;
+            /** Id */
+            id?: string;
+            /**
+             * Name
+             * @default Novo circuito
+             */
+            name: string;
+            /**
+             * Purpose
+             * @default sockets
+             * @enum {string}
+             */
+            purpose: "lighting" | "sockets" | "dedicated";
+            /** Load Ids */
+            load_ids?: string[];
+            /**
+             * Method
+             * @default unknown
+             * @enum {string}
+             */
+            method: "unknown" | "B1" | "B2";
+            /** Voltage V */
+            voltage_v?: number | string | null;
+            /** Length M */
+            length_m?: number | string | null;
+            /** Ambient Temperature C */
+            ambient_temperature_c?: (10 | 15 | 20 | 25 | 30 | 35 | 40 | 45 | 50 | 55 | 60) | null;
+            /** Grouped Circuits */
+            grouped_circuits?: number | null;
+            /**
+             * Scope Confirmed
+             * @default false
+             */
+            scope_confirmed: boolean;
+            /**
+             * Voltage Drop Model Confirmed
+             * @default false
+             */
+            voltage_drop_model_confirmed: boolean;
+            /**
+             * Overload Duration Confirmed
+             * @default false
+             */
+            overload_duration_confirmed: boolean;
+            /** Breaker Ratings A */
+            breaker_ratings_a?: (number | string)[];
+            /** Breaker I2 Factor */
+            breaker_i2_factor?: number | string | null;
+            /** Breaker Source */
+            breaker_source?: string | null;
+            /** Prospective Short Circuit Ka */
+            prospective_short_circuit_ka?: number | string | null;
+            /** Breaking Capacity Ka */
+            breaking_capacity_ka?: number | string | null;
+            /**
+             * Supply Origin
+             * @default unknown
+             * @enum {string}
+             */
+            supply_origin: "unknown" | "public_lv_delivery" | "own_transformer" | "delivery_at_transformer" | "generator";
+            /** Upstream Drop Percent */
+            upstream_drop_percent?: number | string | null;
+        };
+        /** CircuitProtectionCheck */
+        CircuitProtectionCheck: {
+            /** Code */
+            code: string;
+            /** Label */
+            label: string;
+            /** Value */
+            value: number | string | null;
+            /** Passed */
+            passed: boolean | null;
+            /** Reason */
+            reason: string;
+        };
+        /** CircuitProtectionInput */
+        CircuitProtectionInput: {
+            /** Source */
+            source?: string | null;
+            /** Device Rated A */
+            device_rated_a?: number | string | null;
+            /** Cable K */
+            cable_k?: number | string | null;
+            /** Let Through A2S */
+            let_through_a2s?: number | string | null;
+            /** Short Duration S */
+            short_duration_s?: number | string | null;
+            /**
+             * Earthing System
+             * @default unknown
+             * @enum {string}
+             */
+            earthing_system: "unknown" | "TN" | "TT";
+            /** Phase Earth Voltage V */
+            phase_earth_voltage_v?: number | string | null;
+            /** Tn Situation */
+            tn_situation?: (1 | 2) | null;
+            /** Fault Loop Ohm */
+            fault_loop_ohm?: number | string | null;
+            /** Trip Current A */
+            trip_current_a?: number | string | null;
+            /** Trip Time S */
+            trip_time_s?: number | string | null;
+            /** Tt Ra Ohm */
+            tt_ra_ohm?: number | string | null;
+            /** Touch Limit V */
+            touch_limit_v?: (12 | 25 | 50) | null;
+            /** Rcd Sensitivity Ma */
+            rcd_sensitivity_ma?: number | string | null;
+            /**
+             * Rcd Type Compatible Confirmed
+             * @default false
+             */
+            rcd_type_compatible_confirmed: boolean;
+            /** Rcd Additional Required */
+            rcd_additional_required?: boolean | null;
+        };
+        /** CircuitResult */
+        CircuitResult: {
+            /** Protection Checks */
+            protection_checks?: components["schemas"]["CircuitProtectionCheck"][];
+            /** Circuit Id */
+            circuit_id: string;
+            /** Name */
+            name: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "calculated" | "estimated" | "pending" | "invalid" | "out_of_scope" | "awaiting_technical_validation";
+            /** Design Current A */
+            design_current_a: number | string | null;
+            /** Power Factor */
+            power_factor: number | string | null;
+            /** Breaker A */
+            breaker_a: number | string | null;
+            /** Conventional Current A */
+            conventional_current_a: number | string | null;
+            /** Phase Section Mm2 */
+            phase_section_mm2: number | string | null;
+            /** Pe Section Mm2 */
+            pe_section_mm2: number | string | null;
+            /** Capacity A */
+            capacity_a: number | string | null;
+            /** Temperature Factor */
+            temperature_factor: number | string | null;
+            /** Grouping Factor */
+            grouping_factor: number | string | null;
+            /** Voltage Drop V */
+            voltage_drop_v: number | string | null;
+            /** Voltage Drop Percent */
+            voltage_drop_percent: number | string | null;
+            /** Total Drop Percent */
+            total_drop_percent: number | string | null;
+            /** Breaking Capacity Ok */
+            breaking_capacity_ok: boolean | null;
+            /** Pending Checks */
+            pending_checks: string[];
+            /** Reference */
+            reference: string;
+            /** Reference Urls */
+            reference_urls?: string[];
+            /** Limitations */
+            limitations: string[];
         };
         /** Credentials */
         Credentials: {
@@ -1173,6 +1348,12 @@ export interface components {
             number: number;
             /** Body */
             body: string;
+            /** Extraction Method */
+            extraction_method: string;
+            /** Extraction Note */
+            extraction_note: string;
+            /** Ocr Confidence */
+            ocr_confidence: number | null;
         };
         /** KnowledgeProvenance */
         KnowledgeProvenance: {
@@ -1230,6 +1411,10 @@ export interface components {
             text_pages: number;
             /** Sources */
             sources: number;
+            /** Extraction Counts */
+            extraction_counts: {
+                [key: string]: number;
+            };
             /** Kinds */
             kinds: {
                 [key: string]: number;
@@ -1525,6 +1710,9 @@ export interface components {
         };
         /** Project */
         Project: {
+            service_entry?: components["schemas"]["ServiceEntryInput"] | null;
+            /** Circuits */
+            circuits?: components["schemas"]["CircuitInput"][];
             energisa_demand?: components["schemas"]["ProjectEnergisaDemandSettings"] | null;
             /**
              * Analysis Scope
@@ -1681,6 +1869,9 @@ export interface components {
         };
         /** ProjectInput */
         ProjectInput: {
+            service_entry?: components["schemas"]["ServiceEntryInput"] | null;
+            /** Circuits */
+            circuits?: components["schemas"]["CircuitInput"][];
             energisa_demand?: components["schemas"]["ProjectEnergisaDemandSettings"] | null;
             /**
              * Analysis Scope
@@ -1805,6 +1996,67 @@ export interface components {
             file_name?: string | null;
             /** Sha256 */
             sha256?: string | null;
+        };
+        /** ServiceEntryInput */
+        ServiceEntryInput: {
+            /**
+             * Network
+             * @default unknown
+             * @enum {string}
+             */
+            network: "unknown" | "220_127";
+            /**
+             * Route
+             * @default unknown
+             * @enum {string}
+             */
+            route: "unknown" | "embedded" | "underground";
+            /**
+             * Insulation
+             * @default unknown
+             * @enum {string}
+             */
+            insulation: "unknown" | "PVC70" | "XLPE90";
+            /** Requested Phases */
+            requested_phases?: (1 | 2 | 3) | null;
+            /**
+             * Scope Confirmed
+             * @default false
+             */
+            scope_confirmed: boolean;
+            /**
+             * Special Loads Reviewed
+             * @default false
+             */
+            special_loads_reviewed: boolean;
+        };
+        /** ServiceEntryResult */
+        ServiceEntryResult: {
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "calculated" | "estimated" | "pending" | "invalid" | "out_of_scope" | "awaiting_technical_validation";
+            /** Category */
+            category: string | null;
+            /** Phases */
+            phases: number | null;
+            /** Basis Value */
+            basis_value: number | string | null;
+            /** Basis Unit */
+            basis_unit: string | null;
+            /** Minimum Phase Mm2 */
+            minimum_phase_mm2: number | string | null;
+            /** Minimum Neutral Mm2 */
+            minimum_neutral_mm2: number | string | null;
+            /** Minimum Earthing Mm2 */
+            minimum_earthing_mm2: number | string | null;
+            /** Band Breaker References A */
+            band_breaker_references_a: (number | string)[];
+            /** Pending Checks */
+            pending_checks: string[];
+            /** Reference */
+            reference: string;
         };
         /** TechnicalDocument */
         TechnicalDocument: {

@@ -65,6 +65,9 @@ class KnowledgePage(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     number: int
     body: str
+    extraction_method: str
+    extraction_note: str
+    ocr_confidence: int | None
 
 
 class KnowledgeSearch(BaseModel):
@@ -78,6 +81,7 @@ class KnowledgeStats(BaseModel):
     pages: int
     text_pages: int
     sources: int
+    extraction_counts: dict[str, int]
     kinds: dict[str, int]
     review_states: dict[str, int]
     notice: str = NOTICE
@@ -105,6 +109,13 @@ def stats(session: SessionDep):
             select(func.coalesce(func.sum(KnowledgeDocumentRow.text_pages), 0))
         ),
         sources=session.scalar(select(func.count()).select_from(KnowledgeSourceRow)),
+        extraction_counts=dict(
+            session.execute(
+                select(KnowledgePageRow.extraction_method, func.count()).group_by(
+                    KnowledgePageRow.extraction_method
+                )
+            ).all()
+        ),
         kinds=dict(
             session.execute(
                 select(KnowledgeDocumentRow.kind, func.count()).group_by(KnowledgeDocumentRow.kind)

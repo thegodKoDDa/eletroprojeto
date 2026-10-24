@@ -166,6 +166,12 @@ class KnowledgePageRow(Base):
     body: Mapped[str] = mapped_column(Text)
     search_text: Mapped[str] = mapped_column(Text)
 
+    extraction_method: Mapped[str] = mapped_column(
+        String(32), default="native_text", server_default="native_text"
+    )
+    extraction_note: Mapped[str] = mapped_column(Text, default="", server_default="")
+    ocr_confidence: Mapped[int | None] = mapped_column(Integer, nullable=True)
+
 
 class KnowledgeSourceRow(Base):
     __tablename__ = "knowledge_sources"

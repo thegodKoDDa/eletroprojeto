@@ -216,12 +216,22 @@ function DocumentReader({ document, onClose }: { document: Document; onClose: ()
           <h3 className="eyebrow">
             {document.kind === 'pdf' ? `Página ${page.number}` : 'Conteúdo de estudo'}
           </h3>
+          {page.extraction_method === 'ocr_unreviewed' && (
+            <p className="mt-2 text-xs muted">
+              Texto reconhecido automaticamente por OCR (confiança média{' '}
+              {page.ocr_confidence ?? '—'}%). Confira números, símbolos e tabelas no original.
+            </p>
+          )}
+          {page.extraction_method.startsWith('blank') && (
+            <p className="mt-2 text-xs muted">
+              {page.extraction_note || 'Página identificada como vazia.'}
+            </p>
+          )}
           <div className="knowledge-text">
             {['guide', 'template'].includes(document.kind) ? (
               <StudyText body={page.body} />
             ) : (
-              page.body ||
-              'Página sem texto extraível. Abra o arquivo original para consultar a imagem.'
+              page.body || 'Página vazia ou sem texto. Consulte a classificação e o original.'
             )}
           </div>
         </article>
@@ -292,6 +302,9 @@ function SourceRegistry() {
           <option value="nao_e_pdf">Resposta sem PDF</option>
           <option value="pdf_invalido_ou_cifrado">PDF inválido ou cifrado na coleta</option>
           <option value="pdf_validado">PDF recebido na coleta</option>
+          <option value="discarded_out_of_scope">
+            Descartado por falta de utilidade no escopo
+          </option>
         </select>
       </label>
       {error && <p role="alert">{error}</p>}

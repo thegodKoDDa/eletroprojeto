@@ -117,7 +117,13 @@ async def test_pages_metadata_and_unavailable_sources_are_distinct(library_clien
         "number"
     ] == 1
     assert (await client.get(f"/api/v1/knowledge/documents/{key}/pages?offset=1")).json() == [
-        {"number": 2, "body": ""}
+        {
+            "number": 2,
+            "body": "",
+            "extraction_method": "native_text",
+            "extraction_note": "",
+            "ocr_confidence": None,
+        }
     ]
     assert (await client.get("/api/v1/knowledge/sources?outcome=falha_download")).json()[0][
         "document_id"
@@ -231,3 +237,108 @@ def test_ingest_is_idempotent_and_retains_blank_pages(database_engine, tmp_path,
     admin.verify(remove_inputs=True)
     assert not (tmp_path / "references/elétrica").exists()
     assert (library / "inventory.json").exists()
+
+
+def test_discard_is_audited_and_refuses_technical_documents(database_engine, tmp_path, monkeypatch):
+    import knowledge_maintenance as maintenance
+
+    library = tmp_path / "library"
+    objects = library / "objects"
+    objects.mkdir(parents=True)
+    key = hashlib.sha256(b"irrelevant book").hexdigest()
+    (objects / key).write_bytes(b"irrelevant book")
+    sessions = sessionmaker(database_engine)
+    with sessions() as session:
+        session.add(
+            KnowledgeDocumentRow(
+                id=key,
+                title="book_conto.pdf",
+                kind="pdf",
+                collection="distribuidoras",
+                review_state="out_of_scope",
+                media_type="application/pdf",
+                byte_size=15,
+                page_count=1,
+                text_pages=1,
+                search_text="book",
+                provenance={},
+            )
+        )
+        session.flush()
+        session.add(
+            KnowledgePageRow(document_id=key, number=1, body="ficção", search_text="ficcao")
+        )
+        session.add(
+            KnowledgeSourceRow(
+                id="d" * 64,
+                document_id=key,
+                title="Book",
+                url="https://example.org/book",
+                outcome="pdf_validado",
+                provenance={},
+            )
+        )
+        session.commit()
+    monkeypatch.setattr(maintenance, "LIBRARY", library)
+    monkeypatch.setattr(maintenance, "AUDIT", library / "maintenance.json")
+    monkeypatch.setattr(maintenance, "SessionLocal", sessions)
+    maintenance.discard()
+    assert not (objects / key).exists()
+    audit = json.loads((library / "maintenance.json").read_text())
+    assert audit["discarded"][0]["id"] == key
+    with sessions() as session:
+        assert session.get(KnowledgeDocumentRow, key) is None
+        assert session.get(KnowledgeSourceRow, "d" * 64).outcome == "discarded_out_of_scope"
+        assert session.get(KnowledgeSourceRow, "d" * 64).document_id is None
+    maintenance.discard()  # Safe repetition.
+
+
+def test_ocr_blank_page_does_not_require_recognizer(database_engine, tmp_path, monkeypatch):
+    import knowledge_maintenance as maintenance
+
+    pdf = pytest.importorskip("pymupdf")
+    objects = tmp_path / "objects"
+    objects.mkdir()
+    path = objects / ("e" * 64)
+    with pdf.open() as document:
+        document.new_page()
+        document.save(path)
+    monkeypatch.setattr(maintenance, "LIBRARY", tmp_path)
+    result = maintenance.recognize(("e" * 64, 1, "unavailable", "unavailable"))
+    assert result[2] == "blank"
+    assert result[3] == ""
+
+
+@pytest.mark.parametrize(
+    "title", ["Manual técnico de cabos", "Proteção e interrupção de circuitos"]
+)
+def test_discard_refuses_technical_document_without_specific_reason(
+    database_engine, tmp_path, monkeypatch, title
+):
+    import knowledge_maintenance as maintenance
+
+    sessions = sessionmaker(database_engine)
+    with sessions() as session:
+        session.add(
+            KnowledgeDocumentRow(
+                id="f" * 64,
+                title=title,
+                kind="pdf",
+                collection="residencial",
+                review_state="out_of_scope",
+                media_type="application/pdf",
+                byte_size=1,
+                page_count=1,
+                text_pages=1,
+                search_text="cabos",
+                provenance={},
+            )
+        )
+        session.commit()
+    monkeypatch.setattr(maintenance, "LIBRARY", tmp_path)
+    monkeypatch.setattr(maintenance, "AUDIT", tmp_path / "maintenance.json")
+    monkeypatch.setattr(maintenance, "SessionLocal", sessions)
+    with pytest.raises(ValueError, match="justificativa específica"):
+        maintenance.discard()
+    with sessions() as session:
+        assert session.get(KnowledgeDocumentRow, "f" * 64) is not None

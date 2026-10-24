@@ -155,3 +155,10 @@ app/knowledge.py fornece consultas autenticadas pelo mesmo dependency global da 
 Objetos locais deduplicados em references/library/objects/<sha256>,sem extensão e fora do Git. FileResponse somente para hash de documento conhecido,tipo permitido e arquivo não simbólico dentro do diretório configurado; CSP sandbox,nosniff global. Markdown é renderizado como nós React,texto/links http(s) validados,sem HTML executável. SVG como imagem,com scripts bloqueados; HTML original não é servido. SQL e inventários de auditoria ficam no checkpoint; binários do acervo precisam da pasta de objetos para restaurar originais. Não tratar como cache.
 
 KnowledgeLibrary no aside mantém Workspace montado e preserva drafts/edição. Filtros com debounce350ms e AbortController; snapshots de resposta vinculados à chave da consulta/página evitam exibição de resultado anterior para filtro novo. Guias/modelos,leitor por página,busca dentro da referência,originais,diagramas e estados de downloads são separados dos controles de projeto. O acervo não altera catálogo,normas habilitadas,concessionária ou fórmulas.
+
+
+## Motor0.9.0 e extração rastreável
+
+circuits/protections/service_entry são módulos puros,com contratos opcionais persistidos no JSONdeprojeto; nenhuma matemática no frontend. CircuitStudy renderiza entradas,resultados atuais e pendências. useCalculation inclui circuits/service_entry na chave,deps e corpo HTTP;cancelamento/debounce permanecem. JSONdeexportação1.4/PDF incluem critérios e limitações. Snapshot de projetos antigos é preservado; comparação idempotente também alinha IDs de circuitos omitidos somente na comparação.
+
+Migração0007 acrescenta extraction_method/extraction_note/ocr_confidence a knowledge_pages. CLIofflineknowledge_maintenance extraiOCR em processos isolados,sem instalar OCR no sistema e sem escrever nos PDFs. maintenance.json funciona como trilha de descarte/OCR; fontes dos documentos excluídos perdem FK e mantêm motivo. verify conhece tombstones autorizados e recusa hash/textoOCR/contagem divergentes. Nenhuma reimportação histórica após manutenção.

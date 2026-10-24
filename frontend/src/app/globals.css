@@ -1291,3 +1291,15 @@ textarea[aria-invalid='true'] {
   font-size: 0.8rem;
   overflow-wrap: anywhere;
 }
+
+.circuit-study label,
+.circuit-study details,
+.circuit-study summary {
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.circuit-study {
+  overflow-wrap: anywhere;
+}

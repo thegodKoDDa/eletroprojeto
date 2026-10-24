@@ -1,5 +1,12 @@
 # Histórico de alterações
 
+## 0.16.0 — 24/10/2026
+
+- OCR1060páginas:963recuperadas,97vazias identificadas,zero falhas; rastreabilidade método/nota/confiança,migração0007.199livros/relatórios sem aplicação excluídos com auditoria,4,95GB removidos; manuais técnicos preservados.
+- Motor0.9.0:estudo limitado de circuitos,cabos/PE,sobrecarga,queda,curto térmico,TN/TT/DR com dados explícitos. EntradaESS/SP220/127V por NDU7tabela16,sem presumir aprovação/proteção final.
+- Cadastros e cálculos integrados à interface,autosave/recuperação eJSON1.4/PDF. Hook inclui circuitos/entrada,com cancelamento e invalidação de resultados anteriores.
+- Fontes/limites/testes registrados; nenhuma promessa de revisão humana integral de todo o acervo ou dimensionamento universal.
+
 ## 0.15.0 — 23/10/2026
 
 - Biblioteca técnica local integrada à API e interface:2.281documentos,83.461unidades de leitura e3.788fontes. Busca por texto/metadados, filtros, leitura paginada, originais, guias/modelos formatados e diagramas.

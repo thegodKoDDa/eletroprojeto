@@ -57,3 +57,8 @@ Fonte/PDFs locais enviados em references não integram ZIP; preservar os origina
 ### Biblioteca técnica0.15.0
 
 O banco0006 contém documentos,páginas e fontes; as contagens knowledge_* aparecem no relatório. O ZIP de fonte inclui inventory.json/import-result.json/verification.json como auditoria,mas exclui references/library/objects,mesmo com nomes sem extensão. Git ignora toda a library. Objetos originais são necessários para servir PDFs/SVG/modelos e não devem ser apagados como cache. As pastas de entrada elétrica/normas foram excluídas por pedido específico após transferência e verificação; essa autorização não se estende à library. Não repetir collect sem novas entradas. Verificar o acervo com knowledge_admin.py verify,além da restauração SQLite/Git do checkpoint.
+
+
+## Manutenção do acervo — 0.16.0
+
+Schema0007 acrescenta método, confiança e nota de extração. O checkpoint inclui também maintenance.json, além dos três registros anteriores. O inventário original permanece histórico; o verificador considera somente descartes justificados registrados e confere os hashes do texto OCR. Estado atual:2.196objetos retidos,2.082documentos,51.324unidades. Os objetos continuam necessários fora do ZIP; esta manutenção não autoriza apagar a biblioteca. Não reimportar o inventário anterior sobre o banco mantido.

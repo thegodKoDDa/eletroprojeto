@@ -39,7 +39,7 @@ export function ResultsPanel({
     <section id="results" className="panel min-h-64" aria-busy={loading} data-stale={stale}>
       <header className="section-header">
         <SectionHeading
-          eyebrow="03 / CONFERÊNCIA"
+          eyebrow="05 / CONFERÊNCIA"
           title="Resultados e memória de cálculo"
           description="Confira os resultados, a memória e as informações a revisar."
         />

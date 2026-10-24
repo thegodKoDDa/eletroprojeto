@@ -84,3 +84,25 @@ Revisão vinculada ao SHA256 canônico do inventário, IDs, nomes/ambientes, cla
 `calculations/full` integra `energisa_demand` tipado e `normative.demand` coerentes. Capacidades técnicas distinguem método disponível de inventário ainda pendente. O digest geral inclui as configurações da demanda, preservando guards de exportação. Frontend envia essas configurações pelo hook existente, mantendo debounce/cancelamento; painel usa somente resultado atual e resumo de demanda oculta número anterior durante recálculo.
 
 PDF/JSON1.3 trazem demanda, inventário por ID/ambiente, grupos, reservas, declarações, memória/fatores/faixas, pendências e referência NDU7.0. JSON mantém estrutura anterior com adições. Não determina circuito, cabos, proteção, categoria de fornecimento, território oficial nem aprovação. Referências/condições normativas continuam as da0.12, sem nova tabela habilitada. Testes próprios em test_project_demand.py e integração API/E2E; resultados finais em CURRENT_STATE/SESSION_HISTORY.
+
+## Circuitos e verificações de proteção — motor0.9.0
+
+Módulos puros circuits.py/protections.py/service_entry.py,sem FastAPI/Pydantic/ORM. Entradas persistidas opcionais `circuits` e `service_entry`; todos os números elétricos usam Decimal/contexto40,sem arredondamento intermediário. Projetos antigos são compatíveis por defaults vazios e não foram regravados. Revalidação identifica motor/registro novo; históricos anteriores permanecem íntegros.
+
+### Circuito monofásico condicionado
+
+Para cargas associadas exclusivamente:resolver potência elétrica unitária pelo motor existente e multiplicar quantidade uma vez. P=ΣP_i;q=Σ[P_i·√(1−FP_i²)/FP_i];S=√(P²+q²);Ib=S/U;FP_eq=P/S. Escopo de cargas indutivas/resistivas senoidais,sem presumir FP,tensão ou configuração. Carga removida/desconhecida,tensão incompatível ou associação em dois circuitos deixa seleção nula; não usar subtotal.
+
+Tabela36Cu/PVC70/2condutores carregados,B1/B2,seções1,5–35mm²; tabela40(Tamb10–60°C,passos5) e42linha1(1–8circuitos homogêneos). Iz=Iz_ref×f_temp×f_grupo. Selecionar menor nominal disponível informado≥Ib e menor seção que atenda mínimos iluminação/força,térmica e queda. I2=In×relação de fabricante informada,nunca presumida. Critérios Ib≤In≤Iz e I2≤1,45Iz apenas com confirmação da condição de duração5.3.4.1;sem ela,aplicaI2≤Iz. PE por tabela58,mesmo material e conduto,fase≤16:PE=S;16<S≤35:PE16. Não verifica PE adiabático/continuidade só pela tabela.
+
+Queda em regime:ΔU=2·L·Ib·[ρ/S·FP_eq+λ·√(1−FP_eq²)],Ldistância de ida,m;ρCu0,0225Ωmm²/m;λ0,00008Ω/m,modeloPrysmian2024§5 aceito explicitamente. Cargas concentradas no fim do percurso,conduto não magnético. Não é cálculo de partida/harmônicas. Queda%=100ΔU/U;limite terminal4%;quando informados origem/queda a montante,o limite útil é mínimo(4%,limite_total−queda_montante). Total5%na entrega BTcomum e7%nos outros três casos específicos de6.2.7.1;sem aplicar majoração opcional de percurso>100m. Sem dados,queda total nula e pendência explícita.
+
+Verificações complementares,com fonte e dados explícitos:energia passante≤k²S² da fase para duração≤5s;k/energia não presumidos e dados precisam corresponder ao In selecionado. Restrição conhecida aumenta seção antes da escolha. TN:Zs×Ia≤U0 e tempo assegurado≤tabela25;U0127V:(0,8s/0,35s),220V:(0,4s/0,2s),situações1/2 doanexoC;semTN-C/exceção5s. TT:RA(incluindoPE)×IΔn[A]≤UL;DRcompatível eULconferidos. DRadicional:≤30mA somente como critério quando exigência/tipo compatível confirmados. Não escolhe tipo de DR,curva,DPS ou seletividade automaticamente.
+
+Exemplos independentes/tests/test_circuits.py:4400W/220V/FP1⇒20A;série16/25/40A,In25A,I2/In1,45,B1/30°C/1grupo⇒4mm²,Iz32A,PE4mm²;30m⇒6,75V.40°C/3grupos:6mm²⇒24,969A(insuficiente para25A);10mm²⇒34,713A;sem confirmação da duração,I2=36,25A exige16mm². Queda a montante4%emBTexige16mm² no exemplo (1,6875V).I²t900000A²s/k115 exige10mm². Limites de igualdade,FP/tensão/potência ausentes,duplicação de associação,curto insuficiente e dados de outro produto têm testes.
+
+### Entrada ESS220/127V
+
+service_entry.py usaNDU0017.0§6.6/tabela16pp.73–75. Somente residência individualESS/SP,rede confirmada,carga instalada completa>0e≤75kW e avaliação declarada das restrições de motores/solda/cargas especiais. Modalidade por carga/tensão:M até8,8kWsemcarga220;B até17,7kWquando necessário;T por demanda atual revisada kVA. Solicitação explícita de fases é verificada,não é aprovação de fornecimento. Demanda ausente/zero/incompleta bloqueiaT.
+
+M/B por intervalos de kW eT por kVA,limite superior inclusivo. Seções mínimas do ramal/aterramento respeitam isolação70/90°C e notas de subterrâneo,sem extrapolarN.A. PVCsubterrâneo bloqueado (notaIX). Valores de disjuntor da faixa são somente referências superiores da tabela,pois a notaVIIexige cálculo pela demanda real. Não substitui queda/curto/aterramento físico,caixa/poste,eletroduto ou aprovação. Testes cobrem fronteiras3,8/6,3/8,8/10,1/12,7/17,7kW,15,2kVA,isolação e distribuidora fora de escopo.

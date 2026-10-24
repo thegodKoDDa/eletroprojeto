@@ -613,6 +613,63 @@ def render_report(project, result, project_version=None):
             + "; "
             + regional["reference"]["section"]
         )
+    if result.get("circuit_results"):
+        doc.section("Estudo de circuitos — seleção condicionada")
+        for circuit in result["circuit_results"]:
+            doc.line(circuit["name"])
+            doc.line(
+                "Ib="
+                + val(circuit["design_current_a"])
+                + " A; In="
+                + val(circuit["breaker_a"])
+                + " A; fase="
+                + val(circuit["phase_section_mm2"])
+                + " mm²; PE="
+                + val(circuit["pe_section_mm2"])
+                + " mm²"
+            )
+            doc.line(
+                "Queda estimada="
+                + val(circuit["voltage_drop_percent"])
+                + "%; total="
+                + val(circuit["total_drop_percent"])
+                + "%"
+            )
+            for check in circuit["pending_checks"]:
+                doc.line("Pendente: " + check)
+            for check in circuit.get("protection_checks", []):
+                doc.line(
+                    check["label"]
+                    + ": "
+                    + (
+                        "atende ao critério informado"
+                        if check["passed"] is True
+                        else "não atende"
+                        if check["passed"] is False
+                        else "pendente"
+                    )
+                    + "; "
+                    + check["reason"]
+                )
+            doc.line(circuit["reference"])
+    entry = result.get("service_entry")
+    if entry is not None:
+        doc.section("Entrada de energia — referência limitada")
+        doc.line(
+            "Categoria=" + (entry["category"] or "Pendente") + "; fases=" + val(entry["phases"])
+        )
+        doc.line(
+            "Mínimos fase/neutro/terra: "
+            + val(entry["minimum_phase_mm2"])
+            + "/"
+            + val(entry["minimum_neutral_mm2"])
+            + "/"
+            + val(entry["minimum_earthing_mm2"])
+            + " mm²"
+        )
+        for check in entry["pending_checks"]:
+            doc.line(check)
+        doc.line(entry["reference"])
     doc.section("Para conversar com a distribuidora")
     doc.line(summary["atendimento_distribuidora"]["situacao"])
     if not summary["atendimento_distribuidora"]["demanda_disponivel"]:

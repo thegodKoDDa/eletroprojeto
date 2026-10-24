@@ -1,10 +1,12 @@
-# EletroProjeto 0.15.0
+# EletroProjeto 0.16.0
+
+Estudo condicionado de circuitos e entrada ESS disponível no projeto,com cálculos no motorPython e resultados/pendências emJSON/PDF. Escopos em [normas](docs/standards.md); não constitui dimensionamento final universal.
 
 Biblioteca técnica local integrada: busca em guias, modelos, diagramas e PDFs, leitura por páginas, originais e rastreabilidade das fontes. A importação não habilita regras de cálculo sem revisão. Inventário e uso em [referências](references/README.md).
 
 NDU-001 7.0 integrada ao cadastro e aos relatórios: ative o painel de demanda, confirme o escopo, classifique cada carga e revise o inventário. No escopo residencial individual Energisa Sul-Sudeste/SP até75kW, d1–d5, o motor calcula a demanda estimada. Qualquer mudança relevante exige nova revisão. Selecionar a concessionária sozinho não habilita resultado. Limites/fontes em [standards](docs/standards.md); não há dimensionamento final.
 
-Desde0.11.0 há recuperação local de rascunhos, resolução guiada de conflitos, sessões de usuário para implantação HTTPS e catálogo persistente versionado. Projetos existentes permanecem locais e sem proprietário até atribuição administrativa explícita. Motor atual0.8.0; demanda exige classificação/revisão explícitas; dimensionamento completo continua pendente.
+Desde0.11.0 há recuperação local de rascunhos, resolução guiada de conflitos, sessões de usuário para implantação HTTPS e catálogo persistente versionado. Projetos existentes permanecem locais e sem proprietário até atribuição administrativa explícita. Motor atual0.9.0; demanda exige classificação/revisão explícitas; dimensionamento completo continua pendente.
 
 Escopo atual definido pelo usuário: uso local. Publicação remota, execução hospedada de CI, impressão física e backup externo ficam fora do trabalho atual. Recursos existentes foram preservados. [Estado atual](docs/CURRENT_STATE.md), [roadmap](docs/roadmap.md) e [segurança](docs/security.md) descrevem funcionamento e limites.
 

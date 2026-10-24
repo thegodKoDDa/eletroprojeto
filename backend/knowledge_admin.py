@@ -153,6 +153,8 @@ def describe(paths, sources):
 def ingest():
     import pymupdf
 
+    if (LIBRARY / "maintenance.json").exists():
+        raise ValueError("Acervo revisado por manutenção; não reimporte o inventário histórico.")
     inventory = load_json(LIBRARY / "inventory.json")
     sources = imported_sources(inventory)
     by_hash, paths = defaultdict(list), defaultdict(list)
@@ -276,8 +278,17 @@ def verify(remove_inputs=False):
     result = load_json(LIBRARY / "import-result.json")
     if not result.get("complete"):
         raise ValueError("Importação não concluída.")
+    maintenance_path = LIBRARY / "maintenance.json"
+    maintenance = load_json(maintenance_path) if maintenance_path.exists() else {}
+    if maintenance and maintenance.get("status") != "complete":
+        raise ValueError("Manutenção do acervo em andamento ou incompleta.")
+    discarded = {item["id"] for item in maintenance.get("discarded", [])}
     for entry in inventory["objects"]:
         path = LIBRARY / "objects" / entry["sha256"]
+        if entry["sha256"] in discarded:
+            if path.exists():
+                raise ValueError("Objeto descartado ainda presente: " + entry["sha256"])
+            continue
         if (
             path.is_symlink()
             or not path.is_file()
@@ -285,16 +296,29 @@ def verify(remove_inputs=False):
             or digest_file(path) != entry["sha256"]
         ):
             raise ValueError("Objeto divergente: " + entry["sha256"])
+    expected_counts = maintenance.get("expected_counts", result)
     with SessionLocal() as session:
         count = session.scalar(select(func.count()).select_from(KnowledgeDocumentRow))
         pages = session.scalar(select(func.count()).select_from(KnowledgePageRow))
         sources = session.scalar(select(func.count()).select_from(KnowledgeSourceRow))
         if (
-            count != result["documents"]
-            or pages != result["pages"]
-            or sources != result.get("sources", 0)
+            count != expected_counts["documents"]
+            or pages != expected_counts["pages"]
+            or sources != expected_counts.get("sources", 0)
         ):
             raise ValueError("Banco divergente do relatório de importação.")
+    if not discarded.issubset({item["sha256"] for item in inventory["objects"]}):
+        raise ValueError("Descarte sem origem no inventário histórico")
+    with SessionLocal() as session:
+        for item in maintenance.get("ocr", []):
+            page = session.get(KnowledgePageRow, (item["document_id"], item["page"]))
+            if (
+                page is None
+                or hashlib.sha256(page.body.encode()).hexdigest() != item["body_sha256"]
+                or page.extraction_method != item["method"]
+                or page.search_text != normalize(page.body)
+            ):
+                raise ValueError("Texto OCR divergente do registro de manutenção")
     expected = {e["origin"]: e for e in inventory["entries"] if "!/" not in e["origin"]}
     for folder in INPUTS:
         if not folder.exists():
@@ -318,7 +342,8 @@ def verify(remove_inputs=False):
         json.dumps(
             dict(
                 verified=True,
-                objects=len(inventory["objects"]),
+                objects=len(inventory["objects"]) - len(discarded),
+                discarded_objects=len(discarded),
                 documents=count,
                 pages=pages,
                 inputs_removed=remove_inputs,

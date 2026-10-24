@@ -164,7 +164,9 @@ def build_summary(project: dict, result: dict, project_version: int | None = Non
         or "Procedimento de demanda desta distribuidora ainda indisponível neste estudo."
     )
     return dict(
-        formato_versao="1.3",
+        formato_versao="1.4",
+        circuitos=result.get("circuit_results", []),
+        entrada_de_energia=result.get("service_entry"),
         emissao=dict(
             data_hora=datetime.now(ZoneInfo("America/Sao_Paulo")).strftime("%d/%m/%Y, %H:%M:%S"),
             fuso="America/Sao_Paulo",

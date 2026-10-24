@@ -181,7 +181,68 @@ class Environment(Schema):
     loads: list[Load] = Field(default_factory=list, max_length=1000)
 
 
+class CircuitProtectionInput(Schema):
+    source: Text | None = None
+    device_rated_a: Positive | None = None
+    cable_k: Positive | None = None
+    let_through_a2s: Nonnegative | None = None
+    short_duration_s: Positive | None = None
+    earthing_system: Literal["unknown", "TN", "TT"] = "unknown"
+    phase_earth_voltage_v: Positive | None = None
+    tn_situation: Literal[1, 2] | None = None
+    fault_loop_ohm: Positive | None = None
+    trip_current_a: Positive | None = None
+    trip_time_s: Positive | None = None
+    tt_ra_ohm: Positive | None = None
+    touch_limit_v: Literal[12, 25, 50] | None = None
+    rcd_sensitivity_ma: Positive | None = None
+    rcd_type_compatible_confirmed: bool = Field(default=False, strict=True)
+    rcd_additional_required: bool | None = Field(default=None, strict=True)
+
+
+class CircuitInput(Schema):
+    protections: CircuitProtectionInput | None = None
+    id: str = Field(default_factory=lambda: str(uuid4()), min_length=1, max_length=200)
+    name: Text = "Novo circuito"
+    purpose: Literal["lighting", "sockets", "dedicated"] = "sockets"
+    load_ids: list[str] = Field(default_factory=list, max_length=1000)
+    method: Literal["unknown", "B1", "B2"] = "unknown"
+    voltage_v: Positive | None = None
+    length_m: Positive | None = None
+    ambient_temperature_c: Literal[10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60] | None = None
+    grouped_circuits: int | None = Field(default=None, ge=1, le=8, strict=True)
+    scope_confirmed: bool = Field(default=False, strict=True)
+    voltage_drop_model_confirmed: bool = Field(default=False, strict=True)
+    overload_duration_confirmed: bool = Field(default=False, strict=True)
+    breaker_ratings_a: list[Positive] = Field(default_factory=list, max_length=50)
+    breaker_i2_factor: Annotated[Decimal, Field(ge=1, le=10, allow_inf_nan=False)] | None = None
+    breaker_source: Text | None = None
+    prospective_short_circuit_ka: Positive | None = None
+    breaking_capacity_ka: Positive | None = None
+    supply_origin: Literal[
+        "unknown", "public_lv_delivery", "own_transformer", "delivery_at_transformer", "generator"
+    ] = "unknown"
+    upstream_drop_percent: Nonnegative | None = None
+
+    @model_validator(mode="after")
+    def distinct_loads(self):
+        if len(set(self.load_ids)) != len(self.load_ids):
+            raise ValueError("Carga duplicada no mesmo circuito")
+        return self
+
+
+class ServiceEntryInput(Schema):
+    network: Literal["unknown", "220_127"] = "unknown"
+    route: Literal["unknown", "embedded", "underground"] = "unknown"
+    insulation: Literal["unknown", "PVC70", "XLPE90"] = "unknown"
+    requested_phases: Literal[1, 2, 3] | None = None
+    scope_confirmed: bool = Field(default=False, strict=True)
+    special_loads_reviewed: bool = Field(default=False, strict=True)
+
+
 class ProjectInput(Schema):
+    service_entry: ServiceEntryInput | None = None
+    circuits: list[CircuitInput] = Field(default_factory=list, max_length=200)
     energisa_demand: ProjectEnergisaDemandSettings | None = None
     analysis_scope: Literal["installed", "apparent", "current", "normative"] = "installed"
     name: Text
@@ -239,6 +300,9 @@ class ProjectInput(Schema):
         loads = [load.id for room in self.environments for load in room.loads]
         if len(set(rooms)) != len(rooms) or len(set(loads)) != len(loads):
             raise ValueError("Identificadores duplicados de ambientes ou cargas")
+        circuits = [c.id for c in self.circuits]
+        if len(circuits) != len(set(circuits)):
+            raise ValueError("Identificadores duplicados de circuitos")
         return self
 
 
@@ -516,7 +580,55 @@ class NormativeEnvironment(Schema):
     reason: str
 
 
+class CircuitProtectionCheck(Schema):
+    code: str
+    label: str
+    value: Decimal | None
+    passed: bool | None
+    reason: str
+
+
+class CircuitResult(Schema):
+    protection_checks: list[CircuitProtectionCheck] = Field(default_factory=list)
+    circuit_id: str
+    name: str
+    status: Status
+    design_current_a: Decimal | None
+    power_factor: Decimal | None
+    breaker_a: Decimal | None
+    conventional_current_a: Decimal | None
+    phase_section_mm2: Decimal | None
+    pe_section_mm2: Decimal | None
+    capacity_a: Decimal | None
+    temperature_factor: Decimal | None
+    grouping_factor: Decimal | None
+    voltage_drop_v: Decimal | None
+    voltage_drop_percent: Decimal | None
+    total_drop_percent: Decimal | None
+    breaking_capacity_ok: bool | None
+    pending_checks: list[str]
+    reference: str
+    reference_urls: list[str] = Field(default_factory=list)
+    limitations: list[str]
+
+
+class ServiceEntryResult(Schema):
+    status: Status
+    category: str | None
+    phases: int | None
+    basis_value: Decimal | None
+    basis_unit: str | None
+    minimum_phase_mm2: Decimal | None
+    minimum_neutral_mm2: Decimal | None
+    minimum_earthing_mm2: Decimal | None
+    band_breaker_references_a: list[Decimal]
+    pending_checks: list[str]
+    reference: str
+
+
 class CalculationResult(Schema):
+    service_entry: ServiceEntryResult | None = None
+    circuit_results: list[CircuitResult] = Field(default_factory=list)
     energisa_demand: ProjectEnergisaDemandResult | None = None
     normative_environments: list[NormativeEnvironment] = Field(default_factory=list)
     normative_capabilities: list[NormativeCapability] = Field(default_factory=list)

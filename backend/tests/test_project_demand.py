@@ -169,7 +169,7 @@ def test_disabled_legacy_project_preserved_and_export_consistent():
     summary = build_summary(data, result)
     assert summary["atendimento_distribuidora"]["demanda_disponivel"]
     assert summary["demanda_revisada"]["inventory_reviewed"]
-    assert summary["formato_versao"] == "1.3"
+    assert summary["formato_versao"] == "1.4"
     # The report exercises long inventory rows and the group memory without recalculation.
     assert render_report(data, result).startswith(b"%PDF")
     restored = ProjectInput.model_validate(data).model_dump(mode="json")

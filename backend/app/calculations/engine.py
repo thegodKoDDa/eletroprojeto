@@ -4,11 +4,13 @@ from dataclasses import asdict
 from decimal import Decimal, localcontext
 
 from ..version import APP_VERSION, ENGINE_VERSION
+from .circuits import calculate_circuits
 from .energy import energy_cost, resolve_energy
 from .equipment import resolve_equipment
 from .power import installed_power, watts_to_kw
 from .project_demand import project_energisa_demand
 from .residential import residential_prevision
+from .service_entry import service_entry
 from .standards import ENERGISA_V7_EVIDENCE, pending_rule
 from .units import va_to_kva
 
@@ -297,5 +299,7 @@ def calculate(project: dict) -> dict:
             }
         from ..validation import notifications
 
+        output["service_entry"] = service_entry(project, total, unknown, regional_demand)
+        output["circuit_results"] = calculate_circuits(project, output["load_results"])
         output["notifications"] = notifications(project, output)
         return output

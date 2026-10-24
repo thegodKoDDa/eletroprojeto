@@ -3,7 +3,7 @@
   "info": {
     "title": "EletroProjeto",
     "description": "Cálculos de cargas residenciais: potência instalada (W/kW), potência aparente (VA/kVA), correntes, conversões, consumo mensal e estimativa de custo pela tarifa informada. Valores padrão são sugestões documentadas; valores manuais válidos são respeitados e recalculados. Previsão residencial de iluminação e TUG disponível por seleção explícita, com escopo e limites documentados. Demanda Energisa residencial parametrizada disponível em escopo limitado e inventário explícito. Demanda automática do cadastro e dimensionamento final permanecem pendentes.",
-    "version": "0.15.0"
+    "version": "0.16.0"
   },
   "paths": {
     "/api/v1/auth/session": {
@@ -1980,6 +1980,24 @@
     "schemas": {
       "CalculationInput": {
         "properties": {
+          "service_entry": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ServiceEntryInput"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "circuits": {
+            "items": {
+              "$ref": "#/components/schemas/CircuitInput"
+            },
+            "type": "array",
+            "maxItems": 200,
+            "title": "Circuits"
+          },
           "energisa_demand": {
             "anyOf": [
               {
@@ -2157,6 +2175,23 @@
       },
       "CalculationResult": {
         "properties": {
+          "service_entry": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ServiceEntryResult"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "circuit_results": {
+            "items": {
+              "$ref": "#/components/schemas/CircuitResult"
+            },
+            "type": "array",
+            "title": "Circuit Results"
+          },
           "energisa_demand": {
             "anyOf": [
               {
@@ -2633,6 +2668,785 @@
           "note"
         ],
         "title": "CatalogItem"
+      },
+      "CircuitInput": {
+        "properties": {
+          "protections": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CircuitProtectionInput"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "id": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Name",
+            "default": "Novo circuito"
+          },
+          "purpose": {
+            "type": "string",
+            "enum": [
+              "lighting",
+              "sockets",
+              "dedicated"
+            ],
+            "title": "Purpose",
+            "default": "sockets"
+          },
+          "load_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 1000,
+            "title": "Load Ids"
+          },
+          "method": {
+            "type": "string",
+            "enum": [
+              "unknown",
+              "B1",
+              "B2"
+            ],
+            "title": "Method",
+            "default": "unknown"
+          },
+          "voltage_v": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Voltage V"
+          },
+          "length_m": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Length M"
+          },
+          "ambient_temperature_c": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "enum": [
+                  10,
+                  15,
+                  20,
+                  25,
+                  30,
+                  35,
+                  40,
+                  45,
+                  50,
+                  55,
+                  60
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ambient Temperature C"
+          },
+          "grouped_circuits": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 8.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Grouped Circuits"
+          },
+          "scope_confirmed": {
+            "type": "boolean",
+            "title": "Scope Confirmed",
+            "default": false
+          },
+          "voltage_drop_model_confirmed": {
+            "type": "boolean",
+            "title": "Voltage Drop Model Confirmed",
+            "default": false
+          },
+          "overload_duration_confirmed": {
+            "type": "boolean",
+            "title": "Overload Duration Confirmed",
+            "default": false
+          },
+          "breaker_ratings_a": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "exclusiveMinimum": 0.0
+                },
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            "type": "array",
+            "maxItems": 50,
+            "title": "Breaker Ratings A"
+          },
+          "breaker_i2_factor": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 10.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Breaker I2 Factor"
+          },
+          "breaker_source": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Breaker Source"
+          },
+          "prospective_short_circuit_ka": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Prospective Short Circuit Ka"
+          },
+          "breaking_capacity_ka": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Breaking Capacity Ka"
+          },
+          "supply_origin": {
+            "type": "string",
+            "enum": [
+              "unknown",
+              "public_lv_delivery",
+              "own_transformer",
+              "delivery_at_transformer",
+              "generator"
+            ],
+            "title": "Supply Origin",
+            "default": "unknown"
+          },
+          "upstream_drop_percent": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Upstream Drop Percent"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "CircuitInput"
+      },
+      "CircuitProtectionCheck": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          },
+          "passed": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Passed"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "code",
+          "label",
+          "value",
+          "passed",
+          "reason"
+        ],
+        "title": "CircuitProtectionCheck"
+      },
+      "CircuitProtectionInput": {
+        "properties": {
+          "source": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source"
+          },
+          "device_rated_a": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Device Rated A"
+          },
+          "cable_k": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cable K"
+          },
+          "let_through_a2s": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Let Through A2S"
+          },
+          "short_duration_s": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Short Duration S"
+          },
+          "earthing_system": {
+            "type": "string",
+            "enum": [
+              "unknown",
+              "TN",
+              "TT"
+            ],
+            "title": "Earthing System",
+            "default": "unknown"
+          },
+          "phase_earth_voltage_v": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phase Earth Voltage V"
+          },
+          "tn_situation": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "enum": [
+                  1,
+                  2
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tn Situation"
+          },
+          "fault_loop_ohm": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fault Loop Ohm"
+          },
+          "trip_current_a": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Trip Current A"
+          },
+          "trip_time_s": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Trip Time S"
+          },
+          "tt_ra_ohm": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tt Ra Ohm"
+          },
+          "touch_limit_v": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "enum": [
+                  12,
+                  25,
+                  50
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Touch Limit V"
+          },
+          "rcd_sensitivity_ma": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rcd Sensitivity Ma"
+          },
+          "rcd_type_compatible_confirmed": {
+            "type": "boolean",
+            "title": "Rcd Type Compatible Confirmed",
+            "default": false
+          },
+          "rcd_additional_required": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rcd Additional Required"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "CircuitProtectionInput"
+      },
+      "CircuitResult": {
+        "properties": {
+          "protection_checks": {
+            "items": {
+              "$ref": "#/components/schemas/CircuitProtectionCheck"
+            },
+            "type": "array",
+            "title": "Protection Checks"
+          },
+          "circuit_id": {
+            "type": "string",
+            "title": "Circuit Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "calculated",
+              "estimated",
+              "pending",
+              "invalid",
+              "out_of_scope",
+              "awaiting_technical_validation"
+            ],
+            "title": "Status"
+          },
+          "design_current_a": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Design Current A"
+          },
+          "power_factor": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Power Factor"
+          },
+          "breaker_a": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Breaker A"
+          },
+          "conventional_current_a": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Conventional Current A"
+          },
+          "phase_section_mm2": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phase Section Mm2"
+          },
+          "pe_section_mm2": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pe Section Mm2"
+          },
+          "capacity_a": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Capacity A"
+          },
+          "temperature_factor": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Temperature Factor"
+          },
+          "grouping_factor": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Grouping Factor"
+          },
+          "voltage_drop_v": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Voltage Drop V"
+          },
+          "voltage_drop_percent": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Voltage Drop Percent"
+          },
+          "total_drop_percent": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total Drop Percent"
+          },
+          "breaking_capacity_ok": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Breaking Capacity Ok"
+          },
+          "pending_checks": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Pending Checks"
+          },
+          "reference": {
+            "type": "string",
+            "title": "Reference"
+          },
+          "reference_urls": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Reference Urls"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Limitations"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "circuit_id",
+          "name",
+          "status",
+          "design_current_a",
+          "power_factor",
+          "breaker_a",
+          "conventional_current_a",
+          "phase_section_mm2",
+          "pe_section_mm2",
+          "capacity_a",
+          "temperature_factor",
+          "grouping_factor",
+          "voltage_drop_v",
+          "voltage_drop_percent",
+          "total_drop_percent",
+          "breaking_capacity_ok",
+          "pending_checks",
+          "reference",
+          "limitations"
+        ],
+        "title": "CircuitResult"
       },
       "Credentials": {
         "properties": {
@@ -3523,12 +4337,34 @@
           "body": {
             "type": "string",
             "title": "Body"
+          },
+          "extraction_method": {
+            "type": "string",
+            "title": "Extraction Method"
+          },
+          "extraction_note": {
+            "type": "string",
+            "title": "Extraction Note"
+          },
+          "ocr_confidence": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ocr Confidence"
           }
         },
         "type": "object",
         "required": [
           "number",
-          "body"
+          "body",
+          "extraction_method",
+          "extraction_note",
+          "ocr_confidence"
         ],
         "title": "KnowledgePage"
       },
@@ -3687,6 +4523,13 @@
             "type": "integer",
             "title": "Sources"
           },
+          "extraction_counts": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Extraction Counts"
+          },
           "kinds": {
             "additionalProperties": {
               "type": "integer"
@@ -3713,6 +4556,7 @@
           "pages",
           "text_pages",
           "sources",
+          "extraction_counts",
           "kinds",
           "review_states"
         ],
@@ -4562,6 +5406,24 @@
       },
       "Project": {
         "properties": {
+          "service_entry": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ServiceEntryInput"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "circuits": {
+            "items": {
+              "$ref": "#/components/schemas/CircuitInput"
+            },
+            "type": "array",
+            "maxItems": 200,
+            "title": "Circuits"
+          },
           "energisa_demand": {
             "anyOf": [
               {
@@ -5082,6 +5944,24 @@
       },
       "ProjectInput": {
         "properties": {
+          "service_entry": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ServiceEntryInput"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "circuits": {
+            "items": {
+              "$ref": "#/components/schemas/CircuitInput"
+            },
+            "type": "array",
+            "maxItems": 200,
+            "title": "Circuits"
+          },
           "energisa_demand": {
             "anyOf": [
               {
@@ -5467,6 +6347,214 @@
           "consulted_on"
         ],
         "title": "ResearchEvidence"
+      },
+      "ServiceEntryInput": {
+        "properties": {
+          "network": {
+            "type": "string",
+            "enum": [
+              "unknown",
+              "220_127"
+            ],
+            "title": "Network",
+            "default": "unknown"
+          },
+          "route": {
+            "type": "string",
+            "enum": [
+              "unknown",
+              "embedded",
+              "underground"
+            ],
+            "title": "Route",
+            "default": "unknown"
+          },
+          "insulation": {
+            "type": "string",
+            "enum": [
+              "unknown",
+              "PVC70",
+              "XLPE90"
+            ],
+            "title": "Insulation",
+            "default": "unknown"
+          },
+          "requested_phases": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "enum": [
+                  1,
+                  2,
+                  3
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Requested Phases"
+          },
+          "scope_confirmed": {
+            "type": "boolean",
+            "title": "Scope Confirmed",
+            "default": false
+          },
+          "special_loads_reviewed": {
+            "type": "boolean",
+            "title": "Special Loads Reviewed",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "ServiceEntryInput"
+      },
+      "ServiceEntryResult": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "calculated",
+              "estimated",
+              "pending",
+              "invalid",
+              "out_of_scope",
+              "awaiting_technical_validation"
+            ],
+            "title": "Status"
+          },
+          "category": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category"
+          },
+          "phases": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phases"
+          },
+          "basis_value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Basis Value"
+          },
+          "basis_unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Basis Unit"
+          },
+          "minimum_phase_mm2": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Minimum Phase Mm2"
+          },
+          "minimum_neutral_mm2": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Minimum Neutral Mm2"
+          },
+          "minimum_earthing_mm2": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Minimum Earthing Mm2"
+          },
+          "band_breaker_references_a": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Band Breaker References A"
+          },
+          "pending_checks": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Pending Checks"
+          },
+          "reference": {
+            "type": "string",
+            "title": "Reference"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "status",
+          "category",
+          "phases",
+          "basis_value",
+          "basis_unit",
+          "minimum_phase_mm2",
+          "minimum_neutral_mm2",
+          "minimum_earthing_mm2",
+          "band_breaker_references_a",
+          "pending_checks",
+          "reference"
+        ],
+        "title": "ServiceEntryResult"
       },
       "TechnicalDocument": {
         "properties": {

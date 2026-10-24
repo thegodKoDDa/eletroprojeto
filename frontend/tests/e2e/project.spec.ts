@@ -730,7 +730,7 @@ test('shower reference variants retain usage through restoration, saving and JSO
   const { readFile } = await import('node:fs/promises');
   const file = await download;
   const report = JSON.parse(await readFile((await file.path())!, 'utf8'));
-  expect(report.formato_versao).toBe('1.3');
+  expect(report.formato_versao).toBe('1.4');
   expect(report.equipamentos[0].potencia_personalizada).toBe(false);
   expect(report.equipamentos[0].horas_por_dia).toBe('0.5');
   expect(Number(report.resultados.consumo_mensal.valor)).toBe(112.5);
