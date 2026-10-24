@@ -118,4 +118,14 @@ test('circuits and entry calculate on server, survive saving and export with pen
   await expect(page.getByTestId('circuit-editor').getByTestId('circuit-result')).toContainText(
     'fase: 4 mm²',
   );
+  page.on('dialog', (dialog) => dialog.accept());
+  await page.getByRole('button', { name: 'Remover carga', exact: true }).click();
+  await expect(page.getByTestId('circuit-result')).toContainText('Associe ao menos uma carga');
+  await expect
+    .poll(
+      async () =>
+        (await (await request.get(`http://127.0.0.1:8010/api/v1/projects/${saved.id}`)).json())
+          .circuits[0].load_ids,
+    )
+    .toEqual([]);
 });

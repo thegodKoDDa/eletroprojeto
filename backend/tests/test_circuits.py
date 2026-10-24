@@ -55,6 +55,37 @@ def test_independent_resistive_example_20a_and_30m():
     assert row["pending_checks"]  # Never final installation approval.
 
 
+def test_mixed_power_factors_use_vector_sum_and_preserve_input():
+    project, resolved = setup_circuit()
+    first = project["environments"][0]["loads"][0]
+    first["power_factor"] = ".6"
+    second = {**deepcopy(first), "id": "l2", "power_factor": "1"}
+    project["environments"][0]["loads"].append(second)
+    project["circuits"][0]["load_ids"].append("l2")
+    resolved = [
+        dict(load_id="l1", electrical_input_w=D(1320)),
+        dict(load_id="l2", electrical_input_w=D(1980)),
+    ]
+    before = deepcopy(project)
+    row = calculate_circuits(project, resolved)[0]
+    # Independent 8–15–17 triangle: P/U=15A; Q/U=8A; S/U=17A.
+    assert row["design_current_a"] == D(17)
+    assert abs(row["power_factor"] * 17 - 15) < D("1e-26")
+    assert project == before
+
+
+def test_capacity_equality_and_just_above_boundary():
+    project, resolved = setup_circuit()
+    project["circuits"][0].update(breaker_ratings_a=["24"], length_m="1")
+    resolved[0]["electrical_input_w"] = D(5280)
+    row = calculate_circuits(project, resolved)[0]
+    assert row["design_current_a"] == row["breaker_a"] == row["capacity_a"] == 24
+    assert row["phase_section_mm2"] == D("2.5")
+    resolved[0]["electrical_input_w"] = D("5280.000001")
+    row = calculate_circuits(project, resolved)[0]
+    assert row["breaker_a"] is None and row["phase_section_mm2"] is None
+
+
 def test_group_temperature_boundary_and_duration_condition():
     project, loads = setup_circuit()
     circuit = project["circuits"][0]

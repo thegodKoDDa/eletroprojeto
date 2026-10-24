@@ -1,6 +1,12 @@
-# Estado atual — EletroProjeto0.16.0 / motor0.9.0
+# Estado atual — EletroProjeto0.17.0 / motor0.9.1
 
-## Entrega e escopo
+## Revisão geral — 24/10/2026
+
+Pedido: revisar frontend/backend/API, corrigir integrações, organizar código e concluir a sessão preservando o produto. Corrigidos digest de relatórios sem circuitos/entrada, desempate de histórico, cabeçalhos HeadersInit, mensagens de validação das exportações, consulta de sessão sem nova tentativa, associações de cargas removidas e estado local das correntes de disjuntores ao carregar outra edição. Inicialização extraída para use-workspace-resources; leitura de último histórico e interpretação de erros centralizadas. Vitest inclui .test.ts e .test.tsx; CI verifica todas as CLI Python próprias.
+
+Novidade integrada: prévia tipada de revalidação na interface e registro explícito em nova versão pela API existente. Exige edição salva, verifica versão e preserva alterações durante a requisição. Circuitos mostram cargas não associadas, bloqueiam novas associações duplicadas, permitem reparar referências ausentes e apresentam capacidade de interrupção, limites e dados de enquadramento de entrada que já vinham da API. Não foram removidas funcionalidades úteis nem ampliadas regras normativas. Coeficientes/fontes mantidos; motor0.9.1 identifica a correção de rastreabilidade. Arquitetura consolidada e documentação de segurança/roadmap atualizada.
+
+## Base funcional e escopo preservados
 
 Ordem24/10/2026: concluir pendências da integração e descartar materiais sem utilidade. Concluídos OCR/triagem e métodos específicos de circuitos/proteções/entrada,com testes. NÃO equivale à revisão técnica humana integral de2mil documentos nem a dimensionamento final universal. Uso local; publicação/impressão física/backup externo seguem fora do escopo. JSON de relatório1.4,schema0007. Sem nova potência de catálogo ou regra presumida.
 
@@ -23,9 +29,11 @@ Migração0007 registra método/nota/confiança. Auditoria `references/library/m
 
 ## Verificações
 
-Testes finais:383backend+85subtestes;103API/auth/bibliotecaPGQA;92frontend,18E2E,1HTTPS,tipos/contratos/lint/formatação/build eRuff aprovados. Migração0007/checkSQLite/PG aprovados. Bibliotecas/objetos/hashesOCR verificados. 13testes de continuidade/backup também aprovados. Windows/leitor de tela/inspeção de instalação real não executados nesta entrega.
+Validação desta revisão:394backend+85subtestes em SQLite e novamente394+85 em PostgreSQLQA;16testes de scripts;103frontend;19E2E completos e1HTTPS com duas contas. Após o último ajuste do estado das correntes,103frontend e2E2E dirigidos(circuitos/revalidação) repetidos e aprovados. Contratos gerados/tipos/lint/formatação/buildwebpack,Ruff de61arquivos Python,checagem adicional TS sem locais/parâmetros não utilizados,migraçõesSQLite/PG e pipcheck aprovados. Npm audit online e pip-audit do requirements.lock sem vulnerabilidades conhecidas. Sem nova dependência de execução ou migração.
 
-Dados:9projetos,30históricos,8revisões técnicas; todas as colunas das três tabelas idênticas ao checkpoint20261024T005824389645Z,com conferência integral após os testes. Nenhum projeto real editado. API0.16.0/motor0.9.0 confirmada por health, PID852766/porta8000;frontend existente PID572313/porta3000 responde HTTP. Estatísticas reais confirmadas:2.082documentos/51.324unidades. Confirmar serviços ao retomar. Checkpoint final por latest.json após commit e restauração real; sem push.
+Dados:12tabelas reais integralmente iguais ao checkpoint20261024T042034311554Z por hash de todas as linhas/colunas ordenadas:9projetos,30históricos,8revisões técnicas e todo o acervo preservados. QA usa bancos isolados; nenhum projeto real alterado. API0.17.0/motor0.9.1 reiniciada normalmente,PID863425/porta8000;frontend existente PID572313/porta3000 preservado e HTTP200 confirmado. Prévia real conferida sem gravação,sem pageerrors ou overflow390px;capturas em/tmp/eletroprojeto-review-real-{desktop,mobile}.png. Confirmar serviços na próxima retomada.
+
+Não repetidos Windows,leitor de tela real,OCR ou inspeção elétrica física;sem teste de carga/implantação remota/pentest. Verificações anteriores do acervo continuam registradas acima. Commit/checkpoint final devem ser consultados em.checkpoints/latest.json,gerado depois do commit e restauração isolada. Sem push,publicação ou exclusão de dados. Próximo passo: manter regressões e ampliar somente os métodos/escopos documentados no roadmap,com fontes e exemplos independentes.
 
 ## Limites que permanecem
 

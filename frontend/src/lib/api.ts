@@ -19,12 +19,41 @@ export class APIError extends Error {
     super(message);
   }
 }
+function headersWith(init?: HeadersInit, defaults?: Record<string, string>) {
+  return { ...defaults, ...Object.fromEntries(new Headers(init)) };
+}
+
+async function responseError(response: Response, fallback: string): Promise<APIError> {
+  const body = await response.json().catch(() => null);
+  const detail = body?.detail;
+  const message = Array.isArray(detail)
+    ? detail
+        .filter((item) => item && typeof item.msg === 'string')
+        .map((item) =>
+          [Array.isArray(item.loc) ? item.loc.slice(1).join('.') : '', item.msg]
+            .filter(Boolean)
+            .join(': '),
+        )
+        .join('\n')
+    : typeof detail === 'string'
+      ? detail
+      : '';
+  return new APIError(
+    message || fallback,
+    response.status,
+    Array.isArray(body?.notifications) ? body.notifications : [],
+  );
+}
+
 async function fetchApi(path: string, init?: RequestInit): Promise<Response> {
   try {
     const response = await fetch(`${API}${path}`, {
       ...init,
       credentials: 'include',
-      headers: { ...init?.headers, ...(csrfToken ? { 'X-CSRF-Token': csrfToken } : {}) },
+      headers: {
+        ...headersWith(init?.headers),
+        ...(csrfToken ? { 'X-CSRF-Token': csrfToken } : {}),
+      },
     });
     if (response.status === 401 && !path.startsWith('/auth/') && typeof window !== 'undefined')
       window.dispatchEvent(new Event('eletroprojeto:session-expired'));
@@ -38,25 +67,10 @@ async function fetchApi(path: string, init?: RequestInit): Promise<Response> {
 export async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetchApi(path, {
     ...init,
-    headers: { 'Content-Type': 'application/json', ...init?.headers },
+    headers: headersWith(init?.headers, { 'content-type': 'application/json' }),
   });
   if (!response.ok) {
-    const body = await response.json().catch(() => null);
-    const detail = body?.detail;
-    throw new APIError(
-      Array.isArray(detail)
-        ? detail
-            .map(
-              (item: { loc: string[]; msg: string }) =>
-                `${item.loc.slice(1).join('.')}: ${item.msg}`,
-            )
-            .join('\n')
-        : typeof detail === 'string'
-          ? detail
-          : `Falha na API (${response.status})`,
-      response.status,
-      body?.notifications ?? [],
-    );
+    throw await responseError(response, `Falha na API (${response.status})`);
   }
   if (response.status === 204) return undefined as T;
   return response.json();
@@ -88,11 +102,9 @@ export async function requestReport(
     body: JSON.stringify(body),
   });
   if (!response.ok) {
-    const error = await response.json().catch(() => null);
-    throw new Error(
-      typeof error?.detail === 'string'
-        ? error.detail
-        : `Não foi possível exportar ${format.toUpperCase()} (${response.status}). Confira os campos.`,
+    throw await responseError(
+      response,
+      `Não foi possível exportar ${format.toUpperCase()} (${response.status}). Confira os campos.`,
     );
   }
   if (!response.headers.get('Content-Type')?.startsWith(`application/${format}`))

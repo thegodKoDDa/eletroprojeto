@@ -1,13 +1,9 @@
 'use client';
 import { useEffect, useState, type ReactNode, type FormEvent } from 'react';
 import { request, setSessionCsrf } from '@/lib/api';
+import type { components } from '@/lib/api.generated';
 
-type Access = {
-  mode: 'local' | 'remote';
-  authenticated: boolean;
-  username: string | null;
-  csrf: string | null;
-};
+type Access = components['schemas']['AccessSession'];
 
 export function AccessBoundary({
   children,
@@ -17,6 +13,7 @@ export function AccessBoundary({
   const [access, setAccess] = useState<Access>();
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
+  const [attempt, setAttempt] = useState(0);
   const remote = process.env.NEXT_PUBLIC_AUTH_MODE === 'remote';
   useEffect(() => {
     if (!remote) return;
@@ -30,10 +27,10 @@ export function AccessBoundary({
       })
       .catch(() => {
         if (!controller.signal.aborted)
-          setError('Não foi possível consultar o acesso. Recarregue para tentar novamente.');
+          setError('Não foi possível consultar o acesso. Tente novamente.');
       });
     return () => controller.abort();
-  }, [remote]);
+  }, [remote, attempt]);
   useEffect(() => {
     if (!remote) return;
     const expired = () => {
@@ -83,7 +80,19 @@ export function AccessBoundary({
         </p>
       )}
       {!access ? (
-        <p role="status">Consultando acesso…</p>
+        error ? (
+          <button
+            className="btn"
+            onClick={() => {
+              setError('');
+              setAttempt((value) => value + 1);
+            }}
+          >
+            Tentar consultar acesso novamente
+          </button>
+        ) : (
+          <p role="status">Consultando acesso…</p>
+        )
       ) : (
         <form onSubmit={login} className="mt-6 grid gap-4">
           <label>

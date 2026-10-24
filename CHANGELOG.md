@@ -1,5 +1,13 @@
 # Histórico de alterações
 
+## 0.17.0 — 24/10/2026
+
+- Corrigida assinatura de exportações para incluir circuitos/proteções/entrada; motor0.9.1,sem nova regra elétrica. Último histórico ordenado por versão,mesmo com timestamps iguais.
+- Prévia tipada de revalidação e registro explícito na interface,com verificação de versão,histórico e valores manuais preservados. Contratos de sessão/login/projeto recalculado gerados.
+- Remoção de cargas limpa vínculos atuais;estudo de circuitos orienta associação exclusiva,repara ausências e mostra capacidade de interrupção/base/faixa/fontes. Nominais sincronizados com edição carregada e vírgula decimal preservada.
+- Inicialização extraída para hook;errosHTTP compartilhados,HeadersInit normalizado e nova tentativa de acesso. Vitest cobre.ts/.tsx;RuffCI inclui todas asCLI. Arquitetura/documentação consolidadas.
+-394backend+85subtestes SQLite e394+85PostgreSQLQA,16scripts,103frontend,19E2E e1HTTPS;tipos/contratos/lint/formatação/build/migrações/Ruff aprovados. Auditorias de dependências sem vulnerabilidades conhecidas. Dados reais integralmente preservados;sem nova migração/dependência,sem push.
+
 ## 0.16.0 — 24/10/2026
 
 - OCR1060páginas:963recuperadas,97vazias identificadas,zero falhas; rastreabilidade método/nota/confiança,migração0007.199livros/relatórios sem aplicação excluídos com auditoria,4,95GB removidos; manuais técnicos preservados.

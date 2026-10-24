@@ -659,6 +659,26 @@ class CalculationResult(Schema):
     energy_by_category_kwh: dict[str, Decimal] = Field(default_factory=dict)
 
 
+class ProjectRevalidation(Schema):
+    project_id: UUID
+    project_version: int
+    previous_registry_version: str
+    current_registry_version: str
+    previous_engine_version: str | None
+    requires_revalidation: bool
+    # Historical snapshots keep their original schema and must remain readable.
+    previous_result: dict | None
+    current_result: CalculationResult
+    notice: str
+
+
+class AccessSession(Schema):
+    mode: Literal["local", "remote"]
+    authenticated: bool
+    username: str | None
+    csrf: str | None
+
+
 class UtilityInfo(Schema):
     id: str
     name: str

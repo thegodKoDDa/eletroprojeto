@@ -10,9 +10,10 @@ import {
   type Environment,
   type Load,
   type CatalogItem,
-  type UtilityInfo,
 } from '@/lib/api';
-import { duplicateEnvironment } from '@/lib/environments';
+import { duplicateEnvironment, removeProjectLoads } from '@/lib/environments';
+import { useWorkspaceResources } from '@/lib/use-workspace-resources';
+import { ProjectRevalidation } from '@/components/projects/ProjectRevalidation';
 import { draftKey, readDrafts, writeDraft, type Draft } from '@/lib/drafts';
 import { AccessBoundary } from '@/components/projects/AccessBoundary';
 import { WorkspaceIcon } from '@/components/layout/WorkspaceIcon';
@@ -79,8 +80,8 @@ export default function Home() {
 function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => Promise<void> }) {
   const [view, setView] = useState<'home' | 'project' | 'library' | 'trash' | 'knowledge'>('home');
   const [hasProject, setHasProject] = useState(false);
-  const [connectionAttempt, setConnectionAttempt] = useState(0);
-  const [initializationIssues, setInitializationIssues] = useState<string[]>([]);
+  const { catalog, utilities, requirements, health, states, initializationIssues, retry } =
+    useWorkspaceResources();
   const [input, setInput] = useState<ProjectInput>(initial);
   const [saved, setSaved] = useState<Project>();
   const inputSignature = useMemo(() => JSON.stringify(input), [input]);
@@ -95,6 +96,10 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
   const [draftIssue, setDraftIssue] = useState('');
   const [conflict, setConflict] = useState<Project>();
   const [conflictPending, setConflictPending] = useState(false);
+  const [review, setReview] = useState<{
+    input: ProjectInput;
+    data: components['schemas']['ProjectRevalidation'];
+  }>();
   useEffect(() => {
     draftSlot.current ??= draftKey(draftOwner);
     let active = true;
@@ -164,7 +169,6 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
     }
   }, [pendingRoom]);
   const [libraryRevision, setLibraryRevision] = useState(0);
-  const [catalog, setCatalog] = useState<Template[]>([]);
   const [message, setMessage] = useState('');
   const [operationIssues, setOperationIssues] = useState<{
     input: ProjectInput;
@@ -175,44 +179,6 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
   const [saving, setSaving] = useState(false);
   const [autosave, setAutosave] = useState(true);
   const autosaveAttempt = useRef('');
-  const [utilities, setUtilities] = useState<UtilityInfo[]>([]);
-  const [requirements, setRequirements] = useState<
-    Record<string, components['schemas']['FieldRequirement']>
-  >({});
-  const [health, setHealth] = useState<components['schemas']['HealthInfo']>();
-  const [states, setStates] = useState<string[]>([]);
-  useEffect(() => {
-    const controller = new AbortController();
-    const failed = (label: string) => {
-      if (!controller.signal.aborted) setInitializationIssues((old) => [...old, label]);
-    };
-    request<components['schemas']['HealthInfo']>('/health', { signal: controller.signal })
-      .then((value) => {
-        if (!controller.signal.aborted) setHealth(value);
-      })
-      .catch(() => {
-        if (!controller.signal.aborted) setHealth(undefined);
-        failed('Não foi possível confirmar a conexão com a API.');
-      });
-    request<Record<string, components['schemas']['FieldRequirement']>>('/validation/requirements', {
-      signal: controller.signal,
-    })
-      .then((value) => {
-        if (!controller.signal.aborted) setRequirements(value);
-      })
-      .catch(() => failed('Requisitos dos formulários indisponíveis.'));
-    request<string[]>('/locations/states', { signal: controller.signal })
-      .then((value) => {
-        if (!controller.signal.aborted) setStates(value);
-      })
-      .catch(() => failed('Lista de estados indisponível.'));
-    request<UtilityInfo[]>('/utilities', { signal: controller.signal })
-      .then((value) => {
-        if (!controller.signal.aborted) setUtilities(value);
-      })
-      .catch(() => failed('Consulta de distribuidoras indisponível.'));
-    return () => controller.abort();
-  }, [connectionAttempt]);
   const [catalogQuery, setCatalogQuery] = useState('');
   const filteredCatalog = selectionCatalog(catalog).filter((item) =>
     searchText(`${item.category} ${item.selection_name ?? item.name}`).includes(
@@ -237,18 +203,6 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
   const refresh = useCallback(async () => {
     setLibraryRevision((value) => value + 1);
   }, []);
-  useEffect(() => {
-    const controller = new AbortController();
-    request<Template[]>('/equipment', { signal: controller.signal })
-      .then((templates) => {
-        if (!controller.signal.aborted) setCatalog(templates);
-      })
-      .catch(() => {
-        if (!controller.signal.aborted)
-          setInitializationIssues((old) => [...old, 'Catálogo de equipamentos indisponível.']);
-      });
-    return () => controller.abort();
-  }, [connectionAttempt]);
   useEffect(() => {
     if (view === 'project') focusField('project.name');
     else document.querySelector<HTMLElement>('[data-workspace-heading]')?.focus();
@@ -574,14 +528,24 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
   }
   async function checkReferences() {
     if (!saved || busy || exporting) return;
+    if (dirty) {
+      setMessage('Salve suas alterações antes de comparar as referências do projeto.');
+      return;
+    }
     setBusy(true);
+    setReview(undefined);
     setMessage('Verificando referências do projeto…');
     const snapshot = currentInput.current;
     try {
-      const check = await request<{ requires_revalidation: boolean }>(
+      const check = await request<components['schemas']['ProjectRevalidation']>(
         `/projects/${saved.id}/revalidation`,
       );
       if (currentInput.current !== snapshot) return;
+      if (check.project_version !== saved.version) {
+        setMessage('O projeto mudou no servidor. Abra a versão atual antes de revisar.');
+        return;
+      }
+      setReview({ input: snapshot, data: check });
       setMessage(
         check.requires_revalidation
           ? 'Referências alteradas: revalidação necessária. Histórico e valores manuais preservados.'
@@ -589,6 +553,26 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
       );
     } catch (e) {
       setMessage((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
+  async function registerRevalidation() {
+    if (!saved || !review || dirty || busy || exporting || input !== review.input) return;
+    const snapshot = currentInput.current;
+    setBusy(true);
+    try {
+      const project = await request<Project>(
+        `/projects/${saved.id}/recalculate?expected_version=${review.data.project_version}`,
+        { method: 'POST' },
+      );
+      setSaved(project);
+      if (currentInput.current === snapshot) setInput(projectInputs(project));
+      setReview(undefined);
+      setMessage('Revalidação registrada em nova versão. Histórico e valores manuais preservados.');
+      await refresh();
+    } catch (reason) {
+      setMessage((reason as Error).message);
     } finally {
       setBusy(false);
     }
@@ -870,9 +854,8 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                   className="btn mt-3"
                   disabled={busy}
                   onClick={() => {
-                    setInitializationIssues([]);
                     setMessage('');
-                    setConnectionAttempt((value) => value + 1);
+                    retry();
                   }}
                 >
                   Tentar conexão novamente
@@ -906,6 +889,16 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
             )}
             {view === 'project' && (
               <>
+                {review?.input === input &&
+                  review.data.project_id === saved?.id &&
+                  review.data.project_version === saved.version && (
+                    <ProjectRevalidation
+                      review={review.data}
+                      busy={busy || exporting}
+                      onRegister={registerRevalidation}
+                      onClose={() => setReview(undefined)}
+                    />
+                  )}
                 <header className="page-header">
                   <div>
                     <p className="eyebrow">PROJETOS / ESTUDO DE CARGAS</p>
@@ -1232,10 +1225,18 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                                   !room.loads?.length ||
                                   window.confirm(`Remover ${room.name} e seus equipamentos?`)
                                 )
-                                  change(
-                                    'environments',
-                                    input.environments?.filter((r) => r.id !== room.id),
-                                  );
+                                  setInput((old) => {
+                                    const updated = removeProjectLoads(
+                                      old,
+                                      (room.loads ?? []).map((load) => load.id!),
+                                    );
+                                    return {
+                                      ...updated,
+                                      environments: updated.environments?.filter(
+                                        (item) => item.id !== room.id,
+                                      ),
+                                    };
+                                  });
                               }}
                             >
                               <WorkspaceIcon name="trash" /> Remover ambiente
@@ -1347,9 +1348,7 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                               stale={stale}
                               onChange={(patch) => updateLoad(room, load.id!, patch)}
                               onRemove={() =>
-                                updateRoom(room.id!, {
-                                  loads: room.loads?.filter((item) => item.id !== load.id),
-                                })
+                                setInput((old) => removeProjectLoads(old, [load.id!]))
                               }
                               onDuplicate={() =>
                                 updateRoom(room.id!, {
@@ -1390,6 +1389,7 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                   onLoadChange={updateLoad}
                 />
                 <CircuitStudy
+                  key={calculationScope}
                   input={input}
                   result={currentResult}
                   onChange={(value) => change('circuits', value)}

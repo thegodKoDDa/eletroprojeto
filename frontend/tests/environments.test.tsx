@@ -1,6 +1,31 @@
 import { expect, test } from 'vitest';
-import { duplicateEnvironment } from '@/lib/environments';
-import type { Environment } from '@/lib/api';
+import { duplicateEnvironment, removeProjectLoads } from '@/lib/environments';
+import type { Environment, ProjectInput } from '@/lib/api';
+
+test('removing loads clears only their circuit associations without mutating snapshots', () => {
+  const input = {
+    name: 'Casa',
+    municipality: 'Cidade',
+    environments: [
+      {
+        name: 'Sala',
+        loads: [
+          { id: 'a', name: 'A' },
+          { id: 'b', name: 'B' },
+        ],
+      },
+    ],
+    circuits: [
+      { id: 'one', load_ids: ['a', 'b'] },
+      { id: 'two', load_ids: ['missing'] },
+    ],
+  } as ProjectInput;
+  const original = structuredClone(input);
+  const next = removeProjectLoads(input, ['a']);
+  expect(next.environments?.[0].loads?.map((load) => load.id)).toEqual(['b']);
+  expect(next.circuits?.map((circuit) => circuit.load_ids)).toEqual([['b'], ['missing']]);
+  expect(input).toEqual(original);
+});
 
 test('copy renews instance identities and preserves independent manual data and snapshots', () => {
   const source = {

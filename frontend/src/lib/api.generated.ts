@@ -660,6 +660,20 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AccessSession */
+        AccessSession: {
+            /**
+             * Mode
+             * @enum {string}
+             */
+            mode: "local" | "remote";
+            /** Authenticated */
+            authenticated: boolean;
+            /** Username */
+            username: string | null;
+            /** Csrf */
+            csrf: string | null;
+        };
         /** CalculationInput */
         CalculationInput: {
             service_entry?: components["schemas"]["ServiceEntryInput"] | null;
@@ -1922,6 +1936,31 @@ export interface components {
             /** Environments */
             environments?: components["schemas"]["Environment"][];
         };
+        /** ProjectRevalidation */
+        ProjectRevalidation: {
+            /**
+             * Project Id
+             * Format: uuid
+             */
+            project_id: string;
+            /** Project Version */
+            project_version: number;
+            /** Previous Registry Version */
+            previous_registry_version: string;
+            /** Current Registry Version */
+            current_registry_version: string;
+            /** Previous Engine Version */
+            previous_engine_version: string | null;
+            /** Requires Revalidation */
+            requires_revalidation: boolean;
+            /** Previous Result */
+            previous_result: {
+                [key: string]: unknown;
+            } | null;
+            current_result: components["schemas"]["CalculationResult"];
+            /** Notice */
+            notice: string;
+        };
         /** ProjectSummary */
         ProjectSummary: {
             /**
@@ -2236,7 +2275,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": unknown;
+                    "application/json": components["schemas"]["AccessSession"];
                 };
             };
             /** @description Entradas inválidas; avisos localizados quando disponíveis. */
@@ -2269,7 +2308,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": unknown;
+                    "application/json": components["schemas"]["AccessSession"];
                 };
             };
             /** @description Entradas inválidas; avisos localizados quando disponíveis. */
@@ -3285,7 +3324,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": unknown;
+                    "application/json": components["schemas"]["ProjectRevalidation"];
                 };
             };
             /** @description Entradas inválidas; avisos localizados quando disponíveis. */
@@ -3318,7 +3357,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": unknown;
+                    "application/json": components["schemas"]["Project"];
                 };
             };
             /** @description Entradas inválidas; avisos localizados quando disponíveis. */

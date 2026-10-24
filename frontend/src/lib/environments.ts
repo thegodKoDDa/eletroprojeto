@@ -1,4 +1,20 @@
-import type { Environment } from './api';
+import type { Environment, ProjectInput } from './api';
+
+/** Remove only instance associations belonging to loads the user removed. */
+export function removeProjectLoads(input: ProjectInput, ids: readonly string[]): ProjectInput {
+  const removed = new Set(ids);
+  return {
+    ...input,
+    environments: input.environments?.map((room) => ({
+      ...room,
+      loads: room.loads?.filter((load) => !removed.has(load.id!)),
+    })),
+    circuits: input.circuits?.map((circuit) => ({
+      ...circuit,
+      load_ids: circuit.load_ids?.filter((id) => !removed.has(id)),
+    })),
+  };
+}
 
 /** Copy project data, preserving catalog snapshots while renewing instance IDs. */
 export function duplicateEnvironment(

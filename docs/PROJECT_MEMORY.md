@@ -2,7 +2,7 @@
 
 ## Estado e escopo vigentes
 
-Aplicação local de estudo/cálculo elétrico residencial, para leigos, estudantes e profissionais. Preservar produto, dados, funcionalidades e identidade visual; não recriar. API/frontend0.16.0, motor0.9.0, JSON de relatório1.4, banco/schema0007. Versões e testes atuais em CURRENT_STATE; roadmap/KNOWN_ISSUES descrevem o que realmente falta. Registros anteriores foram preservados em SESSION_HISTORY, CHANGELOG, Git e checkpoints; não tratar limitações históricas como atuais.
+Aplicação local de estudo/cálculo elétrico residencial, para leigos, estudantes e profissionais. Preservar produto, dados, funcionalidades e identidade visual; não recriar. API/frontend0.17.0, motor0.9.1, JSON de relatório1.4, banco/schema0007. Versões e testes atuais em CURRENT_STATE; roadmap/KNOWN_ISSUES descrevem o que realmente falta. Registros anteriores foram preservados em SESSION_HISTORY, CHANGELOG, Git e checkpoints; não tratar limitações históricas como atuais.
 
 Usuário autorizou otimizar armazenamento, salvamento, continuidade, estrutura e limpeza, mantendo funcionalidade. Publicação/infraestrutura remota/CI hospedado, impressão física e backup externo foram retirados do escopo atual; não voltar a cobrá-los. Manter mecanismos existentes e checkpoints locais. Rotinas de terminal/testes/contratos/migrações/serviços são executadas pelo agente, sem delegar ao usuário. Restrições obrigatórias do ambiente continuam válidas; nunca push sem autorização.
 
@@ -28,6 +28,8 @@ NDU-0017.0 fornecida pelo usuário e rastreada por hash permite demanda d1–d5 
 Biblioteca revisada0.16.0:2.082documentos/51.324unidades/3.788fontes.199objetos sem utilidade excluídos com auditoria;2.196objetos técnicos preservados. OCR963páginas recuperadas e97vazias,zero falhas. Método/nota/confiança separados de validação normativa. Inventário histórico+maintenance.json e banco entram no checkpoint; objetos não. Não reimportar inventário histórico nem limpar library como cache. Critério de descarte restrito,não apagar manuais técnicos por classificação genérica.
 
 Motor0.9.0 integra circuitos B1/B2/Cu/PVC70/2condutores,Iz/temp/agrupamento,sobrecarga,seção/PE,queda estimada e verificações explícitas curto térmico/TN/TT/DR; entradaESS/SP220/127 por tabela16NDU7.0. Tudo condicionado a dados e escopo confirmados,sem dimensionamento final universal/DPS/seletividade/geometria. Circuitos/service_entry entram na assinatura do hook e nos projetos,drafts,autosave eJSON1.4/PDF. Fonte e testes em standards/calculations; método fora de escopo fica pendente. Nenhuma regra inferida doOCR.
+
+Revisão0.17.0:assinatura de exportações inclui circuitos/proteções/entrada;histórico ordenado por versão,sem ambiguidade de timestamps. Prévia de revalidação e registro explícito integrados à interface com contrato gerado,sem alterar entradas manuais. Remoção de cargas limpa associações na edição atual;referências antigas ausentes têm reparo explícito. Estado das correntes acompanha entradas carregadas e muda de escopo ao trocar projeto. Inicialização em use-workspace-resources;errosHTTP compartilhados eHeadersInit normalizado. Vitest cobre.ts e.tsx;arquitetura consolidada. Sem nova regra elétrica,dependência ou migração.
 
 ## Estrutura e continuidade
 

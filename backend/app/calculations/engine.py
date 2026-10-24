@@ -37,6 +37,8 @@ def calculate(project: dict) -> dict:
             "environments",
             "energy_tariff_brl_per_kwh",
             "energisa_demand",
+            "circuits",
+            "service_entry",
         )
     }
     digest = hashlib.sha256(

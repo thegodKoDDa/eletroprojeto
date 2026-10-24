@@ -16,6 +16,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy import select
 
 from .database import LoginAttemptRow, LoginSessionRow, SessionLocal, UserRow, utcnow
+from .schemas import AccessSession
 from .security import cors_origins
 
 router = APIRouter(prefix="/api/v1/auth", tags=["Acesso"])
@@ -95,7 +96,7 @@ class Credentials(BaseModel):
     password: str = Field(min_length=1, max_length=1024)
 
 
-@router.get("/session")
+@router.get("/session", response_model=AccessSession)
 def session_info(request: Request, session=Depends(auth_session)):
     access_mode = mode()
     if access_mode == "local":
@@ -122,7 +123,7 @@ def session_info(request: Request, session=Depends(auth_session)):
         return {"mode": "remote", "authenticated": False, "username": None, "csrf": None}
 
 
-@router.post("/login")
+@router.post("/login", response_model=AccessSession)
 def login(data: Credentials, request: Request, response: Response, session=Depends(auth_session)):
     if mode() != "remote":
         raise HTTPException(409, "Contas são usadas no modo remoto.")

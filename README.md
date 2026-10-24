@@ -1,4 +1,4 @@
-# EletroProjeto 0.16.0
+# EletroProjeto 0.17.0
 
 Estudo condicionado de circuitos e entrada ESS disponível no projeto,com cálculos no motorPython e resultados/pendências emJSON/PDF. Escopos em [normas](docs/standards.md); não constitui dimensionamento final universal.
 
@@ -6,7 +6,7 @@ Biblioteca técnica local integrada: busca em guias, modelos, diagramas e PDFs, 
 
 NDU-001 7.0 integrada ao cadastro e aos relatórios: ative o painel de demanda, confirme o escopo, classifique cada carga e revise o inventário. No escopo residencial individual Energisa Sul-Sudeste/SP até75kW, d1–d5, o motor calcula a demanda estimada. Qualquer mudança relevante exige nova revisão. Selecionar a concessionária sozinho não habilita resultado. Limites/fontes em [standards](docs/standards.md); não há dimensionamento final.
 
-Desde0.11.0 há recuperação local de rascunhos, resolução guiada de conflitos, sessões de usuário para implantação HTTPS e catálogo persistente versionado. Projetos existentes permanecem locais e sem proprietário até atribuição administrativa explícita. Motor atual0.9.0; demanda exige classificação/revisão explícitas; dimensionamento completo continua pendente.
+Desde0.11.0 há recuperação local de rascunhos, resolução guiada de conflitos, sessões de usuário para implantação HTTPS e catálogo persistente versionado. Projetos existentes permanecem locais e sem proprietário até atribuição administrativa explícita. Motor atual0.9.1; demanda exige classificação/revisão explícitas; dimensionamento completo continua pendente.
 
 Escopo atual definido pelo usuário: uso local. Publicação remota, execução hospedada de CI, impressão física e backup externo ficam fora do trabalho atual. Recursos existentes foram preservados. [Estado atual](docs/CURRENT_STATE.md), [roadmap](docs/roadmap.md) e [segurança](docs/security.md) descrevem funcionamento e limites.
 
@@ -37,7 +37,7 @@ npm run types:sync
 npm run dev
 ```
 
-Endereços configurados: [projeto](http://localhost:3000) e [API documentada](http://localhost:8000/docs). Serviços locais verificados na entrega 0.9.0; disponibilidade depende da execução atual.
+Endereços configurados: [projeto](http://localhost:3000) e [API documentada](http://localhost:8000/docs). Serviços locais verificados na entrega 0.17.0; disponibilidade depende da execução atual.
 
 Configurações: `NEXT_PUBLIC_API_URL` em `frontend/.env.local`; `DATABASE_URL`, `CORS_ORIGINS` e `MAX_REQUEST_BYTES` no backend (exemplos em `.env.example`). Banco padrão: `backend/eletroprojeto.db`, com caminho absoluto consistente entre API e Alembic. Não há criação automática de tabelas. O lock Python registra o ambiente testado em Python 3.14; PostgreSQL possui driver e validação local registrados no estado atual.
 
@@ -53,7 +53,7 @@ Configurações: `NEXT_PUBLIC_API_URL` em `frontend/.env.local`; `DATABASE_URL`,
 - Recálculo com debounce de 400 ms, cancelamento e rejeição de respostas obsoletas. Exportações exigem cálculo atual.
 - Tela inicial no Espaço de trabalho: criar projeto, abrir biblioteca ou acessar lixeira. Navegação e ações do projeto no aside; memória de cálculo dentro do projeto. Voltar ao Início mantém a edição nesta aba.
 - Ações agrupadas: Salvar e PDF à vista no aside; demais ações em menu secundário. Resultados em resumo, memória e pendências. Apresentações simples/técnica do mesmo cálculo Python.
-- PDF principal e JSON secundário com resumo de resultados, ambientes/categorias e situação normativa, sem memória ou referências. Arquivos usam o nome do projeto. Conferência de entradas e versões antes de exportar.
+- PDF principal e JSON secundário com resumo de resultados, ambientes/categorias, situação normativa e estudos condicionais com fontes e pendências. Arquivos usam o nome do projeto. Conferência de entradas e versões antes de exportar.
 - Registro técnico versionado; seleção manual de distribuidoras candidatas por UF e comparação/revalidação do histórico. Não há associação municipal verificada nem demanda normativa regional completa.
 
 ## Verificações

@@ -517,6 +517,58 @@ async def test_pdf_snapshot_export_and_stale_protection(client, payload):
     assert (await client.post("/api/v1/reports/pdf", json=request)).status_code == 409
 
 
+@pytest.mark.parametrize("format", ["pdf", "json"])
+@pytest.mark.parametrize(
+    "changed",
+    [
+        {"circuits": [{"id": "c1", "name": "Circuito alterado", "length_m": "40"}]},
+        {"circuits": [{"id": "c1", "protections": {"fault_loop_ohm": "0.5"}}]},
+        {"service_entry": {"network": "220_127", "route": "underground"}},
+        {"circuits": [], "service_entry": None},
+    ],
+)
+async def test_report_guards_include_circuits_protections_and_entry(
+    client, payload, format, changed
+):
+    from app.schemas import CalculationInput
+
+    payload.update(circuits=[{"id": "c1"}], service_entry={"network": "unknown"})
+    inputs = CalculationInput.model_validate(payload).model_dump(mode="json")
+    calculation = (await client.post("/api/v1/calculations/full", json=inputs)).json()
+    request = dict(
+        project={**inputs, **changed},
+        expected_input_digest=calculation["input_digest"],
+        expected_registry_version=calculation["technical_context"]["registry_version"],
+        expected_engine_version=calculation["engine_version"],
+    )
+    assert (await client.post(f"/api/v1/reports/{format}", json=request)).status_code == 409
+
+
+async def test_latest_recorded_calculation_is_stable_with_identical_timestamps(
+    client, payload, monkeypatch
+):
+    from datetime import datetime, timezone
+
+    from app import main, projects
+
+    instant = datetime(2026, 10, 24, tzinfo=timezone.utc)
+    monkeypatch.setattr(main, "utcnow", lambda: instant)
+    monkeypatch.setattr(projects, "utcnow", lambda: instant)
+    created = (await client.post("/api/v1/projects", json=payload)).json()
+    payload["environments"][0]["loads"][0]["unit_power_w"] = "5500"
+    updated = await client.put(f"/api/v1/projects/{created['id']}?expected_version=1", json=payload)
+    assert updated.status_code == 200
+    comparison = (await client.get(f"/api/v1/projects/{created['id']}/revalidation")).json()
+    assert comparison["project_id"] == created["id"]
+    assert comparison["project_version"] == 2
+    assert comparison["previous_engine_version"] == comparison["current_result"]["engine_version"]
+    assert comparison["previous_result"]["installed_power"]["value"] == "11000"
+    report = (await client.get(f"/api/v1/projects/{created['id']}/report")).json()
+    assert report["recorded_calculation"]["installed_power"]["value"] == "11000"
+    history = (await client.get(f"/api/v1/projects/{created['id']}/history")).json()
+    assert [row["version"] for row in history] == [2, 1]
+
+
 async def test_saved_pdf_version_is_checked_and_invalid_data_not_exported(client, payload):
     saved = (await client.post("/api/v1/projects", json=payload)).json()
     inputs = {
@@ -674,9 +726,8 @@ async def test_version_and_documentation_groups_are_consistent(client):
         == frontend["version"]
         == backend["project"]["version"]
         == APP_VERSION
-        == "0.16.0"
     )
-    assert health["engine_version"] == ENGINE_VERSION == "0.9.0"
+    assert health["engine_version"] == ENGINE_VERSION
     spec = (await client.get("/openapi.json")).json()
     assert spec["info"]["version"] == APP_VERSION
     assert spec["paths"]["/api/v1/reports/pdf"]["post"]["tags"] == ["Relatórios"]

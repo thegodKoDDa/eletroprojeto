@@ -53,3 +53,21 @@ test('remote login gates the editor, sends cookies/CSRF and logout unmounts acco
   await screen.findByRole('button', { name: 'Entrar' });
   expect(localStorage.length).toBe(0);
 });
+
+test('a failed session lookup can be retried without reloading', async () => {
+  vi.stubEnv('NEXT_PUBLIC_AUTH_MODE', 'remote');
+  const fetch = vi
+    .fn()
+    .mockRejectedValueOnce(new TypeError('network'))
+    .mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({ mode: 'remote', authenticated: false, username: null, csrf: null }),
+      ),
+    );
+  vi.stubGlobal('fetch', fetch);
+  render(<AccessBoundary>{() => <p>Editor</p>}</AccessBoundary>);
+  fireEvent.click(await screen.findByRole('button', { name: 'Tentar consultar acesso novamente' }));
+  await screen.findByRole('button', { name: 'Entrar' });
+  expect(fetch).toHaveBeenCalledTimes(2);
+  expect(screen.queryByRole('alert')).toBeNull();
+});

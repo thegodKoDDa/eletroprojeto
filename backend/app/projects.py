@@ -26,6 +26,16 @@ def brasilia_time(value):
     return aware.astimezone(ZoneInfo("America/Sao_Paulo"))
 
 
+def latest_history(session: Session, project_id: str):
+    """Stable ordering also covers histories written at the same instant."""
+    return session.scalar(
+        select(HistoryRow)
+        .where(HistoryRow.project_id == project_id)
+        .order_by(HistoryRow.project_version.desc(), HistoryRow.created_at.desc())
+        .limit(1)
+    )
+
+
 def view(row: ProjectRow) -> Project:
     return Project(
         **row.payload,

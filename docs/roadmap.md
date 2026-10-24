@@ -1,4 +1,4 @@
-# Roadmap — uso local, 0.16.0
+# Roadmap — uso local, 0.17.0
 
 Decisão do usuário em 23/10/2026: operar localmente. Publicação/infraestrutura remota, execução hospedada de CI, impressão física e backup externo foram retirados do escopo atual; não tratá-los como bloqueios ou cobrar recursos para essas tarefas. Código funcional de autenticação, CI e backup já existente fica preservado para evitar regressões.
 
@@ -7,6 +7,8 @@ Decisão do usuário em 23/10/2026: operar localmente. Publicação/infraestrutu
 0.15.0: biblioteca técnica pesquisável,guias/modelos/diagramas/PDFs e fontes locais persistidas. Revisão técnica específica ainda exigida para habilitar regras; importar não conclui dimensionamento nem cobertura territorial.
 
 0.16.0:OCR/triagem,estudo limitado de circuitos Cu/PVC/B1/B2 e verificações de proteção com dados explícitos;enquadramentoESS220/127Vtabela16. Métodos e campos novos não concluem dimensionamento final universal; ampliar somente com fontes/condições/testes.
+
+0.17.0: revisão de integração, assinatura completa de exportações, contratos de acesso/revalidação, prévia e registro explícito de revalidação na interface, limpeza de associações removidas e inicialização extraída para hook próprio. Sem ampliar regras normativas.
 
 ## Disponível
 
@@ -20,7 +22,7 @@ Decisão do usuário em 23/10/2026: operar localmente. Publicação/infraestrutu
 
 1. Manter regressões de cálculos, cadastro, relatórios, acessibilidade automática, contratos, tipos, lint e build conforme as mudanças.
 2. Ampliar a cobertura de demanda somente com revisão específica de grupos especiais, centrais de ar-condicionado e demais exceções. Não aplicar fatores de outra distribuidora.
-3. Implementar circuitos, condutores, disjuntores/proteções, queda de tensão e padrão de entrada após validação das respectivas regras, limites e exemplos.
+3. Ampliar os estudos de circuitos, condutores/proteções e entrada além do subconjunto entregue em0.16.0, somente após conferir fontes, condições, limites e exemplos.
 4. Implementar análise física de localização/distribuição de pontos e restrições da instalação; quantidades previstas não validam posição em planta.
 5. Ampliar associação territorial oficial sem inferir concessionária por município ou endereço incompleto.
 6. Melhorar revalidação seletiva de projetos afetados por mudanças normativas e desempenho em grandes acervos quando necessário.

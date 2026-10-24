@@ -27,6 +27,7 @@ from .projects import (
     ProjectValidationError,
     brasilia_time,
     find,
+    latest_history,
     listing_query,
     record,
     reject_invalid_draft,
@@ -46,6 +47,7 @@ from .schemas import (
     PDFExportInput,
     Project,
     ProjectInput,
+    ProjectRevalidation,
     ProjectSummary,
     TechnicalRules,
     UtilityInfo,
@@ -362,12 +364,7 @@ def standards():
 @app.get(PREFIX + "/projects/{project_id}/report", tags=["Projetos"])
 def report(project_id: UUID, session: Session = Depends(get_session)):
     row = find(session, project_id)
-    latest = session.scalar(
-        select(HistoryRow)
-        .where(HistoryRow.project_id == row.id)
-        .order_by(HistoryRow.created_at.desc())
-        .limit(1)
-    )
+    latest = latest_history(session, row.id)
     return {
         "project": view(row),
         "calculation": CalculationResult.model_validate(
@@ -387,7 +384,7 @@ def history(project_id: UUID, session: Session = Depends(get_session)):
     rows = session.scalars(
         select(HistoryRow)
         .where(HistoryRow.project_id == str(project_id))
-        .order_by(HistoryRow.created_at.desc())
+        .order_by(HistoryRow.project_version.desc(), HistoryRow.created_at.desc())
     )
     return [
         {
@@ -442,17 +439,19 @@ def revision(revision_id: str, session: Session = Depends(get_session)):
     return {"id": row.id, "snapshot": row.payload, "status": row.review_status}
 
 
-@app.get(PREFIX + "/projects/{project_id}/revalidation", tags=["Projetos"])
+@app.get(
+    PREFIX + "/projects/{project_id}/revalidation",
+    tags=["Projetos"],
+    response_model=ProjectRevalidation,
+)
 def revalidation(project_id: UUID, session: Session = Depends(get_session)):
     row = find(session, project_id)
     current = registry_version()
-    latest = session.scalar(
-        select(HistoryRow)
-        .where(HistoryRow.project_id == row.id)
-        .order_by(HistoryRow.created_at.desc())
-        .limit(1)
-    )
+    latest = latest_history(session, row.id)
     return {
+        "project_id": row.id,
+        "project_version": row.version,
+        "previous_engine_version": latest.result.get("engine_version") if latest else None,
         "previous_registry_version": row.standards_version,
         "current_registry_version": current,
         "requires_revalidation": row.standards_version != current
@@ -465,7 +464,7 @@ def revalidation(project_id: UUID, session: Session = Depends(get_session)):
     }
 
 
-@app.post(PREFIX + "/projects/{project_id}/recalculate", tags=["Projetos"])
+@app.post(PREFIX + "/projects/{project_id}/recalculate", tags=["Projetos"], response_model=Project)
 def recalculate(
     project_id: UUID, expected_version: int = Query(ge=1), session: Session = Depends(get_session)
 ):

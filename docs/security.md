@@ -1,6 +1,6 @@
-# Segurança e recuperação — 0.3.0
+# Segurança e recuperação — 0.17.0
 
-## Revisão em andamento — 23/10/2026
+## Acesso implementado — revisão 24/10/2026
 
 Implementação nova em `app/auth.py` e migração0004: modo local restrito a loopback e projetos sem proprietário; modo remoto exige HTTPS, contas provisionadas localmente (sem inscrição pública), Argon2 via pwdlib e sessões opacas com hash SHA256 no banco, validade de oito horas e revogação no logout/troca de senha/desativação. Cookie Secure/HttpOnly/SameSite Strict; operações mutáveis exigem Origin permitido e token CSRF em memória. CORS explícito aceita credenciais somente nas origens configuradas. Não usar o modo local atrás de proxy público.
 
@@ -29,11 +29,11 @@ O utilitário `backend/technical_admin.py backup` usa a API de backup SQLite e v
 
 ## Limites reais
 
-Uso local, sem contas ou autorização por proprietário. Não publicar a API abertamente como aplicação multiusuário. Faltam autenticação, autorização, TLS/ingress, rate limiting compartilhado, política de backup durável e monitoramento operacional. Não foi introduzida uma chave fixa ou mecanismo improvisado para simular autenticação.
+Operação atual local; autenticação remota e isolamento por proprietário já existem. A publicação futura exige configuração de TLS/proxy confiável, rate limiting no ingresso, política de backup durável e monitoramento operacional. Cadastro público, recuperação de senha por e-mail e compartilhamento por equipe não estão implementados. Não publicar o modo local atrás de proxy.
 
-O limite de bytes reduz risco de grandes corpos; não substitui limites de concorrência, timeout e recursos do servidor. A listagem atual ainda retorna payloads completos e precisa de paginação/resumos para grandes acervos. Exclusão lógica não constitui apagamento definitivo de dados.
+O limite de bytes reduz risco de grandes corpos; não substitui limites de concorrência, timeout e recursos do servidor. A interface usa a listagem paginada de resumos; a rota legada completa permanece disponível. A busca literal da biblioteca ainda não possui índice especializado de texto. Exclusão lógica não constitui apagamento definitivo de dados.
 
-Auditoria npm offline executada com resultado zero no relatório local; isso não confirma ausência de vulnerabilidades atuais sem consulta atualizada à base de avisos. Auditoria online e Python devem ser registradas separadamente, conforme disponibilidade das fontes.
+Em24/10/2026, npm audit online e pip-audit sobre requirements.lock não apontaram vulnerabilidades conhecidas. Isso não é pentest nem garantia de ausência de vulnerabilidades futuras; verificações efetivas da entrega em CURRENT_STATE.
 
 ## Checkpoints privados — 22/10/2026
 

@@ -35,8 +35,8 @@ jobs:
       - run: python -m venv backend/.venv
       - run: ${{ matrix.python }} -m pip install -r backend/requirements.lock
       - run: ${{ matrix.python }} -m pip check
-      - run: ${{ matrix.python }} -m ruff check backend/app backend/tests backend/accounts.py backend/catalog_admin.py scripts
-      - run: ${{ matrix.python }} -m ruff format --check backend/app backend/tests backend/accounts.py backend/catalog_admin.py scripts
+      - run: ${{ matrix.python }} -m ruff check backend/app backend/tests backend/accounts.py backend/catalog_admin.py backend/export_openapi.py backend/technical_admin.py backend/knowledge_admin.py backend/knowledge_maintenance.py scripts
+      - run: ${{ matrix.python }} -m ruff format --check backend/app backend/tests backend/accounts.py backend/catalog_admin.py backend/export_openapi.py backend/technical_admin.py backend/knowledge_admin.py backend/knowledge_maintenance.py scripts
       - run: ${{ matrix.python }} scripts/check_migrations.py
       - run: ${{ matrix.python }} -m pytest -q backend/tests
         env:

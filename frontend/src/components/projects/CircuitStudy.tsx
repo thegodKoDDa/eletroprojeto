@@ -37,15 +37,18 @@ function Ratings({
   value: (number | string)[];
   onChange: (value: (number | string)[]) => void;
 }) {
-  const [text, setText] = useState(value.join('; '));
+  const signature = JSON.stringify(value);
+  const [draft, setDraft] = useState({ signature, text: value.join('; ') });
+  const text = draft.signature === signature ? draft.text : value.join('; ');
   const parts = text
     .split(';')
     .map((part) => part.trim())
     .filter(Boolean);
-  const invalid = parts.some(
-    (part) =>
-      !Number.isFinite(Number(part.replace(',', '.'))) || Number(part.replace(',', '.')) <= 0,
-  );
+  const valid = (part: string) =>
+    /^\+?(?:\d+(?:[.,]\d*)?|[.,]\d+)(?:e[+-]?\d+)?$/i.test(part) &&
+    Number.isFinite(Number(part.replace(',', '.'))) &&
+    Number(part.replace(',', '.')) > 0;
+  const invalid = parts.some((part) => !valid(part));
   return (
     <label>
       Correntes nominais disponíveis (A; separe por ;)
@@ -55,20 +58,13 @@ function Ratings({
         placeholder="Valores dos produtos consultados"
         onChange={(event) => {
           const raw = event.target.value;
-          setText(raw);
           const items = raw
             .split(';')
             .map((part) => part.trim())
             .filter(Boolean);
-          onChange(
-            items.every(
-              (item) =>
-                Number.isFinite(Number(item.replace(',', '.'))) &&
-                Number(item.replace(',', '.')) > 0,
-            )
-              ? items.map((item) => item.replace(',', '.'))
-              : [],
-          );
+          const ratings = items.every(valid) ? items.map((item) => item.replace(',', '.')) : [];
+          setDraft({ signature: JSON.stringify(ratings), text: raw });
+          onChange(ratings);
         }}
       />
       {invalid && (
@@ -221,11 +217,20 @@ export function CircuitStudy({
   const loads = (input.environments ?? []).flatMap((room) =>
     (room.loads ?? [])
       .filter((load) => !!load.id)
-      .map((load) => ({ id: load.id!, name: `${room.name} · ${load.name}` })),
+      .map((load) => ({
+        id: load.id!,
+        name: `${room.name} · ${load.name} · ${load.quantity ?? 1} unidade(s)`,
+      })),
   );
   const edit = (index: number, patch: Partial<Circuit>) =>
     onChange(circuits.map((c, i) => (i === index ? { ...c, ...patch } : c)));
   const entry = input.service_entry;
+  const assigned = new Map<string, string[]>();
+  for (const circuit of circuits)
+    for (const id of circuit.load_ids ?? [])
+      assigned.set(id, [...(assigned.get(id) ?? []), circuit.name ?? 'Circuito sem nome']);
+  const loadIds = new Set(loads.map((load) => load.id));
+  const unassigned = loads.filter((load) => !assigned.has(load.id));
   const entryResult = result?.service_entry;
   const patchEntry = (patch: Partial<Entry>) => onEntryChange({ ...entry, ...patch } as Entry);
   return (
@@ -243,6 +248,7 @@ export function CircuitStudy({
         </p>
         <button
           className="btn mt-3"
+          disabled={circuits.length >= 200}
           onClick={() =>
             onChange([
               ...circuits,
@@ -263,9 +269,19 @@ export function CircuitStudy({
         >
           Adicionar circuito
         </button>
+        {circuits.length > 0 && (
+          <p className="mt-3 text-xs muted" role="status">
+            {loads.length === 0
+              ? 'Cadastre cargas para associar aos circuitos.'
+              : unassigned.length > 0
+                ? `${unassigned.length} carga(s) ainda sem circuito. A associação é manual; não confirma a distribuição física da instalação.`
+                : 'Todas as cargas cadastradas estão associadas. Confira as pendências de cada circuito.'}
+          </p>
+        )}
         <div className="mt-3 space-y-3">
           {circuits.map((c, index) => {
             const row = result?.circuit_results?.find((item) => item.circuit_id === c.id);
+            const missingIds = (c.load_ids ?? []).filter((id) => !loadIds.has(id));
             return (
               <details key={c.id} className="equipment-card" data-testid="circuit-editor" open>
                 <summary>
@@ -400,6 +416,7 @@ export function CircuitStudy({
                         <input
                           type="checkbox"
                           checked={c.load_ids?.includes(load.id) ?? false}
+                          disabled={!c.load_ids?.includes(load.id) && assigned.has(load.id)}
                           onChange={(event) =>
                             edit(index, {
                               load_ids: event.target.checked
@@ -409,11 +426,33 @@ export function CircuitStudy({
                           }
                         />
                         {load.name}
+                        {!c.load_ids?.includes(load.id) && assigned.has(load.id) && (
+                          <span className="text-xs muted">
+                            {' '}
+                            — associado a {assigned.get(load.id)!.join(', ')}
+                          </span>
+                        )}
                       </label>
                     ))}
                   </div>
                   {loads.length === 0 && (
                     <p className="text-xs muted">Cadastre os equipamentos primeiro.</p>
+                  )}
+                  {missingIds.length > 0 && (
+                    <div className="mt-3 text-xs">
+                      <p>
+                        Este circuito aponta para {missingIds.length} carga(s) que não existem mais
+                        no projeto.
+                      </p>
+                      <button
+                        className="btn mt-2"
+                        onClick={() =>
+                          edit(index, { load_ids: c.load_ids?.filter((id) => loadIds.has(id)) })
+                        }
+                      >
+                        Remover associações de cargas ausentes
+                      </button>
+                    </div>
                   )}
                 </fieldset>
                 <div className="mt-3 space-y-2 text-xs">
@@ -464,6 +503,17 @@ export function CircuitStudy({
                     {format(row?.voltage_drop_percent)}% · queda total:{' '}
                     {format(row?.total_drop_percent)}%
                   </p>
+                  {row && (
+                    <p className="mt-2 text-xs muted">
+                      Capacidade de interrupção:{' '}
+                      {row.breaking_capacity_ok === true
+                        ? 'atende ao curto presumido informado'
+                        : row.breaking_capacity_ok === false
+                          ? 'não atende ao curto presumido informado'
+                          : 'pendente de dados'}
+                      .
+                    </p>
+                  )}
                   <ul className="mt-2 space-y-1 text-xs muted">
                     {row?.pending_checks.map((message) => (
                       <li key={message}>{message}</li>
@@ -484,6 +534,11 @@ export function CircuitStudy({
                     <details className="mt-3">
                       <summary>Fontes e limites do método</summary>
                       <p className="mt-2 text-xs muted">{row.reference}</p>
+                      <ul className="mt-2 space-y-1 text-xs muted">
+                        {row.limitations.map((limitation) => (
+                          <li key={limitation}>{limitation}</li>
+                        ))}
+                      </ul>
                       <ul className="mt-2 space-y-2 text-xs break-words">
                         {row.reference_urls?.map(
                           (url) =>
@@ -630,11 +685,25 @@ export function CircuitStudy({
                 {format(entryResult?.minimum_neutral_mm2)} /{' '}
                 {format(entryResult?.minimum_earthing_mm2)} mm²
               </p>
+              {entryResult?.basis_value != null && (
+                <p className="mt-2 text-xs muted">
+                  Base do enquadramento: {format(entryResult.basis_value)} {entryResult.basis_unit}.{' '}
+                  Disjuntores no limite superior da faixa:{' '}
+                  {entryResult.band_breaker_references_a.map((value) => format(value)).join(' / ')}{' '}
+                  A. São referências da tabela, não uma proteção escolhida para o projeto.
+                </p>
+              )}
               <ul className="mt-2 space-y-1 text-xs muted">
                 {entryResult?.pending_checks.map((message) => (
                   <li key={message}>{message}</li>
                 ))}
               </ul>
+              {entryResult && (
+                <details className="mt-3 text-xs muted">
+                  <summary>Fonte do enquadramento</summary>
+                  <p className="mt-2 break-words">{entryResult.reference}</p>
+                </details>
+              )}
             </div>
             <button className="btn subtle mt-3" onClick={() => onEntryChange(null)}>
               Remover estudo da entrada

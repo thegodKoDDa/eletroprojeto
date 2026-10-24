@@ -3,7 +3,7 @@
   "info": {
     "title": "EletroProjeto",
     "description": "Cálculos de cargas residenciais: potência instalada (W/kW), potência aparente (VA/kVA), correntes, conversões, consumo mensal e estimativa de custo pela tarifa informada. Valores padrão são sugestões documentadas; valores manuais válidos são respeitados e recalculados. Previsão residencial de iluminação e TUG disponível por seleção explícita, com escopo e limites documentados. Demanda Energisa residencial parametrizada disponível em escopo limitado e inventário explícito. Demanda automática do cadastro e dimensionamento final permanecem pendentes.",
-    "version": "0.16.0"
+    "version": "0.17.0"
   },
   "paths": {
     "/api/v1/auth/session": {
@@ -18,7 +18,9 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/AccessSession"
+                }
               }
             }
           },
@@ -57,7 +59,9 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/AccessSession"
+                }
               }
             }
           },
@@ -1651,7 +1655,9 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectRevalidation"
+                }
               }
             }
           },
@@ -1702,7 +1708,9 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/Project"
+                }
               }
             }
           },
@@ -1978,6 +1986,53 @@
   },
   "components": {
     "schemas": {
+      "AccessSession": {
+        "properties": {
+          "mode": {
+            "type": "string",
+            "enum": [
+              "local",
+              "remote"
+            ],
+            "title": "Mode"
+          },
+          "authenticated": {
+            "type": "boolean",
+            "title": "Authenticated"
+          },
+          "username": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Username"
+          },
+          "csrf": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Csrf"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "mode",
+          "authenticated",
+          "username",
+          "csrf"
+        ],
+        "title": "AccessSession"
+      },
       "CalculationInput": {
         "properties": {
           "service_entry": {
@@ -6140,6 +6195,75 @@
           "municipality"
         ],
         "title": "ProjectInput"
+      },
+      "ProjectRevalidation": {
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Project Id"
+          },
+          "project_version": {
+            "type": "integer",
+            "title": "Project Version"
+          },
+          "previous_registry_version": {
+            "type": "string",
+            "title": "Previous Registry Version"
+          },
+          "current_registry_version": {
+            "type": "string",
+            "title": "Current Registry Version"
+          },
+          "previous_engine_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Previous Engine Version"
+          },
+          "requires_revalidation": {
+            "type": "boolean",
+            "title": "Requires Revalidation"
+          },
+          "previous_result": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Previous Result"
+          },
+          "current_result": {
+            "$ref": "#/components/schemas/CalculationResult"
+          },
+          "notice": {
+            "type": "string",
+            "title": "Notice"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "project_id",
+          "project_version",
+          "previous_registry_version",
+          "current_registry_version",
+          "previous_engine_version",
+          "requires_revalidation",
+          "previous_result",
+          "current_result",
+          "notice"
+        ],
+        "title": "ProjectRevalidation"
       },
       "ProjectSummary": {
         "properties": {
