@@ -178,7 +178,12 @@ export function EquipmentEditor({
   }
   const specific = load.equipment_type;
   return (
-    <div className="equipment-card" data-testid="equipment-editor">
+    <div
+      className="equipment-card"
+      data-testid="equipment-editor"
+      role="group"
+      aria-label={`Equipamento: ${load.name}`}
+    >
       <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-6" data-testid="equipment-essential">
         <label className="sm:col-span-2">
           Equipamento

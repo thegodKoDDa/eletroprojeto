@@ -304,3 +304,62 @@ def test_engine_json_and_pdf_include_circuits_without_unknown_as_zero():
     assert "Estudo de circuitos" in text
     assert "fase=4" in text
     assert "None" not in text
+
+
+@pytest.mark.parametrize(
+    "method,section,capacity,pe",
+    [
+        ("B1", "50", "151", "25"),
+        ("B1", "70", "192", "35"),
+        ("B1", "95", "232", "50"),
+        ("B2", "50", "133", "25"),
+        ("B2", "70", "168", "35"),
+        ("B2", "95", "201", "50"),
+    ],
+)
+def test_extended_capacity_exact_limit_and_protective_conductor(method, section, capacity, pe):
+    # Manual Prysmian2010 p52, table2 B1/B2 two loaded conductors.
+    # At In=Iz and I2=1.45In, the exact capacity must be accepted.
+    # Table58: S>35 requires PE>=S/2; 95/2=47.5 -> next standard size50.
+    project, resolved = setup_circuit()
+    circuit = project["circuits"][0]
+    circuit.update(method=method, breaker_ratings_a=[capacity], length_m="1")
+    resolved[0]["electrical_input_w"] = D(capacity) * D(220)
+    before = deepcopy(project)
+    row = calculate_circuits(project, resolved)[0]
+    assert row["phase_section_mm2"] == D(section)
+    assert row["capacity_a"] == D(capacity)
+    assert row["pe_section_mm2"] == D(pe)
+    assert project == before
+    # Just above each capacity, the smaller section cannot be selected.
+    above = D(capacity) + D(".000001")
+    circuit["breaker_ratings_a"] = [str(above)]
+    resolved[0]["electrical_input_w"] = above * D(220)
+    row = calculate_circuits(project, resolved)[0]
+    if section == "95":
+        assert row["phase_section_mm2"] is None
+        assert row["pe_section_mm2"] is None
+        assert any("até95mm²" in message for message in row["pending_checks"])
+    else:
+        assert row["phase_section_mm2"] > D(section)
+
+
+def test_extended_capacity_still_applies_grouping_temperature_and_unknowns():
+    project, resolved = setup_circuit()
+    circuit = project["circuits"][0]
+    # B1 50:151*.87*.8=105.096<110; 70:192*.87*.8=133.632A.
+    circuit.update(
+        method="B1",
+        breaker_ratings_a=["110"],
+        length_m="1",
+        ambient_temperature_c=40,
+        grouped_circuits=2,
+    )
+    resolved[0]["electrical_input_w"] = D(24200)
+    row = calculate_circuits(project, resolved)[0]
+    assert row["phase_section_mm2"] == D(70)
+    assert row["capacity_a"] == D("133.632")
+    resolved[0]["electrical_input_w"] = None
+    row = calculate_circuits(project, resolved)[0]
+    assert row["phase_section_mm2"] is None
+    assert row["pe_section_mm2"] is None

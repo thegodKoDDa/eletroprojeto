@@ -11,6 +11,8 @@ export function EnergyFields({
   onChange: (patch: Partial<TechnicalParameters>) => void;
 }) {
   const params: Partial<TechnicalParameters> = load.parameters ?? {};
+  const descriptionId = `load.${load.id}.energy-description`;
+  const priorityId = `load.${load.id}.energy-priority`;
   const stated = params.monthly_energy_kwh != null;
   // Invalid dormant values must remain correctable even when stated energy takes priority.
   const hoursValid =
@@ -26,7 +28,7 @@ export function EnergyFields({
   return (
     <details data-testid="equipment-energy">
       <summary className="cursor-pointer text-xs muted">Consumo mensal (opcional)</summary>
-      <p className="mt-2 text-xs muted">
+      <p id={descriptionId} className="mt-2 text-xs muted">
         Informe o consumo mensal por unidade da etiqueta ou medição. Se não souber, informe as horas
         efetivas de funcionamento e os dias de uso para estimar pela potência. Nenhum horário é
         presumido.
@@ -47,6 +49,7 @@ export function EnergyFields({
             type="number"
             min="0"
             step="any"
+            aria-describedby={`${descriptionId} ${priorityId}`}
             placeholder="Desconhecido"
             value={params.monthly_energy_kwh ?? ''}
             onChange={(e) => onChange({ monthly_energy_kwh: e.target.value || null })}
@@ -62,6 +65,7 @@ export function EnergyFields({
             min="0"
             max="24"
             step="any"
+            aria-describedby={`${descriptionId} ${priorityId}`}
             disabled={stated && hoursValid && daysValid}
             placeholder="Ex.: 0,5"
             value={params.usage_hours_per_day ?? ''}
@@ -78,6 +82,7 @@ export function EnergyFields({
             min="0"
             max="31"
             step="1"
+            aria-describedby={`${descriptionId} ${priorityId}`}
             disabled={stated && hoursValid && daysValid}
             placeholder="Não informado"
             value={params.usage_days_per_month ?? ''}
@@ -90,6 +95,10 @@ export function EnergyFields({
         </Field>
       </div>
       <p className="mt-2 text-xs muted">
+        Os kWh informados são de uma unidade. O resultado considera a quantidade cadastrada (
+        {load.quantity}). Para aparelhos com rotinas diferentes, cadastre cada um separadamente.
+      </p>
+      <p id={priorityId} className="mt-2 text-xs muted">
         {stated
           ? 'O consumo mensal informado prevalece sobre os horários. Limpe esse valor para usar a estimativa por horas.'
           : 'A estimativa considera potência constante nas horas informadas. Para geladeira e aparelhos com ciclos, prefira a etiqueta ou medição; tempo ligado na tomada não é tempo efetivo de funcionamento.'}

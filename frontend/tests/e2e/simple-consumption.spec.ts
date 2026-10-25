@@ -72,3 +72,71 @@ test('three-step consumption journey stays simple and technical studies remain o
   }
   expect(errors).toEqual([]);
 });
+
+test('keyboard journey identifies pending appliances by room and offers a tariff shortcut', async ({
+  page,
+}) => {
+  await page.goto('/');
+  const create = page.getByRole('button', { name: /^Criar novo projeto/ });
+  await expect(create).toBeVisible();
+  await page.getByRole('link', { name: 'Ir para o conteúdo' }).focus();
+  await page.keyboard.press('Enter');
+  await expect(page.getByRole('main')).toBeFocused();
+  await create.focus();
+  await page.keyboard.press('Enter');
+  await expect(page.getByLabel('Nome do projeto', { exact: true })).toBeFocused();
+  await page.getByRole('button', { name: 'Adicionar primeiro ambiente', exact: true }).click();
+  const first = page.locator('#environments article').first();
+  await first.getByLabel('Nome', { exact: true }).fill('Sala');
+  await page.getByLabel('Pesquisar catálogo', { exact: true }).fill('chuveiro');
+  await expect(first.getByRole('option', { name: 'Chuveiro elétrico', exact: true })).toHaveCount(
+    1,
+  );
+  await page.getByLabel('Pesquisar catálogo', { exact: true }).fill('zzzinexistente');
+  await expect(first.getByRole('status')).toContainText('Nenhum equipamento encontrado');
+  await page.getByLabel('Pesquisar catálogo', { exact: true }).fill('');
+  await first
+    .getByLabel('Adicionar equipamento em Sala', { exact: true })
+    .selectOption('philips-led-929001195311');
+  await page.getByRole('button', { name: 'Adicionar ambiente', exact: true }).click();
+  const second = page.locator('#environments article').nth(1);
+  await second.getByLabel('Nome', { exact: true }).fill('Quarto');
+  await second
+    .getByLabel('Adicionar equipamento em Quarto', { exact: true })
+    .selectOption('philips-led-929001195311');
+  await expect(page.getByTestId('calculation-status')).toContainText('Resultados atualizados');
+  const pending = page.getByText('Aparelhos com consumo pendente', { exact: true });
+  await pending.focus();
+  await page.keyboard.press('Enter');
+  const target = page.getByRole('button', { name: /^Informar consumo: Quarto/ });
+  await target.focus();
+  await page.keyboard.press('Enter');
+  const hours = second.getByLabel('Horas de uso por dia', { exact: true });
+  await expect(hours).toBeFocused();
+  await expect(hours).toHaveAccessibleDescription(/Nenhum horário é presumido/);
+  await expect(second.getByRole('group', { name: /^Equipamento:/ })).toHaveCount(1);
+  await hours.fill('2');
+  await second.getByLabel('Dias de uso por mês', { exact: true }).fill('20');
+  await first.getByTestId('equipment-energy').locator('summary').click();
+  await first.getByLabel('Consumo de energia (kWh/mês)', { exact: true }).fill('10');
+  await expect(page.getByTestId('calculation-status')).toContainText('Resultados atualizados');
+  await expect(page.getByRole('button', { name: /^Informar consumo:/ })).toHaveCount(0);
+  const tariff = page.getByRole('button', {
+    name: 'Informar tarifa para estimar o custo',
+    exact: true,
+  });
+  await tariff.focus();
+  await page.keyboard.press('Enter');
+  const field = page.getByLabel('Tarifa de energia (R$/kWh)', { exact: true });
+  await expect(field).toBeFocused();
+  await expect(field).toHaveAccessibleDescription(/disponível na conta de luz/);
+  await field.fill('0');
+  await expect(page.getByLabel('Consumo e custo mensais', { exact: true })).toContainText(
+    'R$ 0,00',
+  );
+  await expect(tariff).toHaveCount(0);
+  expect(
+    (await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze())
+      .violations,
+  ).toEqual([]);
+});

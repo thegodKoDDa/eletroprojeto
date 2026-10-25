@@ -6,6 +6,18 @@ import catalog from './fixtures/catalog.json';
 import { selectionCatalog } from '@/lib/equipment';
 afterEach(cleanup);
 const choices = selectionCatalog(catalog as CatalogItem[]);
+test('explicit search includes matches outside room suggestions and explains empty results', () => {
+  const room = { name: 'Sala', type: 'living', id: 'room' } as Environment;
+  const shower = choices.find((item) => item.equipment_type === 'shower')!;
+  const { rerender } = render(
+    <RoomEquipmentPicker room={room} choices={[shower]} searching onAdd={() => {}} />,
+  );
+  expect(
+    screen.getByRole('option', { name: shower.selection_name ?? shower.name }),
+  ).toBeInTheDocument();
+  rerender(<RoomEquipmentPicker room={room} choices={[]} searching onAdd={() => {}} />);
+  expect(screen.getByRole('status')).toHaveTextContent('Nenhum equipamento encontrado');
+});
 test.each(['bedroom', 'kitchen', 'living', 'laundry', 'office', 'bathroom', 'other'] as const)(
   'recommendations and general search for %s',
   (type) => {

@@ -11,10 +11,10 @@ from decimal import Decimal, localcontext
 from .protections import protection_checks
 
 D = Decimal
-SECTIONS = tuple(map(D, ("1.5", "2.5", "4", "6", "10", "16", "25", "35")))
+SECTIONS = tuple(map(D, ("1.5", "2.5", "4", "6", "10", "16", "25", "35", "50", "70", "95")))
 CAPACITIES = {
-    "B1": tuple(map(D, ("17.5", "24", "32", "41", "57", "76", "101", "125"))),
-    "B2": tuple(map(D, ("16.5", "23", "30", "38", "52", "69", "90", "111"))),
+    "B1": tuple(map(D, ("17.5", "24", "32", "41", "57", "76", "101", "125", "151", "192", "232"))),
+    "B2": tuple(map(D, ("16.5", "23", "30", "38", "52", "69", "90", "111", "133", "168", "201"))),
 }
 TEMPERATURE = {
     int(t): D(f)
@@ -33,15 +33,16 @@ TEMPERATURE = {
     ]
 }
 GROUPING = tuple(map(D, ("1", ".80", ".70", ".65", ".60", ".57", ".54", ".52")))
-REFERENCE = "NBR5410:2004/VC2008: tabelas36/40/42(linha1)/47/58; §§5.3.4.1 e6.2.7. Prysmian Electrical Information2024 §5, p.34."
+REFERENCE = "NBR5410:2004/VC2008: tabelas36/40/42(linha1)/47/58; §§5.3.4.1 e6.2.7. Manual Prysmian2010 pp.38/52/56, tabelas2/6/7. Prysmian Electrical Information2024 §5, p.34."
 SOURCES = [
     "https://www.abntcatalogo.com.br/",
     "https://www.ipaam.am.gov.br/wp-content/uploads/2021/01/NBR-05410-05-Instala%C3%A7%C3%B5es-El%C3%A9tricas-de-baixa-Tens%C3%A3o.pdf",
     "https://professor.pucgoias.edu.br/SiteDocente/admin/arquivosUpload/18451/material/nbr_5410.pdf",
     "https://asean.prysmian.com/sites/asean.prysmian.com/files/media/documents/241218%20-%20Prysmian%20Electrical%20Information%20for%20Low%20Voltage%20Cables.pdf",
+    "https://br.prysmian.com/sites/br.prysmian.com/files/media/documents/Manual_Instalacoes_Eletricas.pdf",
 ]
 LIMITATIONS = [
-    "Escopo: cobre/PVC70°C, B1/B2,2condutores carregados,50/60Hz, cargas senoidais monofásicas, conduto não magnético, PE no mesmo conduto e agrupamento homogêneo.",
+    "Escopo: cobre/PVC70°C, B1/B2, seções de1,5 a95mm²,2condutores carregados,50/60Hz, cargas senoidais monofásicas, conduto não magnético, PE no mesmo conduto e agrupamento homogêneo.",
     "Queda estimada em regime, concentrando cargas na extremidade; partida de motores, harmônicas, curto térmico, desligamento automático, DR/DPS, seletividade e geometria exigem verificações próprias.",
     "Resultados não autorizam execução nem certificam conformidade final.",
 ]
@@ -229,13 +230,17 @@ def calculate_circuits(project, load_results):
                 break
             if chosen is None:
                 pending.append(
-                    "Nenhuma seção até35mm² atende aos critérios disponíveis; não extrapolar tabelas."
+                    "Nenhuma seção até95mm² atende aos critérios disponíveis; não extrapolar tabelas."
                 )
             else:
                 section, capacity, drop, percent = chosen
                 row.update(
                     phase_section_mm2=section,
-                    pe_section_mm2=section if section <= 16 else D(16),
+                    pe_section_mm2=section
+                    if section <= 16
+                    else D(16)
+                    if section <= 35
+                    else next(size for size in SECTIONS if size >= section / 2),
                     capacity_a=capacity,
                     voltage_drop_v=drop,
                     voltage_drop_percent=percent,

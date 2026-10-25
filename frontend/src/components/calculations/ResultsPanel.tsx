@@ -22,6 +22,7 @@ export function ResultsPanel({
   stale,
   scope,
   environments,
+  tariff,
   onScopeChange,
 }: {
   result?: CalculationResult;
@@ -29,13 +30,13 @@ export function ResultsPanel({
   stale: boolean;
   scope: ProjectInput['analysis_scope'];
   environments?: ProjectInput['environments'];
+  tariff?: ProjectInput['energy_tariff_brl_per_kwh'];
   onScopeChange: (scope: ProjectInput['analysis_scope']) => void;
 }) {
   const [technical, setTechnical] = useState(false);
   const notices = result?.notifications ?? [];
   const issues = notices.filter((item) => ['error', 'technical'].includes(item.category));
-  function completeEnergy() {
-    const id = result?.energy_unknown_load_ids?.[0];
+  function completeEnergy(id = result?.energy_unknown_load_ids?.[0]) {
     if (!id) return;
     const load = environments?.flatMap((room) => room.loads ?? []).find((item) => item.id === id);
     const params = load?.parameters;
@@ -54,6 +55,15 @@ export function ResultsPanel({
           : 'parameters.monthly_energy_kwh';
     }
     focusField(`load.${id}.${field}`);
+  }
+  function loadLocation(id: string) {
+    const room = environments?.find((item) => item.loads?.some((load) => load.id === id));
+    const load = room?.loads?.find((item) => item.id === id);
+    return (
+      [room?.name, load?.name ?? result?.load_results?.find((item) => item.load_id === id)?.name]
+        .filter(Boolean)
+        .join(' → ') || 'Aparelho sem consumo informado'
+    );
   }
   const demandAvailable =
     result?.normative.demand?.value != null &&
@@ -114,9 +124,21 @@ export function ResultsPanel({
                       {result.energy_unknown_load_ids.length} aparelho(s) sem consumo informado. O
                       subtotal não representa a moradia completa.
                     </p>
-                    <button className="text-action mt-2" onClick={completeEnergy}>
+                    <button className="text-action mt-2" onClick={() => completeEnergy()}>
                       Completar consumo dos aparelhos
                     </button>
+                    <details className="mt-3">
+                      <summary>Aparelhos com consumo pendente</summary>
+                      <ul className="mt-2 space-y-2">
+                        {result.energy_unknown_load_ids.map((id) => (
+                          <li key={id} className="text-sm">
+                            <button className="text-action" onClick={() => completeEnergy(id)}>
+                              Informar consumo: {loadLocation(id)}
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    </details>
                   </div>
                 )}
                 <p className="mt-1 text-xs muted">
@@ -142,6 +164,14 @@ export function ResultsPanel({
                   Estimativa pela tarifa informada; não é a fatura completa. Não inclui encargos
                   fixos ou tributos adicionais.
                 </p>
+                {tariff == null && environments && (
+                  <button
+                    className="text-action mt-2"
+                    onClick={() => focusField('project.energy_tariff_brl_per_kwh')}
+                  >
+                    Informar tarifa para estimar o custo
+                  </button>
+                )}
               </div>
             </div>
             {result.load_results?.some((item) => item.monthly_energy_kwh != null) && (
@@ -157,7 +187,7 @@ export function ResultsPanel({
                       key={item.load_id}
                       className="flex flex-wrap justify-between gap-2 py-2 text-sm"
                     >
-                      <span>{item.name}</span>
+                      <span>{loadLocation(item.load_id)}</span>
                       <span className="muted">
                         {item.monthly_energy_kwh == null
                           ? 'Consumo não informado'

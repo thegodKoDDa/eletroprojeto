@@ -1,4 +1,4 @@
-# Roadmap — uso local, 0.17.0
+# Roadmap — uso local, 0.18.0
 
 Decisão do usuário em 23/10/2026: operar localmente. Publicação/infraestrutura remota, execução hospedada de CI, impressão física e backup externo foram retirados do escopo atual; não tratá-los como bloqueios ou cobrar recursos para essas tarefas. Autenticação e workflow continuam preservados; GitHub privado agora recebe a fonte e o encerramento autorizado. Checkpoints locais continuam protegendo SQLite/fonte/Git, com armazenamento compartilhado de cópias idênticas.
 
@@ -9,6 +9,8 @@ Decisão do usuário em 23/10/2026: operar localmente. Publicação/infraestrutu
 0.16.0:OCR/triagem,estudo limitado de circuitos Cu/PVC/B1/B2 e verificações de proteção com dados explícitos;enquadramentoESS220/127Vtabela16. Métodos e campos novos não concluem dimensionamento final universal; ampliar somente com fontes/condições/testes.
 
 0.17.0: revisão de integração, assinatura completa de exportações, contratos de acesso/revalidação, prévia e registro explícito de revalidação na interface, limpeza de associações removidas e inicialização extraída para hook próprio. Sem ampliar regras normativas.
+
+0.18.0: pesquisa explícita não exclui equipamentos pelas sugestões do ambiente; pendências de consumo por aparelho/ambiente, atalhos e descrições acessíveis. Estudo B1/B2 ampliado até95mm², com PE e testes de fronteira; demais ampliações técnicas e validação com leitor de tela real continuam pendentes.
 
 ## Disponível
 

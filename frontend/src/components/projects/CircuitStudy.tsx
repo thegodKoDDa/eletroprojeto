@@ -245,9 +245,9 @@ export function CircuitStudy({
           description="Associe cargas e confira corrente, seção, sobrecarga e queda de tensão no escopo suportado."
         />
         <p className="mt-3 text-xs muted">
-          Cobre/PVC70°C, métodos B1/B2, dois condutores carregados, 50/60Hz. Resultados
-          condicionados às informações reais; partida, harmônicas, curto térmico, proteção contra
-          choque e seletividade exigem verificação específica.
+          Cobre/PVC70°C, métodos B1/B2, seções de 1,5 a 95 mm², dois condutores carregados, 50/60Hz.
+          Resultados condicionados às informações reais; partida, harmônicas, curto térmico,
+          proteção contra choque e seletividade exigem verificação específica.
         </p>
         <button
           className="btn mt-3"

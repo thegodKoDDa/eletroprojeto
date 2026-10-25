@@ -6,27 +6,40 @@ export function RoomEquipmentPicker({
   room,
   choices,
   onAdd,
+  searching = false,
 }: {
   room: Environment;
   choices: CatalogItem[];
   onAdd: (item: CatalogItem) => void;
+  searching?: boolean;
 }) {
-  return <EquipmentOptions key={room.type} room={room} choices={choices} onAdd={onAdd} />;
+  return (
+    <EquipmentOptions
+      key={room.type}
+      room={room}
+      choices={choices}
+      onAdd={onAdd}
+      searching={searching}
+    />
+  );
 }
 
 function EquipmentOptions({
   room,
   choices,
   onAdd,
+  searching,
 }: {
   room: Environment;
   choices: CatalogItem[];
   onAdd: (item: CatalogItem) => void;
+  searching: boolean;
 }) {
   const [all, setAll] = useState(false);
   const relevant = choices.filter(
     (item) =>
       all ||
+      searching ||
       !item.recommended_environments?.length ||
       item.recommended_environments.includes(room.type),
   );
@@ -47,13 +60,22 @@ function EquipmentOptions({
           </option>
         ))}
       </select>
-      <button
-        className="picker-toggle"
-        aria-pressed={all}
-        onClick={() => setAll((value) => !value)}
-      >
-        {all ? 'Mostrar sugestões do ambiente' : 'Buscar em todos os equipamentos'}
-      </button>
+      {!relevant.length && (
+        <p className="mt-2 text-xs muted" role="status">
+          {searching
+            ? 'Nenhum equipamento encontrado. Tente outro nome ou limpe a pesquisa do catálogo.'
+            : 'Sem sugestões para este ambiente. Busque em todos os equipamentos.'}
+        </p>
+      )}
+      {!searching && (
+        <button
+          className="picker-toggle"
+          aria-pressed={all}
+          onClick={() => setAll((value) => !value)}
+        >
+          {all ? 'Mostrar sugestões do ambiente' : 'Buscar em todos os equipamentos'}
+        </button>
+      )}
     </div>
   );
 }

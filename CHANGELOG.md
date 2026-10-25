@@ -1,5 +1,13 @@
 # Histórico de alterações
 
+## 0.18.0 — 25/10/2026 / motor0.9.2
+
+- Corrigida pesquisa explícita do catálogo que podia ocultar correspondências pelo filtro de sugestões do ambiente; listas vazias explicam a recuperação.
+- Pendências de consumo e resultados por aparelho identificam ambiente; atalhos individuais e para tarifa, descrições acessíveis, grupos de equipamentos e foco no salto ao conteúdo.
+- Estudo condicionado B1/B2 ampliado a50/70/95mm² comPEcorrespondente e testes de capacidade/limites/temperatura/agrupamento. Sem ampliar métodos ou declarar dimensionamento final.
+-401backend+85subtestes,104frontend,22E2E+bateria dirigida de1cenário,contratos/tipos/lint/formatação/build aprovados. Banco real integralmente preservado.
+- Leitor de tela real,grupos especiais de demanda,geometria/proteções integrais ecobertura territorial permanecem pendentes;reconsulta econdições emstandards/CURRENT_STATE.
+
 ## Interface e integração — 24/10/2026 (versão funcional mantida)
 
 - Padronizados títulos, descrições, controles, cores de feedback, erros e paginações, com componentes compartilhados e sem alterar o início/fluxo simples.

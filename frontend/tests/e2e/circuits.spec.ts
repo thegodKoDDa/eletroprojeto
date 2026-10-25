@@ -77,7 +77,7 @@ test('circuits and entry calculate on server, survive saving and export with pen
   await expect(editor.getByTestId('circuit-result')).toContainText('Ib: 20 A');
   await expect(page.getByTestId('entry-result')).toContainText('Categoria: B1');
   await editor.getByLabel('Comprimento de ida (m)').fill('3000');
-  await expect(editor.getByTestId('circuit-result')).toContainText('Nenhuma seção até35mm²');
+  await expect(editor.getByTestId('circuit-result')).toContainText('Nenhuma seção até95mm²');
   await expect(editor.getByTestId('circuit-result')).toContainText('fase: —');
   await editor.getByLabel('Comprimento de ida (m)').fill('30');
   await expect(editor.getByTestId('circuit-result')).toContainText('fase: 4 mm²');

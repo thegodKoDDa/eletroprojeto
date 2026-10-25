@@ -2,13 +2,14 @@
 
 Escopo local definido pelo usuário em 23/10/2026: publicação remota/CI hospedado, impressão física e backup externo foram descartados do trabalho atual. Recursos já implementados foram preservados. Checkpoints locais continuam em uso.
 
-Atualizado em 24/10/2026. Bugs corrigidos constam em CHANGELOG/revisões, não como pendências aqui.
+Atualizado em 25/10/2026. Bugs corrigidos constam em CHANGELOG/revisões, não como pendências aqui.
 
 | ID / gravidade | Local e reprodução | Esperado / estado / causa conhecida |
 | --- | --- | --- |
-| NORM-01 / alta | Ampliação normativa | NDU7.0 d1–d5 integrada ao cadastro/PDF/JSON com classificação e revisão explícitas em0.13.0. d6/d7/centrais presentes e dimensionamento/geometria integrais ainda pendentes;0.16.0inclui estudo limitado de circuitos e referência de entradaESS; sem inventário revisado o resultado permanece nulo. Não transferir regras a outras distribuidoras. |
+| NORM-01 / alta | Ampliação normativa | NDU7.0 d1–d5 integrada ao cadastro/PDF/JSON com classificação e revisão explícitas em0.13.0. d6/d7/centrais presentes e dimensionamento/geometria integrais ainda pendentes;0.18.0amplia somente seçõesB1/B2até95mm² ePEcorrespondente;estudo de circuitos/entradaESScontinua limitado; sem inventário revisado o resultado permanece nulo. Não transferir regras a outras distribuidoras. |
 | REF-01 / limite de consulta | Biblioteca técnica0.15.0 |OCRconcluído sobre1.060páginas relevantes:963recuperadas e97vazias identificadas;199documentos sem utilidade descartados com auditoria. TextoOCRnão revisado,não habilita regra. Revisão humana integral do acervo e dimensionamento/geometria universais continuam pendentes. |
-| GEO-01 / média | Município/distribuidora | Associação territorial oficial incompleta; seleção manual/candidatas por UF. Não presumir cobertura nacional ou regras regionais completas. |
+| GEO-01 / média | Município/distribuidora | Associação territorial oficial incompleta. Em25/10,diretórioSIGELHTTP200,mas camadasAREA_ATUACAO retornaram500/timeout;sem feições verificadas. Seleção manual/candidatas porUF,sem inferir concessionária municipal. |
+| ACCESS-01 / validação pendente | Leitor de tela real | Teclado,nomes/descrições,grupos eaxe revisados na0.18.0;uso real comOrca/NVDA/VoiceOver ainda não realizado. Não equivale à aprovação automática. |
 
 Backend e frontend foram executados em Windows real; PostgreSQL e catálogo persistente também foram validados. O teste histórico no Windows registrou ausência de GPG e privilégio de symlink. O exportador GPG foi retirado nesta organização; symlink/ACL/compactação Windows não foram revalidados nesta revisão. Leitor de tela real ainda não conferido; axe automático não o substitui. Impressão física retirada do escopo pelo usuário.
 

@@ -724,7 +724,7 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
               </button>
             )}
           </aside>
-          <main id="workspace-main" className="workspace-main">
+          <main id="workspace-main" className="workspace-main" tabIndex={-1}>
             {draftIssue && (
               <Feedback tone="warning" role="alert" className="mb-5">
                 {draftIssue}
@@ -1030,6 +1030,7 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                         min="0"
                         step="any"
                         placeholder="Opcional · informe sua tarifa"
+                        aria-describedby="energy-tariff-description"
                         value={input.energy_tariff_brl_per_kwh ?? ''}
                         onChange={(e) =>
                           change('energy_tariff_brl_per_kwh', e.target.value || null)
@@ -1037,7 +1038,7 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                       />
                     </Field>
                   </div>
-                  <p className="field-hint mt-3">
+                  <p id="energy-tariff-description" className="field-hint mt-3">
                     Tarifa opcional, em R$/kWh, disponível na conta de luz. Não sabe? Você ainda
                     pode estimar o consumo.
                   </p>
@@ -1391,6 +1392,7 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                           <RoomEquipmentPicker
                             room={room}
                             choices={filteredCatalog}
+                            searching={catalogQuery.trim().length > 0}
                             onAdd={(template) => addLoad(room, template)}
                           />
                           {!catalog.length && (
@@ -1411,6 +1413,7 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                   </div>
                 </section>
                 <ResultsPanel
+                  tariff={input.energy_tariff_brl_per_kwh}
                   result={result}
                   loading={loading}
                   stale={stale}

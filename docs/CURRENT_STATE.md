@@ -1,47 +1,43 @@
-# Estado atual — EletroProjeto 0.17.0 / motor 0.9.1
+# Estado atual — EletroProjeto 0.18.0 / motor 0.9.2
 
-## Encerramento solicitado — 24/10/2026
+Atualizado em 25/10/2026. SQLite/schema0007 e JSON de relatório1.4 preservados. Esta entrega atende parte do pedido de resolver as pendências; **não conclui leitor de tela real, cobertura territorial, demanda de grupos especiais ou dimensionamento/localização integrais**. Detalhes históricos em SESSION_HISTORY/CHANGELOG/Git.
 
-Sessão encerrada por solicitação do usuário. Git estava limpo/sincronizado em9ac5f00;disco com cerca935GiB livres,API8000 efrontend3000HTTP200. Na conferência inicial deste encerramento,o banco já continha **11projetos/34históricos/9revisões**,10ativos/1lixeira,íntegro/FKok/schema0007. O cadastro adicional observado foi preservado;os totais10/33 da revisão abaixo são a fotografia histórica daquela validação.
+## Produto entregue
 
-Apenas estado/histórico atualizados;sem alteração de código,cálculo,catálogo ou projetos,sem exclusão/limpeza/reinstalação ecom serviços preservados. Suítes não repetidas sem mudança funcional;resultados anteriores permanecem registrados. Commit documental,sincronização privada echeckpoint final devem ser confirmados pela execução e`.checkpoints/latest.json`,sem commit extra pelo caminho. Buffers externos e rascunhos ainda não enviados não são capturados.
+Estimativa de consumo residencial para leigos primeiro, profissionais depois. Início/sidebar/três cartões e fluxo **01 Projeto → 02 Ambientes → 03 Conferência** preservados, com estudos técnicos opcionais e recolhidos.
 
-Próxima sessão: **RETOMAR ELETROPROJETO**,seguir AGENTS/estado/memória econtinuar refinamentos de simplicidade/consumo conforme o pedido do usuário. Não reabrir etapas técnicas obrigatórias nem ampliar regras sem fontes/testes.
+- Pesquisa explícita do catálogo agora considera correspondências em todos os equipamentos; sugestões do ambiente não escondem o resultado. Listas vazias orientam a repetir/limpar a busca.
+- Conferência identifica aparelhos com consumo pendente por ambiente e oferece atalho para cada dado faltante. Consumo por aparelho também identifica o ambiente; nomes iguais deixam de ser ambíguos.
+- Tarifa ausente tem atalho com foco; zero informado permanece válido. Campos de consumo/horários e tarifa possuem descrições acessíveis vinculadas, com prioridade da etiqueta/medição e consumo por unidade/quantidade explícitos.
+- Editores de aparelhos são grupos acessíveis; link de salto foca o conteúdo. Teclado/nomes/descrições/axe foram verificados; isso não representa teste com leitor de tela real. Usuário informou que não usa leitor de tela.
+- Sem fórmulas no frontend, horários/tarifas presumidos, alteração de catálogo, regravação de projetos ou nova etapa técnica obrigatória. Autosave/rascunhos/conflitos e resultados antigos ocultos/debounce/cancelamento preservados.
 
-Atualizado em24/10/2026. JSON de relatório1.4; SQLite/schema0007. Registros anteriores em SESSION_HISTORY, CHANGELOG e Git; este arquivo resume o estado vigente.
+## Ampliação técnica limitada
 
-## Produto e interface
+B1/B2 cobre/PVC70°C/dois condutores carregados agora contempla50/70/95mm², mantendo os critérios anteriores e teto95mm² sem extrapolar. Condutor de proteção para S>35 segue PE≥S/2 com próxima seção padronizada:50→25,70→35,95→50mm². Fonte/edição/condições/conferência visual e exemplos em standards/calculations; testes independentes de resultados/limites em test_circuits.py. Motor0.9.2 identifica a alteração para novos cálculos/prévias/revalidação explícita. Histórico existente permanece inalterado.
 
-Estimativa de consumo residencial para **leigos primeiro**, profissionais depois. Percurso **01 Projeto → 02 Ambientes → 03 Conferência**; início com três cartões/sidebar e estudos técnicos recolhidos preservados. Consumo/custo em destaque, tarifa visível, catálogo referenciado/valores manuais, detalhes de potência/memória e PDF/JSON mantidos.
+Relidos §9/notas/tabelas12–15 da NDU-0017.0 local. d6/d7/centrais continuam nulos/fora do escopo: parâmetros próprios, integração e exemplos específicos ainda não implementados/revisados. Não se tratam kVA como kW nem se infere FP. Não há dimensionamento final universal.
 
-Padronização desta sessão: PageHeading/SectionHeading para títulos e descrições, Feedback para informação/sucesso/aviso/erro, Pagination para projetos/acervo/leitura/fontes. Controles comuns40px/compactos32px, botões, bordas, cores, foco e erros de campo consistentes. Login, biblioteca, lixeira, projeto, revalidação e leitura seguem os mesmos padrões. Datas de rascunhos usam o helper Brasília; totais usam o formatador comum.
+Reconsulta oficial: catálogoABNT exibe5410:2004/VC2008; portalEnergisa listaNDU0017.0. Novas tentativas de download integral falharam. SIGEL retornou diretórioHTTP200/listaAREA_ATUACAO, mas camadas deram500/timeout; sem feições territoriais verificadas e sem nova associação municipal.
 
-Corrigidas integrações: erros localizados de exportação agora mostram Corrigir informação como o salvamento; Completar consumo escolhe potência/dado mecânico/horas/dias realmente faltantes; leitura/fontes permitem repetir consulta sem perder referência/filtros. Requisições antigas continuam canceladas/rejeitadas. Nenhuma fórmula, parâmetro normativo, catálogo, backend, contrato, dependência ou migração alterada.
+## Verificações efetivas
 
-## Backend e frontend conferidos
+- **401 testes backend +85 subtestes e104 testes frontend aprovados.** Ruff/check eformatação Python aprovados.
+- **22 E2E aprovados na bateria completa; o novo23º cenário de teclado falhou por sincronização inicial do teste, foi corrigido e passou em execução dirigida.** Nenhum cenário removido/desativado. Cadastro/consumo/salvamento/rascunhos/revalidação/lixeira/relatórios e circuitos foram exercitados em SQLite/portas QA isolados.
+- Contratos regenerados via `npm run types:sync`; só a versão OpenAPI mudou, tipos gerados sem diff. TypeScript/lint/Prettier ebuildwebpack isolado em`.next/qa-build` aprovados. Gerados next-env/tsconfig inspecionados e restaurados ao conteúdo versionado; Nextdev pode regenerar next-env enquanto ativo.
+- Axe/teclado eviewport320/390/768/1440px sem overflow no fluxo simples. Capturas390/1440px em`/tmp/eletroprojeto-simple-*`inspecionadas.
+- Último checkpoint anterior restaurado isoladamente com sucesso. As **12 tabelas reais** foram comparadas integralmente com20261024T203754927856Z:sem alteração. SQLite íntegro/FKok,11projetos/34históricos/9revisões,10ativos/1lixeira,schema0007. Acervo2.082documentos/51.324unidades/3.788fontes preservado.
+- API8000 efrontend3000 iniciados após conferir portas livres; ambosHTTP200,health0.18.0/motor0.9.2. [Aplicação local](http://localhost:3000).
 
-Inventário revisado:38caminhos/41operações HTTP. Cálculo integrado e aliases, catálogo, requisitos/estados/distribuidoras, projetos/summaries/histórico, duplicação/lixeira/restauração/purga, revalidação, relatórios, biblioteca/arquivos/fontes e autenticação conferidos por código, contratos e testes. Rotas técnicas brutas/compatibilidade permanecem na API; não geram formulários obrigatórios. Matriz por grupo em audit.md.
+Não executados nesta entrega: leitor de tela real, HTTPS de duas contas (validação anterior preservada), PostgreSQL, Windows real, carga/pentest ou inspeção elétrica física. Sem atualização/reinstalação de dependências, migração/reset, exclusão de dados/acervo/checkpoints ou limpeza de gerados.
 
-Preservados autosave após primeiro salvamento, rascunhos/conflitos, IDs/versões/snapshots e edição durante requisições. Não expor números antigos como atuais nem atualizar catálogo/projetos antigos silenciosamente. Fontes/limites em standards/calculations; dimensionamento final universal permanece fora do alcance.
+## Pendências e próximo passo
 
-## Verificações desta sessão
+Pedido do usuário é resolver todas as faltas listadas; esta entrega não encerra esse objetivo amplo. Restam:
 
-- **394backend+85subtestes,103frontend,22E2E completos e1HTTPS de duas contas aprovados.** Após inspeção do estado vazio,1E2E dirigido de interface/exportação repetido e aprovado.
-- Contratos regenerados sem diff,TypeScript,lint,formatação ebuildwebpack isolado em`.next/qa-build` aprovados. next-env/tsconfig gerados pelo QA conferidos/restaurados ao conteúdo versionado.
-- E2E de exportação alterou apenas o corpo QA para32dias e recebeu422real daAPI,com ação/foco eposteriorPDF válido. Retry de leitura/fontes foi testado com indisponibilidade até a tentativa explícita;sem perder filtros/documento.
-- Axe eviewport320/390/768/1440px,sem overflow/pageerrors. Capturas`/tmp/eletroprojeto-standard-*`inspecionadas. Smoke real somente leitura abriuVilaIpê:8ambientes/25cadastros/10circuitos,técnicos fechados;zero tentativas de escrita de projetos.
--12tabelas reais integralmente iguais ao checkpoint20261024T183220286645Z,SQLite íntegro/FKok:10projetos/33históricos/9revisões,9ativos/1lixeira,schema0007. VilaIpê segue versão3. Acervo2.196objetos/2.082documentos/51.324unidades/3.788fontes preservado.
+1. Validação real com leitor de tela em ambiente compatível; usuário não utiliza leitor e nenhum Orca/NVDA foi encontrado nas instalações usuais consultadas. Não instalar por hábito nem declarar aprovação por axe.
+2. Ampliar demanda d6/d7/centrais com parâmetros próprios, revisão das condições/ambiguidades, integração e exemplos independentes. A leitura de tabelas não basta para liberar cálculo.
+3. Ampliar métodos/materiais/fases/proteções/entrada e modelar geometria/localização/volumes/distâncias; seleção atual de seção não verifica distribuição física ou conformidade integral.
+4. Obter/validar dados territoriais oficiais utilizáveis antes de associar municípios e distribuidoras. ServiçoAREA_ATUACAO indisponível nesta consulta.
 
-PostgreSQL,Windows,leitor de tela real,teste de carga/pentest e inspeção elétrica física não repetidos nesta revisão. Não declarar conformidade final por esta validação de software. Serviços8000/3000 preservados eHTTP confirmado no smoke;conferir ao retomar/entregar.
-
-## Continuidade e organização preservadas
-
-Peça RETOMAR ou ENCERRAR SESSÃO DO ELETROPROJETO. Rotina/autorização em AGENTS;detalhes em continuity.md. Retomar reúne Git/banco/instalações/HTTP efetch sem mesclar. Encerrar usa commit revisado +`continuity.py encerrar --sync`,GitHub privado echeckpoint local;sem rede,checkpoint preservado esincronização pendente. `.checkpoints/latest.json` é a referência do ponto final;nenhum commit extra pelo caminho.
-
-[GitHub privado](https://github.com/thegodKoDDa/eletroprojeto),origin/main,Actions desativado. Fonte/histórico fora do computador;SQLite,.env,checkpoints eoriginais doacervo continuam locais. Checkpoints compartilham bancos idênticos sem apagar versões,com restauração isolada;39pontos históricos foram compactados na manutenção anterior. Instalações úteis Linux/Windows/node_modules,referências,migrações ebackups únicos preservados.
-
-Ao terminar QA,limpeza simulada/aplicada retirou155.897.375bytes degerados/caches/saídas inativas,com portasQA livres,sem remover Nextativo/cache útil ou dependências. Auditoria privada em.checkpoints. Sem reinstalação,atualização de versão ou alteração de dados reais. Sincronização/checkpoint finais devem ser confirmados pelo resultado de execução e latest.json.
-
-## Próximo passo
-
-Continuar refinamentos de simplicidade/consumo conforme o uso do usuário,reutilizando os padrões compartilhados. Não reabrir etapas técnicas no percurso principal ou ampliar regras sem fontes/condições/exemplos/testes. Pendências em KNOWN_ISSUES/roadmap. Implantação do site,CIhospedado,impressão física ecópia externa dos dados privados continuam fora do escopo.
+Fontes e limites em standards/calculations; pendências em KNOWN_ISSUES/roadmap; revisão de interface em audit. Código/docs no GitHub privado; banco,.env,originais echeckpoints permanecem locais. Commit/sincronização/checkpoint finais devem ser confirmados pela execução e`.checkpoints/latest.json`; não criar commit extra pelo caminho. Publicação/CIhospedado/impressão física/cópia externa seguem fora do escopo. Buffers externos/rascunhos não enviados não são capturados pelo checkpoint.
