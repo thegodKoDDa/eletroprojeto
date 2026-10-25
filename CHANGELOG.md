@@ -1,5 +1,9 @@
 # Histórico de alterações
 
+## Ajuste de escopo — 25/10/2026
+
+- Validação com leitor de tela real descartada por solicitação explícita do usuário; retirada das pendências e do roadmap. Melhorias de acessibilidade e testes automáticos/teclado preservados. Sem alteração de código, cálculos ou dados.
+
 ## 0.18.0 — 25/10/2026 / motor0.9.2
 
 - Corrigida pesquisa explícita do catálogo que podia ocultar correspondências pelo filtro de sugestões do ambiente; listas vazias explicam a recuperação.

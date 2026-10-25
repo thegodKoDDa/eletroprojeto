@@ -1,6 +1,6 @@
 # Estado atual — EletroProjeto 0.18.0 / motor 0.9.2
 
-Atualizado em 25/10/2026. SQLite/schema0007 e JSON de relatório1.4 preservados. Esta entrega atende parte do pedido de resolver as pendências; **não conclui leitor de tela real, cobertura territorial, demanda de grupos especiais ou dimensionamento/localização integrais**. Detalhes históricos em SESSION_HISTORY/CHANGELOG/Git.
+Atualizado em 25/10/2026. SQLite/schema0007 e JSON de relatório1.4 preservados. Esta entrega atende parte do pedido de resolver as pendências; **não conclui cobertura territorial, demanda de grupos especiais ou dimensionamento/localização integrais**. Detalhes históricos em SESSION_HISTORY/CHANGELOG/Git.
 
 ## Produto entregue
 
@@ -9,7 +9,7 @@ Estimativa de consumo residencial para leigos primeiro, profissionais depois. In
 - Pesquisa explícita do catálogo agora considera correspondências em todos os equipamentos; sugestões do ambiente não escondem o resultado. Listas vazias orientam a repetir/limpar a busca.
 - Conferência identifica aparelhos com consumo pendente por ambiente e oferece atalho para cada dado faltante. Consumo por aparelho também identifica o ambiente; nomes iguais deixam de ser ambíguos.
 - Tarifa ausente tem atalho com foco; zero informado permanece válido. Campos de consumo/horários e tarifa possuem descrições acessíveis vinculadas, com prioridade da etiqueta/medição e consumo por unidade/quantidade explícitos.
-- Editores de aparelhos são grupos acessíveis; link de salto foca o conteúdo. Teclado/nomes/descrições/axe foram verificados; isso não representa teste com leitor de tela real. Usuário informou que não usa leitor de tela.
+- Editores de aparelhos são grupos acessíveis; link de salto foca o conteúdo. Teclado/nomes/descrições/axe foram verificados; isso não representa teste com leitor de tela real. Por decisão explícita do usuário em25/10/2026, a validação com leitor de tela real foi retirada do escopo; não é pendência nem bloqueio. Melhorias e testes automáticos de acessibilidade permanecem.
 - Sem fórmulas no frontend, horários/tarifas presumidos, alteração de catálogo, regravação de projetos ou nova etapa técnica obrigatória. Autosave/rascunhos/conflitos e resultados antigos ocultos/debounce/cancelamento preservados.
 
 ## Ampliação técnica limitada
@@ -33,11 +33,10 @@ Não executados nesta entrega: leitor de tela real, HTTPS de duas contas (valida
 
 ## Pendências e próximo passo
 
-Pedido do usuário é resolver todas as faltas listadas; esta entrega não encerra esse objetivo amplo. Restam:
+Pedido do usuário é resolver as faltas listadas, com a validação por leitor de tela real descartada explicitamente em25/10/2026. Restam:
 
-1. Validação real com leitor de tela em ambiente compatível; usuário não utiliza leitor e nenhum Orca/NVDA foi encontrado nas instalações usuais consultadas. Não instalar por hábito nem declarar aprovação por axe.
-2. Ampliar demanda d6/d7/centrais com parâmetros próprios, revisão das condições/ambiguidades, integração e exemplos independentes. A leitura de tabelas não basta para liberar cálculo.
-3. Ampliar métodos/materiais/fases/proteções/entrada e modelar geometria/localização/volumes/distâncias; seleção atual de seção não verifica distribuição física ou conformidade integral.
-4. Obter/validar dados territoriais oficiais utilizáveis antes de associar municípios e distribuidoras. ServiçoAREA_ATUACAO indisponível nesta consulta.
+1. Ampliar demanda d6/d7/centrais com parâmetros próprios, revisão das condições/ambiguidades, integração e exemplos independentes. A leitura de tabelas não basta para liberar cálculo.
+2. Ampliar métodos/materiais/fases/proteções/entrada e modelar geometria/localização/volumes/distâncias; seleção atual de seção não verifica distribuição física ou conformidade integral.
+3. Obter/validar dados territoriais oficiais utilizáveis antes de associar municípios e distribuidoras. ServiçoAREA_ATUACAO indisponível nesta consulta.
 
 Fontes e limites em standards/calculations; pendências em KNOWN_ISSUES/roadmap; revisão de interface em audit. Código/docs no GitHub privado; banco,.env,originais echeckpoints permanecem locais. Commit/sincronização/checkpoint finais devem ser confirmados pela execução e`.checkpoints/latest.json`; não criar commit extra pelo caminho. Publicação/CIhospedado/impressão física/cópia externa seguem fora do escopo. Buffers externos/rascunhos não enviados não são capturados pelo checkpoint.

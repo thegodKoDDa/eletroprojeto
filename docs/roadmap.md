@@ -10,7 +10,7 @@ Decisão do usuário em 23/10/2026: operar localmente. Publicação/infraestrutu
 
 0.17.0: revisão de integração, assinatura completa de exportações, contratos de acesso/revalidação, prévia e registro explícito de revalidação na interface, limpeza de associações removidas e inicialização extraída para hook próprio. Sem ampliar regras normativas.
 
-0.18.0: pesquisa explícita não exclui equipamentos pelas sugestões do ambiente; pendências de consumo por aparelho/ambiente, atalhos e descrições acessíveis. Estudo B1/B2 ampliado até95mm², com PE e testes de fronteira; demais ampliações técnicas e validação com leitor de tela real continuam pendentes.
+0.18.0: pesquisa explícita não exclui equipamentos pelas sugestões do ambiente; pendências de consumo por aparelho/ambiente, atalhos e descrições acessíveis. Estudo B1/B2 ampliado até95mm², com PE e testes de fronteira; demais ampliações técnicas continuam pendentes. Validação com leitor de tela real foi descartada pelo usuário em25/10/2026; melhorias de acessibilidade existentes permanecem.
 
 ## Disponível
 
@@ -31,4 +31,4 @@ Direção de produto reafirmada em 24/10/2026: simplicidade para leigos antes da
 5. Ampliar associação territorial oficial sem inferir concessionária por município ou endereço incompleto.
 6. Melhorar revalidação seletiva de projetos afetados por mudanças normativas e desempenho em grandes acervos quando necessário.
 
-Fontes, condições e testes normativos em [standards](standards.md) e [calculations](calculations.md). Estado das verificações em [CURRENT_STATE](CURRENT_STATE.md). A ausência de impressão física foi aceita pelo usuário; testes automáticos de acessibilidade não equivalem a uso com leitor de tela real, ainda não conferido.
+Fontes, condições e testes normativos em [standards](standards.md) e [calculations](calculations.md). Estado das verificações em [CURRENT_STATE](CURRENT_STATE.md). Impressão física e validação com leitor de tela real foram retiradas do escopo pelo usuário. Manter acessibilidade implementada e testes automáticos/teclado; não reabrir essa validação como pendência sem novo pedido.
