@@ -1,5 +1,13 @@
 # Histórico de alterações
 
+## 0.20.0 — 26/10/2026 / motor 0.10.0
+
+- Distribuição pública autorizada: ZIP com iniciadores Windows/Unix, Docker Compose e instalação por clone, com guias próprios e requisitos explícitos.
+- Inicialização local supervisionada, dados persistentes, backup antes de migração, build reutilizável e recusa de portas ocupadas.
+- Licença ISC, avisos de terceiros, manifesto e SHA-256 por release; empacotamento somente de código versionado, sem bancos, credenciais ou acervo técnico.
+- Sincronização adaptada ao repositório público exato; Actions desativado e dados locais preservados. Motor, fórmulas e schema inalterados.
+- 500 testes backend + 85 subtestes, 40 scripts, 109 frontend e 24 E2E aprovados; execução nativa Linux e Docker amd64 com salvamento, PDF e persistência. Windows/macOS e ARM ainda sem execução real.
+
 ## Organização do repositório — 26/10/2026
 
 - README reescrito com prévia real, recursos, início rápido e navegação por tarefa, inspirado no Minecoord.

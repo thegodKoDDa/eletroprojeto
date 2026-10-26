@@ -6,7 +6,7 @@ Estimativa de consumo elétrico residencial para **leigos primeiro, profissionai
 
 Consumo/custo recebem destaque, tarifa fica visível e uso dos aparelhos é explícito. Medidas/pontos, dados extras, potência, memória e previsões ficam em detalhes. Catálogo sugere referências, não potências universais; valores manuais válidos prevalecem. A biblioteca técnica serve para melhorar utilidades verificadas, não para exigir novos formulários ou presumir dados.
 
-Uso local. GitHub privado protege a fonte/histórico; implantação do site, CI hospedado, impressão física e cópia externa de dados privados continuam fora do escopo. O agente executa rotinas de terminal, sem delegá-las ao usuário. Autorização de manutenção/sincronização revisada em24/10/2026 está no AGENTS; não repetir perguntas para essas rotinas.
+Uso local. GitHub público distribui a fonte/histórico; dados privados continuam locais; implantação do site, CI hospedado, impressão física e cópia externa de dados privados continuam fora do escopo. O agente executa rotinas de terminal, sem delegá-las ao usuário. Autorização de manutenção/sincronização revisada em24/10/2026 está no AGENTS; não repetir perguntas para essas rotinas.
 
 ## Invariantes
 
@@ -42,7 +42,7 @@ Backend: REST/main, schemas/contratos, projects/histórico, database/ORM, report
 
 Fonte de dependências são manifests/locks. Reutilizar `.venv`, `.venv-windows` e node_modules; não reinstalar por hábito. Contratos somente por `npm run types:sync`. Não rodar build e E2E simultaneamente; QA usa bancos/portas e diretórios próprios.
 
-GitHub: `https://github.com/thegodKoDDa/eletroprojeto`, origin/main, privado, Actions desativado. Encerramento autorizado envia commits revisados apenas para esse destino após conferir privacidade; sem force-push ou merge automático. Credencial existente via Git Credential Manager do Windows, sem token em URL/arquivo/log. Código/docs no GitHub; banco, checkpoints, `.env` e originais do acervo continuam locais.
+GitHub: `https://github.com/thegodKoDDa/eletroprojeto`, origin/main, público por autorização explícita em 26/10/2026, Actions desativado. Encerramento autorizado envia commits revisados apenas para esse destino após conferir destino e visibilidade pública; sem force-push ou merge automático. Credencial existente via Git Credential Manager do Windows, sem token em URL/arquivo/log. Código/docs no GitHub; banco, checkpoints, `.env` e originais do acervo continuam locais.
 
 Rotina em AGENTS e detalhes em continuity.md. Retomar lê AGENTS/CURRENT_STATE/esta memória e executa continuity retomar; documentos históricos são consultados conforme necessidade. Encerrar atualiza docs uma vez, testa proporcionalmente, faz commit revisado e executa encerrar --sync. Sem rede, checkpoint local é preservado e sincronização fica pendente. Não criar commit extra pelo caminho do ponto; consultar `.checkpoints/latest.json`.
 
@@ -59,3 +59,11 @@ Coleta territorial original ANEEL121feições preservada emreferences/territory,
 README apresenta o produto e a prévia real; instruções de agente e detalhes da instalação local ficam nos documentos responsáveis. `docs/setup.md` e `docs/usage.md` atendem instalação/uso, `CONTRIBUTING.md` reúne desenvolvimento e testes, e `docs/README.md` organiza os caminhos. Descrição/tópicos do GitHub foram alinhados ao produto usando Minecoord como referência de apresentação; privacidade e Actions desativado preservados.
 
 Revisões anteriores de auditoria/formulários/expansão inicial estão em `docs/history`, com índice e conteúdo preservados. `docs/audit.md` e `docs/forms-and-pdf.md` descrevem o estado atual e apontam para o histórico. Não voltar a apresentar registros antigos como comportamento vigente nem colocar logs de sessão na página de apresentação. Imagens em `docs/assets` contêm somente interface e dados fictícios; manter essa condição ao atualizá-las.
+
+## Distribuição pública — 0.20.0
+
+Usuário autorizou explicitamente tornar `thegodKoDDa/eletroprojeto` público e preparar formas de uso em 26/10/2026. Visibilidade pública passa a ser a condição do sincronizador; destino, main limpa, revisão de arquivos, ausência de divergência e sem force-push continuam obrigatórios. Histórico preservado. Actions permanece desativado; não confundir publicar código/release com hospedar o site ou enviar dados.
+
+ZIP de fontes com iniciadores Windows/Linux/macOS requer Python/Node; Docker contém runtimes e volume SQLite próprio. Não prometer `.exe`, `index.html` independente ou teste nativo Windows/macOS não realizado. Licença ISC do código original; componentes preservam avisos próprios. Iniciadores recusam portas ocupadas e reutilizam dependências compatíveis; não tocam serviços existentes. Native legado usa backend/eletroprojeto.db se presente, cópia nova usa data/eletroprojeto.db, e --data-dir escolhe outra instalação. Nunca remover volume/pasta de dados para atualizar.
+
+Pacote é gerado de commit por scripts/package_release.py, com manifesto/hash e sem arquivos privados. Contexto Docker é uma lista de inclusão; não afrouxar a exclusão de banco/acervo/credenciais. Código compilado sem bloqueios novos; biblioteca/território ausentes permanecem pendentes, não zero. Continuidade de dados e restrições normativas anteriores permanecem.

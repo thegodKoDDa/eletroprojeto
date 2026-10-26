@@ -31,3 +31,9 @@ Checks proporcionais aprovados: links e âncoras locais, caminhos de imagens, re
 ## Registros anteriores
 
 O [arquivo de auditorias até 0.19.0](history/audit-through-0.19.0.md) preserva causas, correções, casos exercitados e limitações das revisões anteriores. Contagens, processos e pendências ali devem ser interpretados pela data do registro.
+
+## Distribuição 0.20.0 — 26/10/2026
+
+500 testes backend/85 subtestes, 40 testes de scripts, 109 frontend e 24 E2E aprovados. Builds Linux nativo e Docker amd64, contratos, Ruff, tipos, lint e formatação aprovados. Smoke de navegador em ambos: consumo fictício de 6 kWh/mês, salvamento, PDF, axe sem violações e viewports 390/1440 px; projetos isolados preservados após reinício. Imagem runtime passou pip check e contém avisos/licenças de terceiros. Sem execução real em Windows/macOS/ARM. Histórico revisado para arquivos privados e padrões de credenciais; matches de URLs autenticadas são fixtures de segurança. Dados reais/acervo não entram no contexto Docker nem nos pacotes.
+
+ZIP ensaiado em cópia Git isolada antes do commit original, extraído em pasta com espaços e instalado sem dependências prévias nessa cópia. Preparação, migrações, build e navegador aprovados: 6 kWh/mês, salvamento, PDF, axe sem violações. As 12 tabelas reais continuam idênticas ao checkpoint 20261026T043321275895Z, com integridade/FK ok e contagens 11/36/10.

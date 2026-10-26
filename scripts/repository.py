@@ -1,4 +1,4 @@
-"""Bounded Git synchronization with the existing private GitHub repository only."""
+"""Bounded Git synchronization with the existing public GitHub repository only."""
 
 import json
 import os
@@ -46,29 +46,14 @@ def status(root, *, refresh=False):
         return {"configured": False, "reason": "Consulta Git indisponível; use os dados locais."}
 
 
-def private_origin(root):
+def public_origin(root):
     """Confirm destination/visibility without persisting or printing credentials."""
     remote = git(root, "remote", "get-url", "origin")
     if remote.returncode or remote.stdout.strip() not in REMOTES:
         raise ValueError("Envio permitido apenas para o origin GitHub já autorizado.")
-    token = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
-    if not token:
-        credential = subprocess.run(
-            ["git", "-C", str(root), "credential", "fill"],
-            input="protocol=https\nhost=github.com\n\n",
-            capture_output=True,
-            text=True,
-            timeout=20,
-            env={**os.environ, "GIT_TERMINAL_PROMPT": "0", "GCM_INTERACTIVE": "never"},
-        )
-        values = dict(line.split("=", 1) for line in credential.stdout.splitlines() if "=" in line)
-        token = values.get("password")
-    if not token:
-        raise ValueError("Credencial GitHub indisponível; nenhum envio realizado.")
     request = Request(
         f"https://api.github.com/repos/{REPOSITORY}",
         headers={
-            "Authorization": f"Bearer {token}",
             "Accept": "application/vnd.github+json",
             "User-Agent": "EletroProjeto-continuity",
         },
@@ -78,13 +63,13 @@ def private_origin(root):
             repository = json.load(response)
     except (HTTPError, URLError, OSError) as error:
         raise ValueError(
-            "Não foi possível confirmar a privacidade do GitHub; envio suspenso."
+            "Não foi possível confirmar a visibilidade pública do GitHub; envio suspenso."
         ) from error
     if (
         repository.get("full_name", "").lower() != REPOSITORY.lower()
-        or repository.get("private") is not True
+        or repository.get("private") is not False
     ):
-        raise ValueError("Destino não confirmado como o repositório privado autorizado.")
+        raise ValueError("Destino não confirmado como o repositório público autorizado.")
 
 
 def synchronize(root):
@@ -97,7 +82,7 @@ def synchronize(root):
             raise ValueError(
                 "Revise e faça o commit local antes de sincronizar; nenhum arquivo é adicionado automaticamente."
             )
-        private_origin(root)
+        public_origin(root)
         remote = status(root, refresh=True)
         if not remote.get("refreshed"):
             raise ValueError("Consulta ao GitHub falhou; nenhum envio realizado.")
@@ -117,7 +102,7 @@ def synchronize(root):
             or git(root, "rev-parse", "HEAD").stdout.strip() != head
         ):
             raise ValueError("Não foi possível confirmar o mesmo commit local e remoto.")
-        return {"ok": True, "repository": REPOSITORY, "private": True, "commit": head}
+        return {"ok": True, "repository": REPOSITORY, "private": False, "commit": head}
     except (OSError, subprocess.TimeoutExpired):
         return {
             "ok": False,

@@ -10,7 +10,7 @@ Consultas ORM dos projetos são filtradas pelo proprietário no escopo da requis
 
 Frontend remoto exige `NEXT_PUBLIC_AUTH_MODE=remote` e URL HTTPS da API; backend exige `AUTH_MODE=remote` e CORS_ORIGINS HTTPS explícito. Login/sair e escopo de rascunhos por conta implementados; tokens de sessão não são persistidos em localStorage. Rascunhos contêm dados pessoais em armazenamento local do perfil do navegador, sem criptografia própria; recuperação é oferecida antes de carregar, sem envio automático. O usuário autorizou recuperação neste pedido; em dispositivo compartilhado, apagar rascunhos locais e usar perfis separados. Slots independentes evitam sobrescrita entre abas; armazenamento bloqueado/cheio é informado.
 
-Código/histórico são sincronizados com o repositório GitHub privado autorizado; dados e originais permanecem locais. Sincronização exige destino fixo, main limpa, privacidade conferida e ausência de commits remotos a revisar. Não usa force-push, não armazena token e não publica o site. O antigo exportador GPG opcional foi retirado; recuperação atual e limites em [continuity](continuity.md).
+Código/histórico são sincronizados com o repositório GitHub público autorizado; dados e originais permanecem locais. Sincronização exige destino fixo, main limpa, visibilidade pública conferida e ausência de commits remotos a revisar. Não usa force-push, não armazena token e não publica o site. O antigo exportador GPG opcional foi retirado; recuperação atual e limites em [continuity](continuity.md).
 
 ## Proteções implementadas
 

@@ -73,4 +73,24 @@ No pull request, explique o comportamento esperado, os testes efetivos e qualque
 
 Banco, credenciais, `.env`, dependências, checkpoints e originais técnicos permanecem locais e ignorados. O workflow de qualidade está versionado em `.github/workflows`, mas GitHub Actions permanece desativado neste repositório; não apresente uma execução local como CI hospedado aprovado.
 
-Continuidade, sincronização privada e recuperação estão em [docs/continuity.md](docs/continuity.md). Vulnerabilidades devem ser tratadas conforme [SECURITY.md](SECURITY.md).
+Continuidade, sincronização com o destino público autorizado e recuperação estão em [docs/continuity.md](docs/continuity.md). Vulnerabilidades devem ser tratadas conforme [SECURITY.md](SECURITY.md).
+
+## Distribuição
+
+`start_local.py` prepara e inicia uma instalação local; testes não devem apontá-lo para o banco real. Para a imagem, `requirements-runtime.lock` é um subconjunto das versões já revisadas, sem dependências de testes ou ingestão opcional. Em Linux/Python 3.14, confira esse arquivo com:
+
+```sh
+backend/.venv/bin/python scripts/runtime_lock.py --check
+```
+
+Após revisar e commitar uma entrega, gere os arquivos de distribuição:
+
+```sh
+python3 scripts/package_release.py --output dist
+```
+
+O empacotador usa exclusivamente o commit indicado, recusa arquivos privados/symlinks e gera ZIP, manifesto e SHA-256. Dados ignorados e modificações ainda não commitadas não entram no pacote. Um arquivo existente com conteúdo diferente não é substituído silenciosamente. O pacote precisa ser extraído e iniciado em diretório isolado antes da publicação da release.
+
+Docker é compilado com `docker compose build`. Não compile a imagem junto com E2E. Use projeto Compose/porta/volume próprios no QA; verifique CRUD, relatório e persistência após reiniciar. A imagem expõe somente a interface em loopback; o proxy interno não transforma o modo local em implantação remota.
+
+As releases de distribuição são publicadas após as verificações, sem prometer build de executável Windows, imagem multi-arquitetura ou atualização automática. Código sob ISC; avisos de terceiros devem acompanhar os componentes redistribuídos.

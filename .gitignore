@@ -49,3 +49,7 @@ id_ed25519
 
 # Coletas oficiais territoriais: originais/evidências locais, sem mapa presumido
 /references/territory/
+
+# Instalação portátil e pacotes de distribuição
+/data/
+/dist/

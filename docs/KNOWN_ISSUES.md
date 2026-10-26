@@ -17,3 +17,7 @@ Resolvidas em0.11.0: DATA-01 (rascunhos recuperáveis por conta/aba, erros de ar
 VSP-40-W: divergência do catálogo antigo (60 W) corrigida para 140 W conforme página Mondial em 22/10. Não é pendência de implementação; instâncias antigas preservam os valores adotados e requerem conferência da placa/revalidação explícita. Não alterar potência manual apenas por divergir da sugestão.
 
 ENV-01/BUILD-01 eram restrições históricas do sandbox: nesta revisão0.17.0,serviçosHTTP,E2E/HTTPS ebuildwebpack executaram com sucesso no ambiente disponível. Não representam falha atual do produto;conferir novamente se o ambiente mudar. Busca textual da biblioteca segue literal e sem índice especializado;capacidade sob carga não foi medida.
+
+## Compatibilidade da distribuição 0.20.0
+
+Iniciadores Windows e macOS preparados, mas sem execução nesses sistemas. Docker validado somente em Linux amd64; ARM não validado. ZIP contém código-fonte e exige Python/Node/npm, com internet na preparação inicial. Repositório público não fornece aplicação hospedada nem acervo técnico original.

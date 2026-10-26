@@ -23,7 +23,7 @@ def repositories(tmp_path):
     run(local, "commit", "-m", "baseline")
     run(local, "remote", "add", "origin", str(remote))
     run(local, "push", "--set-upstream", "origin", "main")
-    with patch.object(r, "REMOTES", {str(remote)}), patch.object(r, "private_origin"):
+    with patch.object(r, "REMOTES", {str(remote)}), patch.object(r, "public_origin"):
         yield local, remote
 
 
@@ -65,17 +65,17 @@ def test_remote_changes_are_not_merged_or_overwritten(repositories, tmp_path):
     assert (local / "README.md").read_text() == "local change"
 
 
-def test_public_repository_is_refused_without_exposing_credentials(tmp_path, monkeypatch):
+def test_private_repository_is_refused_without_exposing_credentials(tmp_path, monkeypatch):
     monkeypatch.setenv("GH_TOKEN", "qa-only-not-a-real-token")
-    response = io.BytesIO(json.dumps({"full_name": r.REPOSITORY, "private": False}).encode())
+    response = io.BytesIO(json.dumps({"full_name": r.REPOSITORY, "private": True}).encode())
     with (
         patch.object(
             r, "git", return_value=subprocess.CompletedProcess([], 0, next(iter(r.REMOTES)), "")
         ),
         patch.object(r, "urlopen", return_value=response),
     ):
-        with pytest.raises(ValueError, match="privado"):
-            r.private_origin(tmp_path)
+        with pytest.raises(ValueError, match="público"):
+            r.public_origin(tmp_path)
 
 
 def test_unexpected_remote_never_receives_credentials(tmp_path):
@@ -90,7 +90,7 @@ def test_unexpected_remote_never_receives_credentials(tmp_path):
         patch.object(r, "urlopen") as request,
     ):
         with pytest.raises(ValueError, match="origin"):
-            r.private_origin(tmp_path)
+            r.public_origin(tmp_path)
         request.assert_not_called()
 
 
@@ -107,3 +107,30 @@ def test_offline_fetch_preserves_local_and_remote_commits(repositories):
     with patch.object(r, "git", side_effect=offline):
         assert not r.synchronize(local)["ok"]
     assert run(local, "rev-parse", "HEAD") == run(remote, "rev-parse", "main") == before
+
+
+def test_public_repository_is_checked_anonymously(tmp_path, monkeypatch):
+    monkeypatch.setenv("GH_TOKEN", "qa-only-never-sent")
+    response = io.BytesIO(json.dumps({"full_name": r.REPOSITORY, "private": False}).encode())
+    with (
+        patch.object(
+            r, "git", return_value=subprocess.CompletedProcess([], 0, next(iter(r.REMOTES)), "")
+        ),
+        patch.object(r, "urlopen", return_value=response) as request,
+    ):
+        r.public_origin(tmp_path)
+        assert not request.call_args.args[0].has_header("Authorization")
+
+
+def test_public_visibility_does_not_authorize_another_repository(tmp_path):
+    response = io.BytesIO(
+        json.dumps({"full_name": "other-owner/other-repo", "private": False}).encode()
+    )
+    with (
+        patch.object(
+            r, "git", return_value=subprocess.CompletedProcess([], 0, next(iter(r.REMOTES)), "")
+        ),
+        patch.object(r, "urlopen", return_value=response),
+    ):
+        with pytest.raises(ValueError, match="Destino"):
+            r.public_origin(tmp_path)

@@ -1,0 +1,25 @@
+EletroProjeto — uso local
+
+Opção 1: Windows
+Instale Python 3.11+ e Node.js 20.9+ e abra Iniciar-EletroProjeto.cmd.
+A primeira execução precisa de internet e prepara dependências/compilação.
+
+Opção 2: Linux/macOS
+Com Python 3.11+ e Node.js 20.9+, execute:
+  sh iniciar-eletroprojeto.sh
+
+Opção 3: Docker
+Com Docker e Compose instalados, execute nesta pasta:
+  docker compose up --build
+Abra http://127.0.0.1:3000.
+
+Os iniciadores abrem o navegador após a aplicação responder.
+Mantenha o terminal aberto; Ctrl+C encerra os serviços iniciados por ele.
+Não há instalação de serviço nem inicialização automática do computador.
+
+Dados nativos: data/eletroprojeto.db. Uma instalação já existente com banco
+em backend/eletroprojeto.db continua usando esse banco. Docker usa volume
+persistente próprio. Não apague pastas/volumes de dados para atualizar.
+
+Leia README.md e docs/setup.md para configuração, recuperação e limites.
+O pacote contém código, não dados pessoais, normas integrais ou runtimes.

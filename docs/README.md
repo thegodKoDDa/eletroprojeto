@@ -6,7 +6,7 @@ Para conhecer o projeto, comece pelo [README principal](../README.md). Escolha a
 
 | Guia | Conteúdo |
 | --- | --- |
-| [Instalação e configuração](setup.md) | Preparação, serviços, variáveis e Windows |
+| [Instalação e configuração](setup.md) | ZIP com iniciadores, Docker, clone, portas e dados |
 | [Guia de uso](usage.md) | Projeto, ambientes, consumo, salvamento e exportação |
 | [Formulários e relatórios](forms-and-pdf.md) | Dados opcionais, pendências, PDF/JSON e rastreabilidade |
 | [Continuidade e recuperação](continuity.md) | Banco, checkpoints, sincronização e manutenção |

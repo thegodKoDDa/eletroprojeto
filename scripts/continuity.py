@@ -542,7 +542,7 @@ def main():
     parser.add_argument(
         "--sync",
         action="store_true",
-        help="Enviar commits revisados ao origin privado ao encerrar.",
+        help="Enviar commits revisados ao origin público ao encerrar.",
     )
     parser.add_argument("--offline", action="store_true", help="Retomar sem consultar o GitHub.")
     args = parser.parse_args()

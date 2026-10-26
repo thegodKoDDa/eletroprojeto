@@ -1,0 +1,12 @@
+name: eletroprojeto
+services:
+  app:
+    build: .
+    ports:
+      - "127.0.0.1:${ELETROPROJETO_PORT:-3000}:3000"
+    volumes:
+      - projects:/data
+    init: true
+    stop_grace_period: 30s
+volumes:
+  projects:
