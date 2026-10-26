@@ -7,6 +7,7 @@
 - Projeção de consumo/custo em12meses, custos por ambiente/categoria, participação no subtotal e maiores consumos calculados no backend para todos os perfis.
 - Memória, JSON/PDF e correção de campos contemplam unidades/bases novas; zero, dados desconhecidos, cobertura parcial e limites normativos preservados.
 - 587 testes backend/85 subtestes, 128 frontend, 37 E2E locais e 1 HTTPS aprovados; contratos, tipos, lint, formatação/Ruff e build isolado aprovados.
+- Validação adicional pela interface: três residências equivalentes criadas, salvas e reabertas nos três perfis, com resultados iguais e dados anteriores preservados. Exemplos somente no banco local; código/versão inalterados.
 
 ## 0.23.0 — 26/10/2026 / motor 0.11.0 preservado
 

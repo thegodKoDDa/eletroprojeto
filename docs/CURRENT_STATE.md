@@ -2,6 +2,16 @@
 
 Atualizado em 26/10/2026. Consumo e preenchimentos ampliados nos três perfis: **USUÁRIO LEIGO**, **USUÁRIO PROFISSIONAL** e **ESTOU APENAS DANDO UMA OLHADA**. Perfis continuam sendo apresentação. Dados e limites normativos preservados; SQLite/schema0007 e relatório JSON1.4 compatível, com campos aditivos.
 
+## Demonstração real dos três perfis — 26/10/2026
+
+Pedido explícito: clicar em Novo projeto nos três perfis e preencher a mesma residência conforme cada apresentação. Feito no navegador real, usando botões, selects, formulários e Salvar projeto, sem POST direto de projetos nem edição SQL. Três exemplos **Casa Ipê — 72 m² — Leigo / Profissional / Exploração** salvos no banco local, com nomes identificáveis; não são distribuídos pelo GitHub.
+
+As três cópias têm7ambientes,14cadastros/15unidades, mesma geometria/pontos, referências, quantidades e consumo por aparelho. Hábitos e tarifa0,90BRL/kWh são cenário fictício explicitado nas observações. Leigo seguiu orientação e minutos; profissional revisou fontes/memória, usou etiqueta anual equivalente da geladeira, horas equivalentes do chuveiro e rotina comum na sala; exploração abriu recursos recolhidos. Campos opcionais conhecidos do croqui foram preenchidos nas três cópias para manter a casa equivalente. Distribuidora, FP sem fonte e dimensionamento não foram presumidos.
+
+Resultados conferidos nos três: **224,522kWh/mês**, custo exato202,0698BRL (exibido202,07), projeção2694,264kWh/12meses e2424,8376BRL (exibido2424,84). Potência cadastrada9922W, distinta do consumo. Todos os cadastros com consumo; nenhum erro de página. Os três projetos foram reabertos pela biblioteca e mantiveram dados/resultados/versão1; PDFs baixados pela interface. Artefatos de conferência e payloads apenas locais e privados. Dados fictícios não são inspeção ou aprovação técnica.
+
+Ponto inicial20261026T233451148874Z:14projetos/40históricos/12revisões. Estado após os três salvamentos: **17projetos/43históricos/12revisões**,16ativos/1lixeira; todas as linhas anteriores das12tabelas preservadas, SQLiteintegrity/FKok. Sem alterações de código/versão, dependências ou dados alheios. Testes proporcionais foram os cliques/preenchimento/salvamento/exportação/reabertura e comparação independente de equivalência; suítes anteriores não foram repetidas sem mudança de código. Encerramento/checkpoint final seguem a rotina e latest.json.
+
 ## Automação de consumo — entrega atual 0.24.0 / motor 0.12.0
 
 Tempo de uso em minutos ou horas, média mensal de etiqueta anual, projeções de12meses, custos por ambiente/categoria, participação no subtotal e ranking calculados no backend. Rotina comum preenche uma vez os aparelhos sem consumo/horários do ambiente, sem substituir dados parciais/manuais ou zeros. Restaurar referência conserva os novos dados. Todas as funções estão disponíveis nos três perfis, mantendo a apresentação simples e os detalhes recolhidos.
