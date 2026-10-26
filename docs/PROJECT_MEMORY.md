@@ -10,6 +10,12 @@ Consumo/custo recebem destaque, tarifa fica visível e uso dos aparelhos é expl
 
 Uso local. GitHub público distribui a fonte/histórico; dados privados continuam locais; implantação do site, CI hospedado, impressão física e cópia externa de dados privados continuam fora do escopo. O agente executa rotinas de terminal, sem delegá-las ao usuário. Autorização de manutenção/sincronização revisada em24/10/2026 está no AGENTS; não repetir perguntas para essas rotinas.
 
+## Visual e ajuda progressiva — 0.23.0
+
+Usar tokens compartilhados, PageHeading/SectionHeading/Feedback e estados com texto/símbolos além das cores. Superfícies neutras, controles de44px, cartões, tipografia do sistema e espaçamentos comuns em todas as telas; manter responsividade e teclado. Ajuda do leigo acompanha cinco tarefas e destaca automaticamente a próxima, sem roubar foco ou salvar por conta própria. Profissional tem atalhos explicados e acompanhamento opcional recolhido; exploração mantém organização com visual comum e ajuda opcional.
+
+Progresso é derivado de entradas, limites da API e resultado atual; consumo zero válido. Conferência explícita vinculada ao digest/escopo em memória do Workspace, invalidada em edição diferente, nova abertura/projeto; não é histórico técnico nem conformidade. Atalhos de uso aguardam recálculo e erros levam ao campo da API. Não tornar guia obrigatório para salvar/exportar, nem completar normas pendentes a partir de campos preenchidos. Detalhes em forms-and-pdf e usage.
+
 ## Invariantes
 
 - Um motor Python em `backend/app/calculations`, funções puras, Decimal, unidades explícitas e sem arredondamento intermediário. Frontend valida/formata; não replica fórmulas.

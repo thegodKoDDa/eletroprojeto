@@ -46,7 +46,18 @@ export function CalculationNotices({ notices, stale }: { notices: Notice[]; stal
         ];
         if (!items.length) return null;
         return (
-          <details key={group.category} open={group.category === 'error' ? true : undefined}>
+          <details
+            key={group.category}
+            className="notice-group"
+            data-tone={
+              group.category === 'error'
+                ? 'error'
+                : ['technical', 'normative'].includes(group.category)
+                  ? 'warning'
+                  : 'info'
+            }
+            open={group.category === 'error' ? true : undefined}
+          >
             <summary className={`cursor-pointer text-xs ${group.color}`}>
               {group.label} ({items.length})
             </summary>

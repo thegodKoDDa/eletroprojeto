@@ -56,7 +56,7 @@ test('home preserves sidebar branding and equipment disclosures stay compact and
       height: node.getBoundingClientRect().height,
     })),
   );
-  expect(geometry.every((item) => item.height <= 34)).toBe(true);
+  expect(geometry.every((item) => item.height >= 36 && item.height <= 40)).toBe(true);
   expect(
     Math.max(...geometry.map((item) => item.y)) - Math.min(...geometry.map((item) => item.y)),
   ).toBeLessThan(2);

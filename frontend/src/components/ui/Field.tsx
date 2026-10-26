@@ -113,15 +113,22 @@ export function Field({
       data-emphasis={fieldEmphasis(field, profile, required)}
     >
       <span className="field-label">
-        {label}
-        {required && (
-          <span
-            className="required-mark"
-            aria-hidden="true"
-            title={`Necessário para ${rule.purpose}`}
-          >
-            {' '}
-            *
+        <span>
+          {label}
+          {required && (
+            <span
+              className="required-mark"
+              aria-hidden="true"
+              title={`Necessário para ${rule.purpose}`}
+            >
+              {' '}
+              *
+            </span>
+          )}
+        </span>
+        {profile === 'beginner' && required && !error && (
+          <span className="field-completion" aria-label="Preenchido">
+            ✓
           </span>
         )}
       </span>

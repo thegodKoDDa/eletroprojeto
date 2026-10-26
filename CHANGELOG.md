@@ -1,5 +1,13 @@
 # Histórico de alterações
 
+## 0.23.0 — 26/10/2026 / motor 0.11.0 preservado
+
+- Repaginação comum: superfícies neutras, tipografia, espaçamentos, cabeçalhos, cartões, bordas, controles e feedback padronizados em todas as telas e perfis.
+- Leigo com tarefas concluídas automaticamente pelo estado atual e próximo passo destacado; conferência explícita da estimativa e salvamento independente.
+- Profissional com atalhos explicados e acompanhamento opcional; ajuda comum sobre preenchimento, zero/desconhecido e avisos nos três perfis.
+- Progresso aguarda recálculo, reabre tarefas após alteração e conduz à correção indicada pela API. Sem roubar foco, presumir dados, certificar normas ou modificar projetos/cálculos.
+- 570 testes backend/85 subtestes, 125 frontend, 34 E2E locais e 1 HTTPS aprovados; 3 E2E repetidos após compactar o guia móvel, tipos/lint/formatação/contratos e build isolado aprovados.
+
 ## 0.22.1 — 26/10/2026 / motor0.11.0 preservado
 
 - Refinamento dos dois perfis: navegação móvel recolhível, salvamento/exportação à vista e edição preservada ao cancelar novo projeto.

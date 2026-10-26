@@ -61,6 +61,7 @@ export function ProjectActions({
   return (
     <div className="project-actions" aria-label="Ações do projeto">
       <button
+        id="save-project"
         className="btn primary"
         disabled={locked}
         onClick={onSave}

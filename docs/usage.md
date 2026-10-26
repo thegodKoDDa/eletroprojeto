@@ -65,3 +65,13 @@ Nos circuitos, escolha isolação/método/arranjo reais; terminais para90°C, co
 Em **Referência territorial · ANEEL**, a consulta municipal opcional usa código IBGE de sete dígitos, mostra todas as empresas com relação positiva no último mês declarado por cada uma e preserva datas/atrasos. Confirme a empresa que atende o endereço pela fatura/contrato; a consulta não troca a distribuidora do projeto.
 
 Na edição do aparelho, **Etiqueta ou medição** reúne os kWh mensais; **Estimativa por horários** reúne horas e dias. São alternativas: kWh informados, inclusive zero, prevalecem. Limpar os kWh reabilita os horários preservados. **Restaurar referência** recupera os dados técnicos sugeridos sem apagar consumo/horários; duplicar cria outra instância, sem modificar o catálogo. No perfil profissional, **Parâmetros dos aparelhos** leva aos dados do primeiro aparelho e **Resultados e memória** reabre os detalhes quando necessário.
+
+## Acompanhe o próximo passo
+
+No perfil leigo, o quadro Passo a passo mostra o que já está concluído e a próxima ação. Preencha os dados no seu ritmo: o destaque avança sem tirar o cursor do campo. No celular, Ver todas as etapas expande a lista completa; a próxima ação continua visível quando a lista está recolhida. Use Ir para identificação/cadastro/dados de uso/conferência/salvamento para chegar ao destino e abrir os detalhes necessários. Não precisa seguir a ordem para usar os recursos.
+
+A sequência é identificar o projeto → cadastrar ambientes e aparelhos → informar o uso → conferir a estimativa → salvar. Consumo pendente pode ficar em aberto quando você não conhece o dado. Zero informado é válido e diferente de vazio. A tarifa é opcional; os estudos técnicos também.
+
+Quando houver consumo para todos os aparelhos cadastrados, leia os resultados e os avisos e clique Já conferi a estimativa. O quadro destaca o salvamento se ele estiver pendente. Alterar os dados pede nova conferência; reabrir ou recarregar também não presume que você leu a nova estimativa. Conferência do usuário não é aprovação técnica da instalação.
+
+No profissional, Acompanhar as etapas da estimativa oferece o mesmo percurso de forma opcional, abaixo dos atalhos explicados. Em qualquer perfil, Precisa de ajuda? explica as alternativas de preenchimento e o significado dos estados. Verde com confirmação indica tarefa concluída; âmbar indica pendência; vermelho indica correção; azul indica informação. Texto e símbolos acompanham as cores.

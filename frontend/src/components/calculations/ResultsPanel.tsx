@@ -1,4 +1,5 @@
 'use client';
+import { energyCompletionTarget } from '@/lib/journey';
 import { useExperience } from '@/lib/experience';
 import { SectionHeading } from '@/components/ui/SectionHeading';
 import { safeReferenceUrl } from '@/lib/safe-url';
@@ -19,6 +20,8 @@ const statusLabels = {
 
 export function ResultsPanel({
   result,
+  reviewed = false,
+  onReview,
   loading,
   stale,
   scope,
@@ -27,6 +30,8 @@ export function ResultsPanel({
   onScopeChange,
 }: {
   result?: CalculationResult;
+  reviewed?: boolean;
+  onReview?: () => void;
   loading: boolean;
   stale: boolean;
   scope: ProjectInput['analysis_scope'];
@@ -43,24 +48,9 @@ export function ResultsPanel({
   const issues = notices.filter((item) => ['error', 'technical'].includes(item.category));
   function completeEnergy(id = result?.energy_unknown_load_ids?.[0]) {
     if (!id) return;
-    const load = environments?.flatMap((room) => room.loads ?? []).find((item) => item.id === id);
-    const params = load?.parameters;
-    let field = 'parameters.usage_hours_per_day';
-    if (result?.unknown_load_ids?.includes(id)) {
-      field =
-        params?.power_mode === 'mechanical'
-          ? params.mechanical_power == null
-            ? 'parameters.mechanical_power'
-            : 'parameters.efficiency'
-          : 'unit_power_w';
-    } else if (params?.usage_hours_per_day != null) {
-      field =
-        params.usage_days_per_month == null
-          ? 'parameters.usage_days_per_month'
-          : 'parameters.monthly_energy_kwh';
-    }
-    focusField(`load.${id}.${field}`);
+    focusField(energyCompletionTarget({ environments }, result, id));
   }
+
   function loadLocation(id: string) {
     const room = environments?.find((item) => item.loads?.some((load) => load.id === id));
     const load = room?.loads?.find((item) => item.id === id);
@@ -180,6 +170,32 @@ export function ResultsPanel({
                 )}
               </div>
             </div>
+            {profile !== 'explore' &&
+              onReview &&
+              !!environments?.some((room) => room.loads?.length) &&
+              result.monthly_energy?.value != null &&
+              result.energy_unknown_load_ids?.length === 0 && (
+                <div className="estimate-confirm" data-state={reviewed ? 'complete' : 'pending'}>
+                  <div>
+                    <h3>
+                      {reviewed ? '✓ Estimativa conferida por você' : 'Confira antes de concluir'}
+                    </h3>
+                    <p>
+                      Revise aparelhos, quantidades e consumo. Leia os avisos abaixo. A conferência
+                      vale para estes dados e não certifica a instalação.
+                    </p>
+                  </div>
+                  <button
+                    id="estimate-confirm"
+                    type="button"
+                    className="btn"
+                    aria-pressed={reviewed}
+                    onClick={onReview}
+                  >
+                    {reviewed ? 'Conferência concluída' : 'Já conferi a estimativa'}
+                  </button>
+                </div>
+              )}
             {result.load_results?.some((item) => item.monthly_energy_kwh != null) && (
               <details className="mt-5">
                 <summary>Consumo por aparelho</summary>

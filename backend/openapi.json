@@ -3,7 +3,7 @@
   "info": {
     "title": "EletroProjeto",
     "description": "Cálculos de cargas residenciais: potência instalada (W/kW), potência aparente (VA/kVA), correntes, conversões, consumo mensal e estimativa de custo pela tarifa informada. Valores padrão são sugestões documentadas; valores manuais válidos são respeitados e recalculados. Previsão residencial de iluminação e TUG disponível por seleção explícita, com escopo e limites documentados. Demanda Energisa residencial parametrizada disponível em escopo limitado e inventário explícito. Demanda automática do cadastro e dimensionamento final permanecem pendentes.",
-    "version": "0.22.1"
+    "version": "0.23.0"
   },
   "paths": {
     "/api/v1/auth/session": {

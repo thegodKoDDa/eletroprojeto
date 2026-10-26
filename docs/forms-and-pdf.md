@@ -1,6 +1,6 @@
 # Formulários e relatórios
 
-Referência de comportamento atualizada na versão 0.22.1. O [guia de uso](usage.md) explica o percurso pela interface; [cálculos](calculations.md) e [fontes](standards.md) concentram fórmulas e condições técnicas.
+Referência de comportamento atualizada na versão 0.23.0. O [guia de uso](usage.md) explica o percurso pela interface; [cálculos](calculations.md) e [fontes](standards.md) concentram fórmulas e condições técnicas.
 
 ## Entradas e pendências
 
@@ -82,3 +82,17 @@ O menu móvel dos dois perfis é recolhível, preservando ações de salvar/expo
 Consumo agrupado em duas alternativas por fieldsets/legends: etiqueta/medição e horários. Prioridade de kWh, zero válido, horários latentes preservados e correção de valores inválidos permanecem iguais. Restaurar referência recebe explicação e não limpa o uso. Atalho profissional de concessionária nomeia seu destino real; parâmetros do primeiro aparelho ficam acessíveis por atalho. Resultados e memória passa a focar o summary interno, reabrindo os detalhes após fechamento manual. Fórmulas longas na memória quebram em telas estreitas: o teste de 320px revelou overflow que ficava oculto com os detalhes fechados.
 
 Não há alteração de fórmulas, requisitos da API, permissões, payloads de projetos, catálogo ou relatórios. Perfil continua sendo apenas apresentação. Verificações e limites desta entrega estão no CURRENT_STATE e no registro cumulativo da sessão.
+
+## Padrão visual e ajuda progressiva — 0.23.0
+
+Paleta compartilhada de superfícies neutras, texto/contraste, tipografia do sistema, espaçamentos, bordas, raios e controles. Início, entrada/perfis, editor, biblioteca técnica, projetos salvos, lixeira e acesso autenticado usam o mesmo CSS e componentes de títulos, seções e feedback. Ações principais usam verde; informação azul; pendências âmbar; erros/remoção vermelho. Estados também têm texto/símbolos, nunca dependem apenas da cor. Lista de projetos passa a cartões, cabeçalhos têm separação comum e avisos usam ícone/estrutura iguais. Nenhuma fonte remota ou dependência nova.
+
+Leigo recebe cinco tarefas: identificar projeto, cadastrar ambientes/aparelhos, informar uso, conferir estimativa e salvar. Estado deriva das entradas atuais, dos limites de texto fornecidos pela API, do resultado atual e da igualdade da edição salva. Campos obrigatórios válidos mostram Preenchido. Uma tarefa preenchida ganha Concluída e o próximo item é destacado automaticamente. O botão contextual leva ao campo correto e abre detalhes quando necessário; não há salto automático de foco enquanto a pessoa digita, preenchimento presumido ou salvamento implícito.
+
+Uso dos aparelhos só conclui com valor de consumo retornado pela API e nenhum aparelho pendente, incluindo zero válido. Não soma energia nem replica fórmulas no frontend. Durante recálculo, atalhos dessa tarefa aguardam o resultado atual; em erro, apontam para a entrada indicada pela API. A tarefa de cadastro cobre apenas os aparelhos que o usuário decidiu incluir, não prova inventário completo da casa. Tarifa continua opcional.
+
+A conferência exige clicar Já conferi a estimativa nos resultados. A confirmação é local à edição/sessão do Workspace e vinculada ao digest e escopo do projeto; não integra o payload ou histórico técnico. Dados diferentes, novo projeto ou reabertura exigem nova conferência. Resultado anterior não conclui tarefas novas. Salvar segue as rotinas existentes, com autosave/conflitos e histórico preservados. O relatório continua disponível sem impor essa orientação como bloqueio.
+
+Profissional tem cartões de atalhos com finalidade explícita e acompanhamento das mesmas tarefas recolhido. Nenhum estudo técnico opcional é marcado como validado pelo preenchimento. Exploração mantém organização/funcionalidades e recebe o padrão visual comum. Os três perfis têm ajuda recolhida explicando consumo, valores desconhecidos/zero, estados e limites dos estudos. Avisos de cálculo continuam localizados e oferecem correção no campo, com estado atualizado a cada resposta.
+
+Conclusão do percurso significa apenas cadastro, estimativa conferida pelo próprio usuário e edição salva. Não significa conformidade normativa, fatura completa, medição ou aprovação profissional. A fonte das regras e das pendências continua no backend. Verificações efetivas e limites estão no CURRENT_STATE/SESSION_HISTORY.

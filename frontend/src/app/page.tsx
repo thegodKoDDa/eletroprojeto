@@ -21,6 +21,7 @@ import { useExperience } from '@/lib/experience';
 import { AccessBoundary } from '@/components/projects/AccessBoundary';
 import { WorkspaceIcon } from '@/components/layout/WorkspaceIcon';
 import { useCalculation } from '@/lib/use-calculation';
+import { ContextHelp } from '@/components/ui/ContextHelp';
 import { PageHeading } from '@/components/ui/PageHeading';
 import { Feedback, type FeedbackTone } from '@/components/ui/Feedback';
 import { SectionHeading } from '@/components/ui/SectionHeading';
@@ -91,6 +92,7 @@ export default function Home() {
 function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => Promise<void> }) {
   const { profile } = useExperience();
   const professional = profile === 'professional';
+  const [estimateReview, setEstimateReview] = useState<{ scope: number; digest: string }>();
   const [mobileNavigationOpen, setMobileNavigationOpen] = useState(false);
   const [view, setView] = useState<'home' | 'project' | 'library' | 'trash' | 'knowledge'>('home');
   const [hasProject, setHasProject] = useState(false);
@@ -973,9 +975,22 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                   />
                 </header>
                 <ExperienceGuide
-                  firstLoadId={input.environments?.flatMap((room) => room.loads ?? [])[0]?.id}
+                  input={input}
+                  requirements={requirements}
+                  loading={loading}
+                  error={error}
+                  issueTarget={
+                    notifications.find((notice) => notice.category === 'error')?.target_id ??
+                    undefined
+                  }
+                  result={currentResult}
+                  reviewedDigest={
+                    estimateReview?.scope === calculationScope ? estimateReview.digest : undefined
+                  }
+                  saved={!!saved && !dirty}
                   onKnowledge={() => navigate('knowledge')}
                 />
+                <ContextHelp />
                 {operationIssues?.input === input && !error && (
                   <CalculationNotices
                     stale={false}
@@ -1476,6 +1491,18 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                   )}
                 </section>
                 <ResultsPanel
+                  reviewed={
+                    !!currentResult &&
+                    estimateReview?.scope === calculationScope &&
+                    estimateReview.digest === currentResult.input_digest
+                  }
+                  onReview={() => {
+                    if (currentResult)
+                      setEstimateReview({
+                        scope: calculationScope,
+                        digest: currentResult.input_digest,
+                      });
+                  }}
                   tariff={input.energy_tariff_brl_per_kwh}
                   result={result}
                   loading={loading}

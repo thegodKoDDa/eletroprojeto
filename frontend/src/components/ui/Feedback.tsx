@@ -16,7 +16,10 @@ export function Feedback({
       data-tone={tone}
       role={role ?? (tone === 'error' ? 'alert' : 'status')}
     >
-      {children}
+      <span className="feedback-icon" aria-hidden="true">
+        {tone === 'success' ? '✓' : tone === 'info' ? 'i' : '!'}
+      </span>
+      <div className="feedback-content">{children}</div>
     </div>
   );
 }
