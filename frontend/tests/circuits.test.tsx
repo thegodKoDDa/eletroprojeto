@@ -51,6 +51,7 @@ const input: ProjectInput = {
     {
       id: 'one',
       name: 'Iluminação',
+      configuration: 'single_phase',
       purpose: 'lighting',
       method: 'unknown',
       scope_confirmed: false,

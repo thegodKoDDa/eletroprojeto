@@ -142,12 +142,12 @@ def test_scope_boundary_with_project_inventory(power, status):
 @pytest.mark.parametrize(
     "group,ac", [("d6", "unconfirmed"), ("d7", "unconfirmed"), ("d5", "central_unit")]
 )
-def test_unsupported_equipment_cannot_be_approved(group, ac):
+def test_special_equipment_without_parameters_cannot_be_approved(group, ac):
     data = study()
     load = data["environments"][0]["loads"][0]
     load["energisa_demand"].update(group=group, air_conditioning_type=ac)
     result = reviewed(data)["energisa_demand"]
-    assert result["status"] == "out_of_scope" and result["value"] is None
+    assert result["status"] == "pending" and result["value"] is None
 
 
 def test_absence_conflict_and_unconfirmed_scope_are_pending():
@@ -201,3 +201,31 @@ def test_empty_inventory_and_mechanical_output_never_become_demand():
     result = reviewed(data)["energisa_demand"]
     assert result["status"] == "pending" and result["value"] is None
     assert result["inventory"][0]["unit_power_w"] is None
+
+
+def test_new_demand_parameters_are_saved_exported_and_invalidate_review():
+    data = study()
+    load = data["environments"][0]["loads"][0]
+    load["energisa_demand"].update(
+        group="d6",
+        motor=dict(configuration="single_phase", shaft_power_cv="1", source="Placa de teste"),
+    )
+    data["energisa_demand"]["confirmed_absent_groups"] = ["d1", "d3", "d4", "d5", "d7"]
+    result = reviewed(data)
+    assert result["energisa_demand"]["groups"][5]["demand_w"] == Decimal("1095.2")
+    restored = CalculationInput.model_validate(data).model_dump(mode="json")
+    assert calculate(restored)["energisa_demand"]["inventory_reviewed"]
+    assert (
+        build_summary(data, result)["demanda_revisada"]["inventory"][0]["motor"]["shaft_power_cv"]
+        == "1"
+    )
+    assert render_report(data, result).startswith(b"%PDF")
+    for key, value in [
+        ("configuration", "three_phase"),
+        ("shaft_power_cv", "2"),
+        ("source", "Outra fonte"),
+    ]:
+        changed = deepcopy(data)
+        changed["environments"][0]["loads"][0]["energisa_demand"]["motor"][key] = value
+        after = calculate(changed)["energisa_demand"]
+        assert not after["inventory_reviewed"] and after["value"] is None

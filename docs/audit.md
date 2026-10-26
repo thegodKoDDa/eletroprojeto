@@ -314,3 +314,9 @@ O novo E2E de teclado aguarda a tela pronta antes de ativar o link de salto e de
 A lista longa deixava a ação de adicionar distante no cabeçalho. Acrescentado botão após o último ambiente, alinhado à esquerda, usando addRoom e os mesmos bloqueios busy/exporting. Aparece com ao menos um ambiente e permanece no fim após cada criação. Verificação no navegador: criação sucessiva até3ambientes, alinhamento e390/1440px sem overflow, sem escrita de projetos;104testesfrontend eESLint/Prettier aprovados. Sem alteração de fórmulas, dados ou outras funcionalidades.
 
 Pedido posterior do usuário: botão inferior realinhado à direita (justify-end). Conferido no navegador com390/1440px e criação sucessiva, sem overflow ou escrita de projetos. Apenas posicionamento alterado; suítes anteriores não repetidas.
+
+## Estudos opcionais0.19.0 — 26/10/2026
+
+Fluxo01→02→03,início/sidebar,botão inferior àdireita econsumo prioritário preservados. Novos campos de demanda só aparecem no grupo correspondente; fontes/unidades/FP/corrente máxima são explícitos. Localização econsulta territorial têm disclosures próprios dentro deEstudos técnicos recolhidos. Ausência de geometria/coordenadas não bloqueia consumo.
+
+24E2Ecompletos aprovados;cenário novo salva/exporta demandaespecial/circuitotrifásico/envelope de componente,eexercita invalidação de revisão após mudar fonte. Axe eviewport320/390/768/1440semoverflow;captura técnica desktop inspecionada. Consulta territorial real no navegador com390/1440px,axe,sem pageerrors ou escrita de projetos;editar coordenada oculta resultado anterior. TypeScript/ESLint/Prettier/build aprovados. Validação comleitor de tela real continua descartada pelo usuário,não testada nem reaberta.

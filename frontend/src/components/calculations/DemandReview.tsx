@@ -1,4 +1,5 @@
 'use client';
+import { DemandLoadParameters } from './DemandLoadParameters';
 import { SectionHeading } from '@/components/ui/SectionHeading';
 
 import type { CalculationResult, Environment, Load, ProjectInput } from '@/lib/api';
@@ -10,8 +11,8 @@ const groups = [
   ['d3', 'Secadora, micro-ondas, lava-louças ou hidromassagem'],
   ['d4', 'Fogão ou forno elétrico'],
   ['d5', 'Ar-condicionado'],
-  ['d6', 'Motores — fora do escopo atual'],
-  ['d7', 'Solda transformador ou raios-X — fora do escopo atual'],
+  ['d6', 'Motores ou solda motor-gerador'],
+  ['d7', 'Solda transformador, raios-X ou galvanização'],
 ] as const;
 type Settings = NonNullable<ProjectInput['energisa_demand']>;
 type Group = (typeof groups)[number][0];
@@ -35,7 +36,7 @@ export function DemandReview({ input, result, onChange, onLoadChange }: Props) {
       <SectionHeading
         eyebrow="REVISÃO / NDU-001"
         title="Demanda Energisa — revisão do inventário"
-        description="Residência individual Energisa Sul-Sudeste/SP, até 75 kW, grupos d1–d5. Classifique as cargas e confirme o escopo; este estudo não dimensiona circuitos ou entrada."
+        description="Residência individual Energisa Sul-Sudeste/SP, até 75 kW, grupos d1–d7. Classifique as cargas e confirme o escopo; este estudo não dimensiona circuitos ou entrada."
       />
       <label className="mt-4 flex items-center gap-2">
         <input
@@ -164,11 +165,20 @@ export function DemandReview({ input, result, onChange, onLoadChange }: Props) {
                             <option value="window_or_individual">
                               Janela ou central individual
                             </option>
-                            <option value="central_unit">Unidade central — fora do escopo</option>
+                            <option value="central_unit">
+                              Unidade central — dados do fabricante
+                            </option>
                           </select>
                         </label>
                       )}
                     </div>
+                    {classification && !classification.reserve && (
+                      <DemandLoadParameters
+                        name={load.name}
+                        value={classification}
+                        onChange={update}
+                      />
+                    )}
                     <label className="mt-3 flex items-center gap-2">
                       <input
                         type="checkbox"
@@ -253,14 +263,23 @@ export function DemandReview({ input, result, onChange, onLoadChange }: Props) {
                           {format(band.factor)} · demanda {format(band.demand_w)} W
                         </p>
                       ))}
+                      {(group.components ?? []).map((component, index) => (
+                        <p key={index}>
+                          {component.name} · {component.quantity} unidade(s) · referência{' '}
+                          {component.table} · {format(component.unit_apparent_demand_va)} VA/unidade
+                          · FP {format(component.power_factor)}
+                          {component.factor != null ? ` · fator ${format(component.factor)}` : ''} ·
+                          demanda {format(component.demand_w)} W · fonte: {component.source}
+                        </p>
+                      ))}
                       {group.reason && <p>{group.reason}</p>}
                     </div>
                   ))}
                 </details>
               )}
               <p className="mt-3 text-xs muted">
-                NDU-001 7.0, §9.1, Tabelas 5–8/10. Estimativa condicionada ao inventário declarado,
-                sem aprovação pela concessionária.
+                NDU-001 7.0, §9.1, Tabelas 5–8/10/12–14 e nota I. Estimativa condicionada ao
+                inventário declarado, sem aprovação pela concessionária.
               </p>
             </div>
           )}

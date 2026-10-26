@@ -20,8 +20,8 @@ ENERGISA_V7_EVIDENCE = ResearchEvidence(
     url="https://www.energisa.com.br/sites/energisa/files/media/documents/2025-02/NDU%20001%20-%20Fornecimento%20de%20energia%20el%C3%A9trica%20em%20tens%C3%A3o%20secund%C3%A1ria%20a%20edifica%C3%A7%C3%B5es%20individuais%20ou%20agrupadas%20em%20at%C3%A9%20tr%C3%AAs%20unidades%20consumidoras.pdf",
     finding="Exemplar local de 162 páginas identifica Energisa, versão 7.0/novembro2024; §§1/2/6/9.1 e tabelas/notas conferidos. Hash identifica o arquivo enviado, sem afirmar igualdade binária com download oficial bloqueado.",
     access="user_supplied_full_text",
-    consulted_on="2026-10-23",
-    section="§§1/2,9.1 pp.56–57; tabelas5–8/10 pp.63–67; método residencial limitado d1–d5",
+    consulted_on="2026-10-26",
+    section="§§1/2,9.1 pp.56–57; tabelas5–8/10/12–14 pp.63–70 e notas I/VI/VII; método residencial d1–d7",
     file_name="NDU 001 - Fornecimento de energia elétrica em tensão secundária a edificações individuais ou agrupadas em até três unidades consumidoras.pdf",
     sha256="940b4aab66afc741e2f1f20d88ef2630672dcac2499928af31d807ac8d7442e2",
 )
@@ -125,14 +125,19 @@ RULES = (
         "Energisa NDU-001",
         "7.0",
         "2024-11-01",
-        "§9.1, Tabelas5–8/10",
+        "§9.1, Tabelas5–8/10/12–14 e notas I/VI/VII",
         "https://www.energisa.com.br/normas-tecnicas",
         "estimated",
-        "Método residencial §9.1 d1–d5 integrado ao cadastro mediante classificação e revisão explícitas; grupos especiais presentes exigem revisão própria.",
+        "Método residencial §9.1 d1–d7 integrado ao cadastro mediante classificação e revisão explícitas; grupos especiais exigem dados próprios e fontes.",
         ("utility", "state", "energisa_demand", "environments.loads.energisa_demand"),
         procedure="app.calculations.project_demand.project_energisa_demand",
-        limits="Somente residência individual Energisa Sul-Sudeste/SP até75kW, d1–d5, inventário explicitamente classificado/revisado. Grupos d6/d7 ou centrais presentes fora do escopo; sem dimensionamento final.",
-        tests=("tests/test_energisa.py", "tests/test_project_demand.py", "tests/test_api.py"),
+        limits="Somente residência individual Energisa Sul-Sudeste/SP até75kW, d1–d7, inventário explicitamente classificado/revisado. Motores somente nas linhas exatas das Tabelas12/13; especiais com VA/FP/ligação; centrais com corrente máxima do fabricante; sem dimensionamento final.",
+        tests=(
+            "tests/test_energisa.py",
+            "tests/test_energisa_special.py",
+            "tests/test_project_demand.py",
+            "tests/test_api.py",
+        ),
         label="Demanda da distribuidora",
         purpose="Estimativa de potência demandada pelo método da distribuidora; não é potência instalada nem consumo mensal.",
         evidence=(
@@ -153,7 +158,7 @@ RULES = (
         ),
         pending_checks=(
             "No método parametrizado, declarar inventário completo e classificação explícita, ausência dos grupos e reservas; base W distinta das previsões VA.",
-            "Revisar grupos d6/d7 e unidades centrais de ar-condicionado antes de ampliar o escopo.",
+            "Informar dados próprios e fontes para motores, solda, raios-X/galvanização e centrais; sem transferir regras à carga industrial.",
             "Revisar o inventário do projeto; selecionar a distribuidora sozinho não confirma classificação nem escopo.",
         ),
     ),
@@ -167,7 +172,7 @@ def pending_rule(code: str) -> dict:
         "unit": "kVA" if code == "demand" else "VA",
         "status": "pending" if rule.procedure or code == "demand" else rule.status,
         "reference": asdict(rule),
-        "reason": "Ative o painel de demanda e revise classificação, inventário e escopo para usar a NDU-001 7.0 d1–d5."
+        "reason": "Ative o painel de demanda e revise classificação, inventário e escopo para usar a NDU-001 7.0 d1–d7."
         if code == "demand"
         else rule.reason,
     }

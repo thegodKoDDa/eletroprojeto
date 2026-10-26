@@ -114,7 +114,7 @@ REGIONAL_METHODS = [
         endpoint="/api/v1/calculations/energisa-demand",
         status="estimated",
         available=True,
-        scope="Residência individual, Energisa Sul-Sudeste/SP, até75kW; d1–d5 classificados explicitamente, d6/d7 ausentes confirmados. Sem integração automática ao cadastro ou dimensionamento final.",
+        scope="Residência individual, Energisa Sul-Sudeste/SP, até75kW; d1–d7 classificados explicitamente, d6/d7/centrais com parâmetros próprios e fontes. Integrado ao cadastro mediante revisão; sem dimensionamento final.",
         reference=asdict(ENERGISA_V7_EVIDENCE),
     )
 ]
@@ -161,7 +161,7 @@ def applicability(utility: str, state: str = "SP"):
         if compatible
         else "out_of_scope",
         documents=[doc for doc in DOCUMENTS if doc["id"] in ids],
-        reason="Método NDU-001 7.0 d1–d5 disponível com classificação e revisão explícitas; não valida território ou dimensionamento final."
+        reason="Método NDU-001 7.0 d1–d7 disponível com classificação e revisão explícitas; não valida território ou dimensionamento final."
         if utility == "energisa_sul_sudeste" and state == "SP"
         else "Norma selecionada, mas cálculo específico ainda não validado."
         if compatible
@@ -230,7 +230,7 @@ def normative_capabilities(utility: str, state: str = "SP") -> list[dict]:
                 capability.update(
                     available=True,
                     status="estimated",
-                    reason="Método NDU-001 7.0 §9.1 d1–d5 disponível mediante classificação e revisão explícitas no painel de demanda.",
+                    reason="Método NDU-001 7.0 §9.1 d1–d7 disponível mediante classificação e revisão explícitas no painel de demanda.",
                     evidence=[asdict(ENERGISA_V7_EVIDENCE)],
                     pending_checks=["Confirmar escopo e revisar inventário no painel de demanda."],
                 )

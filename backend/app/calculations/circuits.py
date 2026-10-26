@@ -1,8 +1,8 @@
 """Reviewed residential subset, never a blanket installation approval.
 
-NBR5410:2004 table36 (Cu/PVC70, B1/B2, 2 loaded conductors), table40,
+NBR5410:2004 table36 (Cu/PVC70, A1/A2/B1/B2/C, 2 or 3 loaded conductors), table40,
 42 row1,47 and58; §§5.3.4.1/6.2.7. Prysmian LV Information2024 §5
-voltage-drop estimate, non-magnetic conduit, sinusoidal single-phase loads.
+voltage-drop estimate, non-magnetic conduit, sinusoidal single-phase or balanced three-phase loads without neutral.
 """
 
 from collections import Counter
@@ -13,8 +13,18 @@ from .protections import protection_checks
 D = Decimal
 SECTIONS = tuple(map(D, ("1.5", "2.5", "4", "6", "10", "16", "25", "35", "50", "70", "95")))
 CAPACITIES = {
+    "A1": tuple(map(D, ("14.5", "19.5", "26", "34", "46", "61", "80", "99", "119", "151", "182"))),
+    "A2": tuple(map(D, ("14", "18.5", "25", "32", "43", "57", "75", "92", "110", "139", "167"))),
+    "C": tuple(map(D, ("19.5", "27", "36", "46", "63", "85", "112", "138", "168", "213", "258"))),
     "B1": tuple(map(D, ("17.5", "24", "32", "41", "57", "76", "101", "125", "151", "192", "232"))),
     "B2": tuple(map(D, ("16.5", "23", "30", "38", "52", "69", "90", "111", "133", "168", "201"))),
+}
+THREE_LOADED_CAPACITIES = {
+    "A1": tuple(map(D, ("13.5", "18", "24", "31", "42", "56", "73", "89", "108", "136", "164"))),
+    "A2": tuple(map(D, ("13", "17.5", "23", "29", "39", "52", "68", "83", "99", "125", "150"))),
+    "B1": tuple(map(D, ("15.5", "21", "28", "36", "50", "68", "89", "110", "134", "171", "207"))),
+    "B2": tuple(map(D, ("15", "20", "27", "34", "46", "62", "80", "99", "118", "149", "179"))),
+    "C": tuple(map(D, ("17.5", "24", "32", "41", "57", "76", "96", "119", "144", "184", "223"))),
 }
 TEMPERATURE = {
     int(t): D(f)
@@ -42,7 +52,7 @@ SOURCES = [
     "https://br.prysmian.com/sites/br.prysmian.com/files/media/documents/Manual_Instalacoes_Eletricas.pdf",
 ]
 LIMITATIONS = [
-    "Escopo: cobre/PVC70°C, B1/B2, seções de1,5 a95mm²,2condutores carregados,50/60Hz, cargas senoidais monofásicas, conduto não magnético, PE no mesmo conduto e agrupamento homogêneo.",
+    "Escopo: cobre/PVC70°C, A1/A2/B1/B2/C, seções de1,5 a95mm²,2condutores monofásicos ou3trifásicos equilibrados sem neutro,50/60Hz, cargas senoidais indutivas/resistivas, sem FP capacitivo, conduto não magnético, PE no mesmo conduto e agrupamento homogêneo em feixe (Tabela42 linha1); sem sol direto.",
     "Queda estimada em regime, concentrando cargas na extremidade; partida de motores, harmônicas, curto térmico, desligamento automático, DR/DPS, seletividade e geometria exigem verificações próprias.",
     "Resultados não autorizam execução nem certificam conformidade final.",
 ]
@@ -57,6 +67,10 @@ def circuit_current(circuit, loads, results):
     voltage = D(str(voltage))
     if voltage > 1000:
         return None, None, "Tensão acima de1000Vca fora deste escopo de baixa tensão."
+    configuration = circuit.get("configuration", "single_phase")
+    if configuration not in {"single_phase", "balanced_three_phase_without_neutral"}:
+        return None, None, "Configuração de circuito fora do escopo implementado."
+    expected = "single_phase" if configuration == "single_phase" else "balanced_three_phase"
     active = D(0)
     reactive = D(0)
     for key in circuit["load_ids"]:
@@ -67,8 +81,12 @@ def circuit_current(circuit, loads, results):
         if load.get("voltage_v") is None or D(str(load["voltage_v"])) != voltage:
             return None, None, "Confirme tensão de cada carga igual à do circuito."
         params = load.get("parameters") or {}
-        if params.get("configuration") != "single_phase":
-            return None, None, "Somente cargas explicitamente monofásicas são abrangidas."
+        if params.get("configuration") != expected:
+            return (
+                None,
+                None,
+                "Confirme a mesma configuração em todas as cargas: monofásica ou trifásica equilibrada, conforme o circuito; cargas mistas ou desequilibradas exigem estudo próprio.",
+            )
         pf = D(1) if params.get("assume_resistive") else load.get("power_factor")
         power = result.get("electrical_input_w")
         if pf is None or power is None or D(str(power)) <= 0:
@@ -84,16 +102,17 @@ def circuit_current(circuit, loads, results):
         active += power
         reactive += power * (D(1) - pf * pf).sqrt() / pf
     apparent = (active * active + reactive * reactive).sqrt()
-    return apparent / voltage, active / apparent, None
+    divisor = voltage * (D(3).sqrt() if expected == "balanced_three_phase" else D(1))
+    return apparent / divisor, active / apparent, None
 
 
-def voltage_drop(current, pf, length, section):
+def voltage_drop(current, pf, length, section, three_phase=False):
     """Prysmian2024 §5: rho=.0225Ωmm²/m, lambda=.00008Ω/m.
 
     Explicit model acknowledgement required by caller. No assumed FP.
     """
     return (
-        D(2)
+        (D(3).sqrt() if three_phase else D(2))
         * length
         * current
         * (D(".0225") / section * pf + D(".00008") * (D(1) - pf * pf).sqrt())
@@ -195,7 +214,9 @@ def calculate_circuits(project, load_results):
             if total_limit is not None and upstream is not None:
                 terminal_limit = min(terminal_limit, total_limit - D(str(upstream)))
             chosen = None
-            for section, base in zip(SECTIONS, CAPACITIES[method]):
+            three_phase = circuit.get("configuration") == "balanced_three_phase_without_neutral"
+            capacities = THREE_LOADED_CAPACITIES if three_phase else CAPACITIES
+            for section, base in zip(SECTIONS, capacities[method]):
                 capacity = base * tf * gf
                 i2_limit = (
                     D("1.45") if circuit.get("overload_duration_confirmed") else D(1)
@@ -219,7 +240,7 @@ def calculate_circuits(project, load_results):
                 ):
                     continue
                 drop = (
-                    voltage_drop(current, pf, D(str(length)), section)
+                    voltage_drop(current, pf, D(str(length)), section, three_phase)
                     if length is not None and drop_ack
                     else None
                 )

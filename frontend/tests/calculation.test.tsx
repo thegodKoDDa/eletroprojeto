@@ -253,6 +253,7 @@ test.each([
       {
         id: 'circuit',
         name: 'Circuito',
+        configuration: 'single_phase' as const,
         purpose: 'sockets' as const,
         method: 'unknown' as const,
         scope_confirmed: false,

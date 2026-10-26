@@ -363,3 +363,74 @@ def test_extended_capacity_still_applies_grouping_temperature_and_unknowns():
     row = calculate_circuits(project, resolved)[0]
     assert row["phase_section_mm2"] is None
     assert row["pe_section_mm2"] is None
+
+
+@pytest.mark.parametrize(
+    "method,phase,capacity,section",
+    [
+        ("A1", False, "19.5", "2.5"),
+        ("A2", False, "18.5", "2.5"),
+        ("C", False, "27", "2.5"),
+        ("A1", True, "18", "2.5"),
+        ("A2", True, "17.5", "2.5"),
+        ("B1", True, "21", "2.5"),
+        ("B2", True, "20", "2.5"),
+        ("C", True, "24", "2.5"),
+        ("A1", True, "164", "95"),
+        ("A2", True, "150", "95"),
+        ("B1", True, "207", "95"),
+        ("B2", True, "179", "95"),
+        ("C", True, "223", "95"),
+    ],
+)
+def test_reviewed_table36_capacity_at_equality_and_above(method, phase, capacity, section):
+    project, resolved = setup_circuit()
+    c = project["circuits"][0]
+    load = project["environments"][0]["loads"][0]
+    c.update(method=method, breaker_ratings_a=[capacity], length_m="0.01")
+    resolved[0]["electrical_input_w"] = D("100")
+    if phase:
+        c["configuration"] = "balanced_three_phase_without_neutral"
+        load["parameters"]["configuration"] = "balanced_three_phase"
+    row = calculate_circuits(project, resolved)[0]
+    assert row["phase_section_mm2"] == D(section)
+    assert row["capacity_a"] == D(capacity)
+    c["breaker_ratings_a"] = [str(D(capacity) + D(".000001"))]
+    bigger = calculate_circuits(project, resolved)[0]
+    assert (
+        bigger["phase_section_mm2"] is None
+        if section == "95"
+        else bigger["phase_section_mm2"] > D(section)
+    )
+
+
+def test_balanced_three_phase_current_and_voltage_drop_independent_resistive_example():
+    from decimal import localcontext
+
+    project, resolved = setup_circuit()
+    c = project["circuits"][0]
+    load = project["environments"][0]["loads"][0]
+    c.update(
+        configuration="balanced_three_phase_without_neutral",
+        method="B1",
+        voltage_v="220",
+        length_m="30",
+    )
+    load["parameters"]["configuration"] = "balanced_three_phase"
+    resolved[0]["electrical_input_w"] = D("6600")
+    row = calculate_circuits(project, resolved)[0]
+    with localcontext() as ctx:
+        ctx.prec = 40
+        assert abs(row["design_current_a"] - D(30) / D(3).sqrt()) < D("1e-36")
+    assert row["breaker_a"] == 25 and row["phase_section_mm2"] == 4
+    assert abs(row["voltage_drop_v"] - D("5.0625")) < D("1e-36")
+
+
+def test_phase_mixture_never_sizes_and_legacy_configuration_is_preserved():
+    project, resolved = setup_circuit()
+    legacy = calculate_circuits(project, resolved)
+    project["circuits"][0]["configuration"] = "single_phase"
+    assert calculate_circuits(project, resolved) == legacy
+    project["circuits"][0]["configuration"] = "balanced_three_phase_without_neutral"
+    row = calculate_circuits(project, resolved)[0]
+    assert row["design_current_a"] is None and row["phase_section_mm2"] is None

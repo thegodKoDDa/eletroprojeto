@@ -1,5 +1,12 @@
 # Histórico de alterações
 
+## 0.19.0 — 26/10/2026 / motor0.10.0
+
+- Demanda d6/d7/centrais integrada ao inventário revisado, memória e exportações, com fontes/parâmetros explícitos; W/VA/FP/corrente máxima separados, reservas/limites preservados e ambiguidade W/VA pendente.
+- Circuitos Cu/PVC70 ampliados a A1/A2/B1/B2/C mono ou trifásico equilibrado sem neutro; envelopes/volumes e restrições de tomadas/interruptores no arranjo restrito de chuveiro dafigura18.
+- Coleta oficial ANEEL121feições obtida/preservada localmente; consulta pontualSIRGAS2000 informa fontes/períodos/fronteiras sem inferir município, sucessor ou seleção automática.
+- 500 testes backend + 85 subtestes, 109 frontend e 24 E2E aprovados; contratos, tipos, lint, formatação e build aprovados. As 12 tabelas reais permanecem idênticas ao checkpoint inicial. Sem migração, regravação ou exclusão; limites em CURRENT_STATE/standards.
+
 ## Alinhamento do botão — 25/10/2026
 
 - Botão inferior Adicionar ambiente alinhado à direita conforme pedido do usuário; criação e posição após a lista preservadas.

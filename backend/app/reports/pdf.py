@@ -531,7 +531,7 @@ def render_report(project, result, project_version=None):
     if regional:
         doc.section("Demanda revisada — NDU-001 7.0")
         doc.line(
-            "Estimativa d1–d5; inventário e classificação declarados. Não dimensiona a instalação."
+            "Estimativa d1–d7; inventário e classificação declarados. Não dimensiona a instalação."
         )
         declarations = regional["declarations"]
         unit_labels = {
@@ -596,7 +596,7 @@ def render_report(project, result, project_version=None):
             if group["factor"] is not None:
                 doc.line(group["group"] + " — fator por quantidade: " + val(group["factor"]))
             if group["bands"]:
-                doc.line(group["group"] + " — faixas cumulativas da Tabela 5")
+                doc.line(group["group"] + " — parcelas de iluminação/TUG ou AC individual")
                 doc.table(
                     ["Faixa W", "Fator", "Demanda W"],
                     [
@@ -604,6 +604,24 @@ def render_report(project, result, project_version=None):
                         for band in group["bands"]
                     ],
                     [35, 30, 35],
+                )
+            for component in group.get("components", []):
+                doc.line(
+                    component["name"]
+                    + " — "
+                    + str(component["quantity"])
+                    + " unidade(s); referência "
+                    + component["table"]
+                    + "; VA/unidade="
+                    + val(component["unit_apparent_demand_va"])
+                    + "; FP="
+                    + val(component["power_factor"])
+                    + "; fator="
+                    + val(component["factor"])
+                    + "; demanda W="
+                    + val(component["demand_w"])
+                    + "; fonte: "
+                    + component["source"]
                 )
         for message in regional["pending_checks"] + regional["limitations"]:
             doc.line(message)
@@ -613,6 +631,24 @@ def render_report(project, result, project_version=None):
             + "; "
             + regional["reference"]["section"]
         )
+    if result.get("bathroom_geometry_results"):
+        doc.section("Localização — volumes de chuveiro (estudo condicionado)")
+        for room in result["bathroom_geometry_results"]:
+            doc.line(room["name"] + " — " + room["status"])
+            for point in room["points"]:
+                doc.line(
+                    point["name"]
+                    + "; volume="
+                    + (point["volume"] or "pendente")
+                    + "; distância horizontal mínima="
+                    + val(point["nearest_horizontal_distance_m"])
+                    + " m"
+                )
+                for message in point["pending_checks"]:
+                    doc.line(message)
+            for message in room["pending_checks"] + room["limitations"]:
+                doc.line(message)
+            doc.line(room["reference"])
     if result.get("circuit_results"):
         doc.section("Estudo de circuitos — seleção condicionada")
         for circuit in result["circuit_results"]:

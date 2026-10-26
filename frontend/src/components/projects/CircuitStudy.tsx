@@ -245,9 +245,10 @@ export function CircuitStudy({
           description="Associe cargas e confira corrente, seção, sobrecarga e queda de tensão no escopo suportado."
         />
         <p className="mt-3 text-xs muted">
-          Cobre/PVC70°C, métodos B1/B2, seções de 1,5 a 95 mm², dois condutores carregados, 50/60Hz.
-          Resultados condicionados às informações reais; partida, harmônicas, curto térmico,
-          proteção contra choque e seletividade exigem verificação específica.
+          Cobre/PVC70°C, métodos A1/A2/B1/B2/C, seções de 1,5 a 95 mm², dois condutores monofásicos
+          ou três trifásicos equilibrados sem neutro, 50/60Hz. Resultados condicionados às
+          informações reais; partida, harmônicas, curto térmico, proteção contra choque e
+          seletividade exigem verificação específica.
         </p>
         <button
           className="btn mt-3"
@@ -258,6 +259,7 @@ export function CircuitStudy({
               {
                 id: crypto.randomUUID(),
                 name: `Circuito ${circuits.length + 1}`,
+                configuration: 'single_phase',
                 purpose: 'sockets',
                 load_ids: [],
                 method: 'unknown',
@@ -314,6 +316,22 @@ export function CircuitStudy({
                     </select>
                   </label>
                   <label>
+                    Configuração do circuito
+                    <select
+                      value={c.configuration ?? 'single_phase'}
+                      onChange={(event) =>
+                        edit(index, {
+                          configuration: event.target.value as Circuit['configuration'],
+                        })
+                      }
+                    >
+                      <option value="single_phase">Monofásico — dois condutores carregados</option>
+                      <option value="balanced_three_phase_without_neutral">
+                        Trifásico equilibrado — três condutores, sem neutro
+                      </option>
+                    </select>
+                  </label>
+                  <label>
                     Método de instalação
                     <select
                       value={c.method}
@@ -322,6 +340,15 @@ export function CircuitStudy({
                       }
                     >
                       <option value="unknown">Confirmar método</option>
+                      <option value="A1">
+                        A1 — condutores isolados em eletroduto em parede termicamente isolante
+                      </option>
+                      <option value="A2">
+                        A2 — cabo multipolar em eletroduto em parede termicamente isolante
+                      </option>
+                      <option value="C">
+                        C — cabos fixados diretamente à parede (conferir Tabela 33)
+                      </option>
                       <option value="B1">
                         B1 — condutores isolados/cabos unipolares em eletroduto
                       </option>
@@ -465,9 +492,10 @@ export function CircuitStudy({
                       checked={c.scope_confirmed ?? false}
                       onChange={(event) => edit(index, { scope_confirmed: event.target.checked })}
                     />
-                    Conferi instalação fixa, cobre/PVC70°C, método, dois condutores carregados,
-                    conduto não magnético, PE no mesmo conduto, cargas indutivas/resistivas
-                    senoidais e agrupamento homogêneo nas condições mais desfavoráveis do percurso.
+                    Conferi instalação fixa, cobre/PVC70°C, método, configuração mono/trifásica sem
+                    neutro, agrupamento homogêneo em feixe, ausência de sol direto, conduto não
+                    magnético, PE no mesmo conduto, cargas indutivas/resistivas senoidais e
+                    agrupamento homogêneo nas condições mais desfavoráveis do percurso.
                   </label>
                   <label className="checkbox-option">
                     <input

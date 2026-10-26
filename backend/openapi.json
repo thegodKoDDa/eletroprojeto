@@ -3,7 +3,7 @@
   "info": {
     "title": "EletroProjeto",
     "description": "Cálculos de cargas residenciais: potência instalada (W/kW), potência aparente (VA/kVA), correntes, conversões, consumo mensal e estimativa de custo pela tarifa informada. Valores padrão são sugestões documentadas; valores manuais válidos são respeitados e recalculados. Previsão residencial de iluminação e TUG disponível por seleção explícita, com escopo e limites documentados. Demanda Energisa residencial parametrizada disponível em escopo limitado e inventário explícito. Demanda automática do cadastro e dimensionamento final permanecem pendentes.",
-    "version": "0.18.0"
+    "version": "0.19.0"
   },
   "paths": {
     "/api/v1/auth/session": {
@@ -1134,7 +1134,7 @@
           "Cálculos"
         ],
         "summary": "Energisa Demand",
-        "description": "NDU-001 v7 residencial individual d1–d5, inventário explícito; sem dimensionamento final.",
+        "description": "NDU-001 v7 residencial individual d1–d7, inventário explícito; sem dimensionamento final.",
         "operationId": "energisa_demand_api_v1_calculations_energisa_demand_post",
         "requestBody": {
           "content": {
@@ -1288,6 +1288,79 @@
                     "$ref": "#/components/schemas/UtilityInfo"
                   },
                   "title": "Response Utilities Api V1 Utilities Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Entradas inválidas; avisos localizados quando disponíveis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InputValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/locations/territory": {
+      "get": {
+        "tags": [
+          "Localização"
+        ],
+        "summary": "Territory",
+        "operationId": "territory_api_v1_locations_territory_get",
+        "parameters": [
+          {
+            "name": "latitude",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "maximum": 90.0,
+                  "minimum": -90.0
+                },
+                {
+                  "type": "string"
+                }
+              ],
+              "description": "Latitude SIRGAS2000 (EPSG4674); sem reprojeção automática.",
+              "title": "Latitude"
+            },
+            "description": "Latitude SIRGAS2000 (EPSG4674); sem reprojeção automática."
+          },
+          {
+            "name": "longitude",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "maximum": 180.0,
+                  "minimum": -180.0
+                },
+                {
+                  "type": "string"
+                }
+              ],
+              "description": "Longitude SIRGAS2000 (EPSG4674).",
+              "title": "Longitude"
+            },
+            "description": "Longitude SIRGAS2000 (EPSG4674)."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TerritoryLookup"
                 }
               }
             }
@@ -2033,6 +2106,345 @@
         ],
         "title": "AccessSession"
       },
+      "BathroomGeometry": {
+        "properties": {
+          "scope_confirmed": {
+            "type": "boolean",
+            "title": "Scope Confirmed",
+            "default": false
+          },
+          "shower_x_m": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Shower X M"
+          },
+          "shower_y_m": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Shower Y M"
+          },
+          "measurement_source": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Measurement Source"
+          },
+          "points": {
+            "items": {
+              "$ref": "#/components/schemas/BathroomInstallationPoint"
+            },
+            "type": "array",
+            "maxItems": 200,
+            "title": "Points"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "BathroomGeometry"
+      },
+      "BathroomGeometryResult": {
+        "properties": {
+          "environment_id": {
+            "type": "string",
+            "title": "Environment Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "calculated",
+              "estimated",
+              "pending",
+              "invalid",
+              "out_of_scope",
+              "awaiting_technical_validation"
+            ],
+            "title": "Status"
+          },
+          "points": {
+            "items": {
+              "$ref": "#/components/schemas/BathroomPointResult"
+            },
+            "type": "array",
+            "title": "Points"
+          },
+          "pending_checks": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Pending Checks"
+          },
+          "reference": {
+            "type": "string",
+            "title": "Reference"
+          },
+          "reference_urls": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Reference Urls"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Limitations"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "environment_id",
+          "name",
+          "status",
+          "points",
+          "pending_checks",
+          "reference",
+          "reference_urls",
+          "limitations"
+        ],
+        "title": "BathroomGeometryResult"
+      },
+      "BathroomInstallationPoint": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Name",
+            "default": "Novo componente"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "socket",
+              "switch",
+              "water_heater",
+              "luminaire",
+              "other"
+            ],
+            "title": "Kind",
+            "default": "other"
+          },
+          "x_min_m": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "X Min M"
+          },
+          "x_max_m": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "X Max M"
+          },
+          "y_min_m": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Y Min M"
+          },
+          "y_max_m": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Y Max M"
+          },
+          "z_min_m": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Z Min M"
+          },
+          "z_max_m": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Z Max M"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "BathroomInstallationPoint"
+      },
+      "BathroomPointResult": {
+        "properties": {
+          "point_id": {
+            "type": "string",
+            "title": "Point Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "calculated",
+              "estimated",
+              "pending",
+              "invalid",
+              "out_of_scope",
+              "awaiting_technical_validation"
+            ],
+            "title": "Status"
+          },
+          "volume": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "1",
+                  "2",
+                  "3",
+                  "outside"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Volume"
+          },
+          "nearest_horizontal_distance_m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nearest Horizontal Distance M"
+          },
+          "ordinary_socket_or_switch_forbidden": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ordinary Socket Or Switch Forbidden"
+          },
+          "pending_checks": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Pending Checks"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "point_id",
+          "name",
+          "status",
+          "volume",
+          "nearest_horizontal_distance_m",
+          "ordinary_socket_or_switch_forbidden",
+          "pending_checks"
+        ],
+        "title": "BathroomPointResult"
+      },
       "CalculationInput": {
         "properties": {
           "service_entry": {
@@ -2239,6 +2651,13 @@
                 "type": "null"
               }
             ]
+          },
+          "bathroom_geometry_results": {
+            "items": {
+              "$ref": "#/components/schemas/BathroomGeometryResult"
+            },
+            "type": "array",
+            "title": "Bathroom Geometry Results"
           },
           "circuit_results": {
             "items": {
@@ -2726,6 +3145,15 @@
       },
       "CircuitInput": {
         "properties": {
+          "configuration": {
+            "type": "string",
+            "enum": [
+              "single_phase",
+              "balanced_three_phase_without_neutral"
+            ],
+            "title": "Configuration",
+            "default": "single_phase"
+          },
           "protections": {
             "anyOf": [
               {
@@ -2771,8 +3199,11 @@
             "type": "string",
             "enum": [
               "unknown",
+              "A1",
+              "A2",
               "B1",
-              "B2"
+              "B2",
+              "C"
             ],
             "title": "Method",
             "default": "unknown"
@@ -3548,6 +3979,90 @@
         ],
         "title": "DocumentRegistry"
       },
+      "EnergisaCentralData": {
+        "properties": {
+          "configuration": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "single_phase",
+                  "balanced_three_phase"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Configuration"
+          },
+          "voltage_v": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1000.0,
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Voltage V",
+            "description": "Tensão aplicada; entre fases para trifásico equilibrado."
+          },
+          "maximum_total_current_a": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Maximum Total Current A"
+          },
+          "power_factor": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Power Factor"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source",
+            "description": "Fabricante: corrente máxima total, tensão, configuração e FP no mesmo regime. Não usar MCA, corrente nominal ou corrente de partida como corrente máxima total."
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "EnergisaCentralData"
+      },
       "EnergisaDemandBand": {
         "properties": {
           "installed_band_w": {
@@ -3592,6 +4107,85 @@
           "demand_w"
         ],
         "title": "EnergisaDemandBand"
+      },
+      "EnergisaDemandComponent": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "quantity": {
+            "type": "integer",
+            "title": "Quantity"
+          },
+          "table": {
+            "type": "string",
+            "title": "Table"
+          },
+          "unit_apparent_demand_va": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Unit Apparent Demand Va"
+          },
+          "power_factor": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Power Factor"
+          },
+          "factor": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Factor"
+          },
+          "demand_w": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Demand W"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "name",
+          "quantity",
+          "table",
+          "unit_apparent_demand_va",
+          "power_factor",
+          "demand_w",
+          "source"
+        ],
+        "title": "EnergisaDemandComponent"
       },
       "EnergisaDemandGroupResult": {
         "properties": {
@@ -3675,6 +4269,13 @@
             },
             "type": "array",
             "title": "Bands"
+          },
+          "components": {
+            "items": {
+              "$ref": "#/components/schemas/EnergisaDemandComponent"
+            },
+            "type": "array",
+            "title": "Components"
           }
         },
         "additionalProperties": false,
@@ -3805,6 +4406,36 @@
       },
       "EnergisaDemandLoad": {
         "properties": {
+          "motor": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EnergisaMotorData"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "central": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EnergisaCentralData"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "special": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EnergisaSpecialData"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "name": {
             "type": "string",
             "maxLength": 200,
@@ -3823,7 +4454,7 @@
               "d7"
             ],
             "title": "Group",
-            "description": "Classificação explícita §9.1: d1 iluminação/TUG; d2 aquecimento de água; d3 secadora de roupas/micro-ondas/lava-louças/hidromassagem; d4 fogão/forno elétrico; d5 AC janela/individual; d6 motores; d7 solda transformador/raios-X. Sem classificação automática."
+            "description": "Classificação explícita §9.1: d1 iluminação/TUG; d2 aquecimento de água; d3 secadora de roupas/micro-ondas/lava-louças/hidromassagem; d4 fogão/forno elétrico; d5 AC janela/individual/central; d6 motores/solda motor-gerador; d7 solda transformador/raios-X/galvanização. Sem classificação automática."
           },
           "quantity": {
             "type": "integer",
@@ -4004,6 +4635,36 @@
             ],
             "title": "Group"
           },
+          "motor": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EnergisaMotorData"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "central": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EnergisaCentralData"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "special": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EnergisaSpecialData"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "reserve": {
             "type": "boolean",
             "title": "Reserve",
@@ -4024,8 +4685,153 @@
         "type": "object",
         "title": "EnergisaLoadClassification"
       },
+      "EnergisaMotorData": {
+        "properties": {
+          "configuration": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "single_phase",
+                  "three_phase"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Configuration"
+          },
+          "shaft_power_cv": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 20,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Shaft Power Cv",
+            "description": "Potência de eixo em cv, conforme linha exata das Tabelas12/13. Frações: 1/6,1/4,1/3,1/2,2/3,3/4; demais: 1,1.5,2,3,4,5,6,7.5,10,12.5,15,20,25,30. Não converter HP automaticamente."
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source",
+            "description": "Placa/ficha que identifica fases e potência de eixo; motor ou solda motor-gerador."
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "EnergisaMotorData"
+      },
+      "EnergisaSpecialData": {
+        "properties": {
+          "equipment_type": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "arc_welder",
+                  "resistance_welder",
+                  "x_ray",
+                  "galvanization"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Equipment Type"
+          },
+          "connection": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "standard",
+                  "inverted_v_v",
+                  "not_applicable"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Connection"
+          },
+          "input_apparent_power_va": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Input Apparent Power Va"
+          },
+          "power_factor": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Power Factor"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source",
+            "description": "Placa/fabricante: potência aparente elétrica absorvida, FP no mesmo regime e ligação; não potência de saída."
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "EnergisaSpecialData"
+      },
       "Environment": {
         "properties": {
+          "bathroom_geometry": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/BathroomGeometry"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "id": {
             "type": "string",
             "format": "uuid",
@@ -5700,6 +6506,36 @@
       },
       "ProjectEnergisaDemandInventoryItem": {
         "properties": {
+          "motor": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EnergisaMotorData"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "central": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EnergisaCentralData"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "special": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EnergisaSpecialData"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "load_id": {
             "type": "string",
             "title": "Load Id"
@@ -7125,6 +7961,164 @@
           "assumptions"
         ],
         "title": "TechnicalStep"
+      },
+      "TerritoryCandidate": {
+        "properties": {
+          "object_id": {
+            "type": "integer",
+            "title": "Object Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "acronym": {
+            "type": "string",
+            "title": "Acronym"
+          },
+          "cnpj": {
+            "type": "string",
+            "title": "Cnpj"
+          },
+          "state": {
+            "type": "string",
+            "title": "State"
+          },
+          "legal_act": {
+            "type": "string",
+            "title": "Legal Act"
+          },
+          "relation": {
+            "type": "string",
+            "enum": [
+              "inside",
+              "boundary"
+            ],
+            "title": "Relation"
+          },
+          "temporal_status": {
+            "type": "string",
+            "enum": [
+              "ended",
+              "not_started",
+              "within_recorded_period",
+              "no_end_recorded"
+            ],
+            "title": "Temporal Status"
+          },
+          "recorded_start": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recorded Start"
+          },
+          "recorded_end": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recorded End"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "object_id",
+          "name",
+          "acronym",
+          "cnpj",
+          "state",
+          "legal_act",
+          "relation",
+          "temporal_status",
+          "recorded_start",
+          "recorded_end"
+        ],
+        "title": "TerritoryCandidate"
+      },
+      "TerritoryLookup": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "calculated",
+              "estimated",
+              "pending",
+              "invalid",
+              "out_of_scope",
+              "awaiting_technical_validation"
+            ],
+            "title": "Status"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source"
+          },
+          "consulted_on": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Consulted On"
+          },
+          "snapshot_sha256": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Snapshot Sha256"
+          },
+          "automatic_assignment": {
+            "type": "boolean",
+            "const": false,
+            "title": "Automatic Assignment"
+          },
+          "candidates": {
+            "items": {
+              "$ref": "#/components/schemas/TerritoryCandidate"
+            },
+            "type": "array",
+            "title": "Candidates"
+          },
+          "notice": {
+            "type": "string",
+            "title": "Notice"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "status",
+          "source",
+          "consulted_on",
+          "snapshot_sha256",
+          "automatic_assignment",
+          "candidates",
+          "notice",
+          "reason"
+        ],
+        "title": "TerritoryLookup"
       },
       "UtilityInfo": {
         "properties": {

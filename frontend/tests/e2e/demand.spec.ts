@@ -86,7 +86,7 @@ test('reviewed demand persists, exports and becomes pending after editing', asyn
   await review.check();
   await expect(panel).toContainText('Demanda estimada: 9,902 kVA');
   await panel.getByLabel('Grupo NDU de Chuveiro de teste').selectOption('d6');
-  await expect(panel).toContainText('Demanda fora do escopo implementado');
+  await expect(panel).toContainText('Demanda pendente de revisão');
   await expect(page.getByLabel('Resumo de resultados')).not.toContainText('Demanda estimada');
   for (const width of [320, 768, 1440]) {
     await page.setViewportSize({ width, height: 900 });

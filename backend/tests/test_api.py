@@ -1134,7 +1134,7 @@ async def test_research_is_exposed_as_coverage_not_as_project_errors(client, pay
         for evidence in item["evidence"]:
             assert evidence["url"].startswith("https://")
             assert evidence["consulted_on"] == (
-                "2026-10-23" if evidence["access"] == "user_supplied_full_text" else "2026-10-22"
+                "2026-10-26" if evidence["access"] == "user_supplied_full_text" else "2026-10-22"
             )
             assert evidence["access"] in (
                 "official_index",
@@ -1450,3 +1450,17 @@ async def test_first_save_retry_is_idempotent_without_overwriting_newer_input(cl
         "/api/v1/projects", json=payload, headers={"Idempotency-Key": "invalid"}
     )
     assert invalid.status_code == 422
+
+
+async def test_territory_api_validates_coordinate_limits_and_no_snapshot(client, monkeypatch):
+    from app import territory
+
+    monkeypatch.setattr(territory, "snapshot", lambda: None)
+    result = await client.get("/api/v1/locations/territory?latitude=-23.55&longitude=-46.63")
+    assert result.status_code == 200 and result.json()["automatic_assignment"] is False
+    for query in [
+        "latitude=91&longitude=0",
+        "latitude=0&longitude=-181",
+        "latitude=NaN&longitude=0",
+    ]:
+        assert (await client.get("/api/v1/locations/territory?" + query)).status_code == 422

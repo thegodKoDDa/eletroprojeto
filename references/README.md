@@ -29,3 +29,7 @@ Checkpoint inclui SQLite e4JSONs de auditoria;exclui `library/objects`. Preserva
 | `energisa/historico/ndu-001-v6.3.pdf` |189páginas; consulta histórica. |
 
 Esses exemplares anteriores foram preservados. A biblioteca não modifica a validação limitada do motor; fontes e condições em [normas](../docs/standards.md).
+
+## Coleta territorial local — 26/10/2026
+
+`territory/20261026T035935641118Z` preserva a primeira coleta integral bem-sucedida da camada oficial ANEELHosted/AREA_ATUACAO/5 (121feições), com atributos, geometrias, metadados, contagem, relatório e hashes. Caminho ignorado,0700/0600; originais não são gerados dispensáveis. Não apagar ou substituir como cache. `scripts/territory.py` cria diretório novo em cada coleta; nenhuma associação é liberada automaticamente. Condições/vigências/limites emdocs/standards, sem duplicar regras aqui.

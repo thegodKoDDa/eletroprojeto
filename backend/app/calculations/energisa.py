@@ -1,11 +1,13 @@
 """NDU-001 v7 §9.1: explicitly classified individual residential inventory.
 
-Validated subset: d1–d5, tables 5/6/7/8/10. Present d6/d7 or central AC stay
-null/out of scope; absent groups must be explicitly confirmed. No catalog inference,
+Reviewed tables 5/6/7/8/10/12–14 and central AC note I.
+Absent groups must be explicitly confirmed. No catalog inference,
 BTU-to-input conversion, intermediate rounding or supply-category sizing.
 """
 
 from decimal import Decimal, localcontext
+
+from .energisa_special import central_components, motor_components, special_components
 
 GROUPS = ("d1", "d2", "d3", "d4", "d5", "d6", "d7")
 TABLES = {
@@ -13,7 +15,7 @@ TABLES = {
     "d2": "6",
     "d3": "7",
     "d4": "8",
-    "d5": "10",
+    "d5": "10 / §9.1 nota I",
     "d6": "12/13",
     "d7": "14",
 }
@@ -152,16 +154,11 @@ def calculate_energisa_demand(data: dict) -> dict:
             or data["state"] != "SP"
             or data["unit_type"] != "individual_residential"
             or data.get("has_signage_or_display_lighting") is not False
-            or any(
-                item["group"] in ("d6", "d7")
-                or (item["group"] == "d5" and item.get("air_conditioning_type") == "central_unit")
-                for item in active
-            )
             or installed > 75000  # a known subtotal above the limit already excludes the scope
         )
         if out_of_scope:
             pending.append(
-                "Escopo implementado: residência individual sem letreiros/vitrines, Energisa Sul-Sudeste/SP, até75kW, grupos d1–d5 e sem unidades centrais de ar-condicionado. Grupos d6/d7 presentes exigem método próprio."
+                "Escopo implementado: residência individual sem letreiros/vitrines, Energisa Sul-Sudeste/SP, até75kW, grupos d1–d7 com dados próprios e fontes; exclui carga industrial."
             )
             return dict(
                 value=None,
@@ -197,6 +194,7 @@ def calculate_energisa_demand(data: dict) -> dict:
                 else None
             )
             factor, demand, reason, bands = None, None, None, []
+            components = []
             if not selected:
                 if group in absent:
                     base, demand = Decimal(0), Decimal(0)
@@ -208,7 +206,11 @@ def calculate_energisa_demand(data: dict) -> dict:
             elif not known or any(Decimal(str(item["unit_power_w"])) <= 0 for item in selected):
                 reason = f"{group}: informe potência elétrica positiva para todas as cargas; ausência não é zero."
             elif group in ("d6", "d7"):
-                reason = f"{group}: grupo presente exige revisão específica das tabelas {TABLES[group]}; não implementado neste escopo."
+                components, reason = (motor_components if group == "d6" else special_components)(
+                    selected
+                )
+                if reason is None:
+                    demand = sum((row["demand_w"] for row in components), Decimal(0))
             elif group == "d1":
                 simultaneous = data.get("simultaneous_lighting_outlets")
                 if simultaneous is None:
@@ -218,10 +220,54 @@ def calculate_energisa_demand(data: dict) -> dict:
                 else:
                     bands = lighting_outlets_bands(base, simultaneous)
                     demand = sum((band["demand_w"] for band in bands), Decimal(0))
-            elif group == "d5" and any(
-                item.get("air_conditioning_type") != "window_or_individual" for item in selected
-            ):
-                reason = "d5: confirme janela/central individual. Unidade central exige correntes máximas do fabricante e outro tratamento (9.1, nota I)."
+            elif group == "d5":
+                if any(
+                    item.get("air_conditioning_type")
+                    not in ("window_or_individual", "central_unit")
+                    for item in selected
+                ):
+                    reason = "d5: confirme janela/individual ou unidade central para cada carga."
+                else:
+                    individual = [
+                        item
+                        for item in selected
+                        if item.get("air_conditioning_type") == "window_or_individual"
+                    ]
+                    central = [
+                        item
+                        for item in selected
+                        if item.get("air_conditioning_type") == "central_unit"
+                    ]
+                    components, reason = central_components(central)
+                    if reason is None:
+                        individual_count = sum(item["quantity"] for item in individual)
+                        individual_base = sum(
+                            (
+                                Decimal(str(item["unit_power_w"])) * item["quantity"]
+                                for item in individual
+                            ),
+                            Decimal(0),
+                        )
+                        individual_factor = (
+                            count_factor("d5", individual_count) if individual_count else None
+                        )
+                        demand = sum((row["demand_w"] for row in components), Decimal(0))
+                        if individual_factor is not None:
+                            demand += individual_base * individual_factor
+                            bands = [
+                                dict(
+                                    installed_band_w=individual_base,
+                                    factor=individual_factor,
+                                    demand_w=individual_base * individual_factor,
+                                )
+                            ]
+                        factor = (
+                            individual_factor
+                            if not central
+                            else Decimal(1)
+                            if not individual
+                            else None
+                        )
             else:
                 factor = count_factor(group, count)
                 demand = base * factor
@@ -237,6 +283,7 @@ def calculate_energisa_demand(data: dict) -> dict:
                     table=TABLES[group],
                     reason=reason,
                     bands=bands,
+                    components=components,
                 )
             )
         complete = not pending
@@ -255,7 +302,7 @@ def calculate_energisa_demand(data: dict) -> dict:
             pending_checks=pending,
             ignored_reserve_loads=[item["name"] for item in loads if item.get("reserve", False)],
             limitations=[
-                "Escopo parametrizado d1–d5; motores/equipamentos especiais presentes permanecem pendentes.",
+                "Escopo residencial d1–d7; motores somente nas linhas exatas das Tabelas12/13. Partida/instalação não verificadas pela demanda.",
                 "Classificação e potências declaradas; não converte VA de previsão residencial, BTU/h ou kWh em W.",
                 "Não determina categoria de fornecimento, cabos, disjuntor, aprovação ou dimensionamento final.",
                 "Distribuidora/UF declaradas; não valida município, endereço ou cobertura territorial.",

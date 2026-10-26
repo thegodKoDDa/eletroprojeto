@@ -227,9 +227,7 @@ def test_unknowns_remain_null(residential_input, change):
     result = calculate_energisa_demand(data)
     assert result["value"] is None
     assert result["demanded_power_kw"] is None
-    assert result["status"] == (
-        "out_of_scope" if change in ("central_ac", "motor", "special") else "pending"
-    )
+    assert result["status"] == "pending"
     assert result["pending_checks"]
 
 

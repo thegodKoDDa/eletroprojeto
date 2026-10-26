@@ -27,6 +27,8 @@ import { Field, RequirementsContext, CalculationScopeContext } from '@/component
 import type { components } from '@/lib/api.generated';
 import { RoomEquipmentPicker } from '@/components/equipment/RoomEquipmentPicker';
 import { SectionNavigation } from '@/components/projects/SectionNavigation';
+import { TerritoryStudy } from '@/components/projects/TerritoryStudy';
+import { BathroomStudy } from '@/components/projects/BathroomStudy';
 import { CircuitStudy } from '@/components/projects/CircuitStudy';
 import { KnowledgeLibrary } from '@/components/projects/KnowledgeLibrary';
 import { WorkspaceHome } from '@/components/projects/WorkspaceHome';
@@ -1441,6 +1443,10 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                     são mantidos.
                   </p>
                   <details className="mb-4">
+                    <summary>Referência territorial · ANEEL</summary>
+                    <TerritoryStudy />
+                  </details>
+                  <details className="mb-4">
                     <summary>Demanda da residência · Energisa</summary>
                     <DemandReview
                       input={input}
@@ -1448,6 +1454,10 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                       onChange={(value) => change('energisa_demand', value)}
                       onLoadChange={updateLoad}
                     />
+                  </details>
+                  <details className="mb-4">
+                    <summary>Localização de componentes no banheiro</summary>
+                    <BathroomStudy input={input} result={currentResult} onChange={updateRoom} />
                   </details>
                   <details>
                     <summary>Circuitos e entrada de energia</summary>

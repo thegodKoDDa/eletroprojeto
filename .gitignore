@@ -46,3 +46,6 @@ id_ed25519
 
 # Biblioteca importada local: objetos e inventário não são código redistribuível
 /references/library/
+
+# Coletas oficiais territoriais: originais/evidências locais, sem mapa presumido
+/references/territory/

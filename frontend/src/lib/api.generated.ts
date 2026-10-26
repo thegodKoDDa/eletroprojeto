@@ -324,7 +324,7 @@ export interface paths {
         put?: never;
         /**
          * Energisa Demand
-         * @description NDU-001 v7 residencial individual d1–d5, inventário explícito; sem dimensionamento final.
+         * @description NDU-001 v7 residencial individual d1–d7, inventário explícito; sem dimensionamento final.
          */
         post: operations["energisa_demand_api_v1_calculations_energisa_demand_post"];
         delete?: never;
@@ -359,6 +359,23 @@ export interface paths {
         };
         /** Utilities */
         get: operations["utilities_api_v1_utilities_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/locations/territory": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Territory */
+        get: operations["territory_api_v1_locations_territory_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -674,6 +691,92 @@ export interface components {
             /** Csrf */
             csrf: string | null;
         };
+        /** BathroomGeometry */
+        BathroomGeometry: {
+            /**
+             * Scope Confirmed
+             * @default false
+             */
+            scope_confirmed: boolean;
+            /** Shower X M */
+            shower_x_m?: number | string | null;
+            /** Shower Y M */
+            shower_y_m?: number | string | null;
+            /** Measurement Source */
+            measurement_source?: string | null;
+            /** Points */
+            points?: components["schemas"]["BathroomInstallationPoint"][];
+        };
+        /** BathroomGeometryResult */
+        BathroomGeometryResult: {
+            /** Environment Id */
+            environment_id: string;
+            /** Name */
+            name: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "calculated" | "estimated" | "pending" | "invalid" | "out_of_scope" | "awaiting_technical_validation";
+            /** Points */
+            points: components["schemas"]["BathroomPointResult"][];
+            /** Pending Checks */
+            pending_checks: string[];
+            /** Reference */
+            reference: string;
+            /** Reference Urls */
+            reference_urls: string[];
+            /** Limitations */
+            limitations: string[];
+        };
+        /** BathroomInstallationPoint */
+        BathroomInstallationPoint: {
+            /** Id */
+            id?: string;
+            /**
+             * Name
+             * @default Novo componente
+             */
+            name: string;
+            /**
+             * Kind
+             * @default other
+             * @enum {string}
+             */
+            kind: "socket" | "switch" | "water_heater" | "luminaire" | "other";
+            /** X Min M */
+            x_min_m?: number | string | null;
+            /** X Max M */
+            x_max_m?: number | string | null;
+            /** Y Min M */
+            y_min_m?: number | string | null;
+            /** Y Max M */
+            y_max_m?: number | string | null;
+            /** Z Min M */
+            z_min_m?: number | string | null;
+            /** Z Max M */
+            z_max_m?: number | string | null;
+        };
+        /** BathroomPointResult */
+        BathroomPointResult: {
+            /** Point Id */
+            point_id: string;
+            /** Name */
+            name: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "calculated" | "estimated" | "pending" | "invalid" | "out_of_scope" | "awaiting_technical_validation";
+            /** Volume */
+            volume: ("1" | "2" | "3" | "outside") | null;
+            /** Nearest Horizontal Distance M */
+            nearest_horizontal_distance_m: number | string | null;
+            /** Ordinary Socket Or Switch Forbidden */
+            ordinary_socket_or_switch_forbidden: boolean | null;
+            /** Pending Checks */
+            pending_checks: string[];
+        };
         /** CalculationInput */
         CalculationInput: {
             service_entry?: components["schemas"]["ServiceEntryInput"] | null;
@@ -738,6 +841,8 @@ export interface components {
         /** CalculationResult */
         CalculationResult: {
             service_entry?: components["schemas"]["ServiceEntryResult"] | null;
+            /** Bathroom Geometry Results */
+            bathroom_geometry_results?: components["schemas"]["BathroomGeometryResult"][];
             /** Circuit Results */
             circuit_results?: components["schemas"]["CircuitResult"][];
             energisa_demand?: components["schemas"]["ProjectEnergisaDemandResult"] | null;
@@ -882,6 +987,12 @@ export interface components {
         };
         /** CircuitInput */
         CircuitInput: {
+            /**
+             * Configuration
+             * @default single_phase
+             * @enum {string}
+             */
+            configuration: "single_phase" | "balanced_three_phase_without_neutral";
             protections?: components["schemas"]["CircuitProtectionInput"] | null;
             /** Id */
             id?: string;
@@ -903,7 +1014,7 @@ export interface components {
              * @default unknown
              * @enum {string}
              */
-            method: "unknown" | "B1" | "B2";
+            method: "unknown" | "A1" | "A2" | "B1" | "B2" | "C";
             /** Voltage V */
             voltage_v?: number | string | null;
             /** Length M */
@@ -1063,6 +1174,25 @@ export interface components {
             /** Documents */
             documents: components["schemas"]["TechnicalDocument"][];
         };
+        /** EnergisaCentralData */
+        EnergisaCentralData: {
+            /** Configuration */
+            configuration?: ("single_phase" | "balanced_three_phase") | null;
+            /**
+             * Voltage V
+             * @description Tensão aplicada; entre fases para trifásico equilibrado.
+             */
+            voltage_v?: number | string | null;
+            /** Maximum Total Current A */
+            maximum_total_current_a?: number | string | null;
+            /** Power Factor */
+            power_factor?: number | string | null;
+            /**
+             * Source
+             * @description Fabricante: corrente máxima total, tensão, configuração e FP no mesmo regime. Não usar MCA, corrente nominal ou corrente de partida como corrente máxima total.
+             */
+            source?: string | null;
+        };
         /** EnergisaDemandBand */
         EnergisaDemandBand: {
             /** Installed Band W */
@@ -1071,6 +1201,25 @@ export interface components {
             factor: number | string;
             /** Demand W */
             demand_w: number | string;
+        };
+        /** EnergisaDemandComponent */
+        EnergisaDemandComponent: {
+            /** Name */
+            name: string;
+            /** Quantity */
+            quantity: number;
+            /** Table */
+            table: string;
+            /** Unit Apparent Demand Va */
+            unit_apparent_demand_va: number | string;
+            /** Power Factor */
+            power_factor: number | string;
+            /** Factor */
+            factor?: number | string | null;
+            /** Demand W */
+            demand_w: number | string;
+            /** Source */
+            source: string;
         };
         /** EnergisaDemandGroupResult */
         EnergisaDemandGroupResult: {
@@ -1093,6 +1242,8 @@ export interface components {
             reason: string | null;
             /** Bands */
             bands?: components["schemas"]["EnergisaDemandBand"][];
+            /** Components */
+            components?: components["schemas"]["EnergisaDemandComponent"][];
         };
         /**
          * EnergisaDemandInput
@@ -1155,11 +1306,14 @@ export interface components {
         };
         /** EnergisaDemandLoad */
         EnergisaDemandLoad: {
+            motor?: components["schemas"]["EnergisaMotorData"] | null;
+            central?: components["schemas"]["EnergisaCentralData"] | null;
+            special?: components["schemas"]["EnergisaSpecialData"] | null;
             /** Name */
             name: string;
             /**
              * Group
-             * @description Classificação explícita §9.1: d1 iluminação/TUG; d2 aquecimento de água; d3 secadora de roupas/micro-ondas/lava-louças/hidromassagem; d4 fogão/forno elétrico; d5 AC janela/individual; d6 motores; d7 solda transformador/raios-X. Sem classificação automática.
+             * @description Classificação explícita §9.1: d1 iluminação/TUG; d2 aquecimento de água; d3 secadora de roupas/micro-ondas/lava-louças/hidromassagem; d4 fogão/forno elétrico; d5 AC janela/individual/central; d6 motores/solda motor-gerador; d7 solda transformador/raios-X/galvanização. Sem classificação automática.
              * @enum {string}
              */
             group: "d1" | "d2" | "d3" | "d4" | "d5" | "d6" | "d7";
@@ -1214,6 +1368,9 @@ export interface components {
         EnergisaLoadClassification: {
             /** Group */
             group?: ("d1" | "d2" | "d3" | "d4" | "d5" | "d6" | "d7") | null;
+            motor?: components["schemas"]["EnergisaMotorData"] | null;
+            central?: components["schemas"]["EnergisaCentralData"] | null;
+            special?: components["schemas"]["EnergisaSpecialData"] | null;
             /**
              * Reserve
              * @default false
@@ -1226,8 +1383,40 @@ export interface components {
              */
             air_conditioning_type: "unconfirmed" | "window_or_individual" | "central_unit";
         };
+        /** EnergisaMotorData */
+        EnergisaMotorData: {
+            /** Configuration */
+            configuration?: ("single_phase" | "three_phase") | null;
+            /**
+             * Shaft Power Cv
+             * @description Potência de eixo em cv, conforme linha exata das Tabelas12/13. Frações: 1/6,1/4,1/3,1/2,2/3,3/4; demais: 1,1.5,2,3,4,5,6,7.5,10,12.5,15,20,25,30. Não converter HP automaticamente.
+             */
+            shaft_power_cv?: string | null;
+            /**
+             * Source
+             * @description Placa/ficha que identifica fases e potência de eixo; motor ou solda motor-gerador.
+             */
+            source?: string | null;
+        };
+        /** EnergisaSpecialData */
+        EnergisaSpecialData: {
+            /** Equipment Type */
+            equipment_type?: ("arc_welder" | "resistance_welder" | "x_ray" | "galvanization") | null;
+            /** Connection */
+            connection?: ("standard" | "inverted_v_v" | "not_applicable") | null;
+            /** Input Apparent Power Va */
+            input_apparent_power_va?: number | string | null;
+            /** Power Factor */
+            power_factor?: number | string | null;
+            /**
+             * Source
+             * @description Placa/fabricante: potência aparente elétrica absorvida, FP no mesmo regime e ligação; não potência de saída.
+             */
+            source?: string | null;
+        };
         /** Environment */
         Environment: {
+            bathroom_geometry?: components["schemas"]["BathroomGeometry"] | null;
             /**
              * Id
              * Format: uuid
@@ -1800,6 +1989,9 @@ export interface components {
         };
         /** ProjectEnergisaDemandInventoryItem */
         ProjectEnergisaDemandInventoryItem: {
+            motor?: components["schemas"]["EnergisaMotorData"] | null;
+            central?: components["schemas"]["EnergisaCentralData"] | null;
+            special?: components["schemas"]["EnergisaSpecialData"] | null;
             /** Load Id */
             load_id: string;
             /** Environment Id */
@@ -2214,6 +2406,60 @@ export interface components {
             source?: string | null;
             /** Assumptions */
             assumptions: string;
+        };
+        /** TerritoryCandidate */
+        TerritoryCandidate: {
+            /** Object Id */
+            object_id: number;
+            /** Name */
+            name: string;
+            /** Acronym */
+            acronym: string;
+            /** Cnpj */
+            cnpj: string;
+            /** State */
+            state: string;
+            /** Legal Act */
+            legal_act: string;
+            /**
+             * Relation
+             * @enum {string}
+             */
+            relation: "inside" | "boundary";
+            /**
+             * Temporal Status
+             * @enum {string}
+             */
+            temporal_status: "ended" | "not_started" | "within_recorded_period" | "no_end_recorded";
+            /** Recorded Start */
+            recorded_start: string | null;
+            /** Recorded End */
+            recorded_end: string | null;
+        };
+        /** TerritoryLookup */
+        TerritoryLookup: {
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "calculated" | "estimated" | "pending" | "invalid" | "out_of_scope" | "awaiting_technical_validation";
+            /** Source */
+            source: string;
+            /** Consulted On */
+            consulted_on: string | null;
+            /** Snapshot Sha256 */
+            snapshot_sha256: string | null;
+            /**
+             * Automatic Assignment
+             * @constant
+             */
+            automatic_assignment: false;
+            /** Candidates */
+            candidates: components["schemas"]["TerritoryCandidate"][];
+            /** Notice */
+            notice: string;
+            /** Reason */
+            reason: string;
         };
         /** UtilityInfo */
         UtilityInfo: {
@@ -3024,6 +3270,40 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["UtilityInfo"][];
+                };
+            };
+            /** @description Entradas inválidas; avisos localizados quando disponíveis. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InputValidationError"];
+                };
+            };
+        };
+    };
+    territory_api_v1_locations_territory_get: {
+        parameters: {
+            query: {
+                /** @description Latitude SIRGAS2000 (EPSG4674); sem reprojeção automática. */
+                latitude: number | string;
+                /** @description Longitude SIRGAS2000 (EPSG4674). */
+                longitude: number | string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TerritoryLookup"];
                 };
             };
             /** @description Entradas inválidas; avisos localizados quando disponíveis. */

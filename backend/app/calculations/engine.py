@@ -4,6 +4,7 @@ from dataclasses import asdict
 from decimal import Decimal, localcontext
 
 from ..version import APP_VERSION, ENGINE_VERSION
+from .bathroom_geometry import calculate_bathroom_geometry
 from .circuits import calculate_circuits
 from .energy import energy_cost, resolve_energy
 from .equipment import resolve_equipment
@@ -229,6 +230,7 @@ def calculate(project: dict) -> dict:
         if regional_demand is not None:
             regional_demand["reference"] = asdict(ENERGISA_V7_EVIDENCE)
         output = {
+            "bathroom_geometry_results": calculate_bathroom_geometry(project),
             "energisa_demand": regional_demand,
             "normative_environments": normative_rooms,
             "normative_capabilities": normative_capabilities(
@@ -297,7 +299,7 @@ def calculate(project: dict) -> dict:
                 "status": regional_demand["status"],
                 "reference": regional_demand["reference"],
                 "reason": "; ".join(regional_demand["pending_checks"])
-                or "Estimativa NDU-001 7.0 d1–d5 com inventário revisado; sem dimensionamento final.",
+                or "Estimativa NDU-001 7.0 d1–d7 com inventário revisado; sem dimensionamento final.",
             }
         from ..validation import notifications
 

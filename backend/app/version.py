@@ -1,4 +1,4 @@
 """Application release and independently versioned calculation engine."""
 
-APP_VERSION = "0.18.0"
-ENGINE_VERSION = "0.9.2"
+APP_VERSION = "0.19.0"
+ENGINE_VERSION = "0.10.0"

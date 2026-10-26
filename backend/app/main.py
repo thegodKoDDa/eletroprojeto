@@ -1,6 +1,7 @@
 import os
 from contextlib import asynccontextmanager
 from dataclasses import asdict
+from decimal import Decimal
 from typing import Annotated, Literal
 from uuid import UUID, uuid4
 
@@ -50,6 +51,7 @@ from .schemas import (
     ProjectRevalidation,
     ProjectSummary,
     TechnicalRules,
+    TerritoryLookup,
     UtilityInfo,
 )
 from .security import RequestBoundary, cors_origins
@@ -64,6 +66,7 @@ from .technical import (
     normative_capabilities,
     registry_version,
 )
+from .territory import lookup as territory_lookup
 from .version import APP_VERSION
 
 
@@ -329,7 +332,7 @@ def full(data: CalculationInput):
     PREFIX + "/calculations/energisa-demand", tags=["Cálculos"], response_model=EnergisaDemandResult
 )
 def energisa_demand(data: EnergisaDemandInput):
-    """NDU-001 v7 residencial individual d1–d5, inventário explícito; sem dimensionamento final."""
+    """NDU-001 v7 residencial individual d1–d7, inventário explícito; sem dimensionamento final."""
     result = calculate_energisa_demand(data.model_dump(mode="json"))
     return {**result, "reference": asdict(ENERGISA_V7_EVIDENCE)}
 
@@ -354,6 +357,34 @@ def utilities(
 ):
     # Municipality deliberately does not narrow unverified state candidates.
     return [item for item in UTILITIES if state is None or state in item["states"]]
+
+
+@app.get(PREFIX + "/locations/territory", tags=["Localização"], response_model=TerritoryLookup)
+def territory(
+    latitude: Annotated[
+        Decimal,
+        Query(
+            ge=-90,
+            le=90,
+            allow_inf_nan=False,
+            max_digits=18,
+            decimal_places=12,
+            description="Latitude SIRGAS2000 (EPSG4674); sem reprojeção automática.",
+        ),
+    ],
+    longitude: Annotated[
+        Decimal,
+        Query(
+            ge=-180,
+            le=180,
+            allow_inf_nan=False,
+            max_digits=18,
+            decimal_places=12,
+            description="Longitude SIRGAS2000 (EPSG4674).",
+        ),
+    ],
+):
+    return territory_lookup(latitude, longitude)
 
 
 @app.get(PREFIX + "/standards", tags=["Referências técnicas"])

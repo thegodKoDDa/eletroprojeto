@@ -85,8 +85,53 @@ class CatalogItem(Schema):
 EnergisaGroup = Literal["d1", "d2", "d3", "d4", "d5", "d6", "d7"]
 
 
+class EnergisaMotorData(Schema):
+    configuration: Literal["single_phase", "three_phase"] | None = None
+    shaft_power_cv: str | None = Field(
+        default=None,
+        min_length=1,
+        max_length=20,
+        description="Potência de eixo em cv, conforme linha exata das Tabelas12/13. Frações: 1/6,1/4,1/3,1/2,2/3,3/4; demais: 1,1.5,2,3,4,5,6,7.5,10,12.5,15,20,25,30. Não converter HP automaticamente.",
+    )
+    source: Text | None = Field(
+        default=None,
+        description="Placa/ficha que identifica fases e potência de eixo; motor ou solda motor-gerador.",
+    )
+
+
+class EnergisaCentralData(Schema):
+    configuration: Literal["single_phase", "balanced_three_phase"] | None = None
+    voltage_v: Positive | None = Field(
+        default=None,
+        le=1000,
+        description="Tensão aplicada; entre fases para trifásico equilibrado.",
+    )
+    maximum_total_current_a: Positive | None = None
+    power_factor: Ratio | None = None
+    source: Text | None = Field(
+        default=None,
+        description="Fabricante: corrente máxima total, tensão, configuração e FP no mesmo regime. Não usar MCA, corrente nominal ou corrente de partida como corrente máxima total.",
+    )
+
+
+class EnergisaSpecialData(Schema):
+    equipment_type: Literal["arc_welder", "resistance_welder", "x_ray", "galvanization"] | None = (
+        None
+    )
+    connection: Literal["standard", "inverted_v_v", "not_applicable"] | None = None
+    input_apparent_power_va: Positive | None = None
+    power_factor: Ratio | None = None
+    source: Text | None = Field(
+        default=None,
+        description="Placa/fabricante: potência aparente elétrica absorvida, FP no mesmo regime e ligação; não potência de saída.",
+    )
+
+
 class EnergisaLoadClassification(Schema):
     group: EnergisaGroup | None = None
+    motor: EnergisaMotorData | None = None
+    central: EnergisaCentralData | None = None
+    special: EnergisaSpecialData | None = None
     reserve: bool = Field(default=False, strict=True)
     air_conditioning_type: Literal["unconfirmed", "window_or_individual", "central_unit"] = (
         "unconfirmed"
@@ -159,7 +204,28 @@ class Load(Schema):
         return self
 
 
+class BathroomInstallationPoint(Schema):
+    id: str = Field(default_factory=lambda: str(uuid4()), min_length=1, max_length=200)
+    name: Text = "Novo componente"
+    kind: Literal["socket", "switch", "water_heater", "luminaire", "other"] = "other"
+    x_min_m: Nonnegative | None = None
+    x_max_m: Nonnegative | None = None
+    y_min_m: Nonnegative | None = None
+    y_max_m: Nonnegative | None = None
+    z_min_m: Nonnegative | None = None
+    z_max_m: Nonnegative | None = None
+
+
+class BathroomGeometry(Schema):
+    scope_confirmed: bool = Field(default=False, strict=True)
+    shower_x_m: Nonnegative | None = None
+    shower_y_m: Nonnegative | None = None
+    measurement_source: Text | None = None
+    points: list[BathroomInstallationPoint] = Field(default_factory=list, max_length=200)
+
+
 class Environment(Schema):
+    bathroom_geometry: BathroomGeometry | None = None
     id: UUID = Field(default_factory=uuid4)
     name: Text
     type: Literal[
@@ -201,12 +267,13 @@ class CircuitProtectionInput(Schema):
 
 
 class CircuitInput(Schema):
+    configuration: Literal["single_phase", "balanced_three_phase_without_neutral"] = "single_phase"
     protections: CircuitProtectionInput | None = None
     id: str = Field(default_factory=lambda: str(uuid4()), min_length=1, max_length=200)
     name: Text = "Novo circuito"
     purpose: Literal["lighting", "sockets", "dedicated"] = "sockets"
     load_ids: list[str] = Field(default_factory=list, max_length=1000)
-    method: Literal["unknown", "B1", "B2"] = "unknown"
+    method: Literal["unknown", "A1", "A2", "B1", "B2", "C"] = "unknown"
     voltage_v: Positive | None = None
     length_m: Positive | None = None
     ambient_temperature_c: Literal[10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60] | None = None
@@ -412,9 +479,12 @@ class ResearchEvidence(Schema):
 
 
 class EnergisaDemandLoad(Schema):
+    motor: EnergisaMotorData | None = None
+    central: EnergisaCentralData | None = None
+    special: EnergisaSpecialData | None = None
     name: Text
     group: EnergisaGroup = Field(
-        description="Classificação explícita §9.1: d1 iluminação/TUG; d2 aquecimento de água; d3 secadora de roupas/micro-ondas/lava-louças/hidromassagem; d4 fogão/forno elétrico; d5 AC janela/individual; d6 motores; d7 solda transformador/raios-X. Sem classificação automática."
+        description="Classificação explícita §9.1: d1 iluminação/TUG; d2 aquecimento de água; d3 secadora de roupas/micro-ondas/lava-louças/hidromassagem; d4 fogão/forno elétrico; d5 AC janela/individual/central; d6 motores/solda motor-gerador; d7 solda transformador/raios-X/galvanização. Sem classificação automática."
     )
     quantity: int = Field(ge=1, le=100000, strict=True)
     unit_power_w: Nonnegative | None = Field(
@@ -487,6 +557,17 @@ class EnergisaDemandBand(Schema):
     demand_w: Decimal
 
 
+class EnergisaDemandComponent(Schema):
+    name: str
+    quantity: int
+    table: str
+    unit_apparent_demand_va: Decimal
+    power_factor: Decimal
+    factor: Decimal | None = None
+    demand_w: Decimal
+    source: str
+
+
 class EnergisaDemandGroupResult(Schema):
     group: EnergisaGroup
     quantity: int
@@ -496,6 +577,7 @@ class EnergisaDemandGroupResult(Schema):
     table: str
     reason: str | None
     bands: list[EnergisaDemandBand] = Field(default_factory=list)
+    components: list[EnergisaDemandComponent] = Field(default_factory=list)
 
 
 class EnergisaDemandResult(Schema):
@@ -512,6 +594,9 @@ class EnergisaDemandResult(Schema):
 
 
 class ProjectEnergisaDemandInventoryItem(Schema):
+    motor: EnergisaMotorData | None = None
+    central: EnergisaCentralData | None = None
+    special: EnergisaSpecialData | None = None
     load_id: str
     environment_id: str
     environment: str
@@ -588,6 +673,27 @@ class CircuitProtectionCheck(Schema):
     reason: str
 
 
+class BathroomPointResult(Schema):
+    point_id: str
+    name: str
+    status: Status
+    volume: Literal["1", "2", "3", "outside"] | None
+    nearest_horizontal_distance_m: Decimal | None
+    ordinary_socket_or_switch_forbidden: bool | None
+    pending_checks: list[str]
+
+
+class BathroomGeometryResult(Schema):
+    environment_id: str
+    name: str
+    status: Status
+    points: list[BathroomPointResult]
+    pending_checks: list[str]
+    reference: str
+    reference_urls: list[str]
+    limitations: list[str]
+
+
 class CircuitResult(Schema):
     protection_checks: list[CircuitProtectionCheck] = Field(default_factory=list)
     circuit_id: str
@@ -628,6 +734,7 @@ class ServiceEntryResult(Schema):
 
 class CalculationResult(Schema):
     service_entry: ServiceEntryResult | None = None
+    bathroom_geometry_results: list[BathroomGeometryResult] = Field(default_factory=list)
     circuit_results: list[CircuitResult] = Field(default_factory=list)
     energisa_demand: ProjectEnergisaDemandResult | None = None
     normative_environments: list[NormativeEnvironment] = Field(default_factory=list)
@@ -677,6 +784,30 @@ class AccessSession(Schema):
     authenticated: bool
     username: str | None
     csrf: str | None
+
+
+class TerritoryCandidate(Schema):
+    object_id: int
+    name: str
+    acronym: str
+    cnpj: str
+    state: str
+    legal_act: str
+    relation: Literal["inside", "boundary"]
+    temporal_status: Literal["ended", "not_started", "within_recorded_period", "no_end_recorded"]
+    recorded_start: str | None
+    recorded_end: str | None
+
+
+class TerritoryLookup(Schema):
+    status: Status
+    source: str
+    consulted_on: str | None
+    snapshot_sha256: str | None
+    automatic_assignment: Literal[False]
+    candidates: list[TerritoryCandidate]
+    notice: str
+    reason: str
 
 
 class UtilityInfo(Schema):

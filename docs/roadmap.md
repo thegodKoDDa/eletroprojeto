@@ -25,10 +25,10 @@ Decisão do usuário em 23/10/2026: operar localmente. Publicação/infraestrutu
 Direção de produto reafirmada em 24/10/2026: simplicidade para leigos antes da ampliação de estudos profissionais. O percurso principal permanece 01 Projeto → 02 Ambientes → 03 Conferência, com consumo/custo em destaque; circuitos/entrada/demanda são opcionais e recolhidos. Melhorias futuras devem reduzir esforço de cadastro e explicar estimativas usando os dados/fontes realmente disponíveis, sem inventar horários, tarifas ou fatores. Os itens normativos abaixo são evolução técnica posterior, não exigências para o uso básico.
 
 1. Manter regressões de cálculos, cadastro, relatórios, acessibilidade automática, contratos, tipos, lint e build conforme as mudanças.
-2. Ampliar a cobertura de demanda somente com revisão específica de grupos especiais, centrais de ar-condicionado e demais exceções. Não aplicar fatores de outra distribuidora.
-3. Ampliar os estudos de circuitos, condutores/proteções e entrada além do subconjunto entregue em0.16.0, somente após conferir fontes, condições, limites e exemplos.
-4. Implementar análise física de localização/distribuição de pontos e restrições da instalação; quantidades previstas não validam posição em planta.
-5. Ampliar associação territorial oficial sem inferir concessionária por município ou endereço incompleto.
+2. Preservar d6/d7/centrais habilitados em0.19.0; esclarecer oficialmente a ordenação quando W/VA divergirem e revisar demais exceções/distribuidoras antes de ampliar.
+3. Ampliar além de Cu/PVC70/A1/A2/B1/B2/C mono ou tri equilibrado sem neutro da0.19.0; conferir XLPE/outros métodos, neutro, harmônicas, proteções e entrada com condições/exemplos.
+4. Ampliar o modelo de localização além do chuveiro sem delimitação/divisórias dafigura18, entregue em0.19.0; banheiras, divisórias, cabines, percursos e demais restrições exigem modelagem e revisão próprias.
+5. Partir da coleta oficial121feições e consulta pontual0.19.0 para conferir vigências, topologia e associação municipal; não inferir atendimento do imóvel ou sucessor de registros encerrados.
 6. Melhorar revalidação seletiva de projetos afetados por mudanças normativas e desempenho em grandes acervos quando necessário.
 
 Fontes, condições e testes normativos em [standards](standards.md) e [calculations](calculations.md). Estado das verificações em [CURRENT_STATE](CURRENT_STATE.md). Impressão física e validação com leitor de tela real foram retiradas do escopo pelo usuário. Manter acessibilidade implementada e testes automáticos/teclado; não reabrir essa validação como pendência sem novo pedido.

@@ -26,6 +26,9 @@ def project_energisa_demand(project: dict) -> dict | None:
                 reserve=classification.get("reserve", False),
                 air_conditioning_type=classification.get("air_conditioning_type", "unconfirmed"),
             )
+            for field in ("motor", "central", "special"):
+                if classification.get(field) is not None:
+                    item[field] = classification[field]
             # Mechanical output, BTU/h and VA are never silently treated as electrical W.
             if (load.get("parameters") or {}).get("power_mode") == "mechanical":
                 item["unit_power_w"] = None
