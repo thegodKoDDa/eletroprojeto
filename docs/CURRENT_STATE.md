@@ -2,6 +2,12 @@
 
 Atualizado em 25/10/2026. SQLite/schema0007 e JSON de relatório1.4 preservados. Esta entrega atende parte do pedido de resolver as pendências; **não conclui cobertura territorial, demanda de grupos especiais ou dimensionamento/localização integrais**. Detalhes históricos em SESSION_HISTORY/CHANGELOG/Git.
 
+## Encerramento solicitado — 25/10/2026
+
+Sessão encerrada por solicitação do usuário. Código/docs já sincronizados em3547394 antes deste registro; botão inferior Adicionar ambiente está à direita e validação com leitor de tela real foi descartada. Banco atual íntegro/FKok: **11projetos/36históricos/10revisões**, schema0007. Os totais34/9 abaixo são a fotografia da validação anterior; cadastros/revisões adicionais foram preservados. API8000 efrontend3000HTTP200, cerca933GiBlivres. Sem alteração funcional, exclusão, limpeza ou reinstalação neste encerramento; suítes não repetidas. Serviços preservados.
+
+Próxima sessão: RETOMAR ELETROPROJETO e seguir as pendências técnicas abaixo conforme o pedido atual, preservando o fluxo simples. Código/docs no GitHub privado; dados/acervo/checkpoints locais. Sincronização e restauração do checkpoint final devem ser confirmadas pela rotina e`.checkpoints/latest.json`, sem commit extra pelo caminho. Rascunhos não enviados do navegador e buffers externos não são capturados.
+
 ## Produto entregue
 
 Estimativa de consumo residencial para leigos primeiro, profissionais depois. Início/sidebar/três cartões e fluxo **01 Projeto → 02 Ambientes → 03 Conferência** preservados, com estudos técnicos opcionais e recolhidos.

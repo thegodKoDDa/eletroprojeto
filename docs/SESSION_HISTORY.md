@@ -516,3 +516,7 @@ Pedido de uma única alteração: facilitar criar outro ambiente sem voltar ao t
 ## Botão inferior à direita e envio ao GitHub — 25/10/2026
 
 Usuário pediu alinhar o botão inferior à direita e enviar tudo ao GitHub. Estado inicial limpo/sincronizado em3c9d57f;entregas anteriores já estavam no repositório privado. Alterado somente justify-start→justify-end no botão inferior; documentação atualizada. Navegador em390/1440px conferiu borda direita ecriação sucessiva,sem overflow ou gravação de projetos;Prettier/diff conferidos. Sem mudança funcional,suítes aprovadas anteriores não repetidas. Dados/cálculos/acervo preservados. Sincronização echeckpoint serão confirmados pela rotina de encerramento.
+
+## Encerramento solicitado — 25/10/2026
+
+Usuário encerrou por hoje. Conferência inicial:mainlimpa/sincronizada3547394,cerca933GiBlivres,API8000/frontend3000HTTP200. Banco íntegro/FKok,11projetos/36históricos/10revisões,schema0007;revisões adicionais observadas preservadas. Botão inferior à direita e descarte do teste com leitor de tela registrados. Apenas CURRENT_STATE/histórico atualizados;sem código,cálculo,catálogo ou dados alterados,sem exclusão/limpeza/reinstalação,serviços preservados. Suítes anteriores não repetidas sem mudança funcional. Commit documental,syncprivado echeckpoint comrestauração isolada serão confirmados pelaexecução/latest.json. Pendências técnicas seguem no estado atual;buffers externos/rascunhos não enviados não são capturados.
