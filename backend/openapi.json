@@ -3,7 +3,7 @@
   "info": {
     "title": "EletroProjeto",
     "description": "Cálculos de cargas residenciais: potência instalada (W/kW), potência aparente (VA/kVA), correntes, conversões, consumo mensal e estimativa de custo pela tarifa informada. Valores padrão são sugestões documentadas; valores manuais válidos são respeitados e recalculados. Previsão residencial de iluminação e TUG disponível por seleção explícita, com escopo e limites documentados. Demanda Energisa residencial parametrizada disponível em escopo limitado e inventário explícito. Demanda automática do cadastro e dimensionamento final permanecem pendentes.",
-    "version": "0.23.0"
+    "version": "0.24.0"
   },
   "paths": {
     "/api/v1/auth/session": {
@@ -2930,6 +2930,88 @@
             },
             "type": "object",
             "title": "Energy By Category Kwh"
+          },
+          "annual_energy": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Value"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "annual_cost": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Value"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "energy_cost_by_environment_brl": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            "type": "object",
+            "title": "Energy Cost By Environment Brl"
+          },
+          "energy_cost_by_category_brl": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            "type": "object",
+            "title": "Energy Cost By Category Brl"
+          },
+          "energy_share_by_load_pct": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "type": "object",
+            "title": "Energy Share By Load Pct"
+          },
+          "energy_ranked_load_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Energy Ranked Load Ids"
+          },
+          "energy_known_load_count": {
+            "type": "integer",
+            "title": "Energy Known Load Count",
+            "default": 0
+          },
+          "energy_pending_load_count": {
+            "type": "integer",
+            "title": "Energy Pending Load Count",
+            "default": 0
           }
         },
         "additionalProperties": false,
@@ -5864,10 +5946,39 @@
             ],
             "title": "Monthly Cost Brl"
           },
+          "annual_energy_kwh": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Annual Energy Kwh"
+          },
+          "annual_cost_brl": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Annual Cost Brl"
+          },
           "energy_basis": {
             "type": "string",
             "enum": [
               "stated",
+              "annual_stated",
               "schedule",
               "pending"
             ],
@@ -8285,6 +8396,52 @@
               }
             ],
             "title": "Monthly Energy Kwh"
+          },
+          "annual_energy_kwh": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Annual Energy Kwh"
+          },
+          "usage_time_unit": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "hours",
+                  "minutes"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Usage Time Unit"
+          },
+          "usage_minutes_per_day": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1440.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Usage Minutes Per Day"
           },
           "usage_hours_per_day": {
             "anyOf": [

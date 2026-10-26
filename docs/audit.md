@@ -2,6 +2,12 @@
 
 Este documento organiza os resultados conhecidos. A fotografia operacional está em [CURRENT_STATE](CURRENT_STATE.md); regras e condições de aplicação estão em [standards](standards.md). Uma suíte aprovada verifica os cenários exercitados e não declara conformidade elétrica integral.
 
+## Automação de consumo — 0.24.0 / motor0.12.0
+
+Revisados motor/precisão, parâmetros/validação/contratos, catálogo/instância, edição/ajuda, salvamento/reabertura e relatórios.587testes backend/85subtestes,128frontend,37E2E locais e1HTTPS aprovados, além de contratos/tipos/lint/formatação/Ruff/build isolado. E2E novo cobre os3perfis, minutos/anual, rotina em lote sem substituição, custos/participação/projeção, PDF, persistência, edição, axe e320/390/768/1440px. Erros de relatório/base latente e de correção de unidade foram corrigidos; seletores ajustados à inclusão de details aninhados. Fontes/limites em standards/calculations e resultados operacionais em CURRENT_STATE.
+
+Banco real:12tabelas idênticas ao checkpoint inicial20261026T225824590153Z,integridade/FKok;13projetos/38históricos/11revisões preservados. Não revalida normas ou acervo integralmente; sem inspeção física, medição real, testes nativos Windows/macOS/ARM,Docker/PostgreSQL/carga/pentest nesta entrega. Evidência de sucesso limita-se aos cenários exercitados.
+
 ## Base funcional — versão 0.19.0
 
 Validação executada em 26/10/2026:

@@ -927,6 +927,32 @@ export interface components {
             energy_by_category_kwh?: {
                 [key: string]: number | string;
             };
+            annual_energy?: components["schemas"]["Value"] | null;
+            annual_cost?: components["schemas"]["Value"] | null;
+            /** Energy Cost By Environment Brl */
+            energy_cost_by_environment_brl?: {
+                [key: string]: number | string;
+            };
+            /** Energy Cost By Category Brl */
+            energy_cost_by_category_brl?: {
+                [key: string]: number | string;
+            };
+            /** Energy Share By Load Pct */
+            energy_share_by_load_pct?: {
+                [key: string]: number | string | null;
+            };
+            /** Energy Ranked Load Ids */
+            energy_ranked_load_ids?: string[];
+            /**
+             * Energy Known Load Count
+             * @default 0
+             */
+            energy_known_load_count: number;
+            /**
+             * Energy Pending Load Count
+             * @default 0
+             */
+            energy_pending_load_count: number;
         };
         /** CatalogItem */
         CatalogItem: {
@@ -1781,12 +1807,16 @@ export interface components {
             monthly_energy_kwh?: number | string | null;
             /** Monthly Cost Brl */
             monthly_cost_brl?: number | string | null;
+            /** Annual Energy Kwh */
+            annual_energy_kwh?: number | string | null;
+            /** Annual Cost Brl */
+            annual_cost_brl?: number | string | null;
             /**
              * Energy Basis
              * @default pending
              * @enum {string}
              */
-            energy_basis: "stated" | "schedule" | "pending";
+            energy_basis: "stated" | "annual_stated" | "schedule" | "pending";
             /** Unit Current A */
             unit_current_a: number | string | null;
             /**
@@ -2487,6 +2517,12 @@ export interface components {
             screen_inches?: number | string | null;
             /** Monthly Energy Kwh */
             monthly_energy_kwh?: number | string | null;
+            /** Annual Energy Kwh */
+            annual_energy_kwh?: number | string | null;
+            /** Usage Time Unit */
+            usage_time_unit?: ("hours" | "minutes") | null;
+            /** Usage Minutes Per Day */
+            usage_minutes_per_day?: number | string | null;
             /** Usage Hours Per Day */
             usage_hours_per_day?: number | string | null;
             /** Usage Days Per Month */

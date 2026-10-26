@@ -1,8 +1,20 @@
-# Estado atual — EletroProjeto 0.23.0 / motor 0.11.0
+# Estado atual — EletroProjeto 0.24.0 / motor 0.12.0
 
-Atualizado em 26/10/2026. Visual unificado e ajuda progressiva entregues nos três perfis: **USUÁRIO LEIGO**, **USUÁRIO PROFISSIONAL** e **ESTOU APENAS DANDO UMA OLHADA**. Todos os recursos continuam disponíveis, com prioridades de apresentação diferentes. Dados, cálculos e limites normativos anteriores preservados; SQLite/schema0007 e JSON de relatório1.4 inalterados.
+Atualizado em 26/10/2026. Consumo e preenchimentos ampliados nos três perfis: **USUÁRIO LEIGO**, **USUÁRIO PROFISSIONAL** e **ESTOU APENAS DANDO UMA OLHADA**. Perfis continuam sendo apresentação. Dados e limites normativos preservados; SQLite/schema0007 e relatório JSON1.4 compatível, com campos aditivos.
 
-## Visual unificado e ajuda progressiva — entrega atual 0.23.0
+## Automação de consumo — entrega atual 0.24.0 / motor 0.12.0
+
+Tempo de uso em minutos ou horas, média mensal de etiqueta anual, projeções de12meses, custos por ambiente/categoria, participação no subtotal e ranking calculados no backend. Rotina comum preenche uma vez os aparelhos sem consumo/horários do ambiente, sem substituir dados parciais/manuais ou zeros. Restaurar referência conserva os novos dados. Todas as funções estão disponíveis nos três perfis, mantendo a apresentação simples e os detalhes recolhidos.
+
+Prioridade explícita: mensal informado > anual informado > horário da unidade escolhida. Não presume consumo, potência elétrica a partir de kWh, hábitos, ciclo, tarifa ou sazonalidade. Dados insuficientes continuam nulos; percentuais de total zero são nulos. Valor anual original é preservado no total anual, sem reconstrução de médias mensais arredondadas. Memória, PDF/JSON, guia e correção de campos contemplam as novas bases. Campo inválido latente na outra unidade permanece visível para correção. Fontes: EIA e NIST SP811/tabela6 conferidos; fórmulas/exemplos/limites em calculations e standards. Nenhuma nova regra normativa habilitada.
+
+Verificações: **587 testes backend +85 subtestes, 128 frontend, 37 E2E locais e1 HTTPS de duas contas aprovados**. Contratos pelo comando oficial, Ruff/formatação, tipos, ESLint, Prettier e build Webpack isolado aprovados. Cenário dos três perfis combina energia mensal, anual e minutos, rotina em lote preservando preenchidos, custo/projeção/participação, salvamento/reabertura, PDF, edição/recalculo e axe em320/390/768/1440px. JSON/PDF têm testes independentes de texto/unidades/bases. Capturas com dados fictícios inspecionadas.
+
+Banco real comparado integralmente ao checkpoint inicial **20261026T225824590153Z**:12tabelas idênticas, integrity/FKok; preservados **13projetos,38históricos,11revisões** e acervo. O usuário criou mais um projeto desde a entrega anterior; este é o ponto inicial desta sessão. Sem instalação/upgrade, migração/reset, regravação de projetos, exclusão de catálogo/acervo/checkpoints ou limpeza. API reiniciada graciosamente para0.24.0/motor0.12.0, API/interfaceHTTP200 confirmados. Revalidação de projetos antigos permanece explícita. Release estável0.20.0 preservada, sem novo pacote/site/CI. Sincronização e checkpoint final são conferidos pela rotina de encerramento/latest.json.
+
+Não executados nesta entrega: Windows/macOS/ARM,Docker,PostgreSQL,carga/pentest e inspeção física. Leitor real/impressão/site/CI hospedado/backup externo seguem fora do escopo por decisão anterior. Pendências normativas existentes permanecem sinalizadas, sem declaração de dimensionamento final ou aprovação da instalação.
+
+## Visual unificado e ajuda progressiva — base 0.23.0
 
 Repaginação aplicada à entrada, início, editor, projetos salvos, lixeira, biblioteca e acesso autenticado: superfícies neutras, tipografia do sistema, cores semânticas, espaçamentos, cabeçalhos, cartões, controles e feedback compartilhados. Sem fonte externa ou nova dependência. Leigo tem cinco tarefas com conclusão e próxima ação derivadas da edição atual; profissional tem atalhos explicados e acompanhamento opcional. Os três perfis têm ajuda recolhida para campos, zero/desconhecido e avisos. No celular a lista completa de tarefas é expansível, mantendo a próxima ação à vista.
 
@@ -86,4 +98,4 @@ Não executados nesta entrega: HTTPS de duas contas, PostgreSQL, Windows real, c
 
 A revisão completa dos itens registrados está em[KNOWN_ISSUES](KNOWN_ISSUES.md), com distinção entre entrega parcial, evidência externa e descarte. Próximas ampliações reais: neutro carregado/desequilíbrio/harmônicas e outros arranjos térmicos; proteção/entrada integrais após estudo/edições/produtos; geometrias além dafigura18. Esclarecimento oficial d7, vigência/topologia territorial integral, inspeção presencial e revisão humana do acervo continuam sem evidência suficiente; não convertê-los em concluídos.
 
-Retomar pela rotina AGENTS e pelo pedido atual; manter simplicidade, valores manuais e histórico. Código/docs no GitHub público; SQLite, originais, índices oficiais e checkpoints locais ignorados. A release estável disponível é0.20.0; main contém esta revisão0.23.0 após sincronização confirmada. Publicação de site, CI hospedado, impressão física e cópia externa seguem excluídos. Buffers e rascunhos não enviados não são capturados pelo checkpoint.
+Retomar pela rotina AGENTS e pelo pedido atual; manter simplicidade, valores manuais e histórico. Código/docs no GitHub público; SQLite, originais, índices oficiais e checkpoints locais ignorados. A release estável disponível é0.20.0; main contém esta revisão0.24.0 após sincronização confirmada. Publicação de site, CI hospedado, impressão física e cópia externa seguem excluídos. Buffers e rascunhos não enviados não são capturados pelo checkpoint.

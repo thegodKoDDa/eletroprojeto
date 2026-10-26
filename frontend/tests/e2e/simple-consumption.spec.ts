@@ -117,7 +117,7 @@ test('keyboard journey identifies pending appliances by room and offers a tariff
   await expect(second.getByRole('group', { name: /^Equipamento:/ })).toHaveCount(1);
   await hours.fill('2');
   await second.getByLabel('Dias de uso por mês', { exact: true }).fill('20');
-  await first.getByTestId('equipment-energy').locator('summary').click();
+  await first.getByTestId('equipment-energy').locator(':scope > summary').click();
   await first.getByLabel('Consumo de energia (kWh/mês)', { exact: true }).fill('10');
   await expect(page.getByTestId('calculation-status')).toContainText('Resultados atualizados');
   await expect(page.getByRole('button', { name: /^Informar consumo:/ })).toHaveCount(0);

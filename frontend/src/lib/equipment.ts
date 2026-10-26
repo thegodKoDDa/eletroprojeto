@@ -46,6 +46,9 @@ export function restoreReference(load: Load, reference: CatalogItem): Load {
     ...technicalDefaults(),
     ...restored.parameters,
     monthly_energy_kwh: load.parameters?.monthly_energy_kwh,
+    annual_energy_kwh: load.parameters?.annual_energy_kwh,
+    usage_time_unit: load.parameters?.usage_time_unit,
+    usage_minutes_per_day: load.parameters?.usage_minutes_per_day,
     usage_hours_per_day: load.parameters?.usage_hours_per_day,
     usage_days_per_month: load.parameters?.usage_days_per_month,
   };

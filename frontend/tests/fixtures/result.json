@@ -205,5 +205,7 @@
         "Validar condições, limites e exemplos independentes antes de implementar."
       ]
     }
-  ]
+  ],
+  "energy_known_load_count": 0,
+  "energy_pending_load_count": 1
 }

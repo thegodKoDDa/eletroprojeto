@@ -21,6 +21,8 @@ export function energyCompletionTarget(
     .find((item) => item.id === loadId);
   if (!loadId || !load) return 'add-environment';
   const params = load.parameters;
+  const durationField =
+    params?.usage_time_unit === 'minutes' ? 'usage_minutes_per_day' : 'usage_hours_per_day';
   let field = 'parameters.monthly_energy_kwh';
   if (result?.unknown_load_ids?.includes(loadId)) {
     field =
@@ -29,8 +31,8 @@ export function energyCompletionTarget(
           ? 'parameters.mechanical_power'
           : 'parameters.efficiency'
         : 'unit_power_w';
-  } else if (params?.usage_hours_per_day == null) {
-    field = 'parameters.usage_hours_per_day';
+  } else if (params?.[durationField] == null) {
+    field = `parameters.${durationField}`;
   } else if (params.usage_days_per_month == null) {
     field = 'parameters.usage_days_per_month';
   }
@@ -102,7 +104,7 @@ export function estimateJourney(
       id: 'energy',
       title: 'Informar o uso dos aparelhos',
       help: result
-        ? 'Em cada aparelho, informe os kWh mensais da etiqueta ou a potência e os horários efetivos de uso. Não sabe? Deixe pendente, sem inventar valores.'
+        ? 'Em cada aparelho, informe os kWh mensais ou anuais da etiqueta, ou a potência e o tempo efetivo em horas ou minutos. Não sabe? Deixe pendente, sem inventar valores.'
         : 'Aguarde o cálculo atual. Os dados anteriores não concluem esta tarefa.',
       target: energyCompletionTarget(input, result),
       complete: energy,

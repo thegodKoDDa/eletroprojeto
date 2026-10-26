@@ -16,6 +16,10 @@ Usar tokens compartilhados, PageHeading/SectionHeading/Feedback e estados com te
 
 Progresso é derivado de entradas, limites da API e resultado atual; consumo zero válido. Conferência explícita vinculada ao digest/escopo em memória do Workspace, invalidada em edição diferente, nova abertura/projeto; não é histórico técnico nem conformidade. Atalhos de uso aguardam recálculo e erros levam ao campo da API. Não tornar guia obrigatório para salvar/exportar, nem completar normas pendentes a partir de campos preenchidos. Detalhes em forms-and-pdf e usage.
 
+## Automação de consumo — 0.24.0 / motor0.12.0
+
+Todos os perfis: consumo mensal ou anual unitário, tempo em horas/minutos, rotina comum explícita apenas para aparelhos sem energia/horários, projeções e custos por ambiente/categoria e participação/ranking calculados no backend. Prioridade mensal > anual > horário escolhido; zero válido. Dados de unidades latentes, rotinas parciais e catálogo/histórico preservados. Não inferir W de kWh, ciclos, hábitos, tarifa ou sazonalidade. Projeção anual conserva base anual original; percentuais de subtotal zero são nulos. Fontes/aritmética/limites em standards/calculations, comportamento em forms-and-pdf. Novos campos opcionais não regravam projetos; relatório1.4 aditivo e revalidação explícita.
+
 ## Invariantes
 
 - Um motor Python em `backend/app/calculations`, funções puras, Decimal, unidades explícitas e sem arredondamento intermediário. Frontend valida/formata; não replica fórmulas.

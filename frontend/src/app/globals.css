@@ -2196,3 +2196,36 @@ label[data-emphasis='recommended'] {
     display: none;
   }
 }
+
+.usage-batch {
+  padding: 0.5rem 0.65rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-inner);
+  background: var(--surface);
+}
+.energy-breakdown-list {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  padding: 0;
+  list-style: none;
+}
+.energy-breakdown-list li {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-control);
+  font-size: 0.8rem;
+}
+.energy-breakdown-list li > * {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 600px) {
+  .energy-breakdown-list li {
+    grid-template-columns: 1fr;
+  }
+}

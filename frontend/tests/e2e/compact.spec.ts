@@ -62,7 +62,7 @@ test('home preserves sidebar branding and equipment disclosures stay compact and
   ).toBeLessThan(2);
   for (const key of ['equipment-advanced', 'equipment-energy', 'equipment-reference']) {
     const disclosure = equipment.getByTestId(key);
-    await disclosure.locator('summary').click();
+    await disclosure.locator(':scope > summary').click();
     await expect(disclosure).toHaveAttribute('open', '');
     const expandedPositions = await summaries.evaluateAll((nodes) =>
       nodes.map((node) => ({
@@ -76,7 +76,7 @@ test('home preserves sidebar branding and equipment disclosures stay compact and
       expect(Math.abs(expandedPositions[i].y - geometry[i].y)).toBeLessThan(2);
     }
 
-    await disclosure.locator('summary').click();
+    await disclosure.locator(':scope > summary').click();
     await expect(disclosure).not.toHaveAttribute('open', '');
   }
   for (const width of [320, 390, 768, 1440]) {

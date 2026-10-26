@@ -13,6 +13,7 @@ POWER_ORIGINS = {
 }
 ENERGY_BASES = {
     "stated": "Consumo mensal informado por unidade",
+    "annual_stated": "Média mensal do consumo anual informado por unidade",
     "schedule": "Potência e horários informados",
     "pending": "Dados de consumo insuficientes",
 }
@@ -60,8 +61,15 @@ def build_summary(project: dict, result: dict, project_version: int | None = Non
                     or resolved.get("status") == "pending"
                 ):
                     needed.append("potência elétrica")
-                if params.get("usage_hours_per_day") is None:
-                    needed.append("horas de uso por dia")
+                if (
+                    params.get(
+                        "usage_minutes_per_day"
+                        if params.get("usage_time_unit") == "minutes"
+                        else "usage_hours_per_day"
+                    )
+                    is None
+                ):
+                    needed.append("tempo de uso por dia (horas ou minutos)")
                 if params.get("usage_days_per_month") is None:
                     needed.append("dias de uso por mês")
                 pending.append(
@@ -106,17 +114,30 @@ def build_summary(project: dict, result: dict, project_version: int | None = Non
                     corrente_unitaria_a=resolved.get("unit_current_a"),
                     consumo_mensal_kwh=energy,
                     custo_mensal_brl=resolved.get("monthly_cost_brl"),
+                    consumo_anual_kwh=resolved.get("annual_energy_kwh"),
+                    custo_anual_brl=resolved.get("annual_cost_brl"),
+                    participacao_no_subtotal_percentual=result.get(
+                        "energy_share_by_load_pct", {}
+                    ).get(load["id"]),
                     base_consumo=ENERGY_BASES[basis],
                     premissa_consumo="Consumo mensal informado; as condições da etiqueta ou medição podem diferir do uso real."
                     if basis == "stated"
+                    else "Média mensal do consumo anual informado; condições da etiqueta podem diferir do uso real, sem sazonalidade presumida."
+                    if basis == "annual_stated"
                     else "Potência constante nas horas efetivas informadas; ciclos, standby e variação de potência não são presumidos."
                     if basis == "schedule"
                     else "Consumo ainda não estimado.",
                     consumo_unitario_informado_kwh=params.get("monthly_energy_kwh")
                     if basis == "stated"
                     else None,
+                    consumo_anual_unitario_informado_kwh=params.get("annual_energy_kwh")
+                    if basis == "annual_stated"
+                    else None,
+                    minutos_por_dia=params.get("usage_minutes_per_day")
+                    if basis == "schedule" and params.get("usage_time_unit") == "minutes"
+                    else None,
                     horas_por_dia=params.get("usage_hours_per_day")
-                    if basis == "schedule"
+                    if basis == "schedule" and params.get("usage_time_unit") != "minutes"
                     else None,
                     dias_por_mes=params.get("usage_days_per_month")
                     if basis == "schedule"
@@ -136,6 +157,7 @@ def build_summary(project: dict, result: dict, project_version: int | None = Non
                 potencia_incompleta=any(load["id"] in unknown_power for load in room["loads"]),
                 cargas_sem_potencia=sum(load["id"] in unknown_power for load in room["loads"]),
                 consumo_mensal_kwh=result.get("energy_by_environment_kwh", {}).get(room["id"]),
+                custo_mensal_brl=result.get("energy_cost_by_environment_brl", {}).get(room["id"]),
                 cargas_com_consumo=known_energy,
                 cargas_sem_consumo=unknown_energy,
                 consumo_incompleto=bool(unknown_energy),
@@ -188,6 +210,8 @@ def build_summary(project: dict, result: dict, project_version: int | None = Non
         resultados=dict(
             consumo_mensal=measurement(result.get("monthly_energy"), "kWh"),
             custo_mensal_estimado=measurement(result.get("monthly_cost"), "BRL"),
+            projecao_consumo_anual=measurement(result.get("annual_energy"), "kWh"),
+            projecao_custo_anual=measurement(result.get("annual_cost"), "BRL"),
             consumo_incompleto=bool(unknown),
             total_incompleto=bool(result.get("unknown_load_ids")),
             potencia_instalada=measurement(result["installed_power"], "W"),

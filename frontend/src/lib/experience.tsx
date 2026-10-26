@@ -55,7 +55,8 @@ export function fieldEmphasis(field: string, profile: ExperienceProfile, require
     if (
       field === 'project.energy_tariff_brl_per_kwh' ||
       field.startsWith('load.parameters.usage_') ||
-      field === 'load.parameters.monthly_energy_kwh'
+      field === 'load.parameters.monthly_energy_kwh' ||
+      field === 'load.parameters.annual_energy_kwh'
     )
       return 'recommended';
   }
@@ -67,7 +68,8 @@ export function fieldEmphasis(field: string, profile: ExperienceProfile, require
       ['load.voltage_v', 'load.power_factor'].includes(field) ||
       (field.startsWith('load.parameters.') &&
         !field.includes('usage_') &&
-        !field.includes('monthly_energy')))
+        !field.includes('monthly_energy') &&
+        !field.includes('annual_energy')))
   )
     return 'technical';
   return undefined;

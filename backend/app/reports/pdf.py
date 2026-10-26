@@ -318,6 +318,8 @@ def render_report(project, result, project_version=None):
                 result.get("monthly_energy"),
             ),
             row("Custo mensal estimado da energia", result.get("monthly_cost")),
+            row("Projeção de consumo em 12 meses", result.get("annual_energy")),
+            row("Projeção de custo em 12 meses", result.get("annual_cost")),
             row(
                 "Potência conhecida (total incompleto)"
                 if result.get("unknown_load_ids")
@@ -355,17 +357,22 @@ def render_report(project, result, project_version=None):
     doc.line(
         "Consumo mensal em kWh para os hábitos informados; não é medição. Custo pela tarifa informada; não é fatura completa, sem encargos fixos ou tributos adicionais."
     )
+    if result.get("annual_energy") is not None:
+        doc.line(
+            "Projeção de 12 meses: repete o uso mensal ou usa a energia anual declarada. Sem sazonalidade ou reajuste de tarifa presumidos; subtotal quando há pendências."
+        )
     if result.get("apparent_power") is None:
         doc.line(
             "VA indisponível: confira potência elétrica e fator de potência dos equipamentos. Esses dados não impedem a estimativa de consumo em kWh quando há dados suficientes de uso."
         )
     doc.section("Consumo por ambiente")
     doc.table(
-        ["Ambiente", "kWh/mês", "Cobertura"],
+        ["Ambiente", "kWh/mês", "Custo BRL/mês", "Cobertura"],
         [
             (
                 r["nome"],
                 val(r["consumo_mensal_kwh"]),
+                val(r.get("custo_mensal_brl")),
                 "Não estimado"
                 if r["consumo_mensal_kwh"] is None
                 else "Parcial"
@@ -374,7 +381,7 @@ def render_report(project, result, project_version=None):
             )
             for r in summary["ambientes"]
         ],
-        [45, 23, 32],
+        [34, 20, 22, 24],
     )
     doc.section("Potência por ambiente")
     doc.table(
@@ -465,6 +472,14 @@ def render_report(project, result, project_version=None):
                             val(item["consumo_unitario_informado_kwh"])
                             + " kWh/mês por unidade informado"
                             if item["consumo_unitario_informado_kwh"] is not None
+                            else val(item.get("consumo_anual_unitario_informado_kwh"))
+                            + " kWh/ano/un. (média)"
+                            if item.get("consumo_anual_unitario_informado_kwh") is not None
+                            else val(item.get("minutos_por_dia"))
+                            + " min/dia × "
+                            + str(item["dias_por_mes"])
+                            + " dias"
+                            if item.get("minutos_por_dia") is not None
                             else val(item["horas_por_dia"])
                             + " h/dia; "
                             + str(item["dias_por_mes"])

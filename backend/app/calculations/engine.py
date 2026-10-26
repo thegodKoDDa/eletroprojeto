@@ -6,7 +6,7 @@ from decimal import Decimal, localcontext
 from ..version import APP_VERSION, ENGINE_VERSION
 from .bathroom_geometry import calculate_bathroom_geometry
 from .circuits import calculate_circuits
-from .energy import energy_cost, resolve_energy
+from .energy import energy_breakdown, energy_cost, resolve_energy
 from .equipment import resolve_equipment
 from .power import installed_power, watts_to_kw
 from .project_demand import project_energisa_demand
@@ -65,9 +65,13 @@ def calculate(project: dict) -> dict:
                 technical = resolve_equipment(load)
                 energy = resolve_energy(load, technical["electrical_input_w"])
                 technical.update(
-                    {key: energy[key] for key in ("monthly_energy_kwh", "energy_basis")}
+                    {
+                        key: energy[key]
+                        for key in ("monthly_energy_kwh", "annual_energy_kwh", "energy_basis")
+                    }
                 )
                 technical["monthly_cost_brl"] = None
+                technical["annual_cost_brl"] = None
                 if energy["monthly_energy_kwh"] is None:
                     energy_unknown.append(load["id"])
                 else:
@@ -79,8 +83,24 @@ def calculate(project: dict) -> dict:
                         energy_categories.get(load["category"], Decimal(0)) + amount
                     )
                     technical["steps"].append(energy["energy_step"])
+                    technical["steps"].append(
+                        dict(
+                            calculation="annual_energy",
+                            formula="E_ano = quantidade × energia anual unitária"
+                            if energy["energy_basis"] == "annual_stated"
+                            else "E_ano = E_mês × 12",
+                            substituted=f"Energia anual das unidades cadastradas = {energy['annual_energy_kwh']} kWh",
+                            value=energy["annual_energy_kwh"],
+                            unit="kWh",
+                            source=energy["energy_step"]["source"],
+                            assumptions="Consumo anual declarado ou repetição do uso mensal por 12 meses, sem sazonalidade presumida. Não é medição da residência.",
+                        )
+                    )
                     if tariff is not None:
                         technical["monthly_cost_brl"] = energy_cost(amount, tariff)
+                        technical["annual_cost_brl"] = energy_cost(
+                            energy["annual_energy_kwh"], tariff
+                        )
                         technical["steps"].append(
                             dict(
                                 calculation="monthly_cost",
@@ -264,6 +284,7 @@ def calculate(project: dict) -> dict:
             )
             if energy_count and tariff is not None
             else None,
+            **energy_breakdown(load_results, energy_rooms, energy_categories, tariff),
             "energy_unknown_load_ids": energy_unknown,
             "energy_by_environment_kwh": energy_rooms,
             "energy_by_category_kwh": energy_categories,

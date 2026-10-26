@@ -71,7 +71,7 @@ for (const profile of Object.keys(labels) as (keyof typeof labels)[]) {
       .getByRole('combobox', { name: 'Adicionar equipamento em Novo ambiente' })
       .selectOption('philips-led-929001195311');
     const energy = page.getByTestId('equipment-energy');
-    if (profile === 'explore') await energy.locator('summary').click();
+    if (profile === 'explore') await energy.locator(':scope > summary').click();
     await expect(energy).toHaveAttribute('open');
     await energy.getByLabel('Consumo de energia (kWh/mês)').fill('6');
     await expect(page.getByLabel('Consumo e custo mensais')).toContainText('6 kWh/mês');

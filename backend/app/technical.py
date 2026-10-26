@@ -314,8 +314,16 @@ MATHEMATICAL_RULES = [
             "quantity * power_w * hours_per_day * days / 1000",
             ["quantity", "power_w", "hours_per_day", "days"],
             "kWh",
-            "Potência constante; etiqueta/medição mensal unitária prevalece quando informada. Sem ciclo presumido.",
+            "Potência constante; horas ou minutos explícitos. Consumo mensal unitário prevalece sobre anual/12 e horários. Sem ciclo presumido.",
             ["tests/test_energy.py"],
+        ),
+        (
+            "annual_energy",
+            "sum(resolved_annual_energy_kwh_per_load)",
+            ["monthly_energy_kwh", "annual_energy_kwh", "quantity"],
+            "kWh",
+            "Projeção: mesma rotina por 12 meses ou consumo anual informado. Sem sazonalidade; subtotal se incompleto.",
+            ["tests/test_energy_automation.py"],
         ),
         (
             "monthly_cost",

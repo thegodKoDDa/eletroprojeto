@@ -75,3 +75,13 @@ A sequência é identificar o projeto → cadastrar ambientes e aparelhos → in
 Quando houver consumo para todos os aparelhos cadastrados, leia os resultados e os avisos e clique Já conferi a estimativa. O quadro destaca o salvamento se ele estiver pendente. Alterar os dados pede nova conferência; reabrir ou recarregar também não presume que você leu a nova estimativa. Conferência do usuário não é aprovação técnica da instalação.
 
 No profissional, Acompanhar as etapas da estimativa oferece o mesmo percurso de forma opcional, abaixo dos atalhos explicados. Em qualquer perfil, Precisa de ajuda? explica as alternativas de preenchimento e o significado dos estados. Verde com confirmação indica tarefa concluída; âmbar indica pendência; vermelho indica correção; azul indica informação. Texto e símbolos acompanham as cores.
+
+## Menos contas e preenchimento repetido
+
+Em qualquer perfil, você pode informar o tempo de funcionamento em **minutos por dia**. Selecione a unidade e digite o tempo; o motor converte para calcular os kWh. Os valores de horas e minutos são preservados separadamente; a unidade selecionada determina qual será usado.
+
+Se a etiqueta trouxer **kWh/ano**, abra Minha etiqueta informa kWh/ano e digite o valor por unidade. O programa calcula a média mensal. Um consumo mensal já preenchido, inclusive zero, continua prioritário; limpe-o se quiser usar o anual. Energia anual prevalece sobre horários. Não é necessário inventar uma potência para calcular energia conhecida pela etiqueta.
+
+Para vários aparelhos com o mesmo uso, abra **Preencher uma rotina para vários aparelhos** dentro do ambiente. Informe tempo e dias uma vez e aplique. Só aparelhos sem consumo e sem rotina recebem esses valores; dados parciais ou preenchidos são preservados. Escolha os aparelhos adequados: uma geladeira não funciona continuamente na potência máxima só porque fica ligada24h.
+
+Na conferência, **Contas automáticas: ambientes, maiores consumos e12meses** reúne custo por ambiente/categoria, até cinco maiores consumos, percentuais e projeção anual. Os percentuais usam o subtotal conhecido. Sem tarifa, o consumo continua disponível e o custo fica pendente. Sem dados suficientes, não há zero fictício. Projeções não incluem sazonalidade, reajuste de tarifa ou encargos fixos.

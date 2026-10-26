@@ -1,4 +1,5 @@
 'use client';
+import { EnergyBreakdown } from './EnergyBreakdown';
 import { energyCompletionTarget } from '@/lib/journey';
 import { useExperience } from '@/lib/experience';
 import { SectionHeading } from '@/components/ui/SectionHeading';
@@ -196,6 +197,7 @@ export function ResultsPanel({
                   </button>
                 </div>
               )}
+            <EnergyBreakdown result={result} environments={environments} />
             {result.load_results?.some((item) => item.monthly_energy_kwh != null) && (
               <details className="mt-5">
                 <summary>Consumo por aparelho</summary>

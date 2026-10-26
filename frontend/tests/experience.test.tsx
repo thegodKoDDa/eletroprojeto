@@ -150,3 +150,24 @@ test('energy fields open for the guided presentation and preserve valid zero usa
   expect(screen.getByLabelText('Horas de uso por dia')).toBeDisabled();
   expect(onChange).not.toHaveBeenCalled();
 });
+
+test('invalid dormant minutes remain visible and correctable when hours or stated energy takes priority', () => {
+  render(
+    <EnergyFields
+      load={
+        {
+          id: 'dormant',
+          quantity: 1,
+          parameters: {
+            monthly_energy_kwh: '0',
+            usage_time_unit: 'hours',
+            usage_minutes_per_day: '1441',
+          },
+        } as Load
+      }
+      onChange={() => {}}
+    />,
+  );
+  expect(screen.getByLabelText('Minutos de uso por dia')).toHaveAttribute('aria-invalid', 'true');
+  expect(screen.getByLabelText('Minutos de uso por dia')).not.toBeDisabled();
+});

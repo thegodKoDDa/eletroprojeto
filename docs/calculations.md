@@ -1,6 +1,6 @@
 # Cálculos disponíveis
 
-A implementação vigente é o **motor 0.11.0**. As unidades, fórmulas e condições abaixo são mantidas neste documento; edições, cláusulas e evidências ficam em [standards](standards.md).
+A implementação vigente é o **motor 0.12.0**. As unidades, fórmulas e condições abaixo são mantidas neste documento; edições, cláusulas e evidências ficam em [standards](standards.md).
 
 | Assunto | Leitura |
 | --- | --- |
@@ -151,3 +151,22 @@ Exemplos de ampacidade: Cu90°C/B1/40°C/dois circuitos:4mm² dá42×0,91×0,8=3
 coordination.py contém funções puras. Seletividade de curto compara o Ik máximo do circuito com o limite do par documentado; igualdade/maior retorna falso, falta de fonte/confirmação ou outroIn retorna nulo. DPS compara Uc≥requisito, Up efetivo≤suportabilidade, corrente≥requisito somente para a mesma onda, suportabilidade do conjunto≥Ik. Atributos máximos do produto não são inventados e os requisitos vêm de estudo informado; essas comparações não escolhem classe/necessidade ou avaliam risco atmosférico. Exemplos fictícios:limite6kA/Ik5,99 atende;Ik6 não atesta seletividade;Up1500V/suportabilidade1500 atende e1500,001 não. Onda8/20 não satisfaz automaticamente requisito10/350; retorna nulo. Fontes/condições/limites permanecem nos resultados e no relatório.
 
 Municípios não são matemática elétrica: app/municipalities.py valida identidade/competência/duplicatas do INDGER, cruza código oficial com IBGE e preserva último mês de cada par município/CNPJ. Declaração mais recente de outra empresa não apaga a anterior; último registro com zero/ausência de UC não é convertido em relação positiva nem volta silenciosamente a um positivo antigo da mesma empresa. Consulta independente sem efeito sobre seleção manual, demanda ou digest do projeto. Sem rede durante requisição, sem gravação e sem inventar territorialidade. Hash divergente/falta de coleta mantém pendência.
+
+## Automação de consumo — motor 0.12.0 / app 0.24.0
+
+Matemática pura em calculations/energy.py, integrada ao motor para os três perfis. Fontes/unidades e validação registradas em standards. Sem nova tabela normativa ou coeficiente de utilização, simultaneidade, standby ou ciclo.
+
+- Consumo mensal informado por unidade prevalece, inclusive zero: `E_mês = quantidade × kWh_mensais_unitários`.
+- Na ausência de mensal, consumo anual informado: `E_ano = quantidade × kWh_anuais_unitários`; `E_mês_médio = E_ano / 12`. Não implica perfil mensal constante real, potência W ou corrente. O total anual mantém a base original exata, sem reconstruí-la a partir de médias mensais periódicas.
+- Sem energia informada, tempo escolhido em horas: fórmula existente. Em minutos: `E_mês = quantidade × potência_W × minutos_por_dia × dias_no_mês / 60000`. Não arredonda minutos para horas antes do produto. Unidade escolhida determina a entrada; valor ausente não é substituído pelo de outra unidade.
+- Projeção de12meses: energia anual declarada quando adotada; nos demais casos `E_ano = E_mês × 12`. Soma das projeções por carga. Custo anual usa esse total × tarifa, sem reajuste/sazonalidade presumidos.
+- Custos por ambiente/categoria: subtotais de energia conhecidos × tarifa. Ausência de tarifa retorna mapa vazio/custo nulo; tarifa zero retorna zero válido.
+- Participação por carga: energia mensal da carga (já multiplicada pela quantidade) ×100 / subtotal mensal conhecido. Subtotal zero → participação nula, sem divisão por zero nem percentual inventado. Ranking decrescente calculado no backend, desempate por ID; interface mostra até cinco maiores, com lista completa de consumo ainda disponível.
+
+Todas as operações usam Decimal/contexto40. Apresentação arredonda apenas a saída; entradas/snapshots/JSON mantêm valores completos. Novas entradas opcionais são annual_energy_kwh, usage_time_unit (hours/minutes, ausente mantém legado em horas) e usage_minutes_per_day. Horas0–24, minutos0–1440, dias inteiros0–31; entradas negativas/não finitas ou precisão fora do contrato são rejeitadas, mesmo se latentes. Um valor inválido na outra unidade permanece corrigível na interface. Nenhuma potência é inferida de kWh ou BTU/h.
+
+Cobertura parcial mantém status pending e texto de subtotal, inclusive nas projeções/custos; nenhum aparelho conhecido retorna resultado nulo, não zero. Residência inteira só está coberta na medida em que o usuário cadastrou os aparelhos e hábitos. Calendário, duração real de ciclos e encargos fixos não são presumidos. Estudos normativos e dimensionamento final permanecem condicionados como antes.
+
+Exemplos independentes:2aparelhos de2000W por15min/dia durante30dias →30kWh/mês. Três unidades com100kWh/ano →300kWh/ano e25kWh/mês médio, mesmo sem W conhecidos. Em um cenário12+10+10kWh/mês à tarifa0,80BRL/kWh →32kWh/mês,25,60BRL/mês,384kWh/12meses e307,20BRL/12meses. As participações são37,5%,31,25%,31,25%. Valores são exemplos de teste, não potências/rotinas recomendadas.
+
+Reutilização de rotina é cópia explícita de entradas, não uma fórmula no frontend: informa uma vez e aplica apenas a aparelhos do ambiente sem consumo nem horários. Rotinas parciais, dados de etiqueta e zeros permanecem. Não afeta catálogo, histórico ou demais ambientes. Memória, JSON/PDF e validações registram unidade, base e limites novos. Projetos antigos não são regravados; revalidação técnica continua explícita.

@@ -1,5 +1,13 @@
 # Histórico de alterações
 
+## 0.24.0 — 26/10/2026 / motor0.12.0
+
+- Consumo por minutos de uso e conversão de kWh/ano para média mensal, com prioridade explícita e valores antigos preservados.
+- Preenchimento de rotina comum nos aparelhos sem consumo/horários do ambiente, sem substituir dados manuais ou parciais.
+- Projeção de consumo/custo em12meses, custos por ambiente/categoria, participação no subtotal e maiores consumos calculados no backend para todos os perfis.
+- Memória, JSON/PDF e correção de campos contemplam unidades/bases novas; zero, dados desconhecidos, cobertura parcial e limites normativos preservados.
+- 587 testes backend/85 subtestes, 128 frontend, 37 E2E locais e 1 HTTPS aprovados; contratos, tipos, lint, formatação/Ruff e build isolado aprovados.
+
 ## 0.23.0 — 26/10/2026 / motor 0.11.0 preservado
 
 - Repaginação comum: superfícies neutras, tipografia, espaçamentos, cabeçalhos, cartões, bordas, controles e feedback padronizados em todas as telas e perfis.

@@ -26,6 +26,7 @@ import { PageHeading } from '@/components/ui/PageHeading';
 import { Feedback, type FeedbackTone } from '@/components/ui/Feedback';
 import { SectionHeading } from '@/components/ui/SectionHeading';
 import { DemandReview } from '@/components/calculations/DemandReview';
+import { UsageBatch } from '@/components/equipment/UsageBatch';
 import { EquipmentEditor } from '@/components/equipment/EquipmentEditor';
 import { Field, RequirementsContext, CalculationScopeContext } from '@/components/ui/Field';
 import type { components } from '@/lib/api.generated';
@@ -1454,6 +1455,10 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                             />
                           ))}
                         </div>
+                        <UsageBatch
+                          loads={room.loads ?? []}
+                          onApply={(loads) => updateRoom(room.id!, { loads })}
+                        />
                         <div className="environment-equipment-actions">
                           <RoomEquipmentPicker
                             room={room}

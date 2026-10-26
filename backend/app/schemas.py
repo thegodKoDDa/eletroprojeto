@@ -38,6 +38,14 @@ class TechnicalParameters(Schema):
     compressor: Literal["inverter", "conventional", "unknown"] = "unknown"
     screen_inches: Positive | None = None
     monthly_energy_kwh: Nonnegative | None = None
+    annual_energy_kwh: Nonnegative | None = None
+    usage_time_unit: Literal["hours", "minutes"] | None = None
+    usage_minutes_per_day: (
+        Annotated[
+            Decimal, Field(ge=0, le=1440, allow_inf_nan=False, max_digits=10, decimal_places=6)
+        ]
+        | None
+    ) = None
     usage_hours_per_day: (
         Annotated[Decimal, Field(ge=0, le=24, allow_inf_nan=False, max_digits=8, decimal_places=6)]
         | None
@@ -491,7 +499,9 @@ class LoadTechnicalResult(Schema):
     apparent_power_va: Decimal | None
     monthly_energy_kwh: Decimal | None = None
     monthly_cost_brl: Decimal | None = None
-    energy_basis: Literal["stated", "schedule", "pending"] = "pending"
+    annual_energy_kwh: Decimal | None = None
+    annual_cost_brl: Decimal | None = None
+    energy_basis: Literal["stated", "annual_stated", "schedule", "pending"] = "pending"
     unit_current_a: Decimal | None
     status: Status
     steps: list[TechnicalStep]
@@ -802,6 +812,14 @@ class CalculationResult(Schema):
     energy_unknown_load_ids: list[str] = Field(default_factory=list)
     energy_by_environment_kwh: dict[str, Decimal] = Field(default_factory=dict)
     energy_by_category_kwh: dict[str, Decimal] = Field(default_factory=dict)
+    annual_energy: Value | None = None
+    annual_cost: Value | None = None
+    energy_cost_by_environment_brl: dict[str, Decimal] = Field(default_factory=dict)
+    energy_cost_by_category_brl: dict[str, Decimal] = Field(default_factory=dict)
+    energy_share_by_load_pct: dict[str, Decimal | None] = Field(default_factory=dict)
+    energy_ranked_load_ids: list[str] = Field(default_factory=list)
+    energy_known_load_count: int = 0
+    energy_pending_load_count: int = 0
 
 
 class ProjectRevalidation(Schema):

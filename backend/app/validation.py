@@ -44,6 +44,8 @@ REQUIREMENTS = {
 
 
 OPTIONAL_FIELDS = {
+    "load.parameters.annual_energy_kwh": ("Consumo de energia (kWh/ano)", None, 0),
+    "load.parameters.usage_minutes_per_day": ("Minutos de uso por dia", None, 0),
     "project.energy_tariff_brl_per_kwh": ("Tarifa de energia (R$/kWh)", None, 0),
     "load.parameters.usage_hours_per_day": ("Horas de uso por dia", None, 0),
     "load.parameters.usage_days_per_month": ("Dias de uso por mês", None, 0),
@@ -125,6 +127,7 @@ def requirements():
     for key, (_, maximum_length, minimum) in OPTIONAL_FIELDS.items():
         result[key].update(required_for=[], max_length=maximum_length, minimum=minimum)
     result["load.parameters.usage_hours_per_day"].update(maximum=24)
+    result["load.parameters.usage_minutes_per_day"].update(maximum=1440)
     result["load.parameters.usage_days_per_month"].update(maximum=31, integer=True)
     return result
 

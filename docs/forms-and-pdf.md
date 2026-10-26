@@ -1,6 +1,6 @@
 # Formulários e relatórios
 
-Referência de comportamento atualizada na versão 0.23.0. O [guia de uso](usage.md) explica o percurso pela interface; [cálculos](calculations.md) e [fontes](standards.md) concentram fórmulas e condições técnicas.
+Referência de comportamento atualizada na versão 0.24.0. O [guia de uso](usage.md) explica o percurso pela interface; [cálculos](calculations.md) e [fontes](standards.md) concentram fórmulas e condições técnicas.
 
 ## Entradas e pendências
 
@@ -96,3 +96,11 @@ A conferência exige clicar Já conferi a estimativa nos resultados. A confirma�
 Profissional tem cartões de atalhos com finalidade explícita e acompanhamento das mesmas tarefas recolhido. Nenhum estudo técnico opcional é marcado como validado pelo preenchimento. Exploração mantém organização/funcionalidades e recebe o padrão visual comum. Os três perfis têm ajuda recolhida explicando consumo, valores desconhecidos/zero, estados e limites dos estudos. Avisos de cálculo continuam localizados e oferecem correção no campo, com estado atualizado a cada resposta.
 
 Conclusão do percurso significa apenas cadastro, estimativa conferida pelo próprio usuário e edição salva. Não significa conformidade normativa, fatura completa, medição ou aprovação profissional. A fonte das regras e das pendências continua no backend. Verificações efetivas e limites estão no CURRENT_STATE/SESSION_HISTORY.
+
+## Automação de entradas e resultados — 0.24.0
+
+Os três perfis recebem as mesmas capacidades: tempo em horas/minutos, consumo anual informado convertido em média mensal, rotina comum explícita para cargas sem uso no ambiente e painel recolhido de contas automáticas. Backend faz toda matemática; frontend só valida formatos/limites, copia entradas e apresenta valores. Campos de consumo anual têm destaque recomendado no leigo, sem se tornarem obrigatórios. Ajuda para consumo pendente leva à unidade selecionada.
+
+Mensal > anual > horários, com zero válido e valores latentes preservados. Nenhum hábito é deduzido da categoria. A rotina comum não altera aparelhos com consumo conhecido ou rotina parcial, instâncias de outros ambientes, catálogo ou histórico. Restaurar referência conserva os novos parâmetros de uso e energia. Campo inválido latente de outra unidade aparece para correção, evitando erro sem destino visível.
+
+JSON/PDF mostram base mensal/anual/horário, minutos ou horas efetivos, consumo/custo por ambiente e projeção de12meses com escopo. Resultado antigo continua oculto ao editar, inclusive o painel novo; salvar/exportar continuam usando o snapshot atual. Contrato de relatório1.4 ganha campos aditivos opcionais de projeção e participação, preservando leitores/históricos existentes. Motor0.12.0 identificado no registro; nenhuma migração/regravação automática de projetos.

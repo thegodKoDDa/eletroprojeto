@@ -717,10 +717,10 @@ test('shower reference variants retain usage through restoration, saving and JSO
     .getByLabel('Adicionar equipamento em Banheiro', { exact: true })
     .selectOption('lorenzetti-advanced-220-7500');
   const load = room.getByTestId('equipment-editor');
-  await load.getByTestId('equipment-energy').locator('summary').click();
+  await load.getByTestId('equipment-energy').locator(':scope > summary').click();
   await load.getByLabel('Horas de uso por dia', { exact: true }).fill('0.5');
   await load.getByLabel('Dias de uso por mês', { exact: true }).fill('30');
-  await load.getByTestId('equipment-advanced').locator('summary').click();
+  await load.getByTestId('equipment-advanced').locator(':scope > summary').click();
   await load
     .getByLabel('Variante de referência', { exact: true })
     .selectOption('lorenzetti-advanced-127-5500');
