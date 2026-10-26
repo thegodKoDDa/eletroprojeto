@@ -681,23 +681,26 @@ export function EquipmentEditor({
       <div className="equipment-meta text-xs muted">
         {ref && (
           <button
-            className="hover:text-emerald-300"
+            className="equipment-action"
             aria-label="Restaurar sugestão"
+            title="Restaura os dados da referência consultada e preserva o consumo e os horários informados."
             onClick={() => onChange(restoreReference(load, ref))}
           >
-            Restaurar
+            {profile === 'explore' ? 'Restaurar' : 'Restaurar referência'}
           </button>
         )}
         <button
-          className="hover:text-emerald-300"
+          className="equipment-action"
           aria-label="Duplicar equipamento"
+          title="Cria outra instância deste aparelho, mantendo o catálogo original."
           onClick={onDuplicate}
         >
           Duplicar
         </button>
         <button
-          className="hover:text-red-300"
+          className="equipment-action danger"
           aria-label="Remover carga"
+          title="Remove este aparelho do ambiente após confirmação."
           onClick={() => {
             if (window.confirm(`Remover ${load.name}?`)) onRemove();
           }}

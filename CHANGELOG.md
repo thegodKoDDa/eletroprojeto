@@ -1,5 +1,13 @@
 # Histórico de alterações
 
+## 0.22.1 — 26/10/2026 / motor0.11.0 preservado
+
+- Refinamento dos dois perfis: navegação móvel recolhível, salvamento/exportação à vista e edição preservada ao cancelar novo projeto.
+- Rótulos, espaçamentos, bordas, selects, hover/foco, botões de aparelhos e áreas de toque revisados; destaques mais leves e alinhados.
+- Consumo separado visualmente entre etiqueta/medição e horários, preservando prioridade, zero e valores já informados. Restaurar referência esclarecido.
+- Atalhos profissionais para parâmetros e reabertura da memória; fórmulas longas adaptadas a320px. Recursos úteis, dados, catálogo e regras elétricas preservados.
+- 570 testes backend/85 subtestes, 121 frontend, 31 E2E locais e 1 HTTPS aprovados; 4 E2E móveis repetidos após ajuste final, contratos/tipos/lint/formatação e build isolado aprovados.
+
 ## 0.22.0 — 26/10/2026 / motor0.11.0 preservado
 
 - Entrada com três perfis: leigo, profissional e exploração; todos os recursos disponíveis com destaques e orientação próprios. Exploração mantém a organização original.

@@ -4,6 +4,8 @@
 
 Estimativa de consumo elétrico residencial com três apresentações escolhidas na abertura: **leigo, profissional e exploração**, para moradia pronta ou planejada. Todos os recursos continuam disponíveis. Preservar produto, dados e identidade visual. Percurso principal: **01 Projeto → 02 Ambientes → 03 Conferência**. Início mantém sidebar/marca e três cartões. Circuitos, entrada e demanda continuam opcionais depois dos resultados. Leigo/exploração os mantêm recolhidos; profissional destaca o grupo, os parâmetros e os atalhos sem tornar os estudos obrigatórios.
 
+Refinamento0.22.1: navegação recolhível no celular/tablet para leigo/profissional, ações de projeto visíveis, alternativas de consumo agrupadas e atalhos que abrem os detalhes antes de focar. Preservar horários ao informar/limpar kWh, inclusive zero.
+
 Consumo/custo recebem destaque, tarifa fica visível e uso dos aparelhos é explícito. Medidas/pontos, dados extras, potência, memória e previsões ficam em detalhes. Catálogo sugere referências, não potências universais; valores manuais válidos prevalecem. A biblioteca técnica serve para melhorar utilidades verificadas, não para exigir novos formulários ou presumir dados.
 
 Uso local. GitHub público distribui a fonte/histórico; dados privados continuam locais; implantação do site, CI hospedado, impressão física e cópia externa de dados privados continuam fora do escopo. O agente executa rotinas de terminal, sem delegá-las ao usuário. Autorização de manutenção/sincronização revisada em24/10/2026 está no AGENTS; não repetir perguntas para essas rotinas.

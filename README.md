@@ -59,7 +59,7 @@ Configuração de portas, dados, atualização e execução manual: [guia de ins
 
 ## Como usar
 
-Na versão atual da `main` (0.22.0), escolha **USUÁRIO LEIGO**, **USUÁRIO PROFISSIONAL** ou **ESTOU APENAS DANDO UMA OLHADA** na abertura. Os três perfis oferecem todos os recursos, com destaques diferentes; use **Alterar perfil** para trocar sem perder a edição. A distribuição estável publicada permanece na versão indicada em Releases.
+Na versão atual da `main` (0.22.1), escolha **USUÁRIO LEIGO**, **USUÁRIO PROFISSIONAL** ou **ESTOU APENAS DANDO UMA OLHADA** na abertura. Os três perfis oferecem todos os recursos, com destaques diferentes; use **Alterar perfil** para trocar sem perder a edição. A distribuição estável publicada permanece na versão indicada em Releases.
 
 1. **Projeto:** identifique a residência e informe a tarifa, se quiser estimar o custo.
 2. **Ambientes:** adicione aparelhos, confira suas potências e informe horários ou consumo mensal.

@@ -47,60 +47,68 @@ export function EnergyFields({
           superar o consumo típico; prefira etiqueta ou medição quando disponível.
         </p>
       )}
-      <div className="mt-3 grid gap-3 sm:grid-cols-3">
-        <Field
-          field="load.parameters.monthly_energy_kwh"
-          label="Consumo de energia (kWh/mês)"
-          path={`load.${load.id}.parameters.monthly_energy_kwh`}
-        >
-          <input
-            type="number"
-            min="0"
-            step="any"
-            aria-describedby={`${descriptionId} ${priorityId}`}
-            placeholder="Desconhecido"
-            value={params.monthly_energy_kwh ?? ''}
-            onChange={(e) => onChange({ monthly_energy_kwh: e.target.value || null })}
-          />
-        </Field>
-        <Field
-          field="load.parameters.usage_hours_per_day"
-          label="Horas de uso por dia"
-          path={`load.${load.id}.parameters.usage_hours_per_day`}
-        >
-          <input
-            type="number"
-            min="0"
-            max="24"
-            step="any"
-            aria-describedby={`${descriptionId} ${priorityId}`}
-            disabled={stated && hoursValid && daysValid}
-            placeholder="Ex.: 0,5"
-            value={params.usage_hours_per_day ?? ''}
-            onChange={(e) => onChange({ usage_hours_per_day: e.target.value || null })}
-          />
-        </Field>
-        <Field
-          field="load.parameters.usage_days_per_month"
-          label="Dias de uso por mês"
-          path={`load.${load.id}.parameters.usage_days_per_month`}
-        >
-          <input
-            type="number"
-            min="0"
-            max="31"
-            step="1"
-            aria-describedby={`${descriptionId} ${priorityId}`}
-            disabled={stated && hoursValid && daysValid}
-            placeholder="Não informado"
-            value={params.usage_days_per_month ?? ''}
-            onChange={(e) =>
-              onChange({
-                usage_days_per_month: e.target.value === '' ? null : Number(e.target.value),
-              })
-            }
-          />
-        </Field>
+      <div className="energy-alternatives">
+        <fieldset className="energy-method">
+          <legend>Etiqueta ou medição</legend>
+          <Field
+            field="load.parameters.monthly_energy_kwh"
+            label="Consumo de energia (kWh/mês)"
+            path={`load.${load.id}.parameters.monthly_energy_kwh`}
+          >
+            <input
+              type="number"
+              min="0"
+              step="any"
+              aria-describedby={`${descriptionId} ${priorityId}`}
+              placeholder="Desconhecido"
+              value={params.monthly_energy_kwh ?? ''}
+              onChange={(e) => onChange({ monthly_energy_kwh: e.target.value || null })}
+            />
+          </Field>
+        </fieldset>
+        <fieldset className="energy-method">
+          <legend>Estimativa por horários</legend>
+          <div className="grid grid-cols-2 gap-3">
+            <Field
+              field="load.parameters.usage_hours_per_day"
+              label="Horas de uso por dia"
+              path={`load.${load.id}.parameters.usage_hours_per_day`}
+            >
+              <input
+                type="number"
+                min="0"
+                max="24"
+                step="any"
+                aria-describedby={`${descriptionId} ${priorityId}`}
+                disabled={stated && hoursValid && daysValid}
+                placeholder="Ex.: 0,5"
+                value={params.usage_hours_per_day ?? ''}
+                onChange={(e) => onChange({ usage_hours_per_day: e.target.value || null })}
+              />
+            </Field>
+            <Field
+              field="load.parameters.usage_days_per_month"
+              label="Dias de uso por mês"
+              path={`load.${load.id}.parameters.usage_days_per_month`}
+            >
+              <input
+                type="number"
+                min="0"
+                max="31"
+                step="1"
+                aria-describedby={`${descriptionId} ${priorityId}`}
+                disabled={stated && hoursValid && daysValid}
+                placeholder="Não informado"
+                value={params.usage_days_per_month ?? ''}
+                onChange={(e) =>
+                  onChange({
+                    usage_days_per_month: e.target.value === '' ? null : Number(e.target.value),
+                  })
+                }
+              />
+            </Field>
+          </div>
+        </fieldset>
       </div>
       <p className="mt-2 text-xs muted">
         Os kWh informados são de uma unidade. O resultado considera a quantidade cadastrada (

@@ -245,7 +245,7 @@ export function ResultsPanel({
             )}
           </div>
           <details open={profile === 'professional' || undefined} className="result-details mt-5">
-            <summary>Detalhes dos cálculos e previsões técnicas</summary>
+            <summary id="results-memory">Detalhes dos cálculos e previsões técnicas</summary>
             <div className="mt-4 flex flex-wrap gap-4">
               {profile === 'explore' ? (
                 <label>

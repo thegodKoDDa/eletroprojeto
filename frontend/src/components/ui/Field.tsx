@@ -108,21 +108,23 @@ export function Field({
   const error = rendered.find((item) => item.error)?.error;
   return (
     <label
-      className={className}
+      className={['form-field', className].filter(Boolean).join(' ')}
       htmlFor={path}
       data-emphasis={fieldEmphasis(field, profile, required)}
     >
-      {label}
-      {required && (
-        <span
-          className="required-mark"
-          aria-hidden="true"
-          title={`Necessário para ${rule.purpose}`}
-        >
-          {' '}
-          *
-        </span>
-      )}
+      <span className="field-label">
+        {label}
+        {required && (
+          <span
+            className="required-mark"
+            aria-hidden="true"
+            title={`Necessário para ${rule.purpose}`}
+          >
+            {' '}
+            *
+          </span>
+        )}
+      </span>
       {rendered.map((item) => item.node)}
       {error && (
         <span id={`${path}-error`} className="field-error">

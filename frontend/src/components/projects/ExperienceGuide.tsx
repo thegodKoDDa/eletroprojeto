@@ -3,7 +3,13 @@
 import { useExperience } from '@/lib/experience';
 import { focusField } from '@/components/calculations-notices';
 
-export function ExperienceGuide({ onKnowledge }: { onKnowledge: () => void }) {
+export function ExperienceGuide({
+  onKnowledge,
+  firstLoadId,
+}: {
+  onKnowledge: () => void;
+  firstLoadId?: string;
+}) {
   const { profile } = useExperience();
   if (profile === 'explore') return null;
   return (
@@ -21,7 +27,7 @@ export function ExperienceGuide({ onKnowledge }: { onKnowledge: () => void }) {
         <p>
           {profile === 'beginner'
             ? 'Cadastre os aparelhos e informe os kWh da etiqueta ou a potência e os horários de uso. A tarifa permite estimar o custo.'
-            : 'Acesse dados elétricos, referências e verificações condicionadas. Os estudos não substituem a revisão técnica da instalação.'}
+            : 'Acesse os parâmetros e as verificações do estudo. Confira as condições de aplicação de cada método.'}
         </p>
       </div>
       <nav
@@ -34,18 +40,27 @@ export function ExperienceGuide({ onKnowledge }: { onKnowledge: () => void }) {
               ['03 · Conferir estimativa', 'results'],
             ]
           : [
-              ['Dados elétricos', 'project.utility'],
+              ['Concessionária', 'project.utility'],
               ['Demanda', 'technical-demand'],
               ['Circuitos e proteções', 'technical-circuits'],
               ['Localização', 'technical-bathroom'],
               ['Território', 'technical-territory'],
-              ['Resultados e memória', 'results'],
+              ['Resultados e memória', 'results-memory'],
             ]
         ).map(([label, target]) => (
-          <button type="button" key={target} onClick={() => focusField(target)}>
+          <button
+            type="button"
+            key={target}
+            onClick={() => focusField(document.getElementById(target) ? target : 'results')}
+          >
             {label}
           </button>
         ))}
+        {profile === 'professional' && firstLoadId && (
+          <button type="button" onClick={() => focusField(`load.${firstLoadId}.voltage_v`)}>
+            Parâmetros dos aparelhos
+          </button>
+        )}
         {profile === 'professional' && (
           <button type="button" onClick={onKnowledge}>
             Biblioteca técnica

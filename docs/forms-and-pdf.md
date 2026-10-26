@@ -1,6 +1,6 @@
 # Formulários e relatórios
 
-Referência de comportamento da versão 0.19.0. O [guia de uso](usage.md) explica o percurso pela interface; [cálculos](calculations.md) e [fontes](standards.md) concentram fórmulas e condições técnicas.
+Referência de comportamento atualizada na versão 0.22.1. O [guia de uso](usage.md) explica o percurso pela interface; [cálculos](calculations.md) e [fontes](standards.md) concentram fórmulas e condições técnicas.
 
 ## Entradas e pendências
 
@@ -72,3 +72,13 @@ A escolha inicial altera apresentação, destaque e abertura dos detalhes; não 
 Descartes de interface nos dois novos perfis: atalho principal duplicado para lixeira, substituído por referências úteis ao estudo; seletor Simples/Técnica redundante com a preferência, substituído por um controle explícito de detalhamento. A opção de exploração conserva esses controles originais. Não foi identificada função sem utilidade que justificasse apagar código de cálculos, recuperação, dados, catálogo, documentação ou estudos. Textos de escolha no celular são compactos, mantendo as três decisões visíveis sem repetir listas de benefícios.
 
 A troca de perfil mantém Workspace e campos montados, preserva edições durante operações e não dispara novas requisições de cálculo. O diálogo usa elemento nativo, foco contido por Tab/Shift+Tab, Escape e retorno ao botão de origem. Preferência inválida reabre a escolha; sessionStorage indisponível permite uso na sessão atual. Auth continua anterior ao espaço de trabalho e a preferência é isolada por conta/aba.
+
+## Refinamento dos perfis — 0.22.1
+
+Revisados os grupos de identificação, ambientes, catálogo/instâncias, consumo, estudos, biblioteca, salvamento/recuperação e relatórios. Cada grupo tem uso concreto nos dois perfis e continua acessível: profissional também precisa de consumo e recuperação; leigo pode consultar referências e estudos opcionais. Nenhuma função ou dado foi excluído por baixa frequência de uso. Foram retirados peso visual dos blocos destacados, estilos sem efeito em details com display:contents e o rótulo genérico Restaurar nos novos perfis. Exploração mantém organização e nomes anteriores, com melhorias comuns dos controles.
+
+O menu móvel dos dois perfis é recolhível, preservando ações de salvar/exportar e abrindo todos os destinos. Cancelar a criação de outro projeto mantém menu, foco e edição. Desktop mantém navegação aberta. Campos têm rótulo separado do controle, destaques laterais sem preenchimento que desalinhava linhas, bordas/hover/foco consistentes e áreas de toque maiores em telas pequenas. Ações destrutivas usam cor própria, botões de aparelhos têm área e estados visíveis e selects preservam o controle nativo e o teclado.
+
+Consumo agrupado em duas alternativas por fieldsets/legends: etiqueta/medição e horários. Prioridade de kWh, zero válido, horários latentes preservados e correção de valores inválidos permanecem iguais. Restaurar referência recebe explicação e não limpa o uso. Atalho profissional de concessionária nomeia seu destino real; parâmetros do primeiro aparelho ficam acessíveis por atalho. Resultados e memória passa a focar o summary interno, reabrindo os detalhes após fechamento manual. Fórmulas longas na memória quebram em telas estreitas: o teste de 320px revelou overflow que ficava oculto com os detalhes fechados.
+
+Não há alteração de fórmulas, requisitos da API, permissões, payloads de projetos, catálogo ou relatórios. Perfil continua sendo apenas apresentação. Verificações e limites desta entrega estão no CURRENT_STATE e no registro cumulativo da sessão.

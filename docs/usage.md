@@ -10,6 +10,8 @@ Na abertura, escolha uma apresentação:
 - **USUÁRIO PROFISSIONAL:** dados elétricos, medidas, memória de cálculo e atalhos de demanda, circuitos/proteções, localização, território e biblioteca técnica em destaque. Todos os limites e condições dos estudos permanecem.
 - **ESTOU APENAS DANDO UMA OLHADA:** organização original, com consumo primeiro e estudos técnicos recolhidos.
 
+No celular e tablet, leigo e profissional têm um botão **Navegação** para abrir os acessos a início, projetos, lixeira e biblioteca. Selecionar um destino recolhe esse menu; salvar e exportar continuam visíveis durante a edição. No computador a navegação permanece aberta.
+
 Todos os recursos estão disponíveis em qualquer perfil. Use **Alterar perfil** na navegação para trocar a apresentação sem perder o projeto ou a edição. O diálogo também pode ser fechado por Escape ou **Voltar sem alterar**. A escolha é lembrada nesta aba, inclusive ao recarregar; uma aba nova começa com a tela de escolha. A preferência é separada por conta quando há autenticação e não é gravada no projeto ou relatório.
 
 Nos perfis leigo e profissional, a biblioteca técnica ocupa o terceiro atalho da tela inicial; a lixeira continua disponível na navegação. Na exploração, o terceiro atalho continua sendo a lixeira. Em detalhes dos resultados, **Mostrar verificações e memória detalhadas** permite aprofundar a consulta em qualquer um dos novos perfis; a exploração conserva o seletor original.
@@ -61,3 +63,5 @@ Os procedimentos têm cobertura limitada e fontes identificadas. Uma posição, 
 Nos circuitos, escolha isolação/método/arranjo reais; terminais para90°C, condições enterradas e afastamentos precisam ser conferidos. D exige temperatura do solo e referência limitada; G exige circuito único trifásico equilibrado sem neutro. Dados de impedância próprios são necessários para queda em XLPE/EPR e D/E/F/G. Os painéis DPS/seletividade comparam documentação de produtos e estudo informado, sem selecionar proteção final.
 
 Em **Referência territorial · ANEEL**, a consulta municipal opcional usa código IBGE de sete dígitos, mostra todas as empresas com relação positiva no último mês declarado por cada uma e preserva datas/atrasos. Confirme a empresa que atende o endereço pela fatura/contrato; a consulta não troca a distribuidora do projeto.
+
+Na edição do aparelho, **Etiqueta ou medição** reúne os kWh mensais; **Estimativa por horários** reúne horas e dias. São alternativas: kWh informados, inclusive zero, prevalecem. Limpar os kWh reabilita os horários preservados. **Restaurar referência** recupera os dados técnicos sugeridos sem apagar consumo/horários; duplicar cria outra instância, sem modificar o catálogo. No perfil profissional, **Parâmetros dos aparelhos** leva aos dados do primeiro aparelho e **Resultados e memória** reabre os detalhes quando necessário.

@@ -1,8 +1,18 @@
-# Estado atual — EletroProjeto 0.22.0 / motor 0.11.0
+# Estado atual — EletroProjeto 0.22.1 / motor 0.11.0
 
 Atualizado em 26/10/2026. Entrada por três perfis entregue conforme pedido: **USUÁRIO LEIGO**, **USUÁRIO PROFISSIONAL** e **ESTOU APENAS DANDO UMA OLHADA**. Todos os recursos continuam disponíveis, com prioridades de apresentação diferentes. Dados, cálculos e limites normativos anteriores preservados; SQLite/schema0007 e JSON de relatório1.4 inalterados.
 
-## Perfis de apresentação — entrega atual
+## Refinamento atual — 0.22.1
+
+Revisão dos perfis leigo/profissional: navegação recolhível no celular/tablet, ações de projeto à vista, destaques de campos alinhados, bordas/hover/foco/selects consistentes e áreas de toque maiores. Aparelhos têm ações mais claras e alternativas de consumo agrupadas por etiqueta/medição ou horários. Em telas até480px os dois perfis organizam os detalhes do aparelho em sequência; exploração conserva os três acessos na mesma linha. Atalhos profissionais chegam à concessionária, aos parâmetros do primeiro aparelho e reabrem a memória de resultados. Fórmulas longas agora quebram em320px.
+
+Utilidade revisada nos grupos de cadastro, catálogo, consumo, estudos, biblioteca, recuperação e relatórios: todos mantidos com finalidade concreta em ambos os perfis. Removidos apenas peso visual, rótulo ambíguo e estilo sem efeito; nenhuma função útil, dado ou referência excluída. Motor0.11.0, schema0007, requisitos, cálculos, debounce/cancelamento, histórico e exportações preservados. Detalhes em forms-and-pdf e usage.
+
+Verificações desta revisão:570pytest/85subtestes,121frontend e31E2E completos aprovados. Contratos regenerados, tipos, lint e formatação aprovados. Testes novos cobrem menu móvel nos dois perfis, cancelamento sem perder edição, prioridade do zero e horários preservados, atalhos/foco, axe e320/390/768/1440px. Capturas de celular e desktop inspecionadas. Após o último ajuste móvel,4E2E afetados passaram novamente;1E2E HTTPS de duas contas e build Webpack isolado aprovados. API/interfaceHTTP200, gerados deQA inspecionados/restaurados.
+
+As12tabelas reais foram comparadas integralmente ao checkpoint20261026T184255805677Z: conteúdo idêntico, integrity/FKok. Nenhuma migração, atualização de dependências, exclusão ou limpeza de dados/acervo/checkpoints. API reiniciada graciosamente para0.22.1; motor0.11.0. Release estável0.20.0 preservada, sem novo pacote/site/CI. Limites normativos e verificações externas não executadas abaixo continuam válidos. Sincronização e checkpoint final são confirmados pela rotina de encerramento e latest.json.
+
+## Perfis de apresentação — base0.22.0
 
 - **Leigo:** requisitos da operação recebidos da API e dados de consumo/custo destacados; Consumo mensal aberto; orientação de três passos. Nenhuma exigência normativa ou fórmula foi criada no frontend.
 - **Profissional:** dados complementares do projeto, medidas, memória de cálculo e grupo de estudos técnicos destacados/abertos. Atalhos diretos para dados elétricos, demanda, circuitos/proteções, localização, território e biblioteca. Os estudos continuam opcionais e condicionados.
@@ -64,4 +74,4 @@ Não executados nesta entrega: HTTPS de duas contas, PostgreSQL, Windows real, c
 
 A revisão completa dos itens registrados está em[KNOWN_ISSUES](KNOWN_ISSUES.md), com distinção entre entrega parcial, evidência externa e descarte. Próximas ampliações reais: neutro carregado/desequilíbrio/harmônicas e outros arranjos térmicos; proteção/entrada integrais após estudo/edições/produtos; geometrias além dafigura18. Esclarecimento oficial d7, vigência/topologia territorial integral, inspeção presencial e revisão humana do acervo continuam sem evidência suficiente; não convertê-los em concluídos.
 
-Retomar pela rotina AGENTS e pelo pedido atual; manter simplicidade, valores manuais e histórico. Código/docs no GitHub público; SQLite, originais, índices oficiais e checkpoints locais ignorados. A release estável disponível é0.20.0; main contém esta revisão0.22.0 após sincronização confirmada. Publicação de site, CI hospedado, impressão física e cópia externa seguem excluídos. Buffers e rascunhos não enviados não são capturados pelo checkpoint.
+Retomar pela rotina AGENTS e pelo pedido atual; manter simplicidade, valores manuais e histórico. Código/docs no GitHub público; SQLite, originais, índices oficiais e checkpoints locais ignorados. A release estável disponível é0.20.0; main contém esta revisão0.22.1 após sincronização confirmada. Publicação de site, CI hospedado, impressão física e cópia externa seguem excluídos. Buffers e rascunhos não enviados não são capturados pelo checkpoint.

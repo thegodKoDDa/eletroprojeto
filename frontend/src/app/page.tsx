@@ -91,6 +91,7 @@ export default function Home() {
 function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => Promise<void> }) {
   const { profile } = useExperience();
   const professional = profile === 'professional';
+  const [mobileNavigationOpen, setMobileNavigationOpen] = useState(false);
   const [view, setView] = useState<'home' | 'project' | 'library' | 'trash' | 'knowledge'>('home');
   const [hasProject, setHasProject] = useState(false);
   const { catalog, utilities, requirements, health, states, initializationIssues, retry } =
@@ -229,6 +230,7 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
     else document.querySelector<HTMLElement>('[data-workspace-heading]')?.focus();
   }, [view, calculationScope]);
   function navigate(next: typeof view) {
+    setMobileNavigationOpen(false);
     setMessage('');
     if (next === view) document.querySelector<HTMLElement>('[data-workspace-heading]')?.focus();
     else setView(next);
@@ -475,6 +477,7 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
       !window.confirm('Descartar alterações locais e criar outro projeto?')
     )
       return;
+    setMobileNavigationOpen(false);
     pendingDraft.current?.();
     createId.current = undefined;
     setCalculationScope((value) => value + 1);
@@ -684,20 +687,38 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
               </div>
             </div>
             <ExperienceSwitcher />
-            <p className="sidebar-label">ESPAÇO DE TRABALHO</p>
-            <SectionNavigation
-              active={view}
-              busy={busy || exporting}
-              hasProject={hasProject}
-              projectName={input.name}
-              dirty={dirty || !saved}
-              onHome={showHome}
-              onNew={newProject}
-              onProject={() => navigate('project')}
-              onLibrary={showLibrary}
-              onTrash={showTrash}
-              onKnowledge={() => navigate('knowledge')}
-            />
+            {profile !== 'explore' && (
+              <button
+                type="button"
+                className="workspace-navigation-toggle btn subtle"
+                aria-expanded={mobileNavigationOpen}
+                aria-controls="workspace-navigation-panel"
+                onClick={() => setMobileNavigationOpen((value) => !value)}
+              >
+                <WorkspaceIcon name="library" /> Navegação{' '}
+                <span aria-hidden="true">{mobileNavigationOpen ? '−' : '+'}</span>
+              </button>
+            )}
+            <div
+              id="workspace-navigation-panel"
+              className="workspace-navigation-panel"
+              data-expanded={mobileNavigationOpen}
+            >
+              <p className="sidebar-label">ESPAÇO DE TRABALHO</p>
+              <SectionNavigation
+                active={view}
+                busy={busy || exporting}
+                hasProject={hasProject}
+                projectName={input.name}
+                dirty={dirty || !saved}
+                onHome={showHome}
+                onNew={newProject}
+                onProject={() => navigate('project')}
+                onLibrary={showLibrary}
+                onTrash={showTrash}
+                onKnowledge={() => navigate('knowledge')}
+              />
+            </div>
             {view === 'project' && (
               <div className="sidebar-actions">
                 <p className="eyebrow">AÇÕES DO PROJETO</p>
@@ -951,7 +972,10 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                     }
                   />
                 </header>
-                <ExperienceGuide onKnowledge={() => navigate('knowledge')} />
+                <ExperienceGuide
+                  firstLoadId={input.environments?.flatMap((room) => room.loads ?? [])[0]?.id}
+                  onKnowledge={() => navigate('knowledge')}
+                />
                 {operationIssues?.input === input && !error && (
                   <CalculationNotices
                     stale={false}
