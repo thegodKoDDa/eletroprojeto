@@ -1,4 +1,5 @@
 'use client';
+import { useExperience } from '@/lib/experience';
 import { Field } from '@/components/ui/Field';
 import type { Load, TechnicalParameters } from '@/lib/api';
 
@@ -10,6 +11,7 @@ export function EnergyFields({
   load: Load;
   onChange: (patch: Partial<TechnicalParameters>) => void;
 }) {
+  const { profile } = useExperience();
   const params: Partial<TechnicalParameters> = load.parameters ?? {};
   const descriptionId = `load.${load.id}.energy-description`;
   const priorityId = `load.${load.id}.energy-priority`;
@@ -26,8 +28,14 @@ export function EnergyFields({
       params.usage_days_per_month >= 0 &&
       params.usage_days_per_month <= 31);
   return (
-    <details data-testid="equipment-energy">
-      <summary className="cursor-pointer text-xs muted">Consumo mensal (opcional)</summary>
+    <details
+      open={profile !== 'explore' || undefined}
+      data-testid="equipment-energy"
+      data-emphasis={profile === 'beginner' ? 'recommended' : undefined}
+    >
+      <summary className="cursor-pointer text-xs muted">
+        {profile === 'beginner' ? 'Consumo mensal · informe como usa' : 'Consumo mensal (opcional)'}
+      </summary>
       <p id={descriptionId} className="mt-2 text-xs muted">
         Informe o consumo mensal por unidade da etiqueta ou medição. Se não souber, informe as horas
         efetivas de funcionamento e os dias de uso para estimar pela potência. Nenhum horário é

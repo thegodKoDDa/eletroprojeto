@@ -1,5 +1,5 @@
 import AxeBuilder from '@axe-core/playwright';
-import { expect, test } from '@playwright/test';
+import { expect, test } from '../support/workspace-test';
 
 test('home and populated editor expose labelled controls and accessible landmarks', async ({
   page,

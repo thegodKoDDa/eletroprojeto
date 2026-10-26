@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../support/workspace-test';
 import AxeBuilder from '@axe-core/playwright';
 
 test('reference library searches real API, reads content and preserves editing', async ({

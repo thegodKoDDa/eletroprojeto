@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../support/workspace-test';
 import AxeBuilder from '@axe-core/playwright';
 
 test('section hierarchy, notes, autosave and action menu stay usable across viewports', async ({

@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../support/workspace-test';
 
 test('lost first-save response and immediate reload retain input without duplicate projects', async ({
   page,

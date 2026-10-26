@@ -1,4 +1,5 @@
 'use client';
+import { useExperience } from '@/lib/experience';
 import { WorkspaceIcon, type WorkspaceIconName } from '@/components/layout/WorkspaceIcon';
 
 type Props = {
@@ -28,6 +29,7 @@ export function SectionNavigation({
   onTrash,
   onKnowledge,
 }: Props) {
+  const { profile } = useExperience();
   const items = [
     { id: 'home', label: 'Início', icon: 'home', action: onHome },
     { id: 'new', label: 'Novo projeto', icon: 'new', action: onNew },
@@ -47,6 +49,9 @@ export function SectionNavigation({
           key={item.id}
           disabled={busy}
           onClick={item.action}
+          data-emphasis={
+            profile === 'professional' && item.id === 'knowledge' ? 'technical' : undefined
+          }
           data-project={item.id === 'project' || undefined}
           aria-current={active === item.id ? 'page' : undefined}
         >

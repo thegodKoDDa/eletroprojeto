@@ -1,5 +1,12 @@
 # Histórico de alterações
 
+## 0.22.0 — 26/10/2026 / motor0.11.0 preservado
+
+- Entrada com três perfis: leigo, profissional e exploração; todos os recursos disponíveis com destaques e orientação próprios. Exploração mantém a organização original.
+- Preferência por conta/aba, diálogo acessível de troca e Workspace preservado entre apresentações; perfil não altera cálculos, permissões, projetos ou exportações.
+- Revisão das opções: consumo/requisitos em destaque no leigo; parâmetros, medidas, memória e atalhos técnicos no profissional. Biblioteca no terceiro cartão dos novos perfis e lixeira preservada na navegação. Controle de detalhamento substitui seletor redundante nesses perfis.
+- Entrada e diálogo compactos no celular, teclado/foco, axe e viewports conferidos. 570 testes backend/85subtestes,121frontend,29E2E locais e1HTTPS de duas contas aprovados. Nenhuma fórmula, migração, dependência ou dado de projeto alterado.
+
 ## 0.21.0 — 26/10/2026 / motor0.11.0
 
 - Revisão das pendências registradas; itens resolvidos/descartados preservados e limites restantes discriminados.

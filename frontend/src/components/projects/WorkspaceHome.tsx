@@ -1,4 +1,5 @@
 'use client';
+import { useExperience } from '@/lib/experience';
 import { WorkspaceIcon } from '@/components/layout/WorkspaceIcon';
 
 type Props = {
@@ -8,9 +9,21 @@ type Props = {
   onLibrary: () => void;
   onTrash: () => void;
   onContinue: () => void;
+  onKnowledge: () => void;
 };
 
-export function WorkspaceHome({ busy, projectName, onNew, onLibrary, onTrash, onContinue }: Props) {
+export function WorkspaceHome({
+  busy,
+  projectName,
+  onNew,
+  onLibrary,
+  onTrash,
+  onContinue,
+  onKnowledge,
+}: Props) {
+  const { profile } = useExperience();
+  const guided = profile !== 'explore';
+  const professional = profile === 'professional';
   return (
     <section aria-labelledby="workspace-title" className="workspace-home">
       <header className="workspace-welcome">
@@ -21,11 +34,18 @@ export function WorkspaceHome({ busy, projectName, onNew, onLibrary, onTrash, on
           tabIndex={-1}
           className="text-3xl font-semibold tracking-tight sm:text-4xl"
         >
-          Seu próximo projeto começa aqui.
+          {professional
+            ? 'Um espaço para o seu próximo estudo.'
+            : profile === 'beginner'
+              ? 'Vamos entender o consumo da sua casa?'
+              : 'Seu próximo projeto começa aqui.'}
         </h1>
         <p className="mt-4 max-w-xl text-sm leading-6 muted">
-          Estime o consumo de energia da sua casa, pronta ou em construção. Comece um novo estudo ou
-          continue um projeto salvo.
+          {professional
+            ? 'Organize cargas, consulte a memória de cálculo e aprofunde as verificações técnicas. Comece um estudo ou retome um projeto salvo.'
+            : profile === 'beginner'
+              ? 'Adicione os aparelhos, conte como usa cada um e acompanhe a estimativa mensal. Os dados essenciais ficam em destaque para ajudar você a começar.'
+              : 'Estime o consumo de energia da sua casa, pronta ou em construção. Comece um novo estudo ou continue um projeto salvo.'}
         </p>
       </header>
       <div className="workspace-options">
@@ -57,16 +77,24 @@ export function WorkspaceHome({ busy, projectName, onNew, onLibrary, onTrash, on
             Ver biblioteca <span aria-hidden="true">→</span>
           </span>
         </button>
-        <button className="workspace-option" disabled={busy} onClick={onTrash}>
+        <button
+          className="workspace-option"
+          disabled={busy}
+          onClick={guided ? onKnowledge : onTrash}
+        >
           <span className="workspace-option-icon" aria-hidden="true">
-            <WorkspaceIcon name="trash" />
+            <WorkspaceIcon name={guided ? 'project' : 'trash'} />
           </span>
-          <span className="text-lg font-semibold">Acessar lixeira</span>
+          <span className="text-lg font-semibold">
+            {guided ? 'Consultar biblioteca técnica' : 'Acessar lixeira'}
+          </span>
           <span className="text-sm leading-6 muted">
-            Restaure projetos excluídos ou remova-os definitivamente.
+            {guided
+              ? 'Guias, modelos e fontes de apoio. Consulte a origem e o estado de revisão de cada referência.'
+              : 'Restaure projetos excluídos ou remova-os definitivamente.'}
           </span>
           <span className="workspace-option-link">
-            Ver lixeira <span aria-hidden="true">→</span>
+            {guided ? 'Consultar referências' : 'Ver lixeira'} <span aria-hidden="true">→</span>
           </span>
         </button>
       </div>

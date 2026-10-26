@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../support/workspace-test';
 import { projectInputs } from '../../src/lib/api';
 
 test('unsent drafts survive reload and conflict recovery preserves both editions', async ({

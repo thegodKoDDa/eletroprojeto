@@ -54,3 +54,21 @@ O [registro de revisões até 0.14.1](history/forms-and-pdf-through-0.14.1.md) f
 
 
 Na0.21.0, estudos recolhidos recebem isolação/arranjo/solo e dados documentais DPS/seletividade. Campo sem fonte ou condição não ganha aprovação. CircuitResult.study_conditions e motivos de proteção preservam parâmetros/fontes no PDF/JSON, inclusive o requisito comparado; relatório continua formato1.4 aditivo. A consulta municipal INDGER/IBGE também é independente, cancela/esconde resultados antigos e não entra no projeto/relatório ou na seleção automática.
+
+
+## Revisão de opções e perfis — 0.22.0
+
+A escolha inicial altera apresentação, destaque e abertura dos detalhes; não altera o inventário, os requisitos recebidos da API, os cálculos ou as condições normativas. Todas as funções foram mantidas acessíveis nos três perfis. Recursos de recuperação e dados salvos não foram considerados descartáveis.
+
+| Grupo de opções | Leigo | Profissional | Exploração / decisão |
+| --- | --- | --- | --- |
+| Nome, localização, tarifa e salvamento | Requisitos atuais destacados; tarifa recomendada, sem torná-la obrigatória | Cadastro básico preservado e dados complementares abertos | Organização original preservada |
+| Ambientes, catálogo, valores manuais e consumo | Consumo aberto; caminho orientado e dados essenciais destacados | Consumo disponível e parâmetros elétricos destacados | Recolhimentos originais; todas as alternativas de entrada mantidas |
+| Medidas, concessionária, circuitos, demanda e localização | Estudos opcionais acessíveis após resultados | Medidas/dados extras e grupo técnico abertos, com atalhos diretos | Grupo técnico original recolhido; sem promover estudos a exigência de consumo |
+| Memória, unidades W/VA/A e previsão residencial | Detalhamento acessível por controle explícito | Memória/verificações destacadas e detalhamento inicial ativo | Seletor Apresentação original mantido; requisitos da operação são independentes do perfil |
+| Biblioteca, lixeira e recuperação | Biblioteca no terceiro cartão; lixeira na navegação | Biblioteca destacada; lixeira na navegação | Três cartões originais, incluindo lixeira; nada removido do armazenamento |
+| PDF/JSON, histórico, autosave, conflitos e revalidação | Disponíveis com os mesmos bloqueios de entradas/snapshot | Disponíveis com os mesmos bloqueios | Disponíveis; perfil não é gravado no projeto/relatório e não dispara cálculo |
+
+Descartes de interface nos dois novos perfis: atalho principal duplicado para lixeira, substituído por referências úteis ao estudo; seletor Simples/Técnica redundante com a preferência, substituído por um controle explícito de detalhamento. A opção de exploração conserva esses controles originais. Não foi identificada função sem utilidade que justificasse apagar código de cálculos, recuperação, dados, catálogo, documentação ou estudos. Textos de escolha no celular são compactos, mantendo as três decisões visíveis sem repetir listas de benefícios.
+
+A troca de perfil mantém Workspace e campos montados, preserva edições durante operações e não dispara novas requisições de cálculo. O diálogo usa elemento nativo, foco contido por Tab/Shift+Tab, Escape e retorno ao botão de origem. Preferência inválida reabre a escolha; sessionStorage indisponível permite uso na sessão atual. Auth continua anterior ao espaço de trabalho e a preferência é isolada por conta/aba.

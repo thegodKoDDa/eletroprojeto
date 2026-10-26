@@ -8,6 +8,7 @@ import {
   type ReactNode,
   type ReactElement,
 } from 'react';
+import { fieldEmphasis, useExperience } from '@/lib/experience';
 import type { components } from '@/lib/api.generated';
 export const CalculationScopeContext = createContext('installed');
 export const RequirementsContext = createContext<
@@ -44,6 +45,7 @@ export function Field({
   path?: string;
   className?: string;
 }) {
+  const { profile } = useExperience();
   const rule = useContext(RequirementsContext)[field];
   const operation = useContext(CalculationScopeContext);
   const required =
@@ -105,7 +107,11 @@ export function Field({
   });
   const error = rendered.find((item) => item.error)?.error;
   return (
-    <label className={className} htmlFor={path}>
+    <label
+      className={className}
+      htmlFor={path}
+      data-emphasis={fieldEmphasis(field, profile, required)}
+    >
       {label}
       {required && (
         <span

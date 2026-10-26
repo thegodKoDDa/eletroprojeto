@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../support/workspace-test';
 import AxeBuilder from '@axe-core/playwright';
 
 test('HTTPS sessions isolate projects and local drafts across two accounts', async ({ page }) => {

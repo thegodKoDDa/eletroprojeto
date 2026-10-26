@@ -2,6 +2,18 @@
 
 O EletroProjeto estima o consumo elétrico de uma residência pronta ou planejada. Você informa os aparelhos e como são usados; a aplicação organiza os resultados por ambiente e equipamento.
 
+## Escolha como quer usar
+
+Na abertura, escolha uma apresentação:
+
+- **USUÁRIO LEIGO:** preenchimento essencial em destaque, consumo mensal dos aparelhos aberto e orientação para chegar à estimativa. Os campos necessários seguem os requisitos da operação atual; a tarifa é opcional para estimar o consumo e necessária para estimar o custo.
+- **USUÁRIO PROFISSIONAL:** dados elétricos, medidas, memória de cálculo e atalhos de demanda, circuitos/proteções, localização, território e biblioteca técnica em destaque. Todos os limites e condições dos estudos permanecem.
+- **ESTOU APENAS DANDO UMA OLHADA:** organização original, com consumo primeiro e estudos técnicos recolhidos.
+
+Todos os recursos estão disponíveis em qualquer perfil. Use **Alterar perfil** na navegação para trocar a apresentação sem perder o projeto ou a edição. O diálogo também pode ser fechado por Escape ou **Voltar sem alterar**. A escolha é lembrada nesta aba, inclusive ao recarregar; uma aba nova começa com a tela de escolha. A preferência é separada por conta quando há autenticação e não é gravada no projeto ou relatório.
+
+Nos perfis leigo e profissional, a biblioteca técnica ocupa o terceiro atalho da tela inicial; a lixeira continua disponível na navegação. Na exploração, o terceiro atalho continua sendo a lixeira. Em detalhes dos resultados, **Mostrar verificações e memória detalhadas** permite aprofundar a consulta em qualquer um dos novos perfis; a exploração conserva o seletor original.
+
 ## 1. Projeto
 
 Na tela inicial, escolha **Criar novo projeto**. Informe um nome e o município. A tarifa é opcional: sem ela, o consumo ainda pode ser estimado; com ela, aparece também o custo calculado para a energia informada.

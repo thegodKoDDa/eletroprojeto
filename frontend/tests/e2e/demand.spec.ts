@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../support/workspace-test';
 import AxeBuilder from '@axe-core/playwright';
 
 test('reviewed demand persists, exports and becomes pending after editing', async ({

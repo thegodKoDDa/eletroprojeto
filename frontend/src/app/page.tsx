@@ -15,6 +15,9 @@ import { duplicateEnvironment, removeProjectLoads } from '@/lib/environments';
 import { useWorkspaceResources } from '@/lib/use-workspace-resources';
 import { ProjectRevalidation } from '@/components/projects/ProjectRevalidation';
 import { draftKey, readDrafts, writeDraft, type Draft } from '@/lib/drafts';
+import { ExperienceBoundary, ExperienceSwitcher } from '@/components/projects/ExperienceBoundary';
+import { ExperienceGuide } from '@/components/projects/ExperienceGuide';
+import { useExperience } from '@/lib/experience';
 import { AccessBoundary } from '@/components/projects/AccessBoundary';
 import { WorkspaceIcon } from '@/components/layout/WorkspaceIcon';
 import { useCalculation } from '@/lib/use-calculation';
@@ -76,12 +79,18 @@ const searchText = (value: string) =>
 export default function Home() {
   return (
     <AccessBoundary>
-      {(scope, logout) => <Workspace key={scope} draftOwner={scope} logout={logout} />}
+      {(scope, logout) => (
+        <ExperienceBoundary key={scope} owner={scope}>
+          <Workspace draftOwner={scope} logout={logout} />
+        </ExperienceBoundary>
+      )}
     </AccessBoundary>
   );
 }
 
 function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => Promise<void> }) {
+  const { profile } = useExperience();
+  const professional = profile === 'professional';
   const [view, setView] = useState<'home' | 'project' | 'library' | 'trash' | 'knowledge'>('home');
   const [hasProject, setHasProject] = useState(false);
   const { catalog, utilities, requirements, health, states, initializationIssues, retry } =
@@ -657,7 +666,10 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
   return (
     <RequirementsContext.Provider value={requirements}>
       <CalculationScopeContext.Provider value={input.analysis_scope ?? 'installed'}>
-        <div className={`app-shell${view === 'home' ? ' app-shell-home' : ''}`}>
+        <div
+          data-experience={profile}
+          className={`app-shell${view === 'home' ? ' app-shell-home' : ''}`}
+        >
           <a className="skip-link" href="#workspace-main">
             Ir para o conteúdo
           </a>
@@ -671,6 +683,7 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                 <p className="brand-caption">Estudos elétricos residenciais</p>
               </div>
             </div>
+            <ExperienceSwitcher />
             <p className="sidebar-label">ESPAÇO DE TRABALHO</p>
             <SectionNavigation
               active={view}
@@ -895,6 +908,7 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                 onNew={newProject}
                 onLibrary={showLibrary}
                 onTrash={showTrash}
+                onKnowledge={() => navigate('knowledge')}
                 onContinue={() => setView('project')}
               />
             )}
@@ -926,11 +940,18 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                   )}
                 <header className="page-header">
                   <PageHeading
-                    title="Consumo da residência"
-                    eyebrow="SEU CONSUMO EM 3 PASSOS"
-                    description="Adicione os aparelhos que você usa ou planeja usar e estime o consumo da sua casa."
+                    title={professional ? 'Estudo da residência' : 'Consumo da residência'}
+                    eyebrow={
+                      professional ? 'CONSUMO E ESTUDOS TÉCNICOS' : 'SEU CONSUMO EM 3 PASSOS'
+                    }
+                    description={
+                      professional
+                        ? 'Organize as cargas, confira os parâmetros e consulte as verificações disponíveis.'
+                        : 'Adicione os aparelhos que você usa ou planeja usar e estime o consumo da sua casa.'
+                    }
                   />
                 </header>
+                <ExperienceGuide onKnowledge={() => navigate('knowledge')} />
                 {operationIssues?.input === input && !error && (
                   <CalculationNotices
                     stale={false}
@@ -1089,7 +1110,7 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                               : 'As alterações são salvas após uma breve pausa na edição. Aguarde a confirmação de salvamento.'}
                     </p>
                   </div>
-                  <details className="project-extra disclosure">
+                  <details open={professional || undefined} className="project-extra disclosure">
                     <summary>Outros dados do projeto</summary>
                     <div className="mt-3 grid gap-4 md:grid-cols-3">
                       <Field field="project.utility" label="Concessionária">
@@ -1181,6 +1202,7 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                     />
                     <button
                       className="btn primary add-environment"
+                      id="add-environment"
                       onClick={addRoom}
                       disabled={busy || exporting}
                     >
@@ -1293,7 +1315,10 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                             </select>
                           </Field>
                         </div>
-                        <details className="room-measurements mt-3">
+                        <details
+                          open={professional || undefined}
+                          className="room-measurements mt-3"
+                        >
                           <summary>Medidas, iluminação e tomadas (opcional)</summary>
                           <p className="mt-2 text-xs muted">
                             Usados na previsão de pontos de luz e tomadas. Não são necessários para
@@ -1435,7 +1460,11 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                   environments={input.environments}
                   onScopeChange={(value) => change('analysis_scope', value)}
                 />
-                <details key={`technical-${calculationScope}`} className="technical-tools mt-6">
+                <details
+                  key={`technical-${calculationScope}`}
+                  open={professional || undefined}
+                  className="technical-tools mt-6"
+                >
                   <summary>Estudos técnicos (opcional)</summary>
                   <p className="mt-3 mb-4 text-sm muted">
                     Para quem precisa estudar a instalação: demanda, circuitos e entrada de energia.
@@ -1443,11 +1472,11 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                     são mantidos.
                   </p>
                   <details className="mb-4">
-                    <summary>Referência territorial · ANEEL</summary>
+                    <summary id="technical-territory">Referência territorial · ANEEL</summary>
                     <TerritoryStudy />
                   </details>
                   <details className="mb-4">
-                    <summary>Demanda da residência · Energisa</summary>
+                    <summary id="technical-demand">Demanda da residência · Energisa</summary>
                     <DemandReview
                       input={input}
                       result={currentResult}
@@ -1456,11 +1485,13 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                     />
                   </details>
                   <details className="mb-4">
-                    <summary>Localização de componentes no banheiro</summary>
+                    <summary id="technical-bathroom">
+                      Localização de componentes no banheiro
+                    </summary>
                     <BathroomStudy input={input} result={currentResult} onChange={updateRoom} />
                   </details>
                   <details>
-                    <summary>Circuitos e entrada de energia</summary>
+                    <summary id="technical-circuits">Circuitos e entrada de energia</summary>
                     <CircuitStudy
                       key={calculationScope}
                       input={input}

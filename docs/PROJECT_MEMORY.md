@@ -2,7 +2,7 @@
 
 ## Produto e escopo
 
-Estimativa de consumo elétrico residencial para **leigos primeiro, profissionais depois**, em moradia pronta ou planejada. Preservar produto, dados e identidade visual. Percurso principal: **01 Projeto → 02 Ambientes → 03 Conferência**. Início mantém sidebar/marca e três cartões. Circuitos, entrada e demanda ficam recolhidos depois dos resultados em Estudos técnicos; não voltar a promovê-los a etapas obrigatórias sem pedido.
+Estimativa de consumo elétrico residencial com três apresentações escolhidas na abertura: **leigo, profissional e exploração**, para moradia pronta ou planejada. Todos os recursos continuam disponíveis. Preservar produto, dados e identidade visual. Percurso principal: **01 Projeto → 02 Ambientes → 03 Conferência**. Início mantém sidebar/marca e três cartões. Circuitos, entrada e demanda continuam opcionais depois dos resultados. Leigo/exploração os mantêm recolhidos; profissional destaca o grupo, os parâmetros e os atalhos sem tornar os estudos obrigatórios.
 
 Consumo/custo recebem destaque, tarifa fica visível e uso dos aparelhos é explícito. Medidas/pontos, dados extras, potência, memória e previsões ficam em detalhes. Catálogo sugere referências, não potências universais; valores manuais válidos prevalecem. A biblioteca técnica serve para melhorar utilidades verificadas, não para exigir novos formulários ou presumir dados.
 
@@ -76,3 +76,12 @@ Usuário pediu revisar e resolver pendências, ignorando as já resolvidas/desca
 DPS/seletividade são comparações documentais condicionadas a estudo/produtos/fontes, sem seleção ou análise integral automática. Catálogo ABNT já identifica NBR5419:2026/VC2026; não usar versões antigas como validação da edição atual. Revisão humana integral do acervo e inspeção/ensaios no local não foram executados pelo agente e não podem ser atestados por importação/simulação.
 
 Relações municipais INDGER/IBGE disponíveis por código oficial, preservando múltiplas empresas e mês próprio por CNPJ; atrasos/linhas sem município/código não associado ficam explícitos. Não confundir declaração mensal com vigência jurídica/exclusividade ou atendimento do endereço. Coletas locais em references/municipalities, ignoradas e preservadas; o coletor cria novo diretório, não altera banco. Não alterar o estado jurídico dos IDs internos nem a seleção manual automaticamente. Releasev0.20.0 com três arquivos foi confirmada publicada; esta revisão não criou novo pacote/release.
+
+
+## Perfis de apresentação — 0.22.0
+
+Pedido explícito do usuário: tela inicial com USUÁRIO LEIGO, USUÁRIO PROFISSIONAL e ESTOU APENAS DANDO UMA OLHADA, preservando todos os recursos nas três apresentações. Motor0.11.0, cálculos, contratos de dados e pendências normativas não mudaram. O perfil é preferência de apresentação, não habilitação profissional nem permissão de acesso.
+
+ExperienceBoundary fica dentro de AccessBoundary, isolada pela conta. sessionStorage por conta/aba lembra a escolha ao recarregar; aba nova começa na escolha. Falha do armazenamento não bloqueia a seleção. Alterar perfil abre diálogo com teclado/fechamento por Escape, mantendo Workspace montado: edição, rascunhos, salvamento, referências e resultados permanecem. O perfil não entra no projeto, assinatura de cálculo ou exportação; trocar perfil não dispara nova matemática.
+
+Leigo destaca requisitos recebidos da API e dados recomendados de consumo/custo, abre Consumo mensal e oferece caminho de três passos. Profissional destaca dados elétricos/medidas/memória e atalhos para todos os estudos, mantendo-os condicionados. Exploração preserva início com lixeira, controles e recolhimentos originais. Biblioteca substitui o atalho principal da lixeira nos novos perfis; lixeira permanece na navegação. O seletor redundante de apresentação nos novos perfis vira controle de detalhamento; exploração mantém o original. Revisão dos grupos de opções em forms-and-pdf; não apagar funcionalidades de recuperação/dados sob pretexto de simplificar.

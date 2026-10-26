@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../support/workspace-test';
 import AxeBuilder from '@axe-core/playwright';
 
 test('home preserves sidebar branding and equipment disclosures stay compact and functional', async ({

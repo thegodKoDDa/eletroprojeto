@@ -1,4 +1,5 @@
 'use client';
+import { useExperience } from '@/lib/experience';
 import { format } from '@/lib/format';
 import { EnergyFields } from './EnergyFields';
 import { safeReferenceUrl } from '@/lib/safe-url';
@@ -51,6 +52,7 @@ export function EquipmentEditor({
   stale = false,
 }: Props) {
   const scope = useContext(CalculationScopeContext);
+  const { profile } = useExperience();
   const params = { ...technicalDefaults(), ...load.parameters };
   const ref = load.catalog_reference;
   const sourceUrl = safeReferenceUrl(ref?.source_url);
@@ -362,7 +364,10 @@ export function EquipmentEditor({
       )}
       <div className="equipment-options">
         <EnergyFields load={load} onChange={technical} />
-        <details data-testid="equipment-advanced">
+        <details
+          data-testid="equipment-advanced"
+          data-emphasis={profile === 'professional' ? 'technical' : undefined}
+        >
           <summary className="cursor-pointer text-xs muted">
             Configurações avançadas
             {!load.name.trim() || !load.category?.trim() || !load.source?.trim()

@@ -1,4 +1,5 @@
 'use client';
+import { useExperience } from '@/lib/experience';
 import { SectionHeading } from '@/components/ui/SectionHeading';
 import { safeReferenceUrl } from '@/lib/safe-url';
 import { useState } from 'react';
@@ -33,7 +34,11 @@ export function ResultsPanel({
   tariff?: ProjectInput['energy_tariff_brl_per_kwh'];
   onScopeChange: (scope: ProjectInput['analysis_scope']) => void;
 }) {
-  const [technical, setTechnical] = useState(false);
+  const { profile } = useExperience();
+  const [detailPreference, setDetailPreference] = useState<{ profile: string; value: boolean }>();
+  const technical =
+    detailPreference?.profile === profile ? detailPreference.value : profile === 'professional';
+  const setTechnical = (value: boolean) => setDetailPreference({ profile, value });
   const notices = result?.notifications ?? [];
   const issues = notices.filter((item) => ['error', 'technical'].includes(item.category));
   function completeEnergy(id = result?.energy_unknown_load_ids?.[0]) {
@@ -71,6 +76,7 @@ export function ResultsPanel({
   return (
     <section
       id="results"
+      tabIndex={-1}
       aria-labelledby="results-heading"
       className="panel min-h-64"
       aria-busy={loading}
@@ -238,20 +244,31 @@ export function ResultsPanel({
               <p className="text-sm muted">Nenhum dado pendente para o cálculo selecionado.</p>
             )}
           </div>
-          <details className="result-details mt-5">
+          <details open={profile === 'professional' || undefined} className="result-details mt-5">
             <summary>Detalhes dos cálculos e previsões técnicas</summary>
             <div className="mt-4 flex flex-wrap gap-4">
-              <label>
-                Apresentação
-                <select
-                  aria-label="Apresentação"
-                  value={technical ? 'technical' : 'simple'}
-                  onChange={(e) => setTechnical(e.target.value === 'technical')}
-                >
-                  <option value="simple">Simples</option>
-                  <option value="technical">Técnica</option>
-                </select>
-              </label>
+              {profile === 'explore' ? (
+                <label>
+                  Apresentação
+                  <select
+                    aria-label="Apresentação"
+                    value={technical ? 'technical' : 'simple'}
+                    onChange={(e) => setTechnical(e.target.value === 'technical')}
+                  >
+                    <option value="simple">Simples</option>
+                    <option value="technical">Técnica</option>
+                  </select>
+                </label>
+              ) : (
+                <label className="checkbox-option">
+                  <input
+                    type="checkbox"
+                    checked={technical}
+                    onChange={(e) => setTechnical(e.target.checked)}
+                  />
+                  Mostrar verificações e memória detalhadas
+                </label>
+              )}
               <label className="max-w-sm">
                 Requisitos para
                 <select
