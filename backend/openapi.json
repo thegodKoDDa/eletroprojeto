@@ -3,7 +3,7 @@
   "info": {
     "title": "EletroProjeto",
     "description": "Cálculos de cargas residenciais: potência instalada (W/kW), potência aparente (VA/kVA), correntes, conversões, consumo mensal e estimativa de custo pela tarifa informada. Valores padrão são sugestões documentadas; valores manuais válidos são respeitados e recalculados. Previsão residencial de iluminação e TUG disponível por seleção explícita, com escopo e limites documentados. Demanda Energisa residencial parametrizada disponível em escopo limitado e inventário explícito. Demanda automática do cadastro e dimensionamento final permanecem pendentes.",
-    "version": "0.20.0"
+    "version": "0.21.0"
   },
   "paths": {
     "/api/v1/auth/session": {
@@ -1288,6 +1288,49 @@
                     "$ref": "#/components/schemas/UtilityInfo"
                   },
                   "title": "Response Utilities Api V1 Utilities Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Entradas inválidas; avisos localizados quando disponíveis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InputValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/locations/municipality": {
+      "get": {
+        "tags": [
+          "Localização"
+        ],
+        "summary": "Municipal Utilities",
+        "operationId": "municipal_utilities_api_v1_locations_municipality_get",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{7}$",
+              "title": "Code"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MunicipalityLookup"
                 }
               }
             }
@@ -3145,6 +3188,105 @@
       },
       "CircuitInput": {
         "properties": {
+          "air_layout": {
+            "type": "string",
+            "enum": [
+              "unknown",
+              "trefoil",
+              "flat_touching",
+              "horizontal_spaced",
+              "vertical_spaced"
+            ],
+            "title": "Air Layout",
+            "default": "unknown"
+          },
+          "soil_temperature_c": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "enum": [
+                  10,
+                  15,
+                  20,
+                  25,
+                  30,
+                  35,
+                  40,
+                  45,
+                  50,
+                  55,
+                  60
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Soil Temperature C"
+          },
+          "buried_reference_confirmed": {
+            "type": "boolean",
+            "title": "Buried Reference Confirmed",
+            "default": false
+          },
+          "insulation": {
+            "type": "string",
+            "enum": [
+              "PVC70",
+              "XLPE90",
+              "EPR90"
+            ],
+            "title": "Insulation",
+            "default": "PVC70"
+          },
+          "terminals_90c_confirmed": {
+            "type": "boolean",
+            "title": "Terminals 90C Confirmed",
+            "default": false
+          },
+          "hot_resistivity_ohm_mm2_m": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hot Resistivity Ohm Mm2 M"
+          },
+          "reactance_ohm_m": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reactance Ohm M"
+          },
+          "impedance_source": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Impedance Source"
+          },
           "configuration": {
             "type": "string",
             "enum": [
@@ -3203,7 +3345,11 @@
               "A2",
               "B1",
               "B2",
-              "C"
+              "C",
+              "D",
+              "E",
+              "F",
+              "G"
             ],
             "title": "Method",
             "default": "unknown"
@@ -3450,6 +3596,26 @@
       },
       "CircuitProtectionInput": {
         "properties": {
+          "selectivity": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SelectivityInput"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "surge": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SurgeProtectionInput"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "source": {
             "anyOf": [
               {
@@ -3677,6 +3843,13 @@
       },
       "CircuitResult": {
         "properties": {
+          "study_conditions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Study Conditions"
+          },
           "protection_checks": {
             "items": {
               "$ref": "#/components/schemas/CircuitProtectionCheck"
@@ -5921,6 +6094,172 @@
         ],
         "title": "MemoryResult"
       },
+      "MunicipalUtility": {
+        "properties": {
+          "reference_month": {
+            "type": "string",
+            "title": "Reference Month"
+          },
+          "cnpj": {
+            "type": "string",
+            "title": "Cnpj"
+          },
+          "acronym": {
+            "type": "string",
+            "title": "Acronym"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "grant_type": {
+            "type": "string",
+            "title": "Grant Type"
+          },
+          "active_units": {
+            "type": "integer",
+            "title": "Active Units"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "reference_month",
+          "cnpj",
+          "acronym",
+          "name",
+          "grant_type",
+          "active_units"
+        ],
+        "title": "MunicipalUtility"
+      },
+      "MunicipalityIdentity": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "state": {
+            "type": "string",
+            "title": "State"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "code",
+          "name",
+          "state"
+        ],
+        "title": "MunicipalityIdentity"
+      },
+      "MunicipalityLookup": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "calculated",
+              "estimated",
+              "pending",
+              "invalid",
+              "out_of_scope",
+              "awaiting_technical_validation"
+            ],
+            "title": "Status"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source"
+          },
+          "ibge_source": {
+            "type": "string",
+            "title": "Ibge Source"
+          },
+          "consulted_on": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Consulted On"
+          },
+          "snapshot_sha256": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Snapshot Sha256"
+          },
+          "automatic_assignment": {
+            "type": "boolean",
+            "const": false,
+            "title": "Automatic Assignment"
+          },
+          "municipality": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MunicipalityIdentity"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "reference_month": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reference Month"
+          },
+          "candidates": {
+            "items": {
+              "$ref": "#/components/schemas/MunicipalUtility"
+            },
+            "type": "array",
+            "title": "Candidates"
+          },
+          "notice": {
+            "type": "string",
+            "title": "Notice"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "status",
+          "source",
+          "ibge_source",
+          "consulted_on",
+          "snapshot_sha256",
+          "automatic_assignment",
+          "municipality",
+          "reference_month",
+          "candidates",
+          "notice",
+          "reason"
+        ],
+        "title": "MunicipalityLookup"
+      },
       "NormativeCapability": {
         "properties": {
           "code": {
@@ -7308,6 +7647,87 @@
         ],
         "title": "ResearchEvidence"
       },
+      "SelectivityInput": {
+        "properties": {
+          "upstream_device": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Upstream Device"
+          },
+          "downstream_device": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Downstream Device"
+          },
+          "downstream_rated_a": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Downstream Rated A"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source"
+          },
+          "conditions_confirmed": {
+            "type": "boolean",
+            "title": "Conditions Confirmed",
+            "default": false
+          },
+          "limit_ka": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Limit Ka"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "SelectivityInput"
+      },
       "ServiceEntryInput": {
         "properties": {
           "network": {
@@ -7515,6 +7935,192 @@
           "reference"
         ],
         "title": "ServiceEntryResult"
+      },
+      "SurgeProtectionInput": {
+        "properties": {
+          "device": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Device"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source"
+          },
+          "requirements_source": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Requirements Source"
+          },
+          "conditions_confirmed": {
+            "type": "boolean",
+            "title": "Conditions Confirmed",
+            "default": false
+          },
+          "uc_v": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Uc V"
+          },
+          "required_uc_v": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Required Uc V"
+          },
+          "effective_up_v": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Effective Up V"
+          },
+          "withstand_voltage_v": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Withstand Voltage V"
+          },
+          "discharge_ka": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Discharge Ka"
+          },
+          "required_discharge_ka": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Required Discharge Ka"
+          },
+          "waveform": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "8/20",
+                  "10/350"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Waveform"
+          },
+          "requirement_waveform": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "8/20",
+                  "10/350"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Requirement Waveform"
+          },
+          "short_withstand_ka": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Short Withstand Ka"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "SurgeProtectionInput"
       },
       "TechnicalDocument": {
         "properties": {

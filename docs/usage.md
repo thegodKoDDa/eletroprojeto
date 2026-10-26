@@ -44,3 +44,8 @@ Detalhes do formato e da rastreabilidade estão em [formulários e relatórios](
 Na conferência, abra **Estudos técnicos** apenas quando precisar de uma análise adicional. Demanda, circuitos, localização de componentes e consulta territorial exigem dados e condições específicos. Nenhum desses estudos é obrigatório para estimar o consumo.
 
 Os procedimentos têm cobertura limitada e fontes identificadas. Uma posição, seção ou demanda estimada não declara conformidade final da instalação. Consulte [cálculos](calculations.md), [referências](standards.md) e [limitações conhecidas](KNOWN_ISSUES.md).
+
+
+Nos circuitos, escolha isolação/método/arranjo reais; terminais para90°C, condições enterradas e afastamentos precisam ser conferidos. D exige temperatura do solo e referência limitada; G exige circuito único trifásico equilibrado sem neutro. Dados de impedância próprios são necessários para queda em XLPE/EPR e D/E/F/G. Os painéis DPS/seletividade comparam documentação de produtos e estudo informado, sem selecionar proteção final.
+
+Em **Referência territorial · ANEEL**, a consulta municipal opcional usa código IBGE de sete dígitos, mostra todas as empresas com relação positiva no último mês declarado por cada uma e preserva datas/atrasos. Confirme a empresa que atende o endereço pela fatura/contrato; a consulta não troca a distribuidora do projeto.

@@ -24,6 +24,7 @@ from .catalog import CATALOG
 from .catalog_store import initialize_catalog
 from .database import HistoryRow, ProjectRow, TechnicalRevisionRow, get_session, utcnow
 from .knowledge import router as knowledge_router
+from .municipalities import lookup as municipality_lookup
 from .projects import (
     ProjectValidationError,
     brasilia_time,
@@ -45,6 +46,7 @@ from .schemas import (
     FieldRequirement,
     HealthInfo,
     InputValidationError,
+    MunicipalityLookup,
     PDFExportInput,
     Project,
     ProjectInput,
@@ -357,6 +359,13 @@ def utilities(
 ):
     # Municipality deliberately does not narrow unverified state candidates.
     return [item for item in UTILITIES if state is None or state in item["states"]]
+
+
+@app.get(
+    PREFIX + "/locations/municipality", tags=["Localização"], response_model=MunicipalityLookup
+)
+def municipal_utilities(code: str = Query(pattern=r"^\d{7}$")):
+    return municipality_lookup(code)
 
 
 @app.get(PREFIX + "/locations/territory", tags=["Localização"], response_model=TerritoryLookup)

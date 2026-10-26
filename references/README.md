@@ -33,3 +33,8 @@ Esses exemplares anteriores foram preservados. A biblioteca não modifica a vali
 ## Coleta territorial local — 26/10/2026
 
 `territory/20261026T035935641118Z` preserva a primeira coleta integral bem-sucedida da camada oficial ANEELHosted/AREA_ATUACAO/5 (121feições), com atributos, geometrias, metadados, contagem, relatório e hashes. Caminho ignorado,0700/0600; originais não são gerados dispensáveis. Não apagar ou substituir como cache. `scripts/territory.py` cria diretório novo em cada coleta; nenhuma associação é liberada automaticamente. Condições/vigências/limites emdocs/standards, sem duplicar regras aqui.
+
+
+## Relações municipais oficiais — 26/10/2026
+
+`municipalities/20261026T174000622041Z` preserva metadados CKAN, CSV INDGER, identidades IBGE, índice e relatório/hash da coleta usada na0.21.0. Os diretórios anteriores de tentativa também ficam preservados. Código de coleta emscripts/municipalities.py; critérios/limites emdocs/standards. Ignorados no Git,0700/0600; não são cache dispensável nem acompanham a distribuição. O índice declara o mês de cada empresa e não constitui mapa jurídico ou confirmação de atendimento de um imóvel. Checkpoint local inclui esses arquivos pela rotina existente, separado da distribuição pública.

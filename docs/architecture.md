@@ -81,3 +81,10 @@ Continuidade, snapshots SQLite/Git, restauração isolada e manutenção autoriz
 A imagem Docker reúne Next standalone e API em um contêiner para manter o backend em loopback. Next encaminha `/api/v1` ao backend interno; a porta publicada pela composição fica em 127.0.0.1. Uvicorn não confia em cabeçalhos de proxy nesse modo. O volume `/data` preserva SQLite e é separado dos dados nativos. A imagem roda sem privilégios e leva os avisos de licença dos componentes; originais técnicos, banco e configurações privadas não entram no contexto de build, controlado por uma lista de inclusão em `.dockerignore`.
 
 `package_release.py` exporta um commit Git para ZIP, com manifesto de arquivos/versões e SHA-256. Os runtimes não são embutidos no ZIP. O repositório público distribui código; não é uma instância pública da aplicação e não recebe os projetos de quem o utiliza.
+
+
+## Ampliação condicionada — 0.21.0
+
+CircuitInput recebe isolação, arranjo ao ar livre, condições/temperatura do solo, confirmação térmica de90°C e impedância documentada; CircuitProtectionInput recebe comparação de seletividade/DPS. Todos são dados opcionais compatíveis com projetos anteriores, armazenados no payload existente, sem migração. Modelos puros em calculations/circuits.py e coordination.py, sem dependências de API/ORM. CircuitResult.study_conditions registra método/dados/fontes no relatório; schema JSON1.4 permanece aditivo. Digest inclui todo o circuito/proteções; alterações invalidam exportação/revisão sem atualizar histórico automaticamente.
+
+GET `/api/v1/locations/municipality?code=3550308` lê índice INDGER/IBGE local com hash e versão conferidos, mantendo CNPJ/período de cada empresa e nulos/limites. scripts/municipalities.py coleta metadados/CSV/IBGE em novo diretório privado ignorado; não altera banco nem feições territoriais anteriores. Consulta e UI não selecionam distribuidora, não fazem rede externa ou salvam o código pesquisado; edição cancela requisição e oculta resposta anterior. Essa relação declarada não muda o estado unverified do mapeamento jurídico dos IDs internos de UtilityInfo.

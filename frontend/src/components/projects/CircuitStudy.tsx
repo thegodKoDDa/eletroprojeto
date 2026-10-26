@@ -78,6 +78,142 @@ function Ratings({
   );
 }
 type Protection = components['schemas']['CircuitProtectionInput'];
+type Selectivity = components['schemas']['SelectivityInput'];
+type Surge = components['schemas']['SurgeProtectionInput'];
+const surgeNumbers = [
+  ['uc_v', 'Uc do DPS (V)'],
+  ['required_uc_v', 'Uc mínimo do estudo (V)'],
+  ['effective_up_v', 'Up efetivo, incluindo conexões (V)'],
+  ['withstand_voltage_v', 'Suportabilidade do equipamento (V)'],
+  ['discharge_ka', 'In (8/20) ou Iimp (10/350) do DPS (kA; não Imax)'],
+  ['required_discharge_ka', 'Corrente requerida do estudo (kA)'],
+  ['short_withstand_ka', 'Suportabilidade do conjunto DPS + retaguarda (kA)'],
+] as const;
+function CoordinationFields({
+  value,
+  onChange,
+}: {
+  value: Protection;
+  onChange: (value: Protection) => void;
+}) {
+  const selectivity: Selectivity = value.selectivity ?? { conditions_confirmed: false };
+  const surge: Surge = value.surge ?? { conditions_confirmed: false };
+  const patchSelectivity = (patch: Partial<Selectivity>) =>
+    onChange({ ...value, selectivity: { ...selectivity, ...patch } });
+  const patchSurge = (patch: Partial<Surge>) =>
+    onChange({ ...value, surge: { ...surge, ...patch } });
+  return (
+    <details className="mt-3">
+      <summary>DPS e seletividade — comparação documental</summary>
+      <p className="mt-2 text-xs muted">
+        Use o estudo e as tabelas do fabricante para o par exato. O curto máximo é o informado no
+        circuito. Esses critérios não selecionam automaticamente DPS, não executam análise de risco
+        de descargas atmosféricas e não atestam coordenação integral.
+      </p>
+      <fieldset className="mt-3">
+        <legend>Seletividade de curto-circuito</legend>
+        <div className="mt-2 grid gap-3 sm:grid-cols-2">
+          {(
+            [
+              ['upstream_device', 'Modelo e ajustes do dispositivo a montante'],
+              ['downstream_device', 'Modelo e ajustes do dispositivo a jusante'],
+              ['source', 'Fonte: tabela, edição e linha do par'],
+            ] as const
+          ).map(([field, label]) => (
+            <label key={field}>
+              {label}
+              <input
+                maxLength={200}
+                value={selectivity[field] ?? ''}
+                onChange={(e) => patchSelectivity({ [field]: e.target.value || null })}
+              />
+            </label>
+          ))}
+          <Numeric
+            label="In do dispositivo a jusante consultado (A)"
+            value={selectivity.downstream_rated_a}
+            onChange={(v) => patchSelectivity({ downstream_rated_a: v })}
+          />
+          <Numeric
+            label="Limite de seletividade do par (kA)"
+            value={selectivity.limit_ka}
+            onChange={(v) => patchSelectivity({ limit_ka: v })}
+          />
+        </div>
+        <label className="checkbox-option mt-3">
+          <input
+            type="checkbox"
+            checked={selectivity.conditions_confirmed ?? false}
+            onChange={(e) => patchSelectivity({ conditions_confirmed: e.target.checked })}
+          />
+          Conferi par exato, tensão, polos, ajustes, tolerâncias e fonte de alimentação da tabela. O
+          limite vale somente nessas condições.
+        </label>
+      </fieldset>
+      <fieldset className="mt-4">
+        <legend>DPS: requisitos definidos no estudo</legend>
+        <div className="mt-2 grid gap-3 sm:grid-cols-2">
+          {(
+            [
+              ['device', 'Modelo do DPS e proteção de retaguarda'],
+              ['source', 'Fonte: fabricante, edição e configuração'],
+              ['requirements_source', 'Fonte dos requisitos: estudo, edição normativa e condições'],
+            ] as const
+          ).map(([field, label]) => (
+            <label key={field}>
+              {label}
+              <input
+                maxLength={200}
+                value={surge[field] ?? ''}
+                onChange={(e) => patchSurge({ [field]: e.target.value || null })}
+              />
+            </label>
+          ))}
+          {surgeNumbers.map(([field, label]) => (
+            <Numeric
+              key={field}
+              label={label}
+              value={surge[field]}
+              onChange={(v) => patchSurge({ [field]: v })}
+            />
+          ))}
+          {(
+            [
+              ['waveform', 'Onda da corrente do produto'],
+              ['requirement_waveform', 'Onda exigida no estudo'],
+            ] as const
+          ).map(([field, label]) => (
+            <label key={field}>
+              {label}
+              <select
+                value={surge[field] ?? ''}
+                onChange={(e) =>
+                  patchSurge({
+                    [field]: e.target.value ? (e.target.value as '8/20' | '10/350') : null,
+                  })
+                }
+              >
+                <option value="">Conferir dado</option>
+                <option value="8/20">8/20 µs — In nominal</option>
+                <option value="10/350">10/350 µs — Iimp</option>
+              </select>
+            </label>
+          ))}
+        </div>
+        <label className="checkbox-option mt-3">
+          <input
+            type="checkbox"
+            checked={surge.conditions_confirmed ?? false}
+            onChange={(e) => patchSurge({ conditions_confirmed: e.target.checked })}
+          />
+          Conferi aplicabilidade e edição do estudo, modos de conexão/aterramento, TOV, retaguarda,
+          coordenação em cascata e parâmetros das conexões. Dados documentais não substituem
+          inspeção e ensaios.
+        </label>
+      </fieldset>
+    </details>
+  );
+}
 const protectionFields = [
   ['device_rated_a', 'In do disjuntor dos dados consultados (A)'],
   ['cable_k', 'Coeficiente k do cabo (A·√s/mm²)'],
@@ -109,6 +245,7 @@ function ProtectionFields({
         Use dados documentados do mesmo produto e do circuito avaliado. Não há corrente de curto,
         curva, tipo de DR ou resistência de terra presumidos.
       </p>
+      <CoordinationFields value={data} onChange={onChange} />
       <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
         <label>
           Fonte das curvas e verificações
@@ -225,7 +362,22 @@ export function CircuitStudy({
       })),
   );
   const edit = (index: number, patch: Partial<Circuit>) =>
-    onChange(circuits.map((c, i) => (i === index ? { ...c, ...patch } : c)));
+    onChange(
+      circuits.map((c, i) => {
+        if (i !== index) return c;
+        const changedScope = (
+          ['insulation', 'method', 'air_layout', 'configuration'] as const
+        ).some((key) => key in patch && patch[key] !== c[key]);
+        return {
+          ...c,
+          ...patch,
+          ...(changedScope ? { scope_confirmed: false } : {}),
+          ...('insulation' in patch && patch.insulation !== c.insulation
+            ? { terminals_90c_confirmed: false }
+            : {}),
+        };
+      }),
+    );
   const entry = input.service_entry;
   const assigned = new Map<string, string[]>();
   for (const circuit of circuits)
@@ -245,10 +397,10 @@ export function CircuitStudy({
           description="Associe cargas e confira corrente, seção, sobrecarga e queda de tensão no escopo suportado."
         />
         <p className="mt-3 text-xs muted">
-          Cobre/PVC70°C, métodos A1/A2/B1/B2/C, seções de 1,5 a 95 mm², dois condutores monofásicos
-          ou três trifásicos equilibrados sem neutro, 50/60Hz. Resultados condicionados às
-          informações reais; partida, harmônicas, curto térmico, proteção contra choque e
-          seletividade exigem verificação específica.
+          Cobre/PVC70°C ou XLPE/EPR90°C, métodos A1/A2/B1/B2/C/D/E/F/G, seções de 1,5 a 95 mm², dois
+          condutores monofásicos ou três trifásicos equilibrados sem neutro, 50/60Hz. Resultados
+          condicionados às informações reais; partida, harmônicas, curto térmico, proteção contra
+          choque e seletividade exigem verificação específica.
         </p>
         <button
           className="btn mt-3"
@@ -258,6 +410,10 @@ export function CircuitStudy({
               ...circuits,
               {
                 id: crypto.randomUUID(),
+                insulation: 'PVC70',
+                air_layout: 'unknown',
+                buried_reference_confirmed: false,
+                terminals_90c_confirmed: false,
                 name: `Circuito ${circuits.length + 1}`,
                 configuration: 'single_phase',
                 purpose: 'sockets',
@@ -332,6 +488,19 @@ export function CircuitStudy({
                     </select>
                   </label>
                   <label>
+                    Isolação do cabo de cobre
+                    <select
+                      value={c.insulation ?? 'PVC70'}
+                      onChange={(event) =>
+                        edit(index, { insulation: event.target.value as Circuit['insulation'] })
+                      }
+                    >
+                      <option value="PVC70">PVC — 70 °C</option>
+                      <option value="XLPE90">XLPE — 90 °C</option>
+                      <option value="EPR90">EPR — 90 °C</option>
+                    </select>
+                  </label>
+                  <label>
                     Método de instalação
                     <select
                       value={c.method}
@@ -353,8 +522,82 @@ export function CircuitStudy({
                         B1 — condutores isolados/cabos unipolares em eletroduto
                       </option>
                       <option value="B2">B2 — cabo multipolar em eletroduto</option>
+                      <option value="D">
+                        D — cabo multipolar em eletroduto enterrado (referência limitada)
+                      </option>
+                      <option value="F">F — cabos unipolares justapostos ao ar livre</option>
+                      <option value="G">G — três cabos unipolares espaçados ao ar livre</option>
+                      <option value="E">
+                        E — cabo multipolar ao ar livre (conferir dissipação e Tabela 33)
+                      </option>
                     </select>
                   </label>
+                  {(c.method === 'F' || c.method === 'G') && (
+                    <label>
+                      Disposição dos cabos unipolares
+                      <select
+                        value={c.air_layout ?? 'unknown'}
+                        onChange={(e) =>
+                          edit(index, { air_layout: e.target.value as Circuit['air_layout'] })
+                        }
+                      >
+                        <option value="unknown">
+                          Confirmar arranjo (F monofásico: dois justapostos)
+                        </option>
+                        {c.method === 'F' ? (
+                          <>
+                            <option value="trefoil">Três em trifólio justaposto</option>
+                            <option value="flat_touching">Três no mesmo plano, justapostos</option>
+                          </>
+                        ) : (
+                          <>
+                            <option value="horizontal_spaced">
+                              Três espaçados na horizontal (≥1 diâmetro)
+                            </option>
+                            <option value="vertical_spaced">
+                              Três espaçados na vertical (≥1 diâmetro)
+                            </option>
+                          </>
+                        )}
+                      </select>
+                    </label>
+                  )}
+                  {c.method === 'D' && (
+                    <>
+                      <label>
+                        Temperatura do solo (°C)
+                        <select
+                          value={c.soil_temperature_c ?? ''}
+                          onChange={(e) =>
+                            edit(index, {
+                              soil_temperature_c: e.target.value
+                                ? (Number(e.target.value) as Circuit['soil_temperature_c'])
+                                : null,
+                            })
+                          }
+                        >
+                          <option value="">Confirmar temperatura do solo</option>
+                          {[10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60].map((v) => (
+                            <option key={v} value={v}>
+                              {v} °C
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                      <label className="checkbox-option">
+                        <input
+                          type="checkbox"
+                          checked={c.buried_reference_confirmed ?? false}
+                          onChange={(e) =>
+                            edit(index, { buried_reference_confirmed: e.target.checked })
+                          }
+                        />
+                        Confirmei cabo multipolar não armado, eletroduto a 0,7 m, solo homogêneo com
+                        resistividade térmica de 2,5 K·m/W, sem secagem e sem outros
+                        circuitos/condutos próximos. D/G exigem agrupamento igual a 1.
+                      </label>
+                    </>
+                  )}
                   {numericFields.map(([field, label]) => (
                     <Numeric
                       key={field}
@@ -363,6 +606,44 @@ export function CircuitStudy({
                       onChange={(value) => edit(index, { [field]: value })}
                     />
                   ))}
+                  {((c.insulation && c.insulation !== 'PVC70') ||
+                    ['D', 'E', 'F', 'G'].includes(c.method)) && (
+                    <>
+                      <label
+                        className="checkbox-option"
+                        hidden={!c.insulation || c.insulation === 'PVC70'}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={c.terminals_90c_confirmed ?? false}
+                          onChange={(event) =>
+                            edit(index, { terminals_90c_confirmed: event.target.checked })
+                          }
+                        />
+                        Conferi terminais, conexões e equipamentos para condutor a 90 °C.
+                      </label>
+                      <Numeric
+                        label={`Resistividade do cobre a ${c.insulation && c.insulation !== 'PVC70' ? 90 : 70} °C (Ω·mm²/m)`}
+                        value={c.hot_resistivity_ohm_mm2_m}
+                        onChange={(value) => edit(index, { hot_resistivity_ohm_mm2_m: value })}
+                      />
+                      <Numeric
+                        label="Reatância do percurso (Ω/m)"
+                        value={c.reactance_ohm_m}
+                        onChange={(value) => edit(index, { reactance_ohm_m: value })}
+                      />
+                      <label>
+                        Fonte da impedância do cabo/percurso na temperatura de serviço
+                        <input
+                          maxLength={200}
+                          value={c.impedance_source ?? ''}
+                          onChange={(event) =>
+                            edit(index, { impedance_source: event.target.value || null })
+                          }
+                        />
+                      </label>
+                    </>
+                  )}
                   <label>
                     Temperatura ambiente (°C)
                     <select
@@ -492,10 +773,12 @@ export function CircuitStudy({
                       checked={c.scope_confirmed ?? false}
                       onChange={(event) => edit(index, { scope_confirmed: event.target.checked })}
                     />
-                    Conferi instalação fixa, cobre/PVC70°C, método, configuração mono/trifásica sem
-                    neutro, agrupamento homogêneo em feixe, ausência de sol direto, conduto não
-                    magnético, PE no mesmo conduto, cargas indutivas/resistivas senoidais e
-                    agrupamento homogêneo nas condições mais desfavoráveis do percurso.
+                    Conferi instalação fixa, cobre, cabos não armados até 0,6/1 kV, isolação, método
+                    e dissipação (E somente cabo multipolar ao ar livre), configuração
+                    mono/trifásica sem neutro, agrupamento homogêneo em feixe, ausência de sol
+                    direto, conduto não magnético, PE acompanhando as fases, cargas
+                    indutivas/resistivas senoidais e agrupamento homogêneo nas condições mais
+                    desfavoráveis do percurso.
                   </label>
                   <label className="checkbox-option">
                     <input
@@ -565,6 +848,11 @@ export function CircuitStudy({
                     <details className="mt-3">
                       <summary>Fontes e limites do método</summary>
                       <p className="mt-2 text-xs muted">{row.reference}</p>
+                      <ul className="mt-2 space-y-1 text-xs muted">
+                        {row.study_conditions?.map((condition) => (
+                          <li key={condition}>{condition}</li>
+                        ))}
+                      </ul>
                       <ul className="mt-2 space-y-1 text-xs muted">
                         {row.limitations.map((limitation) => (
                           <li key={limitation}>{limitation}</li>

@@ -523,6 +523,9 @@ async def test_pdf_snapshot_export_and_stale_protection(client, payload):
     [
         {"circuits": [{"id": "c1", "name": "Circuito alterado", "length_m": "40"}]},
         {"circuits": [{"id": "c1", "protections": {"fault_loop_ohm": "0.5"}}]},
+        {"circuits": [{"id": "c1", "insulation": "XLPE90", "terminals_90c_confirmed": True}]},
+        {"circuits": [{"id": "c1", "protections": {"surge": {"required_uc_v": "242"}}}]},
+        {"circuits": [{"id": "c1", "protections": {"selectivity": {"limit_ka": "6"}}}]},
         {"service_entry": {"network": "220_127", "route": "underground"}},
         {"circuits": [], "service_entry": None},
     ],

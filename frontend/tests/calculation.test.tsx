@@ -252,6 +252,10 @@ test.each([
     circuits: [
       {
         id: 'circuit',
+        insulation: 'PVC70' as const,
+        air_layout: 'unknown' as const,
+        buried_reference_confirmed: false,
+        terminals_90c_confirmed: false,
         name: 'Circuito',
         configuration: 'single_phase' as const,
         purpose: 'sockets' as const,

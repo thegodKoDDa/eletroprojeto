@@ -50,6 +50,10 @@ const input: ProjectInput = {
   circuits: [
     {
       id: 'one',
+      insulation: 'PVC70',
+      air_layout: 'unknown',
+      buried_reference_confirmed: false,
+      terminals_90c_confirmed: false,
       name: 'Iluminação',
       configuration: 'single_phase',
       purpose: 'lighting',
@@ -108,4 +112,54 @@ test('breaker ratings accept decimal commas and reject hexadecimal input before 
   );
   expect(field).toHaveValue('32');
   expect(field).not.toHaveAttribute('aria-invalid');
+});
+
+test('90 degree cable inputs preserve manual data and expose documented coordination', () => {
+  const onChange = vi.fn();
+  const next: ProjectInput = {
+    ...input,
+    circuits: [{ ...input.circuits![0], insulation: 'XLPE90' }],
+  };
+  render(<CircuitStudy input={next} onChange={onChange} onEntryChange={vi.fn()} />);
+  fireEvent.change(screen.getByLabelText('Resistividade do cobre a 90 °C (Ω·mm²/m)'), {
+    target: { value: '0.025' },
+  });
+  expect(onChange.mock.lastCall?.[0][0].hot_resistivity_ohm_mm2_m).toBe('0.025');
+  expect(input.circuits?.[0].insulation).toBe('PVC70');
+  fireEvent.change(screen.getByLabelText('Limite de seletividade do par (kA)'), {
+    target: { value: '6' },
+  });
+  expect(onChange.mock.lastCall?.[0][0].protections.selectivity).toMatchObject({
+    limit_ka: '6',
+    conditions_confirmed: false,
+  });
+  fireEvent.change(screen.getByLabelText('Onda exigida no estudo'), {
+    target: { value: '10/350' },
+  });
+  expect(onChange.mock.lastCall?.[0][0].protections.surge.requirement_waveform).toBe('10/350');
+});
+
+test('changing physical cable conditions requires a new scope confirmation while preserving numeric data', () => {
+  const onChange = vi.fn();
+  const next: ProjectInput = {
+    ...input,
+    circuits: [
+      {
+        ...input.circuits![0],
+        scope_confirmed: true,
+        terminals_90c_confirmed: true,
+        length_m: '25',
+      },
+    ],
+  };
+  render(<CircuitStudy input={next} onChange={onChange} onEntryChange={vi.fn()} />);
+  fireEvent.change(screen.getByLabelText('Isolação do cabo de cobre'), {
+    target: { value: 'EPR90' },
+  });
+  expect(onChange.mock.lastCall?.[0][0]).toMatchObject({
+    insulation: 'EPR90',
+    scope_confirmed: false,
+    terminals_90c_confirmed: false,
+    length_m: '25',
+  });
 });

@@ -5,6 +5,7 @@ import { request } from '@/lib/api';
 import type { components } from '@/lib/api.generated';
 import { formatDate } from '@/lib/format';
 import { safeReferenceUrl } from '@/lib/safe-url';
+import { MunicipalityStudy } from './MunicipalityStudy';
 import { SectionHeading } from '@/components/ui/SectionHeading';
 
 type Lookup = components['schemas']['TerritoryLookup'];
@@ -58,6 +59,7 @@ export function TerritoryStudy() {
         title="Distribuidoras no ponto informado"
         description="Consulta opcional à coleta local de polígonos oficiais ANEEL/SIGEL. Use coordenadas SIRGAS2000 (EPSG4674); não há conversão automática de outro referencial. A busca não seleciona distribuidora e suas coordenadas não são salvas no projeto."
       />
+      <MunicipalityStudy />
       <form
         className="mt-3 grid gap-3 md:grid-cols-3"
         onSubmit={(e) => {

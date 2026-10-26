@@ -1,5 +1,13 @@
 # Histórico de alterações
 
+## 0.21.0 — 26/10/2026 / motor0.11.0
+
+- Revisão das pendências registradas; itens resolvidos/descartados preservados e limites restantes discriminados.
+- Circuitos Cu/PVC70 ou XLPE/EPR90, métodos A1–G condicionados: arranjos de cabos/solo, terminais90°C e impedância próprios; sem extrapolação de seções/agrupamentos ou alumínio residencial.
+- Comparações documentais DPS/seletividade com fontes, produtos/requisitos explícitos; memória/PDF/JSON preservam condições. Não é seleção integral ou análise de risco atmosférico.
+- Relações municipais oficiais INDGER/IBGE por CNPJ e último mês próprio, com múltiplas empresas, datas e inconsistências segregadas; consulta cancelável sem seleção automática.
+- 570 testes backend/85subtestes,113frontend e25E2E aprovados; contratos, qualidade, tipos e build aprovados. Banco real com12tabelas idênticas ao checkpoint inicial, sem migração/regravação ou exclusões. Revisão humana integral, inspeção física e demais limites não foram declarados concluídos.
+
 ## 0.20.0 — 26/10/2026 / motor 0.10.0
 
 - Distribuição pública autorizada: ZIP com iniciadores Windows/Unix, Docker Compose e instalação por clone, com guias próprios e requisitos explícitos.

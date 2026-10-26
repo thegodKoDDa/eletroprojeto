@@ -62,7 +62,7 @@ test('full reference workflow, stable editing, persistence and mobile layout', a
   await page.getByRole('button', { name: /^Criar novo projeto/ }).click();
   const projectName = `Casa E2E ${Date.now()}`;
   await page.getByLabel('Nome do projeto', { exact: true }).fill(projectName);
-  await page.getByLabel('Município').fill('Município informado');
+  await page.getByLabel('Município', { exact: true }).fill('Município informado');
   await page.getByRole('button', { name: 'Adicionar primeiro ambiente' }).click();
   let bedroom = page.locator('main article').first();
   await bedroom.getByLabel('Nome', { exact: true }).fill('Quarto');

@@ -247,7 +247,34 @@ class Environment(Schema):
     loads: list[Load] = Field(default_factory=list, max_length=1000)
 
 
+class SelectivityInput(Schema):
+    upstream_device: Text | None = None
+    downstream_device: Text | None = None
+    downstream_rated_a: Positive | None = None
+    source: Text | None = None
+    conditions_confirmed: bool = Field(default=False, strict=True)
+    limit_ka: Positive | None = None
+
+
+class SurgeProtectionInput(Schema):
+    device: Text | None = None
+    source: Text | None = None
+    requirements_source: Text | None = None
+    conditions_confirmed: bool = Field(default=False, strict=True)
+    uc_v: Positive | None = None
+    required_uc_v: Positive | None = None
+    effective_up_v: Positive | None = None
+    withstand_voltage_v: Positive | None = None
+    discharge_ka: Positive | None = None
+    required_discharge_ka: Positive | None = None
+    waveform: Literal["8/20", "10/350"] | None = None
+    requirement_waveform: Literal["8/20", "10/350"] | None = None
+    short_withstand_ka: Positive | None = None
+
+
 class CircuitProtectionInput(Schema):
+    selectivity: SelectivityInput | None = None
+    surge: SurgeProtectionInput | None = None
     source: Text | None = None
     device_rated_a: Positive | None = None
     cable_k: Positive | None = None
@@ -267,13 +294,23 @@ class CircuitProtectionInput(Schema):
 
 
 class CircuitInput(Schema):
+    air_layout: Literal[
+        "unknown", "trefoil", "flat_touching", "horizontal_spaced", "vertical_spaced"
+    ] = "unknown"
+    soil_temperature_c: Literal[10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60] | None = None
+    buried_reference_confirmed: bool = Field(default=False, strict=True)
+    insulation: Literal["PVC70", "XLPE90", "EPR90"] = "PVC70"
+    terminals_90c_confirmed: bool = Field(default=False, strict=True)
+    hot_resistivity_ohm_mm2_m: Positive | None = None
+    reactance_ohm_m: Nonnegative | None = None
+    impedance_source: Text | None = None
     configuration: Literal["single_phase", "balanced_three_phase_without_neutral"] = "single_phase"
     protections: CircuitProtectionInput | None = None
     id: str = Field(default_factory=lambda: str(uuid4()), min_length=1, max_length=200)
     name: Text = "Novo circuito"
     purpose: Literal["lighting", "sockets", "dedicated"] = "sockets"
     load_ids: list[str] = Field(default_factory=list, max_length=1000)
-    method: Literal["unknown", "A1", "A2", "B1", "B2", "C"] = "unknown"
+    method: Literal["unknown", "A1", "A2", "B1", "B2", "C", "D", "E", "F", "G"] = "unknown"
     voltage_v: Positive | None = None
     length_m: Positive | None = None
     ambient_temperature_c: Literal[10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60] | None = None
@@ -695,6 +732,7 @@ class BathroomGeometryResult(Schema):
 
 
 class CircuitResult(Schema):
+    study_conditions: list[str] = Field(default_factory=list)
     protection_checks: list[CircuitProtectionCheck] = Field(default_factory=list)
     circuit_id: str
     name: str
@@ -806,6 +844,35 @@ class TerritoryLookup(Schema):
     snapshot_sha256: str | None
     automatic_assignment: Literal[False]
     candidates: list[TerritoryCandidate]
+    notice: str
+    reason: str
+
+
+class MunicipalityIdentity(Schema):
+    code: str
+    name: str
+    state: str
+
+
+class MunicipalUtility(Schema):
+    reference_month: str
+    cnpj: str
+    acronym: str
+    name: str
+    grant_type: str
+    active_units: int
+
+
+class MunicipalityLookup(Schema):
+    status: Status
+    source: str
+    ibge_source: str
+    consulted_on: str | None
+    snapshot_sha256: str | None
+    automatic_assignment: Literal[False]
+    municipality: MunicipalityIdentity | None
+    reference_month: str | None
+    candidates: list[MunicipalUtility]
     notice: str
     reason: str
 

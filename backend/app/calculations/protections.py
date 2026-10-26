@@ -5,10 +5,12 @@ No default fault current, cable k, product curve, earthing resistance or DR type
 
 from decimal import Decimal as D
 
+from .coordination import coordination_checks
+
 TN_TIMES = {D(127): (D(".8"), D(".35")), D(220): (D(".4"), D(".2"))}
 
 
-def protection_checks(data, section, breaker):
+def protection_checks(data, section, breaker, prospective_short_circuit_ka=None):
     data = data or {}
     checks = []
 
@@ -107,4 +109,4 @@ def protection_checks(data, section, breaker):
         D(str(sensitivity)) <= 30 if ready else None,
         "Confirmar exigência de§5.1.3.2, tipologia, polos, corrente nominal, coordenação e instruções dos aparelhos. Não presumir dispensa de DR.",
     )
-    return checks
+    return checks + coordination_checks(data, breaker, prospective_short_circuit_ka)

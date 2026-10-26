@@ -653,6 +653,8 @@ def render_report(project, result, project_version=None):
         doc.section("Estudo de circuitos — seleção condicionada")
         for circuit in result["circuit_results"]:
             doc.line(circuit["name"])
+            for condition in circuit.get("study_conditions", []):
+                doc.line(condition)
             doc.line(
                 "Ib="
                 + val(circuit["design_current_a"])

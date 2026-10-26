@@ -367,6 +367,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/locations/municipality": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Municipal Utilities */
+        get: operations["municipal_utilities_api_v1_locations_municipality_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/locations/territory": {
         parameters: {
             query?: never;
@@ -988,6 +1005,36 @@ export interface components {
         /** CircuitInput */
         CircuitInput: {
             /**
+             * Air Layout
+             * @default unknown
+             * @enum {string}
+             */
+            air_layout: "unknown" | "trefoil" | "flat_touching" | "horizontal_spaced" | "vertical_spaced";
+            /** Soil Temperature C */
+            soil_temperature_c?: (10 | 15 | 20 | 25 | 30 | 35 | 40 | 45 | 50 | 55 | 60) | null;
+            /**
+             * Buried Reference Confirmed
+             * @default false
+             */
+            buried_reference_confirmed: boolean;
+            /**
+             * Insulation
+             * @default PVC70
+             * @enum {string}
+             */
+            insulation: "PVC70" | "XLPE90" | "EPR90";
+            /**
+             * Terminals 90C Confirmed
+             * @default false
+             */
+            terminals_90c_confirmed: boolean;
+            /** Hot Resistivity Ohm Mm2 M */
+            hot_resistivity_ohm_mm2_m?: number | string | null;
+            /** Reactance Ohm M */
+            reactance_ohm_m?: number | string | null;
+            /** Impedance Source */
+            impedance_source?: string | null;
+            /**
              * Configuration
              * @default single_phase
              * @enum {string}
@@ -1014,7 +1061,7 @@ export interface components {
              * @default unknown
              * @enum {string}
              */
-            method: "unknown" | "A1" | "A2" | "B1" | "B2" | "C";
+            method: "unknown" | "A1" | "A2" | "B1" | "B2" | "C" | "D" | "E" | "F" | "G";
             /** Voltage V */
             voltage_v?: number | string | null;
             /** Length M */
@@ -1072,6 +1119,8 @@ export interface components {
         };
         /** CircuitProtectionInput */
         CircuitProtectionInput: {
+            selectivity?: components["schemas"]["SelectivityInput"] | null;
+            surge?: components["schemas"]["SurgeProtectionInput"] | null;
             /** Source */
             source?: string | null;
             /** Device Rated A */
@@ -1114,6 +1163,8 @@ export interface components {
         };
         /** CircuitResult */
         CircuitResult: {
+            /** Study Conditions */
+            study_conditions?: string[];
             /** Protection Checks */
             protection_checks?: components["schemas"]["CircuitProtectionCheck"][];
             /** Circuit Id */
@@ -1816,6 +1867,60 @@ export interface components {
              */
             unit: "W";
         };
+        /** MunicipalUtility */
+        MunicipalUtility: {
+            /** Reference Month */
+            reference_month: string;
+            /** Cnpj */
+            cnpj: string;
+            /** Acronym */
+            acronym: string;
+            /** Name */
+            name: string;
+            /** Grant Type */
+            grant_type: string;
+            /** Active Units */
+            active_units: number;
+        };
+        /** MunicipalityIdentity */
+        MunicipalityIdentity: {
+            /** Code */
+            code: string;
+            /** Name */
+            name: string;
+            /** State */
+            state: string;
+        };
+        /** MunicipalityLookup */
+        MunicipalityLookup: {
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "calculated" | "estimated" | "pending" | "invalid" | "out_of_scope" | "awaiting_technical_validation";
+            /** Source */
+            source: string;
+            /** Ibge Source */
+            ibge_source: string;
+            /** Consulted On */
+            consulted_on: string | null;
+            /** Snapshot Sha256 */
+            snapshot_sha256: string | null;
+            /**
+             * Automatic Assignment
+             * @constant
+             */
+            automatic_assignment: false;
+            municipality: components["schemas"]["MunicipalityIdentity"] | null;
+            /** Reference Month */
+            reference_month: string | null;
+            /** Candidates */
+            candidates: components["schemas"]["MunicipalUtility"][];
+            /** Notice */
+            notice: string;
+            /** Reason */
+            reason: string;
+        };
         /** NormativeCapability */
         NormativeCapability: {
             /**
@@ -2228,6 +2333,24 @@ export interface components {
             /** Sha256 */
             sha256?: string | null;
         };
+        /** SelectivityInput */
+        SelectivityInput: {
+            /** Upstream Device */
+            upstream_device?: string | null;
+            /** Downstream Device */
+            downstream_device?: string | null;
+            /** Downstream Rated A */
+            downstream_rated_a?: number | string | null;
+            /** Source */
+            source?: string | null;
+            /**
+             * Conditions Confirmed
+             * @default false
+             */
+            conditions_confirmed: boolean;
+            /** Limit Ka */
+            limit_ka?: number | string | null;
+        };
         /** ServiceEntryInput */
         ServiceEntryInput: {
             /**
@@ -2288,6 +2411,38 @@ export interface components {
             pending_checks: string[];
             /** Reference */
             reference: string;
+        };
+        /** SurgeProtectionInput */
+        SurgeProtectionInput: {
+            /** Device */
+            device?: string | null;
+            /** Source */
+            source?: string | null;
+            /** Requirements Source */
+            requirements_source?: string | null;
+            /**
+             * Conditions Confirmed
+             * @default false
+             */
+            conditions_confirmed: boolean;
+            /** Uc V */
+            uc_v?: number | string | null;
+            /** Required Uc V */
+            required_uc_v?: number | string | null;
+            /** Effective Up V */
+            effective_up_v?: number | string | null;
+            /** Withstand Voltage V */
+            withstand_voltage_v?: number | string | null;
+            /** Discharge Ka */
+            discharge_ka?: number | string | null;
+            /** Required Discharge Ka */
+            required_discharge_ka?: number | string | null;
+            /** Waveform */
+            waveform?: ("8/20" | "10/350") | null;
+            /** Requirement Waveform */
+            requirement_waveform?: ("8/20" | "10/350") | null;
+            /** Short Withstand Ka */
+            short_withstand_ka?: number | string | null;
         };
         /** TechnicalDocument */
         TechnicalDocument: {
@@ -3270,6 +3425,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["UtilityInfo"][];
+                };
+            };
+            /** @description Entradas inválidas; avisos localizados quando disponíveis. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InputValidationError"];
+                };
+            };
+        };
+    };
+    municipal_utilities_api_v1_locations_municipality_get: {
+        parameters: {
+            query: {
+                code: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MunicipalityLookup"];
                 };
             };
             /** @description Entradas inválidas; avisos localizados quando disponíveis. */

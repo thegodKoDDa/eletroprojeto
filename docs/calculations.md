@@ -1,6 +1,6 @@
 # Cálculos disponíveis
 
-A implementação vigente é o **motor 0.10.0**. As unidades, fórmulas e condições abaixo são mantidas neste documento; edições, cláusulas e evidências ficam em [standards](standards.md).
+A implementação vigente é o **motor 0.11.0**. As unidades, fórmulas e condições abaixo são mantidas neste documento; edições, cláusulas e evidências ficam em [standards](standards.md).
 
 | Assunto | Leitura |
 | --- | --- |
@@ -138,3 +138,16 @@ Circuitos: A1/A2/B1/B2/C, Cu/PVC70,1,5–95mm²; `configuration=balanced_three_p
 `bathroom_geometry.py` classifica envelopes externos de componentes no arranjo restrito dafigura18. Usa distância euclidiana mínima do chuveiro à caixa envolvente; compara raios ao quadrado sem arredondar, e a menor altura do componente para identificar qualquer interseção com o volume mais restritivo. Volume2 inclui a região superior ao volume1 até3m; fora dosvolumes não significa local aprovado. Sem medidas/fonte/confirmação não há volume calculado; mínimo maior que máximo é inválido. Banheiro/posições participam da assinatura e ficam no snapshot/PDF/JSON (campo aditivo `localizacao_banheiros`, contrato1.4 preservado).
 
 Consulta territorial fica em `app/territory.py`, separada da matemática elétrica. Polígonos locais oficiais são conferidos por hash, indexados por envolvente e consultados por regra par/ímpar com testes de fronteira em Decimal/contexto60; furos e múltiplos anéis são respeitados. Coordenadas SIRGAS2000, sem transformação presumida de datum. A consulta é de referência e não altera o projeto, município, distribuidora ou cálculo; ausência de feição/arquivo não é ausência de atendimento. Fonte, época e limites em standards.
+
+
+## Motor0.11.0 — isolação, métodos, coordenação e relações municipais (26/10/2026)
+
+Circuitos mantêm cálculo vetorial de corrente, seleção discreta, sobrecarga/PE/queda e nulos anteriores. A tabela de ampacidade depende agora de isolação, método, dois/três carregados e arranjo F/G. PVC70 usa Tabelas36/38; XLPE90/EPR90 usam37/39 e fatores próprios da40. D distingue solo20°C de ar30°C e bloqueia condições enterradas não cobertas; G bloqueia monofásico e agrupamento diferente de1. Referências e condições completas emstandards. Nenhum coeficiente de alumínio ou neutro presumido foi adicionado.
+
+Para XLPE/EPR e D/E/F/G, ΔU usa resistividade quente e reatância explícitas do cabo/percurso, com fonte; sem elas a queda permanece nula. O modelo PVC70 já conferido permanece para A1/A2/B1/B2/C. Exemplo aritmético fictício independente:20A/220V,1m,ρ informado0,025Ωmm²/m,λ0 eS2,5mm² →ΔU0,4V;30m →12V, acima4%, exigindo4mm² →7,5V. Esses parâmetros de teste não são valores sugeridos para produto real. A fonte e condições entram emstudy_conditions/memória/PDF/JSON; nada disso altera placa/catálogo/histórico.
+
+Exemplos de ampacidade: Cu90°C/B1/40°C/dois circuitos:4mm² dá42×0,91×0,8=30,576A. C/90°C/10mm²/dois carregados é80A (divergência do manual resolvida pela tabela normativa). D/PVC/solo30°C usa0,89, não1; a referência térmica não é a temperatura do ar. Testes incluem igualdades e incremento acima para todos os novos métodos/arranjos, bloqueios de geometria/terminais/agrupamento, teto95mm², fonte/impedância ausentes e preservação de entradas.
+
+coordination.py contém funções puras. Seletividade de curto compara o Ik máximo do circuito com o limite do par documentado; igualdade/maior retorna falso, falta de fonte/confirmação ou outroIn retorna nulo. DPS compara Uc≥requisito, Up efetivo≤suportabilidade, corrente≥requisito somente para a mesma onda, suportabilidade do conjunto≥Ik. Atributos máximos do produto não são inventados e os requisitos vêm de estudo informado; essas comparações não escolhem classe/necessidade ou avaliam risco atmosférico. Exemplos fictícios:limite6kA/Ik5,99 atende;Ik6 não atesta seletividade;Up1500V/suportabilidade1500 atende e1500,001 não. Onda8/20 não satisfaz automaticamente requisito10/350; retorna nulo. Fontes/condições/limites permanecem nos resultados e no relatório.
+
+Municípios não são matemática elétrica: app/municipalities.py valida identidade/competência/duplicatas do INDGER, cruza código oficial com IBGE e preserva último mês de cada par município/CNPJ. Declaração mais recente de outra empresa não apaga a anterior; último registro com zero/ausência de UC não é convertido em relação positiva nem volta silenciosamente a um positivo antigo da mesma empresa. Consulta independente sem efeito sobre seleção manual, demanda ou digest do projeto. Sem rede durante requisição, sem gravação e sem inventar territorialidade. Hash divergente/falta de coleta mantém pendência.

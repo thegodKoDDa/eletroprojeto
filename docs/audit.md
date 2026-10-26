@@ -37,3 +37,8 @@ O [arquivo de auditorias até 0.19.0](history/audit-through-0.19.0.md) preserva 
 500 testes backend/85 subtestes, 40 testes de scripts, 109 frontend e 24 E2E aprovados. Builds Linux nativo e Docker amd64, contratos, Ruff, tipos, lint e formatação aprovados. Smoke de navegador em ambos: consumo fictício de 6 kWh/mês, salvamento, PDF, axe sem violações e viewports 390/1440 px; projetos isolados preservados após reinício. Imagem runtime passou pip check e contém avisos/licenças de terceiros. Sem execução real em Windows/macOS/ARM. Histórico revisado para arquivos privados e padrões de credenciais; matches de URLs autenticadas são fixtures de segurança. Dados reais/acervo não entram no contexto Docker nem nos pacotes.
 
 ZIP ensaiado em cópia Git isolada antes do commit original, extraído em pasta com espaços e instalado sem dependências prévias nessa cópia. Preparação, migrações, build e navegador aprovados: 6 kWh/mês, salvamento, PDF, axe sem violações. As 12 tabelas reais continuam idênticas ao checkpoint 20261026T043321275895Z, com integridade/FK ok e contagens 11/36/10.
+
+
+## Revisão de pendências0.21.0 — 26/10/2026
+
+Fonte/condições confrontadas emstandards; casos resolvidos e descartados não reabertos. Métodos/isolação ampliados, verificações documentais DPS/seletividade e relações municipais oficiais entregues com nulos/limites. Verificações atuais emCURRENT_STATE; fontes locais ignoradas e12tabelas reais idênticas ao checkpoint inicial. A revisão não é laudo físico nem revisão humana integral do acervo. O catálogo ABNT lista5419:2026; não foi habilitada análise integral por metadados. Não extrapolar relações INDGER/IBGE para vigência/exclusividade municipal ou atendimento do imóvel.

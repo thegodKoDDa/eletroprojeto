@@ -124,10 +124,13 @@ Relatórios PDF/JSON não restauram projetos completos. A cópia de dados é res
 
 ## Biblioteca técnica e território
 
-Originais normativos, biblioteca importada e coletas territoriais não acompanham fonte, ZIP ou imagem. Sem esses arquivos, recursos dependentes permanecem indisponíveis ou pendentes; cadastro e consumo continuam funcionando. Organização das fontes em [references](../references/README.md).
+Originais normativos, biblioteca importada e coletas territoriais/municipais não acompanham fonte, ZIP ou imagem. Sem esses arquivos, recursos dependentes permanecem indisponíveis ou pendentes; cadastro e consumo continuam funcionando. Organização das fontes em [references](../references/README.md).
 
 ## Compatibilidade e verificações
 
 Inicialização nativa e Docker foram conferidas em Linux, incluindo HTTP, cálculo, salvamento, PDF e persistência. Windows/macOS têm iniciadores/instruções compatíveis preparados; não foram validados em máquinas desses sistemas nesta entrega. A imagem Docker testada é Linux amd64; não há promessa de executável Windows ou imagem multi-arquitetura pronta.
 
 Para desenvolver e testar, veja [CONTRIBUTING](../CONTRIBUTING.md).
+
+
+Coleta municipal opcional para manutenção: `backend/.venv/bin/python scripts/municipalities.py`, com httpx do ambiente de desenvolvimento existente. Obtém INDGER/ANEEL e identidades IBGE, preserva originais/relatório emreferences/municipalities e não altera projetos. A instalação distribuída sem coleta permanece com consulta municipal pendente; cadastro/consumo não dependem dela. Requisitos e limites emstandards/KNOWN_ISSUES.

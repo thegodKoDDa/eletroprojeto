@@ -51,3 +51,6 @@ O renderizador PDF é local, em texto e tabelas, sem executar HTML ou buscar rec
 Testes de exportação e snapshot estão em `backend/tests/test_api.py`, `test_pdf.py`, `test_report_summary.py`, `test_project_demand.py`, `test_bathroom_geometry.py` e nos E2E. Resultados efetivos da última entrega estão em [verificações](audit.md).
 
 O [registro de revisões até 0.14.1](history/forms-and-pdf-through-0.14.1.md) foi preservado para rastrear a evolução dos formulários e dos formatos; seus requisitos e posições antigas não descrevem necessariamente a interface atual.
+
+
+Na0.21.0, estudos recolhidos recebem isolação/arranjo/solo e dados documentais DPS/seletividade. Campo sem fonte ou condição não ganha aprovação. CircuitResult.study_conditions e motivos de proteção preservam parâmetros/fontes no PDF/JSON, inclusive o requisito comparado; relatório continua formato1.4 aditivo. A consulta municipal INDGER/IBGE também é independente, cancela/esconde resultados antigos e não entra no projeto/relatório ou na seleção automática.
