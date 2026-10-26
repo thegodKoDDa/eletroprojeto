@@ -1412,7 +1412,7 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                     ))}
                   </div>
                   {!!input.environments?.length && (
-                    <div className="mt-5 flex justify-start">
+                    <div className="mt-5 flex justify-end">
                       <button
                         className="btn primary add-environment"
                         aria-label="Adicionar ambiente ao final da lista"

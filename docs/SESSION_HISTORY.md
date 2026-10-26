@@ -512,3 +512,7 @@ Após esclarecer a finalidade do teste, o usuário solicitou explicitamente desc
 ## Adicionar ambiente no fim da lista — 25/10/2026
 
 Pedido de uma única alteração: facilitar criar outro ambiente sem voltar ao topo. Acrescentado botão inferior alinhado à esquerda após a lista não vazia, preservando botão superior, addRoom e bloqueios de envio/exportação. Navegador real com1/2/3ambientes e390/1440px conferidos, sem overflow ou gravação de projetos;captura móvel inspecionada.104testesfrontend eESLint/Prettier aprovados. Sem novo teste versionado para alteração simples;backend/build/suíteE2E não repetidos. Dados/cálculos/catálogo preservados. Documentos responsáveis atualizados;commit/sync/checkpoint conferidos pela rotina de encerramento.
+
+## Botão inferior à direita e envio ao GitHub — 25/10/2026
+
+Usuário pediu alinhar o botão inferior à direita e enviar tudo ao GitHub. Estado inicial limpo/sincronizado em3c9d57f;entregas anteriores já estavam no repositório privado. Alterado somente justify-start→justify-end no botão inferior; documentação atualizada. Navegador em390/1440px conferiu borda direita ecriação sucessiva,sem overflow ou gravação de projetos;Prettier/diff conferidos. Sem mudança funcional,suítes aprovadas anteriores não repetidas. Dados/cálculos/acervo preservados. Sincronização echeckpoint serão confirmados pela rotina de encerramento.

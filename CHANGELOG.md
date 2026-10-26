@@ -1,5 +1,9 @@
 # Histórico de alterações
 
+## Alinhamento do botão — 25/10/2026
+
+- Botão inferior Adicionar ambiente alinhado à direita conforme pedido do usuário; criação e posição após a lista preservadas.
+
 ## Botão ao final dos ambientes — 25/10/2026
 
 - Adicionado outro botão Adicionar ambiente ao final da lista, alinhado à esquerda, para continuar o cadastro sem voltar ao topo. Botão superior e ação de criação existentes preservados.

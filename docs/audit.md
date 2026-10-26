@@ -312,3 +312,5 @@ O novo E2E de teclado aguarda a tela pronta antes de ativar o link de salto e de
 ## Continuidade do cadastro de ambientes — 25/10/2026
 
 A lista longa deixava a ação de adicionar distante no cabeçalho. Acrescentado botão após o último ambiente, alinhado à esquerda, usando addRoom e os mesmos bloqueios busy/exporting. Aparece com ao menos um ambiente e permanece no fim após cada criação. Verificação no navegador: criação sucessiva até3ambientes, alinhamento e390/1440px sem overflow, sem escrita de projetos;104testesfrontend eESLint/Prettier aprovados. Sem alteração de fórmulas, dados ou outras funcionalidades.
+
+Pedido posterior do usuário: botão inferior realinhado à direita (justify-end). Conferido no navegador com390/1440px e criação sucessiva, sem overflow ou escrita de projetos. Apenas posicionamento alterado; suítes anteriores não repetidas.
