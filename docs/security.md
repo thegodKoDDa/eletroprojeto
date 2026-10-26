@@ -1,4 +1,4 @@
-# Segurança e recuperação — 0.17.0
+# Segurança e recuperação
 
 ## Acesso implementado — revisão 24/10/2026
 

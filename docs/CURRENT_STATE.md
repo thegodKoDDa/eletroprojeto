@@ -2,6 +2,14 @@
 
 Atualizado em 26/10/2026. SQLite/schema 0007 e JSON de relatório 1.4 preservados. A solicitação avançou nas três frentes: demanda d6/d7/centrais implementada sob condições verificadas, circuitos/fases e localização ampliados, e primeira coleta territorial oficial integral obtida com consulta pontual. **Não equivale a dimensionamento/conformidade universal, mapa municipal vigente certificado ou atendimento de imóvel confirmado.** Fontes e condições em standards/calculations; histórico em SESSION_HISTORY/CHANGELOG/Git.
 
+## Repositório e documentação — 26/10/2026
+
+Organização solicitada pelo usuário, inspirada no [Minecoord](https://github.com/thegodKoDDa/minecoord). README focado no produto, com prévia real, recursos, início rápido e links por tarefa; texto reduzido de 6.761 para 3.410 bytes. Guias de instalação/uso e contribuição separados. Descrição e oito tópicos do GitHub atualizados; repositório privado, main e Actions desativado preservados.
+
+Auditorias, revisão antiga de formulários e expansão técnica inicial foram movidas para `docs/history`, com conteúdo integral preservado e links relativos ajustados. Documentos atuais de formulários/auditoria e índice histórico apontam para esses registros. Navegação de cálculos/fontes distingue cobertura atual de consultas antigas; nenhuma fórmula, contrato, dependência ou código da aplicação foi alterado.
+
+Capturas em `docs/assets` usam navegador separado e dados fictícios, sem gravar projetos. README renderizado pela API Markdown do GitHub e inspecionado localmente; links/âncoras/imagens e templates de issue conferidos; **27 testes de continuidade aprovados**. Suítes funcionais abaixo são da entrega 0.19.0 e não foram repetidas nesta revisão documental. As 12 tabelas do banco real também foram comparadas integralmente ao checkpoint 20261026T041711328199Z: conteúdo idêntico, integridade/FK ok. Banco e acervo preservados; o resultado da sincronização/checkpoint final deve ser conferido na rotina e em `.checkpoints/latest.json`.
+
 ## Produto preservado
 
 Estimativa de consumo residencial para leigos primeiro, profissionais depois. Início/sidebar/três cartões e fluxo **01 Projeto → 02 Ambientes → 03 Conferência** preservados. Estudos técnicos continuam opcionais e recolhidos; os novos dados não são exigidos para estimar consumo. Botão inferior Adicionar ambiente continua à direita. Pesquisa completa do catálogo, atalhos por ambiente/aparelho, tarifa zero válida, acessibilidade, autosave/rascunhos/conflitos, debounce/cancelamento e resultados antigos ocultos preservados. Sem fórmulas elétricas no frontend ou potências/horários/tarifas inventados.

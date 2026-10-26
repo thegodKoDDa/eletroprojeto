@@ -1,6 +1,18 @@
 # Cálculos disponíveis
 
-## Demanda Energisa parametrizada — motor0.7.0
+A implementação vigente é o **motor 0.10.0**. As unidades, fórmulas e condições abaixo são mantidas neste documento; edições, cláusulas e evidências ficam em [standards](standards.md).
+
+| Assunto | Leitura |
+| --- | --- |
+| Energia e custo | [Consumo mensal e tarifa](#energia-e-custo--motor-050) |
+| Iluminação e tomadas | [Previsão residencial](#previsão-residencial--motor-060) |
+| Demanda d1–d7 e centrais | [Ampliação vigente e limites](#motor0100--grupos-especiais-fases-e-localização-26102026) |
+| Circuitos e entrada | [Critérios de seleção](#circuitos-e-verificações-de-proteção--motor090), complementados pela ampliação vigente |
+| Localização e território | [Modelos condicionais atuais](#motor0100--grupos-especiais-fases-e-localização-26102026) |
+
+As seções são datadas pela introdução ou revisão do procedimento. Restrições históricas, como d6/d7 indisponíveis ou somente B1/B2 monofásico, foram ampliadas no motor 0.10.0 sob as condições indicadas na seção vigente. Elas não substituem esses limites atuais. [Pendências conhecidas](KNOWN_ISSUES.md) reúne os casos ainda não cobertos.
+
+## Demanda Energisa parametrizada — motor0.7.0 (registro inicial)
 
 Implementação pura `calculations/energisa.py`, fonte/escopo/condições em [standards.md](standards.md). Endpoint tipado `/api/v1/calculations/energisa-demand`, inventário explícito e ausência dos grupos confirmada; sem inferir classificação do catálogo ou converter bases VA em W. d1 soma cada faixa da Tabela5; d2–d5 aplicam fator por quantidade total às potênciasW declaradas. Reservas não entram na demanda; todos os aparelhos declarados entram na conferência conservadora do limite instalado. Soma d[kW]/0,92 resulta em D[kVA]; divisor não altera FP cadastrado ou potência instalada dos projetos. Memória mostra faixas, base/fator/demanda por grupo, sem arredondamento intermediário.
 

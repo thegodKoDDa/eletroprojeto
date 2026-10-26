@@ -1,5 +1,17 @@
 # Referências e validação normativa
 
+A cobertura vigente é a da versão **0.19.0 / motor 0.10.0**. A [revisão de 26/10/2026](#ampliação-conferida--26102026-0190--motor-0100) registra as condições atuais de demanda especial, circuitos, localização e consulta territorial.
+
+| Procedimento | Cobertura atual |
+| --- | --- |
+| Previsão residencial | Quantidades e bases em VA sob as condições residenciais conferidas |
+| Demanda Energisa | Residência individual ESS/SP até 75 kW, d1–d7 e centrais com parâmetros/fontes/revisão |
+| Circuitos | Cu/PVC70, A1/A2/B1/B2/C, mono ou trifásico equilibrado sem neutro, escopo limitado |
+| Localização | Envelopes no arranjo restrito de chuveiro da figura 18 |
+| Território | Consulta pontual de referência, com registros e vigências explícitos; sem mapa municipal certificado |
+
+Este arquivo conserva a proveniência e o registro das consultas por data. Uma consulta antiga bloqueada, uma versão anterior do produto ou uma tabela apenas localizada não representa a cobertura atual nem habilita uma regra adicional. [Limitações conhecidas](KNOWN_ISSUES.md) e [cálculos](calculations.md) complementam a leitura.
+
 ## NDU-001 enviada pelo usuário — 0.12.0 / motor0.7.0, 23/10/2026
 
 Foram examinados os dois PDFs locais: identificação, escopo/vigência, demanda, tabelas/notas e erratas. Nome/metadados do arquivo não definem vigência:
@@ -31,7 +43,7 @@ Dimensionamento/instalação: relidos no exemplar NBR identificado §§5.3.4–5
 
 NDU001/portal Energisa novamente403 em web/curl. [SIGEL oficial](https://sigel.aneel.gov.br/arcgis/rest/services/DadosAbertos) lista AREA_ATUACAO; acesso ao serviço específico expirou em25s, sem coleta completa/validação territorial. Serviço histórico2018 não foi promovido a mapa atual. Nenhuma associação entre endereço e distribuidora foi inventada.
 
-## Estado atual — 0.9.0 / motor 0.6.0
+## Registro da versão 0.9.0 / motor 0.6.0
 
 Iluminação e tomadas residenciais agora têm procedimentos executáveis revisados no escopo limitado abaixo. Demanda da distribuidora permanece pendente. Os registros subsequentes até 0.8.0 são históricos, anteriores à obtenção das novas fontes.
 
@@ -61,7 +73,7 @@ Referências da stack consultadas:
 - [Pydantic — campos](https://docs.pydantic.dev/latest/concepts/fields/)
 - [SQLAlchemy 2 — ORM](https://docs.sqlalchemy.org/en/20/orm/quickstart.html)
 
-## Reconsulta e catálogo — revisão atual
+## Reconsulta e catálogo — registro de 22/10/2026
 
 Foram localizados PDFs NDU-001 7.0 no domínio oficial Energisa, mas a leitura integral retornou 403/erro. O registro permanece pendente. Nenhum fator foi habilitado a partir de fragmentos indexados ou da expressão histórica com 0,92. A edição e os requisitos de NBR 5410 continuam sem confirmação em exemplar oficial autorizado.
 

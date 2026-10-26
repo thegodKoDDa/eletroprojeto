@@ -1,29 +1,35 @@
-# Índice da documentação
+# Documentação
 
-Comece por [estado atual](CURRENT_STATE.md) e [memória permanente](PROJECT_MEMORY.md). Consulte [pendências](KNOWN_ISSUES.md) e [roadmap](roadmap.md) conforme o trabalho. Instruções de trabalho permanecem no [AGENTS](../AGENTS.md).
+Para conhecer o projeto, comece pelo [README principal](../README.md). Escolha abaixo o guia correspondente à sua tarefa.
 
-| Documento | Responsabilidade |
+## Usar e instalar
+
+| Guia | Conteúdo |
 | --- | --- |
-| [architecture.md](architecture.md) | Componentes, persistência e contratos. |
-| [calculations.md](calculations.md) | Matemática, unidades e limites implementados. |
-| [standards.md](standards.md) | Evidências normativas, fontes e validação. |
-| [security.md](security.md) | Autenticação e operação local/remota. |
-| [continuity.md](continuity.md) | Retomar/encerrar, GitHub privado, checkpoints e manutenção. |
-| [forms-and-pdf.md](forms-and-pdf.md) | Formulários, relatórios e respectivas revisões. |
-| [technical-expansion.md](technical-expansion.md) | Decisões e evolução da expansão técnica. |
-| [audit.md](audit.md) | Auditorias e evidências datadas. |
-| [SESSION_HISTORY.md](SESSION_HISTORY.md) | Registro cumulativo das sessões. |
-| [CHANGELOG](../CHANGELOG.md) | Alterações por entrega. |
+| [Instalação e configuração](setup.md) | Preparação, serviços, variáveis e Windows |
+| [Guia de uso](usage.md) | Projeto, ambientes, consumo, salvamento e exportação |
+| [Formulários e relatórios](forms-and-pdf.md) | Dados opcionais, pendências, PDF/JSON e rastreabilidade |
+| [Continuidade e recuperação](continuity.md) | Banco, checkpoints, sincronização e manutenção |
 
-Revisões de versões anteriores ficam em `history/review-*.md`. O [estado anterior à organização](history/state-before-organization.md) conserva o documento cumulativo antigo: versões, contagens, processos e tarefas em andamento ali são históricos. Consulte CURRENT_STATE para a situação atual. Registros datados nos demais documentos também devem ser lidos pela data, sem transformar limitações antigas em pendências atuais.
+## Desenvolver e conferir
 
-## Pastas do projeto
+| Referência | Conteúdo |
+| --- | --- |
+| [Contribuir](../CONTRIBUTING.md) | Organização, testes e geração de contratos |
+| [Arquitetura](architecture.md) | Componentes, persistência e integração |
+| [Cálculos](calculations.md) | Unidades, procedimentos e limites implementados |
+| [Fontes e validação](standards.md) | Evidências, edições e condições normativas |
+| [Segurança](security.md) | Acesso, sessões e operação local/remota |
+| [Verificações](audit.md) | Evidências atuais e registros de auditoria |
+| [Limitações conhecidas](KNOWN_ISSUES.md) | Pendências e casos ainda não cobertos |
+| [Roadmap](roadmap.md) | Prioridades de evolução |
 
-- `backend/`: API, motor Python, migrações, testes e ferramenta de inspeção PDF. Banco e `backups/` são privados; ambientes `.venv`/`.venv-windows` e metadados de instalação são mantidos.
-- `frontend/`: aplicação, contratos gerados, testes e configurações. `node_modules/` e `.next/` são saídas locais necessárias à instalação/execução.
-- `scripts/`: continuity.py para retomar/checkpoint/verificar; repository.py para GitHub privado; maintenance.py para diagnóstico, limpeza de gerados e compactação; QA e testes. Wrappers PowerShell preservados.
-- `.github/`: automação CI. `.git/`: histórico local.
-- `references/`: índice dos exemplares normativos locais; PDFs ignorados no Git.
-- `.checkpoints/`: recuperação privada verificada, com armazenamento compartilhado de bancos idênticos e sem apagar pontos. Integrações privadas e arquivos `.env` permanecem em seus locais.
+## Histórico e continuidade do trabalho
 
-Mantenha configurações e instruções na raiz. Guarde novos documentos técnicos em `docs/`, revisões antigas em `docs/history/` e exemplares normativos em `references/`. Caches podem ser regenerados; dados, migrações, referências e backups exigem análise antes de qualquer exclusão.
+- [Histórico de versões](../CHANGELOG.md): entregas do produto.
+- [Estado atual](CURRENT_STATE.md): fotografia operacional e próximo passo.
+- [Memória permanente](PROJECT_MEMORY.md) e [AGENTS.md](../AGENTS.md): decisões e instruções de trabalho.
+- [Sessões](SESSION_HISTORY.md): registro cumulativo das execuções.
+- [Arquivo histórico](history/README.md): revisões anteriores, preservadas como evidência.
+
+Documentos do arquivo histórico descrevem a versão e a data em que foram escritos. Eles não substituem o estado atual nem habilitam regras de cálculo. Dados, originais técnicos e checkpoints continuam locais; sua organização está em [references](../references/README.md) e [continuidade](continuity.md).

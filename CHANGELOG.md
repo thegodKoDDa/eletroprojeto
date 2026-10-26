@@ -1,5 +1,12 @@
 # Histórico de alterações
 
+## Organização do repositório — 26/10/2026
+
+- README reescrito com prévia real, recursos, início rápido e navegação por tarefa, inspirado no Minecoord.
+- Guias de instalação e uso, contribuição e modelos de issue/PR; descrição e tópicos do GitHub alinhados ao produto.
+- Registros antigos preservados em `docs/history`; formulários, verificações e índice documental atualizados, com distinção entre cobertura atual e histórica.
+- Links, âncoras, imagens, renderização e templates conferidos; 27 testes de continuidade aprovados. Sem alteração funcional, fórmulas, contratos, dados ou dependências; repositório privado e Actions desativado preservados.
+
 ## 0.19.0 — 26/10/2026 / motor0.10.0
 
 - Demanda d6/d7/centrais integrada ao inventário revisado, memória e exportações, com fontes/parâmetros explícitos; W/VA/FP/corrente máxima separados, reservas/limites preservados e ambiguidade W/VA pendente.
