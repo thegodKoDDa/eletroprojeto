@@ -1411,6 +1411,18 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                       </article>
                     ))}
                   </div>
+                  {!!input.environments?.length && (
+                    <div className="mt-5 flex justify-start">
+                      <button
+                        className="btn primary add-environment"
+                        aria-label="Adicionar ambiente ao final da lista"
+                        onClick={addRoom}
+                        disabled={busy || exporting}
+                      >
+                        <WorkspaceIcon name="new" /> Adicionar ambiente
+                      </button>
+                    </div>
+                  )}
                 </section>
                 <ResultsPanel
                   tariff={input.energy_tariff_brl_per_kwh}

@@ -508,3 +508,7 @@ Verificações:401backend+85subtestes,104frontend,Ruff/formatação63arquivos,co
 ## Validação com leitor de tela descartada — 25/10/2026
 
 Após esclarecer a finalidade do teste, o usuário solicitou explicitamente descartá-lo. Validação com leitor de tela real retirada do escopo e da lista de pendências; não reabrir sem novo pedido. CURRENT_STATE, KNOWN_ISSUES, roadmap, memória e CHANGELOG atualizados. Acessibilidade implementada e testes automáticos/teclado preservados. Sem alteração de código/cálculos/dados ou exclusão de arquivos. Conferência documental e diff; suítes não repetidas por não haver mudança funcional. Commit documental e encerramento com sincronização/checkpoint serão confirmados pela execução.
+
+## Adicionar ambiente no fim da lista — 25/10/2026
+
+Pedido de uma única alteração: facilitar criar outro ambiente sem voltar ao topo. Acrescentado botão inferior alinhado à esquerda após a lista não vazia, preservando botão superior, addRoom e bloqueios de envio/exportação. Navegador real com1/2/3ambientes e390/1440px conferidos, sem overflow ou gravação de projetos;captura móvel inspecionada.104testesfrontend eESLint/Prettier aprovados. Sem novo teste versionado para alteração simples;backend/build/suíteE2E não repetidos. Dados/cálculos/catálogo preservados. Documentos responsáveis atualizados;commit/sync/checkpoint conferidos pela rotina de encerramento.

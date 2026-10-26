@@ -6,6 +6,7 @@ Atualizado em 25/10/2026. SQLite/schema0007 e JSON de relatório1.4 preservados.
 
 Estimativa de consumo residencial para leigos primeiro, profissionais depois. Início/sidebar/três cartões e fluxo **01 Projeto → 02 Ambientes → 03 Conferência** preservados, com estudos técnicos opcionais e recolhidos.
 
+- Adicionar ambiente também aparece ao final da lista, alinhado à esquerda, após existir ao menos um ambiente. Usa a mesma ação e bloqueios do botão superior e acompanha a criação sucessiva; conferido no navegador em390/1440px, sem overflow ou gravação de projetos.
 - Pesquisa explícita do catálogo agora considera correspondências em todos os equipamentos; sugestões do ambiente não escondem o resultado. Listas vazias orientam a repetir/limpar a busca.
 - Conferência identifica aparelhos com consumo pendente por ambiente e oferece atalho para cada dado faltante. Consumo por aparelho também identifica o ambiente; nomes iguais deixam de ser ambíguos.
 - Tarifa ausente tem atalho com foco; zero informado permanece válido. Campos de consumo/horários e tarifa possuem descrições acessíveis vinculadas, com prioridade da etiqueta/medição e consumo por unidade/quantidade explícitos.
@@ -21,6 +22,8 @@ Relidos §9/notas/tabelas12–15 da NDU-0017.0 local. d6/d7/centrais continuam n
 Reconsulta oficial: catálogoABNT exibe5410:2004/VC2008; portalEnergisa listaNDU0017.0. Novas tentativas de download integral falharam. SIGEL retornou diretórioHTTP200/listaAREA_ATUACAO, mas camadas deram500/timeout; sem feições territoriais verificadas e sem nova associação municipal.
 
 ## Verificações efetivas
+
+Ajuste pontual posterior do botão inferior:104 testes frontend, ESLint/Prettier do arquivo e verificação no navegador com1/2/3ambientes aprovados. Backend/build/suíteE2E não repetidos para esse acréscimo de botão; resultados abaixo correspondem à entrega0.18.0 anterior.
 
 - **401 testes backend +85 subtestes e104 testes frontend aprovados.** Ruff/check eformatação Python aprovados.
 - **22 E2E aprovados na bateria completa; o novo23º cenário de teclado falhou por sincronização inicial do teste, foi corrigido e passou em execução dirigida.** Nenhum cenário removido/desativado. Cadastro/consumo/salvamento/rascunhos/revalidação/lixeira/relatórios e circuitos foram exercitados em SQLite/portas QA isolados.

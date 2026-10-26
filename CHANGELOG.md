@@ -1,5 +1,9 @@
 # Histórico de alterações
 
+## Botão ao final dos ambientes — 25/10/2026
+
+- Adicionado outro botão Adicionar ambiente ao final da lista, alinhado à esquerda, para continuar o cadastro sem voltar ao topo. Botão superior e ação de criação existentes preservados.
+
 ## Ajuste de escopo — 25/10/2026
 
 - Validação com leitor de tela real descartada por solicitação explícita do usuário; retirada das pendências e do roadmap. Melhorias de acessibilidade e testes automáticos/teclado preservados. Sem alteração de código, cálculos ou dados.
