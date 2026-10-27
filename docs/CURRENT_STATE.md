@@ -1,6 +1,17 @@
 # Estado atual — EletroProjeto 0.24.1 / motor 0.12.0
 
-Atualizado em 26/10/2026. Consumo e preenchimentos ampliados nos três perfis: **USUÁRIO LEIGO**, **USUÁRIO PROFISSIONAL** e **ESTOU APENAS DANDO UMA OLHADA**. Perfis continuam sendo apresentação. Dados e limites normativos preservados; SQLite/schema0007 e relatório JSON1.4 compatível, com campos aditivos.
+Atualizado em 27/10/2026. Consumo e preenchimentos ampliados nos três perfis: **USUÁRIO LEIGO**, **USUÁRIO PROFISSIONAL** e **ESTOU APENAS DANDO UMA OLHADA**. Perfis continuam sendo apresentação. Dados e limites normativos preservados; SQLite/schema0007 e relatório JSON1.4 compatível, com campos aditivos.
+
+## Acesso online via GitHub Pages — 27/10/2026
+
+Pedido do usuário: adicionar no `README.md` a opção de acessar o projeto diretamente pelo navegador usando GitHub Pages (`https://thegodkodda.github.io/eletroprojeto/`), igual ao `minecoord`, e publicar o site no GitHub Pages mantendo a regra de não duplicar matemática elétrica em TypeScript/JavaScript.
+
+- `README.md` e `docs/setup.md` atualizados com o link direto no topo, linha na tabela **Escolha como usar** e seção **Online pelo navegador (GitHub Pages)**.
+- `backend/app/browser_runtime.py` despacha as rotas da API usando exatamente os módulos Python originais (`calculations/engine.py`, `schemas.py`, `validation.py`, `technical.py`, `catalog.py`, `territory.py`, `municipalities.py`, `reports/pdf.py` e `reports/summary.py`), mantendo `Decimal` e unidades explícitas sem FastAPI/SQLAlchemy.
+- `frontend/src/lib/browser-backend.ts` e `frontend/src/lib/api.ts` detectam `*.github.io` / `NEXT_PUBLIC_BROWSER_RUNTIME=1`, carregam Pyodide `v0.27.4` (`pydantic`, `tzdata`) e `pyodide-app.zip` sob demanda, e persistem projetos em `localStorage` (`eletroprojeto.browser.store.v1` com backup `eletroprojeto.browser.backup.v1` e `navigator.locks`).
+- `frontend/next.config.ts` suporta exportação estática condicional (`NEXT_OUTPUT_EXPORT=1` e `NEXT_BASE_PATH`), preservando o modo padrão/standalone local e Docker.
+- `scripts/build_pages.py` gera o bundle estático e `pyodide-app.zip` (somente os 32 módulos puros do motor, sem banco, `.env` ou acervo privado), publicado por `.github/workflows/pages.yml` no GitHub Pages (com `quality.yml` mantido desativado).
+- Verificações proporcionais: 24 testes pytest (`test_browser_runtime.py`, `test_build_pages.py`, `test_package_release.py`, `test_continuity.py`), 131 testes Vitest (23 arquivos, incluindo `browser-backend.test.ts`), Ruff check/format, Prettier, ESLint, TypeScript e build estático em `scripts/build_pages.py` aprovados. Banco SQLite local intacto (14 projetos, 42 históricos, 12 revisões, migração 0007).
 
 ## Download atualizado — 0.24.1
 

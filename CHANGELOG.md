@@ -1,7 +1,10 @@
 # Histórico de alterações
 
-## 0.24.1 — 26/10/2026 / motor 0.12.0 preservado
+## 0.24.1 — 27/10/2026 / motor 0.12.0 preservado
 
+- Opção de acesso online direto pelo navegador no GitHub Pages (`https://thegodkodda.github.io/eletroprojeto/`) adicionada ao `README.md` e `docs/setup.md`, seguindo o padrão do `minecoord`.
+- Execução local do motor Python original (`backend/app/calculations`, `schemas`, `validation`, `reports`, `catalog`, `technical`) via Pyodide (WebAssembly) em `backend/app/browser_runtime.py` e `frontend/src/lib/browser-backend.ts`, com persistência em `localStorage` e sem replicar fórmulas elétricas em TypeScript/JavaScript.
+- Exportação estática condicional em `frontend/next.config.ts`, empacotador `scripts/build_pages.py` (`pyodide-app.zip` + `.nojekyll`) e workflow `.github/workflows/pages.yml`.
 - Release estável v0.24.1 publicada com todas as mudanças desde 0.20.0: ZIP de fontes/iniciadores, manifesto do commit 92fe605 e SHA-256; downloads públicos conferidos.
 - Aviso de recálculo com área estável e notificações de operação fora do fluxo, eliminando deslocamentos do cadastro.
 - Resultados e guia preservam geometria durante atualização, mantendo números desatualizados ocultos/inertes e memória montada.

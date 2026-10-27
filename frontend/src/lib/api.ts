@@ -1,4 +1,5 @@
 import type { components } from './api.generated';
+import { fetchBrowserApi, isBrowserRuntime } from './browser-backend';
 export type ProjectInput = components['schemas']['ProjectInput'];
 export type Project = components['schemas']['Project'];
 export type ProjectSummary = components['schemas']['ProjectSummary'];
@@ -46,6 +47,9 @@ async function responseError(response: Response, fallback: string): Promise<APIE
 }
 
 async function fetchApi(path: string, init?: RequestInit): Promise<Response> {
+  if (isBrowserRuntime()) {
+    return fetchBrowserApi(path, init);
+  }
   try {
     const response = await fetch(`${API}${path}`, {
       ...init,

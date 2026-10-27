@@ -4,7 +4,7 @@ Entenda o consumo de energia da sua casa.
 
 Organize ambientes e aparelhos, informe como são usados e acompanhe uma estimativa de consumo e custo mensal. Para moradias prontas ou planejadas: **Projeto → Ambientes → Conferência**.
 
-**[Baixar ZIP com iniciadores](https://github.com/thegodKoDDa/eletroprojeto/releases/latest/download/EletroProjeto-source.zip)** · [Todas as versões](https://github.com/thegodKoDDa/eletroprojeto/releases) · [Licença ISC](LICENSE)
+**[Abrir no navegador (GitHub Pages)](https://thegodkodda.github.io/eletroprojeto/)** · **[Baixar ZIP com iniciadores](https://github.com/thegodKoDDa/eletroprojeto/releases/latest/download/EletroProjeto-source.zip)** · [Todas as versões](https://github.com/thegodKoDDa/eletroprojeto/releases) · [Licença ISC](LICENSE)
 
 ![Escolha de apresentação no EletroProjeto — main 0.23.0](docs/assets/profile-choice.png)
 
@@ -23,9 +23,14 @@ Os resultados dependem dos dados informados. Consumo estimado não representa a 
 
 | Forma | Requisitos | Início |
 | --- | --- | --- |
+| **Online pelo navegador (GitHub Pages)** | Navegador atualizado | Acesse **[https://thegodkodda.github.io/eletroprojeto/](https://thegodkodda.github.io/eletroprojeto/)** sem baixar ou instalar nada |
 | **ZIP com iniciadores** | Python 3.11+, Node.js 20.9+ e npm | Extraia e abra `Iniciar-EletroProjeto.cmd` no Windows ou execute `sh iniciar-eletroprojeto.sh` no Linux/macOS |
 | **Docker Compose** | Docker com Compose | `docker compose up --build` na pasta extraída ou clonada |
 | **Código-fonte** | Python, Node.js, npm e Git | Clone e execute o iniciador ou os serviços manualmente |
+
+### Online pelo navegador (GitHub Pages)
+
+Acesse diretamente **[https://thegodkodda.github.io/eletroprojeto/](https://thegodkodda.github.io/eletroprojeto/)** para usar o EletroProjeto sem baixar ou instalar nada. O motor Python original de cálculos e relatórios é executado no próprio navegador via WebAssembly (Pyodide), e os projetos ficam salvos localmente no armazenamento do seu navegador, com exportação de relatórios em PDF e JSON.
 
 ### Baixar e iniciar
 

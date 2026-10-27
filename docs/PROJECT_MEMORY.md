@@ -108,3 +108,7 @@ Leigo destaca requisitos recebidos da API e dados recomendados de consumo/custo,
 ## Download atualizado — 0.24.1
 
 Release estável v0.24.1 publicada a pedido do usuário, com ZIP, manifesto e hashes gerados de92fe605. Latest e links de download apontam para essa versão; v0.20.0 preservada no histórico. Código funcional e pacote estão alinhados; posteriores commits apenas documentais não exigem republicar os mesmos binários/fontes. Confirmados downloads públicos e hashes; dados locais nunca fazem parte do pacote.
+
+## GitHub Pages com motor Python via Pyodide — 0.24.1
+
+A pedido explícito do usuário em 27/10/2026, o `README.md` inclui o acesso online pelo navegador em `https://thegodkodda.github.io/eletroprojeto/` no mesmo padrão do `minecoord`, com publicação via `.github/workflows/pages.yml` e `scripts/build_pages.py` (`quality.yml` permanece desativado). Para respeitar a regra permanente de nunca duplicar fórmulas elétricas no frontend, a edição estática executa os próprios módulos Python de `backend/app` no navegador via Pyodide (`backend/app/browser_runtime.py` + `frontend/src/lib/browser-backend.ts`) e armazena projetos apenas no `localStorage` do navegador do usuário (`eletroprojeto.browser.store.v1` / `eletroprojeto.browser.backup.v1`). Banco SQLite local, checkpoints e acervo técnico continuam exclusivamente locais e fora do Git/Pages.

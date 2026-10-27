@@ -1,6 +1,10 @@
 # Instalação e configuração
 
-O EletroProjeto é uma aplicação web local com frontend e API. Você pode baixar um pacote de fontes com iniciadores, usar Docker ou executar os serviços manualmente. Banco, credenciais e acervo técnico são independentes do código baixado.
+O EletroProjeto pode ser aberto diretamente no navegador via [GitHub Pages](https://thegodkodda.github.io/eletroprojeto/) ou executado localmente com frontend e API (pacote ZIP com iniciadores, Docker ou execução manual). Banco, credenciais e acervo técnico são independentes do código baixado.
+
+## Online pelo navegador (GitHub Pages)
+
+Acesse **[thegodkodda.github.io/eletroprojeto](https://thegodkodda.github.io/eletroprojeto/)** em qualquer navegador moderno, sem instalar Python, Node.js ou Docker. A versão estática exportada por `scripts/build_pages.py` carrega sob demanda o motor oficial em Python (`backend/app/calculations`, `schemas`, `validation`, `reports`, `catalog`, `technical`) via Pyodide (WebAssembly) a partir de `pyodide-app.zip`, sem duplicar fórmulas elétricas em TypeScript/JavaScript. Projetos criados nessa modalidade ficam salvos somente no `localStorage` do próprio navegador (`eletroprojeto.browser.store.v1`, com cópia imediata anterior em `eletroprojeto.browser.backup.v1`). Para persistência em banco SQLite/PostgreSQL ou consulta ao acervo completo em disco, utilize uma das opções locais abaixo.
 
 ## ZIP com iniciadores
 
