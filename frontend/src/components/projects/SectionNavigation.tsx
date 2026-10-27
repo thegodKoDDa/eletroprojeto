@@ -5,6 +5,7 @@ import { WorkspaceIcon, type WorkspaceIconName } from '@/components/layout/Works
 type Props = {
   active: 'home' | 'project' | 'library' | 'trash' | 'knowledge';
   busy: boolean;
+  writing?: boolean;
   hasProject: boolean;
   projectName?: string;
   dirty?: boolean;
@@ -19,6 +20,7 @@ type Props = {
 export function SectionNavigation({
   active,
   busy,
+  writing = false,
   hasProject,
   projectName,
   dirty,
@@ -47,7 +49,12 @@ export function SectionNavigation({
       {items.map((item) => (
         <button
           key={item.id}
-          disabled={busy}
+          disabled={busy || (writing && item.id === 'new')}
+          title={
+            writing && item.id === 'new'
+              ? 'Aguarde o salvamento em andamento antes de criar outro projeto.'
+              : undefined
+          }
           onClick={item.action}
           data-emphasis={
             profile === 'professional' && item.id === 'knowledge' ? 'technical' : undefined

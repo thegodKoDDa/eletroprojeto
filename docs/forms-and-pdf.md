@@ -1,6 +1,6 @@
 # Formulários e relatórios
 
-Referência de comportamento atualizada na versão 0.24.0. O [guia de uso](usage.md) explica o percurso pela interface; [cálculos](calculations.md) e [fontes](standards.md) concentram fórmulas e condições técnicas.
+Referência de comportamento atualizada na versão 0.24.1. O [guia de uso](usage.md) explica o percurso pela interface; [cálculos](calculations.md) e [fontes](standards.md) concentram fórmulas e condições técnicas.
 
 ## Entradas e pendências
 
@@ -104,3 +104,11 @@ Os três perfis recebem as mesmas capacidades: tempo em horas/minutos, consumo a
 Mensal > anual > horários, com zero válido e valores latentes preservados. Nenhum hábito é deduzido da categoria. A rotina comum não altera aparelhos com consumo conhecido ou rotina parcial, instâncias de outros ambientes, catálogo ou histórico. Restaurar referência conserva os novos parâmetros de uso e energia. Campo inválido latente de outra unidade aparece para correção, evitando erro sem destino visível.
 
 JSON/PDF mostram base mensal/anual/horário, minutos ou horas efetivos, consumo/custo por ambiente e projeção de12meses com escopo. Resultado antigo continua oculto ao editar, inclusive o painel novo; salvar/exportar continuam usando o snapshot atual. Contrato de relatório1.4 ganha campos aditivos opcionais de projeção e participação, preservando leitores/históricos existentes. Motor0.12.0 identificado no registro; nenhuma migração/regravação automática de projetos.
+
+## Recálculo, salvamento e menus sem saltos — 0.24.1
+
+O aviso de cálculo permanece em área reservada e troca apenas o estado/texto. Mensagens de salvar/exportar/erro aparecem em aviso fixo com botão Fechar, sem empurrar o formulário. Conferências e erros detalhados continuam acionáveis após os resultados. O contexto do projeto não muda de altura ao salvar; renomear mantém o aviso de pausa no próprio bloco do autosave, sem inserir outra linha na grade dos campos.
+
+Durante recálculo, a altura anterior dos resultados/guia é preservada, mas nenhum número antigo é visível, anunciado ou interativo. Detalhes/memória permanecem montados; campos mantêm foco e edição. Ao finalizar, disclosures voltam à altura natural. A resposta de salvamento não provoca outro cálculo por mera ordem de propriedades ou defaults: a identidade é normalizada pelo contrato, distinguindo null, zero, false e alterações reais.
+
+A navegação lateral mantém espaçamentos e largura entre páginas. Mais ações abre em camada sobre a interface, acima ou abaixo conforme o espaço da janela, sem aumentar o aside/formulário; usa rolagem própria quando necessário. Autosave preserva menu/foco e consulta, enquanto ações que poderiam trocar o projeto em gravação continuam protegidas. Exportar requer resultado atual e preserva seu snapshot. Avisos não somem por cronômetro; podem ser dispensados ou substituídos pela próxima operação.

@@ -1,6 +1,20 @@
-# Estado atual — EletroProjeto 0.24.0 / motor 0.12.0
+# Estado atual — EletroProjeto 0.24.1 / motor 0.12.0
 
 Atualizado em 26/10/2026. Consumo e preenchimentos ampliados nos três perfis: **USUÁRIO LEIGO**, **USUÁRIO PROFISSIONAL** e **ESTOU APENAS DANDO UMA OLHADA**. Perfis continuam sendo apresentação. Dados e limites normativos preservados; SQLite/schema0007 e relatório JSON1.4 compatível, com campos aditivos.
+
+## Estabilidade visual e aside — entrega atual 0.24.1
+
+Corrigidos saltos/piscadas ao recalcular, salvar e usar menus. Estado do cálculo ocupa uma área permanente; avisos de operação são fixos e dispensáveis. Formulário/contexto/autosave/renomeação não ganham linhas transitórias que empurram os demais campos. Resultados e guia conservam altura durante a espera, mantendo valores velhos ocultos/inertes e memória montada. Detalhes voltam à altura natural ao concluir, sem prender painéis recolhidos.
+
+Identidade das entradas normaliza defaults da própria API e ordem das chaves, evitando recálculo após salvar só por diferenças de transporte. `types:sync` gera também input-defaults.generated.json a partir de Pydantic/OpenAPI; não executa fábricas de IDs nem escolhe união ambígua. Null, zero, false, IDs, ordem de arrays e propriedades desconhecidas seguem distintos. Nenhuma fórmula elétrica foi movida ao frontend.
+
+Aside mantém espaçamentos/largura entre páginas e reserva scrollbar. Mais ações abre sobre a interface, para cima/baixo conforme espaço, com rolagem própria e retorno de foco sem salto. Autosave preserva menu, foco e navegação de consulta; criar/substituir/recuperar projeto e logout seguem protegidos durante escrita. Exportar um snapshot atual permanece seguro durante autosave. A largura do aside acomoda o gutter e avisos móveis respeitam as margens da área útil.
+
+Verificações: **587 pytest +85 subtestes, 130 frontend, 44 E2E locais e 1 HTTPS aprovados**; tipos/lint/Prettier, Ruff do gerador, contratos e build Webpack isolado aprovados. Após ajustes finais, os testes afetados de geometria/menu/renomeação, interfaces e acessibilidade foram repetidos e passaram; último conjunto de 8 E2E e novo build aprovados. Cenários com requisições retidas medem posição do cadastro/altura dos resultados em 390/1440px nos três perfis, preservação do foco/menu no autosave, exportação, navegação e menu acima em janela de 720px. Salvar não dispara cálculo adicional por defaults/ordem; observações e município mantêm posição ao salvar/renomear. Capturas locais fictícias inspecionadas.
+
+Checkpoint inicial **20261026T235318846272Z**: dados atuais já eram **14 projetos/39 históricos/12 revisões, 14 ativos/0 lixeira**. Todas as linhas das 12 tabelas seguem idênticas, integrity/FK ok. Não restaurar contagens históricas da demonstração abaixo sobre o uso posterior do usuário. Sem migração, mudança de motor, dependência nova, regravação ou exclusão de projetos/acervo/checkpoints. API reiniciada graciosamente para 0.24.1/motor0.12.0, API/interface HTTP200; gerados de QA inspecionados/restaurados no encerramento. Release estável0.20.0 mantida, sem pacote/site/CI novo. Sincronização/checkpoint final confirmados pela rotina/latest.json.
+
+Não executados nesta entrega: Windows/macOS/ARM, Docker, PostgreSQL, carga/pentest, leitor de tela real ou inspeção física; descartes e limites normativos anteriores preservados. Verificações automáticas/teclado exercitam os cenários registrados, sem declarar ausência universal de falhas.
 
 ## Demonstração real dos três perfis — 26/10/2026
 
@@ -12,7 +26,7 @@ Resultados conferidos nos três: **224,522kWh/mês**, custo exato202,0698BRL (ex
 
 Ponto inicial20261026T233451148874Z:14projetos/40históricos/12revisões. Estado após os três salvamentos: **17projetos/43históricos/12revisões**,16ativos/1lixeira; todas as linhas anteriores das12tabelas preservadas, SQLiteintegrity/FKok. Sem alterações de código/versão, dependências ou dados alheios. Testes proporcionais foram os cliques/preenchimento/salvamento/exportação/reabertura e comparação independente de equivalência; suítes anteriores não foram repetidas sem mudança de código. Encerramento/checkpoint final seguem a rotina e latest.json.
 
-## Automação de consumo — entrega atual 0.24.0 / motor 0.12.0
+## Automação de consumo — base 0.24.0 / motor 0.12.0
 
 Tempo de uso em minutos ou horas, média mensal de etiqueta anual, projeções de12meses, custos por ambiente/categoria, participação no subtotal e ranking calculados no backend. Rotina comum preenche uma vez os aparelhos sem consumo/horários do ambiente, sem substituir dados parciais/manuais ou zeros. Restaurar referência conserva os novos dados. Todas as funções estão disponíveis nos três perfis, mantendo a apresentação simples e os detalhes recolhidos.
 
@@ -108,4 +122,4 @@ Não executados nesta entrega: HTTPS de duas contas, PostgreSQL, Windows real, c
 
 A revisão completa dos itens registrados está em[KNOWN_ISSUES](KNOWN_ISSUES.md), com distinção entre entrega parcial, evidência externa e descarte. Próximas ampliações reais: neutro carregado/desequilíbrio/harmônicas e outros arranjos térmicos; proteção/entrada integrais após estudo/edições/produtos; geometrias além dafigura18. Esclarecimento oficial d7, vigência/topologia territorial integral, inspeção presencial e revisão humana do acervo continuam sem evidência suficiente; não convertê-los em concluídos.
 
-Retomar pela rotina AGENTS e pelo pedido atual; manter simplicidade, valores manuais e histórico. Código/docs no GitHub público; SQLite, originais, índices oficiais e checkpoints locais ignorados. A release estável disponível é0.20.0; main contém esta revisão0.24.0 após sincronização confirmada. Publicação de site, CI hospedado, impressão física e cópia externa seguem excluídos. Buffers e rascunhos não enviados não são capturados pelo checkpoint.
+Retomar pela rotina AGENTS e pelo pedido atual; manter simplicidade, valores manuais e histórico. Código/docs no GitHub público; SQLite, originais, índices oficiais e checkpoints locais ignorados. A release estável disponível é0.20.0; main contém esta revisão0.24.1 após sincronização confirmada. Publicação de site, CI hospedado, impressão física e cópia externa seguem excluídos. Buffers e rascunhos não enviados não são capturados pelo checkpoint.

@@ -1,5 +1,14 @@
 # Histórico de alterações
 
+## 0.24.1 — 26/10/2026 / motor 0.12.0 preservado
+
+- Aviso de recálculo com área estável e notificações de operação fora do fluxo, eliminando deslocamentos do cadastro.
+- Resultados e guia preservam geometria durante atualização, mantendo números desatualizados ocultos/inertes e memória montada.
+- Identidade das entradas deriva dos defaults do contrato; salvar não recalcula apenas por normalização ou ordem das propriedades.
+- Aside consistente entre páginas, menu sobreposto que cabe na janela e foco preservado durante autosave. Consulta/exportação segura continuam disponíveis; substituições de projeto seguem protegidas.
+- Contexto de salvamento, renomeação, barras de rolagem e áreas de estado estabilizados. Nenhuma fórmula, migração ou dado de projeto alterado.
+- 587 testes backend/85 subtestes, 130 frontend, 44 E2E locais e 1 HTTPS aprovados; testes afetados repetidos após os ajustes finais, contratos/tipos/lint/Ruff/formatação e build isolado aprovados.
+
 ## 0.24.0 — 26/10/2026 / motor0.12.0
 
 - Consumo por minutos de uso e conversão de kWh/ano para média mensal, com prioridade explícita e valores antigos preservados.

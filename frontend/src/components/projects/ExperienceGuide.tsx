@@ -1,5 +1,6 @@
 'use client';
 
+import { useStableHeight } from '@/lib/use-stable-height';
 import { useId, useState } from 'react';
 import { useExperience } from '@/lib/experience';
 import { focusField } from '@/components/calculations-notices';
@@ -29,6 +30,7 @@ export function ExperienceGuide({
   requirements: Record<string, components['schemas']['FieldRequirement']>;
 }) {
   const { profile } = useExperience();
+  const heightRef = useStableHeight(profile, loading);
   const [stepsExpanded, setStepsExpanded] = useState(false);
   const stepsId = useId();
   if (profile === 'explore') return null;
@@ -111,7 +113,7 @@ export function ExperienceGuide({
               'Você pode continuar editando ou exportar o relatório. Alterações nos dados reabrem as tarefas que precisam de revisão.'}
           </p>
         </div>
-        {next && (
+        {next ? (
           <button
             type="button"
             className="btn primary"
@@ -130,6 +132,10 @@ export function ExperienceGuide({
                     : 'salvamento'}{' '}
             <span aria-hidden="true">→</span>
           </button>
+        ) : (
+          <span className="journey-complete-action" aria-hidden="true">
+            ✓
+          </span>
         )}
       </div>
       <p className="experience-guide-caption">
@@ -140,6 +146,7 @@ export function ExperienceGuide({
   );
   return (
     <section
+      ref={heightRef}
       className="experience-guide"
       data-profile={profile}
       aria-label={

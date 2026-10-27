@@ -6,6 +6,7 @@ export function ProjectActions({
   saved,
   busy,
   saving,
+  automaticSaving = false,
   exporting,
   canExport,
   canExportPdf,
@@ -22,6 +23,7 @@ export function ProjectActions({
   saved: boolean;
   busy: boolean;
   saving: boolean;
+  automaticSaving?: boolean;
   exporting: boolean;
   canExport: boolean;
   canExportPdf: boolean;
@@ -35,9 +37,11 @@ export function ProjectActions({
 }) {
   const menu = useRef<HTMLDetailsElement>(null);
   const locked = busy || saving || exporting;
+  const menuLocked = (busy && !automaticSaving) || exporting;
+  const exportLocked = (busy && !automaticSaving) || exporting;
   useEffect(() => {
-    if (locked && menu.current) menu.current.open = false;
-  }, [locked]);
+    if (menuLocked && menu.current) menu.current.open = false;
+  }, [menuLocked]);
   useEffect(() => {
     function outside(event: PointerEvent) {
       if (
@@ -53,9 +57,28 @@ export function ProjectActions({
   function closeMenu() {
     if (menu.current) menu.current.open = false;
   }
-  function run(action: () => void) {
+  function toggleMenu() {
+    const element = menu.current;
+    if (!element || menuLocked) return;
+    if (element.open) {
+      closeMenu();
+      return;
+    }
+    element.style.removeProperty('--action-menu-height');
+    element.dataset.placement = 'down';
+    element.open = true;
+    const summary = element.querySelector('summary')!.getBoundingClientRect();
+    const height = element.querySelector('.action-menu-content')!.getBoundingClientRect().height;
+    const above = summary.top - 12;
+    const below = window.innerHeight - summary.bottom - 12;
+    const up = below < height && above > below;
+    element.dataset.placement = up ? 'up' : 'down';
+    element.style.setProperty('--action-menu-height', `${Math.max(44, up ? above : below)}px`);
+  }
+  function run(action: () => void, readOnly = false) {
+    if (readOnly ? exportLocked : locked) return;
     closeMenu();
-    menu.current?.querySelector('summary')?.focus();
+    menu.current?.querySelector('summary')?.focus({ preventScroll: true });
     action();
   }
   return (
@@ -63,19 +86,23 @@ export function ProjectActions({
       <button
         id="save-project"
         className="btn primary"
-        disabled={locked}
-        onClick={onSave}
+        disabled={locked && !automaticSaving}
+        aria-disabled={locked}
+        aria-busy={saving}
+        onClick={() => {
+          if (!locked) onSave();
+        }}
         title={locked ? 'Aguarde a operação em andamento.' : 'Salvar as alterações deste projeto.'}
       >
         <WorkspaceIcon name="save" />
-        {saving ? 'Salvando…' : 'Salvar projeto'}
+        {saving && !automaticSaving ? 'Salvando…' : 'Salvar projeto'}
       </button>
       <button
         className="btn"
-        disabled={locked || !canExportPdf}
+        disabled={exportLocked || !canExportPdf}
         onClick={onPdf}
         title={
-          locked
+          exportLocked
             ? 'Aguarde a operação em andamento.'
             : !canExportPdf
               ? 'Aguarde um cálculo atualizado para exportar.'
@@ -95,17 +122,20 @@ export function ProjectActions({
           if (e.key === 'Escape') {
             e.preventDefault();
             closeMenu();
-            menu.current?.querySelector('summary')?.focus();
+            menu.current?.querySelector('summary')?.focus({ preventScroll: true });
           }
         }}
       >
         <summary
           className="btn"
           aria-label="Mais ações do projeto"
-          aria-disabled={locked}
-          title={locked ? 'Aguarde a operação em andamento.' : 'Outras opções para este projeto.'}
+          aria-disabled={menuLocked}
+          title={
+            menuLocked ? 'Aguarde a operação em andamento.' : 'Outras opções para este projeto.'
+          }
           onClick={(event) => {
-            if (locked) event.preventDefault();
+            event.preventDefault();
+            toggleMenu();
           }}
         >
           <span>Mais ações</span>
@@ -122,28 +152,45 @@ export function ProjectActions({
         </summary>
         <div className="action-menu-content">
           {!hideNew && (
-            <button disabled={locked} onClick={() => run(onNew)}>
+            <button
+              disabled={locked && !automaticSaving}
+              aria-disabled={locked}
+              onClick={() => run(onNew)}
+            >
               <WorkspaceIcon name="new" />
               <span>Novo projeto</span>
             </button>
           )}
           {saved && (
-            <button disabled={locked} onClick={() => run(onSaveAs)}>
+            <button
+              disabled={locked && !automaticSaving}
+              aria-disabled={locked}
+              onClick={() => run(onSaveAs)}
+            >
               <WorkspaceIcon name="copy" />
               <span>Salvar como novo</span>
             </button>
           )}
-          <button disabled={locked || !canExport} onClick={() => run(onJson)}>
+          <button disabled={exportLocked || !canExport} onClick={() => run(onJson, true)}>
             <WorkspaceIcon name="download" />
             <span>Exportar JSON</span>
           </button>
           {saved && (
             <>
-              <button disabled={locked} onClick={() => run(onCheck)}>
+              <button
+                disabled={locked && !automaticSaving}
+                aria-disabled={locked}
+                onClick={() => run(onCheck)}
+              >
                 <WorkspaceIcon name="library" />
                 <span>Verificar referências</span>
               </button>
-              <button className="danger" disabled={locked} onClick={() => run(onDelete)}>
+              <button
+                className="danger"
+                disabled={locked && !automaticSaving}
+                aria-disabled={locked}
+                onClick={() => run(onDelete)}
+              >
                 <WorkspaceIcon name="trash" />
                 <span>Mover para lixeira</span>
               </button>

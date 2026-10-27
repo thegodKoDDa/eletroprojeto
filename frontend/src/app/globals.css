@@ -28,6 +28,7 @@
   --shadow-card: 0 4px 20px #00000012;
 }
 html {
+  scrollbar-gutter: stable;
   scroll-padding-top: 7rem;
 }
 body {
@@ -550,25 +551,17 @@ details[open]:not(.action-menu) > summary {
   width: 100%;
 }
 .sidebar-actions .action-menu-content {
-  position: static;
+  position: absolute;
   width: 100%;
   max-width: 100%;
-  margin-top: 0.5rem;
-  box-shadow: none;
+  max-height: var(--action-menu-height, 20rem);
+  overflow: auto;
+  overscroll-behavior: contain;
+  box-shadow: 0 8px 24px #0005;
 }
 
 .app-shell-home .workspace-main {
   padding: clamp(1rem, 3vw, 2.75rem);
-}
-.app-shell-home .workspace-sidebar {
-  padding: 1.5rem 1.1rem;
-}
-.app-shell-home .workspace-brand {
-  margin-bottom: 2rem;
-}
-.app-shell-home .workspace-navigation button {
-  min-height: 46px;
-  padding: 0.7rem;
 }
 .workspace-home {
   width: 100%;
@@ -1187,9 +1180,10 @@ textarea[aria-invalid='true'] {
 @media (min-width: 1024px) {
   .app-shell {
     display: grid;
-    grid-template-columns: 248px minmax(0, 1fr);
+    grid-template-columns: 264px minmax(0, 1fr);
   }
   .workspace-sidebar {
+    scrollbar-gutter: stable;
     position: sticky;
     top: 0;
     height: 100dvh;
@@ -2227,5 +2221,110 @@ label[data-emphasis='recommended'] {
 @media (max-width: 600px) {
   .energy-breakdown-list li {
     grid-template-columns: 1fr;
+  }
+}
+
+/* Async work reports status without inserting/removing space above the editor. */
+.calculation-status {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  block-size: 3.5rem;
+  margin-bottom: 1rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-control);
+  color: var(--muted);
+  font-size: 0.75rem;
+  line-height: 1.6;
+}
+.calculation-status[data-state='ready'] {
+  color: var(--success);
+}
+.calculation-status[data-state='error'] {
+  color: var(--danger);
+}
+.operation-notice {
+  position: fixed;
+  z-index: 50;
+  right: 1rem;
+  bottom: 1rem;
+  width: min(28rem, calc(100% - 2rem));
+  filter: drop-shadow(0 6px 18px #0005);
+}
+.operation-notice .feedback {
+  padding-right: 2.8rem;
+  max-height: min(16rem, 40dvh);
+  overflow: auto;
+  background: var(--surface-raised);
+}
+.notice-close {
+  position: absolute;
+  top: 0.35rem;
+  right: 0.35rem;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-control);
+  color: var(--muted);
+  font-size: 1.3rem;
+}
+.notice-close:hover {
+  background: var(--field);
+  color: var(--text);
+}
+.result-state {
+  min-block-size: 3.2em;
+  line-height: 1.6;
+}
+.journey-complete-action {
+  display: grid;
+  place-items: center;
+  min-height: 44px;
+  min-width: 44px;
+  color: var(--success);
+}
+.journey-next > div > p {
+  min-block-size: 3.5em;
+}
+#project .section-header > .status-pill {
+  min-inline-size: 11rem;
+  justify-content: center;
+}
+.preference-row .status-pill {
+  min-inline-size: 6.5rem;
+  justify-content: center;
+}
+.project-preferences > .field-hint {
+  min-block-size: 3.3em;
+}
+.equipment-meta > span:last-child {
+  min-inline-size: 7.5rem;
+  min-block-size: 1.5em;
+  text-align: right;
+}
+.environment-equipment-actions > span {
+  min-inline-size: 8rem;
+  text-align: right;
+}
+[data-automatic-saving='true'] #save-project[aria-disabled='true'],
+[data-automatic-saving='true'] .workspace-navigation button:disabled {
+  opacity: 1;
+}
+@media (max-width: 600px) {
+  .operation-notice {
+    bottom: 0.75rem;
+  }
+}
+
+.action-menu[data-placement='up'] > .action-menu-content {
+  top: auto;
+  bottom: calc(100% + 0.5rem);
+}
+
+@media (max-width: 767px) {
+  .project-preferences > .field-hint {
+    min-block-size: 4.95em;
   }
 }

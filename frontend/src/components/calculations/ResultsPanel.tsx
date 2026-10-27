@@ -1,4 +1,5 @@
 'use client';
+import { useStableHeight } from '@/lib/use-stable-height';
 import { EnergyBreakdown } from './EnergyBreakdown';
 import { energyCompletionTarget } from '@/lib/journey';
 import { useExperience } from '@/lib/experience';
@@ -41,6 +42,7 @@ export function ResultsPanel({
   onScopeChange: (scope: ProjectInput['analysis_scope']) => void;
 }) {
   const { profile } = useExperience();
+  const heightRef = useStableHeight(String(scope), loading);
   const [detailPreference, setDetailPreference] = useState<{ profile: string; value: boolean }>();
   const technical =
     detailPreference?.profile === profile ? detailPreference.value : profile === 'professional';
@@ -66,10 +68,11 @@ export function ResultsPanel({
     ['calculated', 'estimated'].includes(String(result.normative.demand.status));
   return (
     <section
+      ref={heightRef}
       id="results"
       tabIndex={-1}
       aria-labelledby="results-heading"
-      className="panel min-h-64"
+      className="panel min-h-64 results-panel"
       aria-busy={loading}
       data-stale={stale}
     >
@@ -81,19 +84,23 @@ export function ResultsPanel({
           description="Veja o consumo e o custo mensal dos aparelhos cadastrados."
         />
       </header>
-      <p className="mt-3 text-xs muted" role="status">
+      <p className="result-state mt-3 text-xs muted" role="status">
         {loading
-          ? result
-            ? 'Recalculando · os valores anteriores estão desatualizados.'
-            : 'Calculando as entradas atuais…'
+          ? 'Recalculando as entradas atuais…'
           : stale
-            ? 'Valores desatualizados; confira as entradas ou a conexão. Exportação indisponível.'
+            ? 'Cálculo indisponível. Confira os dados ou a conexão.'
             : result
               ? 'Resultados correspondem às entradas atuais.'
               : 'Sem resultados atuais.'}
       </p>
       {result ? (
-        <div hidden={stale}>
+        <div
+          className="results-content"
+          hidden={stale && !loading}
+          aria-hidden={stale || undefined}
+          inert={stale || undefined}
+          style={{ visibility: stale ? 'hidden' : undefined }}
+        >
           <div className="result-section" aria-label="Resumo de resultados">
             <div
               className="consumption-summary grid gap-5 md:grid-cols-2"

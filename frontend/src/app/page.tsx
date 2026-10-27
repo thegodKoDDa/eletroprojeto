@@ -21,6 +21,8 @@ import { useExperience } from '@/lib/experience';
 import { AccessBoundary } from '@/components/projects/AccessBoundary';
 import { WorkspaceIcon } from '@/components/layout/WorkspaceIcon';
 import { useCalculation } from '@/lib/use-calculation';
+import { OperationNotice } from '@/components/ui/OperationNotice';
+import { inputIdentity } from '@/lib/input-identity';
 import { ContextHelp } from '@/components/ui/ContextHelp';
 import { PageHeading } from '@/components/ui/PageHeading';
 import { Feedback, type FeedbackTone } from '@/components/ui/Feedback';
@@ -101,9 +103,9 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
     useWorkspaceResources();
   const [input, setInput] = useState<ProjectInput>(initial);
   const [saved, setSaved] = useState<Project>();
-  const inputSignature = useMemo(() => JSON.stringify(input), [input]);
+  const inputSignature = useMemo(() => inputIdentity(input), [input]);
   const savedSignature = useMemo(
-    () => JSON.stringify(saved ? projectInputs(saved) : initial()),
+    () => inputIdentity(saved ? projectInputs(saved) : initial()),
     [saved],
   );
   const createId = useRef<string | undefined>(undefined);
@@ -202,6 +204,7 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
   const [exporting, setExporting] = useState(false);
   const [busy, setBusy] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [automaticSaving, setAutomaticSaving] = useState(false);
   const [autosave, setAutosave] = useState(true);
   const autosaveAttempt = useRef('');
   const [catalogQuery, setCatalogQuery] = useState('');
@@ -326,7 +329,8 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
       writeInFlight.current = true;
       setBusy(true);
       setSaving(true);
-      setMessage('Salvando projeto…');
+      setAutomaticSaving(automatic);
+      if (!automatic) setMessage('Salvando projeto…');
       setOperationIssues(undefined);
       const startedInput = input;
       const snapshot =
@@ -423,6 +427,7 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
         writeInFlight.current = false;
         setBusy(false);
         setSaving(false);
+        setAutomaticSaving(false);
       }
     },
     [input, saved, refresh, conflictPending, setMessage],
@@ -633,7 +638,12 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
     }
   }
   async function exportReport(format: 'pdf' | 'json') {
-    if (busy || exporting || !currentResult || !currentResult.technical_context?.registry_version)
+    if (
+      (busy && !automaticSaving) ||
+      exporting ||
+      !currentResult ||
+      !currentResult.technical_context?.registry_version
+    )
       return;
     const snapshot = input;
     setOperationIssues(undefined);
@@ -674,6 +684,7 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
       <CalculationScopeContext.Provider value={input.analysis_scope ?? 'installed'}>
         <div
           data-experience={profile}
+          data-automatic-saving={automaticSaving}
           className={`app-shell${view === 'home' ? ' app-shell-home' : ''}`}
         >
           <a className="skip-link" href="#workspace-main">
@@ -710,7 +721,8 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
               <p className="sidebar-label">ESPAÇO DE TRABALHO</p>
               <SectionNavigation
                 active={view}
-                busy={busy || exporting}
+                busy={(busy && !automaticSaving) || exporting}
+                writing={saving}
                 hasProject={hasProject}
                 projectName={input.name}
                 dirty={dirty || !saved}
@@ -731,6 +743,7 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                   saved={!!saved}
                   busy={busy}
                   saving={saving}
+                  automaticSaving={automaticSaving}
                   exporting={exporting}
                   canExport={!!currentResult?.technical_context?.registry_version}
                   canExportPdf={!!currentResult?.technical_context?.registry_version}
@@ -904,11 +917,7 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                 </div>
               </section>
             )}
-            {message && (
-              <Feedback tone={feedback.tone} data-testid="project-message" className="mb-5">
-                {message}
-              </Feedback>
-            )}
+            <OperationNotice text={message} tone={feedback.tone} onClose={() => setMessage('')} />
             {!!initializationIssues.length && (
               <Feedback tone="error" className="mb-5">
                 <p>{initializationIssues.join(' ')}</p>
@@ -927,7 +936,8 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
             {view === 'knowledge' && <KnowledgeLibrary />}
             {view === 'home' && (
               <WorkspaceHome
-                busy={busy || exporting}
+                busy={(busy && !automaticSaving) || exporting}
+                writing={saving}
                 projectName={hasProject ? input.name || 'Projeto sem nome' : undefined}
                 onNew={newProject}
                 onLibrary={showLibrary}
@@ -992,38 +1002,18 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                   onKnowledge={() => navigate('knowledge')}
                 />
                 <ContextHelp />
-                {operationIssues?.input === input && !error && (
-                  <CalculationNotices
-                    stale={false}
-                    notices={operationIssues.notices.filter(
-                      (notice) =>
-                        !currentResult?.notifications?.some(
-                          (current) =>
-                            current.id === notice.id ||
-                            (notice.target_id != null && current.target_id === notice.target_id),
-                        ),
-                    )}
-                  />
-                )}
                 <p
-                  className={loading || error ? 'mb-3 text-xs muted' : 'sr-only'}
+                  className="calculation-status"
+                  data-state={loading ? 'loading' : error ? 'error' : 'ready'}
                   role="status"
                   data-testid="calculation-status"
                 >
                   {loading
-                    ? result
-                      ? 'Recalculando… Resultados desatualizados ficam ocultos até a atualização.'
-                      : 'Recalculando as entradas atuais…'
+                    ? 'Recalculando… Valores desatualizados ocultos.'
                     : error
-                      ? 'Entradas inválidas ou erro na API. Valores anteriores desatualizados; exportação indisponível.'
-                      : 'Resultados atualizados para as entradas atuais.'}
+                      ? 'Entradas inválidas ou erro na API.'
+                      : 'Resultados atualizados para esta edição.'}
                 </p>
-                {error && <CalculationNotices notices={notifications} stale={false} />}
-                {error && !notifications.length && (
-                  <Feedback tone="error" className="mb-5">
-                    {error}
-                  </Feedback>
-                )}
                 <section id="project" aria-labelledby="project-heading" className="panel mb-6">
                   <header className="section-header">
                     <SectionHeading
@@ -1046,20 +1036,17 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                     </span>
                   </header>
                   <p className="project-context">
-                    {saved
-                      ? `Editando projeto salvo: ${saved.name}. Para preservar este registro e criar outro, use Salvar como novo.`
-                      : 'Novo projeto independente · o primeiro salvamento criará um registro.'}
+                    <span className="sr-only">
+                      {saved
+                        ? `Editando projeto salvo: ${saved.name}.`
+                        : 'Novo projeto independente.'}
+                    </span>
+                    Salvar projeto guarda esta edição. Salvar como novo cria uma cópia independente.
                   </p>
                   <div className="grid gap-4 md:grid-cols-2">
                     <Field field="project.name" label="Nome do projeto">
                       <input value={input.name} onChange={(e) => change('name', e.target.value)} />
                     </Field>
-                    {saved && input.name !== saved.name && (
-                      <p className="text-xs text-amber-200 md:col-span-2">
-                        Nome alterado: use Salvar projeto para renomear este registro ou Salvar como
-                        novo para criar outro. O salvamento automático está pausado.
-                      </p>
-                    )}
                     <Field field="project.state" label="Estado">
                       <select
                         value={input.state}
@@ -1244,7 +1231,7 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                       className="btn primary add-environment"
                       id="add-environment"
                       onClick={addRoom}
-                      disabled={busy || exporting}
+                      disabled={(busy && !automaticSaving) || exporting}
                     >
                       <WorkspaceIcon name="new" /> Adicionar ambiente
                     </button>
@@ -1292,7 +1279,7 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                             <button
                               className="btn subtle"
                               aria-label={`Duplicar ambiente ${room.name}`}
-                              disabled={busy || exporting}
+                              disabled={(busy && !automaticSaving) || exporting}
                               onClick={() => duplicateRoom(room)}
                             >
                               <WorkspaceIcon name="copy" /> Duplicar ambiente
@@ -1488,7 +1475,7 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                         className="btn primary add-environment"
                         aria-label="Adicionar ambiente ao final da lista"
                         onClick={addRoom}
-                        disabled={busy || exporting}
+                        disabled={(busy && !automaticSaving) || exporting}
                       >
                         <WorkspaceIcon name="new" /> Adicionar ambiente
                       </button>
@@ -1496,6 +1483,7 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                   )}
                 </section>
                 <ResultsPanel
+                  key={calculationScope}
                   reviewed={
                     !!currentResult &&
                     estimateReview?.scope === calculationScope &&
@@ -1516,6 +1504,27 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                   environments={input.environments}
                   onScopeChange={(value) => change('analysis_scope', value)}
                 />
+                <div id="calculation-issues">
+                  {operationIssues?.input === input && !error && (
+                    <CalculationNotices
+                      stale={false}
+                      notices={operationIssues.notices.filter(
+                        (notice) =>
+                          !currentResult?.notifications?.some(
+                            (current) =>
+                              current.id === notice.id ||
+                              (notice.target_id != null && current.target_id === notice.target_id),
+                          ),
+                      )}
+                    />
+                  )}
+                  {error && <CalculationNotices notices={notifications} stale={false} />}
+                  {error && !notifications.length && (
+                    <Feedback tone="error" className="mb-5">
+                      {error}
+                    </Feedback>
+                  )}
+                </div>
                 <details
                   key={`technical-${calculationScope}`}
                   open={professional || undefined}

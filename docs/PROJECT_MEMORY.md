@@ -20,6 +20,12 @@ Progresso é derivado de entradas, limites da API e resultado atual; consumo zer
 
 Todos os perfis: consumo mensal ou anual unitário, tempo em horas/minutos, rotina comum explícita apenas para aparelhos sem energia/horários, projeções e custos por ambiente/categoria e participação/ranking calculados no backend. Prioridade mensal > anual > horário escolhido; zero válido. Dados de unidades latentes, rotinas parciais e catálogo/histórico preservados. Não inferir W de kWh, ciclos, hábitos, tarifa ou sazonalidade. Projeção anual conserva base anual original; percentuais de subtotal zero são nulos. Fontes/aritmética/limites em standards/calculations, comportamento em forms-and-pdf. Novos campos opcionais não regravam projetos; relatório1.4 aditivo e revalidação explícita.
 
+## Estabilidade de interface — 0.24.1
+
+Manter aviso de recálculo em área fixa e feedback fora do fluxo. Resultado anterior fica montado para conservar disclosures/altura, porém visibility:hidden + aria-hidden + inert enquanto stale; nunca expor números velhos. Altura só é reservada durante a espera, sem prender o recolhimento voluntário. Asides/scrollbars têm largura estável e menu sobreposto com posição medida, não conteúdo expansível que empurra a página.
+
+Identidade normaliza somente defaults gerados de Pydantic/OpenAPI e ordem de chaves. Null/zero/false/IDs/ordem de arrays e dados desconhecidos continuam distintos. Gerar input-defaults.generated.json junto de api.generated.ts via types:sync; não duplicar defaults à mão. Autosave mantém navegação de consulta, foco e menu; novas/substituições/recuperação/logout continuam bloqueados durante gravação. Exportação continua dependente de cálculo atual. Detalhes em architecture/forms-and-pdf.
+
 ## Invariantes
 
 - Um motor Python em `backend/app/calculations`, funções puras, Decimal, unidades explícitas e sem arredondamento intermediário. Frontend valida/formata; não replica fórmulas.

@@ -1,10 +1,10 @@
-# Arquitetura — EletroProjeto 0.19.0
+# Arquitetura — EletroProjeto 0.24.1
 
 Este documento descreve a implementação atual. A evolução e as verificações anteriores estão em SESSION_HISTORY e CHANGELOG; regras/fontes em calculations e standards. Estado operacional e limitações em CURRENT_STATE.
 
 ## Camadas e contratos
 
-Monorepositório com Next.js App Router, React, TypeScript e Tailwind no frontend; FastAPI, Pydantic 2, SQLAlchemy 2 e Alembic no backend. Integração REST JSON sob `/api/v1`. `backend/export_openapi.py` exporta o contrato; `npm run types:sync` gera `backend/openapi.json` e `frontend/src/lib/api.generated.ts`. O contrato gerado não é editado manualmente. Sessão, login, projeto recalculado e prévia de revalidação possuem respostas tipadas.
+Monorepositório com Next.js App Router, React, TypeScript e Tailwind no frontend; FastAPI, Pydantic 2, SQLAlchemy 2 e Alembic no backend. Integração REST JSON sob `/api/v1`. `backend/export_openapi.py` exporta o contrato; `npm run types:sync` gera `backend/openapi.json` e `frontend/src/lib/api.generated.ts`. A mesma rotina executa `backend/export_input_defaults.py`, que deriva dos modelos Pydantic/OpenAPI o mapa `input-defaults.generated.json` para identidade das entradas. Não executa fábricas de UUID nem escolhe variantes ambíguas de união. O contrato gerado não é editado manualmente. Sessão, login, projeto recalculado e prévia de revalidação possuem respostas tipadas.
 
 `backend/app/calculations` concentra a matemática com Decimal/contexto de 40 dígitos e unidades explícitas. Funções matemáticas não importam FastAPI, Pydantic ou ORM. O orquestrador engine agrega cálculo, diagnósticos e contexto técnico a partir dos dados validados; não busca normas, equipamentos ou coeficientes pela rede. Nenhuma fórmula elétrica é replicada no frontend.
 
@@ -95,3 +95,13 @@ GET `/api/v1/locations/municipality?code=3550308` lê índice INDGER/IBGE local 
 Home mantém AccessBoundary e insere ExperienceBoundary por conta. O armazenamento externo consultado por useSyncExternalStore usa sessionStorage com chave de proprietário; SSR começa com a escolha, sem renderizar projetos antes da preferência/autenticação. A escolha em memória mantém uso possível mesmo com armazenamento bloqueado. O diálogo de troca é irmão do Workspace, que permanece montado entre perfis; nenhuma chave de projeto depende da apresentação.
 
 lib/experience contém metadados e ênfase de campos, sem matemática elétrica. Field deriva necessidade dos requisitos já recebidos da API; EnergyFields, ResultsPanel e disclosures ajustam apenas apresentação. ExperienceGuide usa os mesmos alvos de navegação e abre os ancestrais recolhidos. Perfil não entra em ProjectInput, digest, drafts, exportação ou permissões; valores e histórico permanecem independentes da preferência. As regressões antigas usam explicitamente uma sessão de exploração; testes novos partem de sessão vazia para validar escolha, troca, falha de armazenamento e isolamento.
+
+## Estabilidade durante operações assíncronas — 0.24.1
+
+`inputIdentity` ordena chaves e completa somente os defaults do contrato gerado, preservando null explícito, zero, false, IDs, propriedades desconhecidas e ordem de arrays. A assinatura de cálculo usa CalculationInput; a comparação de edição/salvo usa ProjectInput. Assim, ordem de propriedades e defaults acrescentados pela resposta de salvamento não criam um falso novo cálculo. O corpo enviado continua validado pela API; nenhuma fórmula ou arredondamento foi movido ao cliente.
+
+O aviso de cálculo tem área estável. Feedback de operação usa OperationNotice fixo e dispensável, sem inserir espaço no topo; fechar restaura foco sem rolagem forçada. Textos de contexto e estados de salvamento têm geometria estável. Diagnósticos de operação/API ficam depois dos resultados, sem deslocar o cadastro no topo. Scrollbar-gutter mantém a largura disponível da página e do aside.
+
+ResultsPanel mantém o snapshot montado e reserva a última altura durante a atualização usando ResizeObserver/useLayoutEffect. Números anteriores recebem visibility:hidden, aria-hidden e inert: não aparecem, não são anunciados nem recebem interação. Ao concluir, a altura volta a acompanhar conteúdo/disclosures; não fica espaço preso após recolher. O guia também conserva altura somente durante recálculo. Novo projeto muda a chave do painel e descarta a geometria anterior.
+
+Autosave é distinguido de operações manuais: não desabilita toda a navegação, não fecha Mais ações nem retira foco do botão. Exportação de um snapshot atual pode ocorrer durante autosave; criação/substituição de projeto, recuperação, saída da conta e mutações conflitantes continuam protegidas. O menu abre sobre o aside, medido antes da pintura para escolher acima/abaixo, limitado à altura disponível e com rolagem própria. Escape/clique externo/ação fecham o menu; retorno de foco usa preventScroll. Nenhum desses ajustes modifica snapshot, histórico ou regra elétrica.

@@ -85,3 +85,9 @@ Se a etiqueta trouxer **kWh/ano**, abra Minha etiqueta informa kWh/ano e digite 
 Para vários aparelhos com o mesmo uso, abra **Preencher uma rotina para vários aparelhos** dentro do ambiente. Informe tempo e dias uma vez e aplique. Só aparelhos sem consumo e sem rotina recebem esses valores; dados parciais ou preenchidos são preservados. Escolha os aparelhos adequados: uma geladeira não funciona continuamente na potência máxima só porque fica ligada24h.
 
 Na conferência, **Contas automáticas: ambientes, maiores consumos e12meses** reúne custo por ambiente/categoria, até cinco maiores consumos, percentuais e projeção anual. Os percentuais usam o subtotal conhecido. Sem tarifa, o consumo continua disponível e o custo fica pendente. Sem dados suficientes, não há zero fictício. Projeções não incluem sazonalidade, reajuste de tarifa ou encargos fixos.
+
+## Avisos e menu lateral
+
+O estado do cálculo fica visível em uma área estável; ele não empurra o cadastro ao aparecer. Enquanto recalcula, os números anteriores ficam ocultos até chegar a resposta correspondente aos seus dados. Salvar/exportar mostram um aviso no canto, que pode ser fechado pelo botão Fechar aviso da operação.
+
+Mais ações abre um menu sobre a interface, sem aumentar a barra lateral. Em janelas baixas, ele abre para cima ou oferece rolagem. Escape fecha e devolve o foco ao botão. O salvamento automático mantém a navegação de consulta disponível e preserva o menu; aguarde a gravação terminar para criar outro projeto ou substituir a edição atual.

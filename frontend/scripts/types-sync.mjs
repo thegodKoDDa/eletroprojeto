@@ -6,6 +6,7 @@ import { backend, python } from './backend-python.mjs';
 const frontend = fileURLToPath(new URL('../', import.meta.url));
 for (const [command, args, cwd] of [
   [python, ['export_openapi.py'], backend],
+  [python, ['export_input_defaults.py'], backend],
   [
     process.execPath,
     [

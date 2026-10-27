@@ -4,6 +4,7 @@ import { WorkspaceIcon } from '@/components/layout/WorkspaceIcon';
 
 type Props = {
   busy: boolean;
+  writing?: boolean;
   projectName?: string;
   onNew: () => void;
   onLibrary: () => void;
@@ -14,6 +15,7 @@ type Props = {
 
 export function WorkspaceHome({
   busy,
+  writing = false,
   projectName,
   onNew,
   onLibrary,
@@ -51,7 +53,7 @@ export function WorkspaceHome({
       <div className="workspace-options">
         <button
           className="workspace-option workspace-option-primary"
-          disabled={busy}
+          disabled={busy || writing}
           onClick={onNew}
         >
           <span className="workspace-option-icon" aria-hidden="true">
