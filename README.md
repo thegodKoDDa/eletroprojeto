@@ -59,7 +59,7 @@ Configuração de portas, dados, atualização e execução manual: [guia de ins
 
 ## Como usar
 
-Na versão atual da `main` (0.24.1), escolha **USUÁRIO LEIGO**, **USUÁRIO PROFISSIONAL** ou **ESTOU APENAS DANDO UMA OLHADA** na abertura. Os três perfis oferecem todos os recursos, com destaques diferentes; use **Alterar perfil** para trocar sem perder a edição. O leigo conta com tarefas concluídas e próximo passo destacado; o profissional tem atalhos explicados e acompanhamento opcional. A distribuição estável publicada permanece na versão indicada em Releases.
+Na versão 0.24.1, disponível no ZIP e na `main`, escolha **USUÁRIO LEIGO**, **USUÁRIO PROFISSIONAL** ou **ESTOU APENAS DANDO UMA OLHADA** na abertura. Os três perfis oferecem todos os recursos, com destaques diferentes; use **Alterar perfil** para trocar sem perder a edição. O leigo conta com tarefas concluídas e próximo passo destacado; o profissional tem atalhos explicados e acompanhamento opcional. A distribuição estável publicada é a [v0.24.1](https://github.com/thegodKoDDa/eletroprojeto/releases/tag/v0.24.1).
 
 1. **Projeto:** identifique a residência e informe a tarifa, se quiser estimar o custo.
 2. **Ambientes:** adicione aparelhos, confira suas potências e informe horários ou consumo mensal.

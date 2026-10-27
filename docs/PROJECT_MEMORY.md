@@ -103,3 +103,8 @@ Pedido explícito do usuário: tela inicial com USUÁRIO LEIGO, USUÁRIO PROFISS
 ExperienceBoundary fica dentro de AccessBoundary, isolada pela conta. sessionStorage por conta/aba lembra a escolha ao recarregar; aba nova começa na escolha. Falha do armazenamento não bloqueia a seleção. Alterar perfil abre diálogo com teclado/fechamento por Escape, mantendo Workspace montado: edição, rascunhos, salvamento, referências e resultados permanecem. O perfil não entra no projeto, assinatura de cálculo ou exportação; trocar perfil não dispara nova matemática.
 
 Leigo destaca requisitos recebidos da API e dados recomendados de consumo/custo, abre Consumo mensal e oferece caminho de três passos. Profissional destaca dados elétricos/medidas/memória e atalhos para todos os estudos, mantendo-os condicionados. Exploração preserva início com lixeira, controles e recolhimentos originais. Biblioteca substitui o atalho principal da lixeira nos novos perfis; lixeira permanece na navegação. O seletor redundante de apresentação nos novos perfis vira controle de detalhamento; exploração mantém o original. Revisão dos grupos de opções em forms-and-pdf; não apagar funcionalidades de recuperação/dados sob pretexto de simplificar.
+
+
+## Download atualizado — 0.24.1
+
+Release estável v0.24.1 publicada a pedido do usuário, com ZIP, manifesto e hashes gerados de92fe605. Latest e links de download apontam para essa versão; v0.20.0 preservada no histórico. Código funcional e pacote estão alinhados; posteriores commits apenas documentais não exigem republicar os mesmos binários/fontes. Confirmados downloads públicos e hashes; dados locais nunca fazem parte do pacote.

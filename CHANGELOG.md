@@ -2,6 +2,7 @@
 
 ## 0.24.1 — 26/10/2026 / motor 0.12.0 preservado
 
+- Release estável v0.24.1 publicada com todas as mudanças desde 0.20.0: ZIP de fontes/iniciadores, manifesto do commit 92fe605 e SHA-256; downloads públicos conferidos.
 - Aviso de recálculo com área estável e notificações de operação fora do fluxo, eliminando deslocamentos do cadastro.
 - Resultados e guia preservam geometria durante atualização, mantendo números desatualizados ocultos/inertes e memória montada.
 - Identidade das entradas deriva dos defaults do contrato; salvar não recalcula apenas por normalização ou ordem das propriedades.

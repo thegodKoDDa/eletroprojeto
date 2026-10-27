@@ -2,6 +2,12 @@
 
 Atualizado em 26/10/2026. Consumo e preenchimentos ampliados nos três perfis: **USUÁRIO LEIGO**, **USUÁRIO PROFISSIONAL** e **ESTOU APENAS DANDO UMA OLHADA**. Perfis continuam sendo apresentação. Dados e limites normativos preservados; SQLite/schema0007 e relatório JSON1.4 compatível, com campos aditivos.
 
+## Download atualizado — 0.24.1
+
+Pedido de atualizar o GitHub com todas as mudanças: código funcional já sincronizado em `92fe605`; publicada a release estável [v0.24.1](https://github.com/thegodKoDDa/eletroprojeto/releases/tag/v0.24.1), reunindo as mudanças desde 0.20.0. ZIP de fontes/iniciadores, build-manifest.json e SHA256SUMS.txt gerados desse commit pelo empacotador oficial. Release anterior preservada; Latest agora aponta para 0.24.1. Publicação passou por rascunho, conferência dos três arquivos e downloads públicos comparados aos hashes locais.
+
+5 testes do empacotador aprovados; 268 arquivos do ZIP conferidos contra o manifesto, integridade e checksums válidos. Sem mudança de aplicação/dependências, não repetidas as baterias funcionais já aprovadas acima. Sem nova instalação, build Docker, teste nativo Windows/macOS/ARM ou publicação do site/CI. Dados pessoais/acervo/checkpoints não são distribuídos. Retomada encontrou 14 projetos/42 históricos/12 revisões, uso posterior do usuário preservado; nenhuma gravação de projeto nesta tarefa. Documentação de download atualizada; sincronização e checkpoint final conferidos pela rotina de encerramento.
+
 ## Estabilidade visual e aside — entrega atual 0.24.1
 
 Corrigidos saltos/piscadas ao recalcular, salvar e usar menus. Estado do cálculo ocupa uma área permanente; avisos de operação são fixos e dispensáveis. Formulário/contexto/autosave/renomeação não ganham linhas transitórias que empurram os demais campos. Resultados e guia conservam altura durante a espera, mantendo valores velhos ocultos/inertes e memória montada. Detalhes voltam à altura natural ao concluir, sem prender painéis recolhidos.
@@ -122,4 +128,4 @@ Não executados nesta entrega: HTTPS de duas contas, PostgreSQL, Windows real, c
 
 A revisão completa dos itens registrados está em[KNOWN_ISSUES](KNOWN_ISSUES.md), com distinção entre entrega parcial, evidência externa e descarte. Próximas ampliações reais: neutro carregado/desequilíbrio/harmônicas e outros arranjos térmicos; proteção/entrada integrais após estudo/edições/produtos; geometrias além dafigura18. Esclarecimento oficial d7, vigência/topologia territorial integral, inspeção presencial e revisão humana do acervo continuam sem evidência suficiente; não convertê-los em concluídos.
 
-Retomar pela rotina AGENTS e pelo pedido atual; manter simplicidade, valores manuais e histórico. Código/docs no GitHub público; SQLite, originais, índices oficiais e checkpoints locais ignorados. A release estável disponível é0.20.0; main contém esta revisão0.24.1 após sincronização confirmada. Publicação de site, CI hospedado, impressão física e cópia externa seguem excluídos. Buffers e rascunhos não enviados não são capturados pelo checkpoint.
+Retomar pela rotina AGENTS e pelo pedido atual; manter simplicidade, valores manuais e histórico. Código/docs no GitHub público; SQLite, originais, índices oficiais e checkpoints locais ignorados. A release estável disponível e a versão funcional da main são0.24.1; manifesto do pacote aponta para92fe605. Publicação de site, CI hospedado, impressão física e cópia externa seguem excluídos. Buffers e rascunhos não enviados não são capturados pelo checkpoint.
