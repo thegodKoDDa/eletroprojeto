@@ -2,6 +2,12 @@
 
 Atualizado em 27/10/2026. Consumo e preenchimentos ampliados nos três perfis: **USUÁRIO LEIGO**, **USUÁRIO PROFISSIONAL** e **ESTOU APENAS DANDO UMA OLHADA**. Perfis continuam sendo apresentação. Dados e limites normativos preservados; SQLite/schema0007 e relatório JSON1.4 compatível, com campos aditivos.
 
+## Conferência e encerramento — 27/10/2026
+
+Conferido o encerramento anterior: árvore limpa, main sincronizada em `fe377f9` e checkpoint `20261027T234035870847Z` restaurado isoladamente com sucesso (303 arquivos, SQLite íntegro: 14 projetos, 42 históricos, 12 revisões, schema0007). Consulta posterior ao origin não encontrou novos commits.
+
+Teste rápido do GitHub Pages publicado com Chromium/Playwright em contexto isolado: HTTP200, seleção do perfil leigo, criação de projeto fictício, consumo de10kWh/mês à tarifa0,80 → R$8,00, salvamento em localStorage e reabertura após recarregar aprovados, sem erros de JavaScript detectados. Nenhum projeto foi gravado no SQLite local. Não repetidas suítes/build sem mudança de código; teste não abrange PDF, demais perfis ou validação normativa. Serviços locais encontrados parados e mantidos assim; nenhuma limpeza/exclusão ou alteração de dependências. Próximo passo: aguardar pedido do usuário; sincronização e checkpoint deste encerramento devem ser conferidos pela saída da rotina e latest.json.
+
 ## Acesso online via GitHub Pages — 27/10/2026
 
 Pedido do usuário: adicionar no `README.md` a opção de acessar o projeto diretamente pelo navegador usando GitHub Pages (`https://thegodkodda.github.io/eletroprojeto/`), igual ao `minecoord`, e publicar o site no GitHub Pages mantendo a regra de não duplicar matemática elétrica em TypeScript/JavaScript.
