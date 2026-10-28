@@ -239,14 +239,38 @@ def field_issues(project):
 
 def notifications(project, result):
     notices = []
+    energy_known = {
+        item["load_id"]
+        for item in result.get("load_results", [])
+        if item.get("monthly_energy_kwh") is not None
+    }
     for issue in result["field_issues"]:
+        load_id = (
+            issue["path"].split(".loads.", 1)[-1].split(".", 1)[0]
+            if ".loads." in issue["path"]
+            else None
+        )
+        power_optional_for_energy = (
+            issue["status"] == "pending"
+            and load_id in energy_known
+            and issue["field"]
+            in {
+                "load.unit_power_w",
+                "load.parameters.mechanical_power",
+                "load.parameters.efficiency",
+            }
+        )
         notices.append(
             dict(
                 id=issue["path"],
-                category="error",
+                category="info" if power_optional_for_energy else "error",
                 location=issue["location"],
-                problem=issue["message"],
-                solution=issue["solution"],
+                problem=f"{issue['label']} ainda não informado; o consumo declarado em kWh já está disponível."
+                if power_optional_for_energy
+                else issue["message"],
+                solution="Informe a potência apenas se quiser completar os indicadores de potência; ela não é necessária para usar os kWh declarados."
+                if power_optional_for_energy
+                else issue["solution"],
                 affected_results=issue["affected_results"],
                 target_id=issue["target_id"],
             )

@@ -6,17 +6,18 @@ import { inputIdentity } from '@/lib/input-identity';
 import { format, formatCurrency } from '@/lib/format';
 
 type Comparison = components['schemas']['EstimateComparison'];
-/** Explicit comparison with the saved snapshot; arithmetic stays in Python. */
-export function ScenarioComparison({
-  input,
-  saved,
-  ready,
-}: {
-  input: ProjectInput;
-  saved?: Project;
-  ready: boolean;
-}) {
-  const key = inputIdentity(input) + ':' + (saved?.id ?? '') + ':' + (saved?.version ?? '');
+type Props = { input: ProjectInput; saved?: Project; ready: boolean };
+
+/** A project boundary captures its initial saved snapshot, including before the first comparison. */
+export function ScenarioComparison(props: Props) {
+  return <ComparisonEditor key={props.saved?.id ?? 'unsaved'} {...props} />;
+}
+
+function ComparisonEditor({ input, saved, ready }: Props) {
+  const [baseline, setBaseline] = useState<Project | undefined>(() =>
+    saved ? structuredClone(saved) : undefined,
+  );
+  const key = inputIdentity(input) + ':' + (baseline?.id ?? '') + ':' + (baseline?.version ?? '');
   const controller = useRef<AbortController | null>(null);
   const [state, setState] = useState<{
     key: string;
@@ -29,7 +30,7 @@ export function ScenarioComparison({
   }, [key]);
   const current = state?.key === key && ready ? state : undefined;
   async function compare() {
-    if (!saved || !ready) return;
+    if (!baseline || !ready) return;
     controller.current?.abort();
     const abort = new AbortController();
     controller.current = abort;
@@ -37,7 +38,7 @@ export function ScenarioComparison({
     try {
       const result = await request<Comparison>('/calculations/compare', {
         method: 'POST',
-        body: JSON.stringify({ baseline: projectInputs(saved), scenario: input }),
+        body: JSON.stringify({ baseline: projectInputs(baseline), scenario: input }),
         signal: abort.signal,
       });
       if (!abort.signal.aborted) setState({ key, result });
@@ -49,9 +50,9 @@ export function ScenarioComparison({
     <details className="panel mt-5">
       <summary>Comparar cenários de consumo</summary>
       <p className="field-hint mt-3">
-        Salve uma configuração e ajuste os aparelhos ou hábitos. Compare a edição atual com a última
-        versão salva, sem sobrescrevê-la. Para manter os dois cenários, use Salvar como novo
-        projeto.
+        Salve uma configuração e ajuste os aparelhos ou hábitos. Compare a edição atual com a versão
+        de referência, preservada durante o salvamento automático. Para manter os dois cenários, use
+        Salvar como novo projeto.
       </p>
       <button
         className="btn mt-3"
@@ -60,6 +61,25 @@ export function ScenarioComparison({
       >
         {current?.pending ? 'Comparando…' : 'Comparar com versão salva'}
       </button>
+      {baseline && saved && baseline.version !== saved.version && (
+        <div className="mt-3">
+          <p className="field-hint">
+            Referência mantida: versão salva {baseline.version}. Versão mais recente:{' '}
+            {saved.version}.
+          </p>
+          <button
+            className="btn mt-2"
+            disabled={!ready || current?.pending}
+            onClick={() => {
+              controller.current?.abort();
+              setState(undefined);
+              setBaseline(structuredClone(saved));
+            }}
+          >
+            Usar versão salva mais recente como referência
+          </button>
+        </div>
+      )}
       {!saved && (
         <p className="field-hint mt-2">Salve o primeiro cenário para habilitar a comparação.</p>
       )}
@@ -67,7 +87,7 @@ export function ScenarioComparison({
       {current?.result && (
         <div className="mt-4 overflow-x-auto">
           <table className="w-full text-sm">
-            <caption>Diferença: edição atual menos versão salva {saved?.version}</caption>
+            <caption>Diferença: edição atual menos versão salva {baseline?.version}</caption>
             <thead>
               <tr>
                 <th>Indicador</th>

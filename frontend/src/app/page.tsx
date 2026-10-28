@@ -1416,7 +1416,12 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                   environments={input.environments}
                   onScopeChange={(value) => change('analysis_scope', value)}
                 />
-                <ScenarioComparison input={input} saved={saved} ready={!!currentResult} />
+                <ScenarioComparison
+                  key={`comparison-${calculationScope}`}
+                  input={input}
+                  saved={saved}
+                  ready={!!currentResult}
+                />
                 <div id="calculation-issues">
                   {operationIssues?.input === input && !error && (
                     <CalculationNotices

@@ -11,9 +11,14 @@ for (const profile of ['LEIGO', 'PROFISSIONAL']) {
     if (profile === 'PROFISSIONAL')
       await page.getByText(/^Acompanhar as etapas da estimativa/).click();
     const steps = page.getByRole('list', { name: 'Tarefas da estimativa' });
+    await page.getByLabel('Nome do projeto', { exact: true }).fill('');
     await expect(steps.locator('[data-state="current"]')).toContainText('Identificar');
     await page.getByLabel('Nome do projeto', { exact: true }).fill(`Percurso ${profile}`);
-    await page.getByLabel('Município', { exact: true }).fill('Cidade QA');
+    await expect(page.getByLabel('Município', { exact: true })).toHaveValue('');
+    await expect(page.getByLabel('Município', { exact: true })).toHaveAttribute(
+      'aria-required',
+      'false',
+    );
     await expect(steps.locator('[data-state="current"]')).toContainText('Cadastrar');
     await expect(steps.locator('[data-state="complete"]')).toHaveCount(1);
     await page.getByRole('button', { name: 'Ir para cadastro', exact: true }).click();

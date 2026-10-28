@@ -47,12 +47,18 @@ export function EnergyBreakdown({
             <span>{room.name}</span>
             <span>
               {result.energy_by_environment_kwh?.[room.id!] == null
-                ? 'Consumo pendente'
+                ? room.loads?.length
+                  ? 'Consumo pendente'
+                  : 'Sem aparelhos'
                 : `${format(result.energy_by_environment_kwh[room.id!])} kWh/mês`}
             </span>
             <span>
               {result.energy_cost_by_environment_brl?.[room.id!] == null
-                ? 'Custo pendente'
+                ? !room.loads?.length
+                  ? '—'
+                  : result.monthly_cost
+                    ? 'Consumo pendente'
+                    : 'Tarifa não informada'
                 : formatCurrency(result.energy_cost_by_environment_brl[room.id!])}
             </span>
           </li>
@@ -60,6 +66,11 @@ export function EnergyBreakdown({
       </ul>
       <details className="mt-3">
         <summary>Consumo e custo por categoria</summary>
+        {partial && (
+          <p className="field-hint mt-2">
+            Valores por ambiente e categoria representam apenas os aparelhos com consumo informado.
+          </p>
+        )}
         <ul className="energy-breakdown-list">
           {Object.entries(result.energy_by_category_kwh ?? {}).map(([category, amount]) => (
             <li key={category}>
@@ -67,7 +78,7 @@ export function EnergyBreakdown({
               <span>{format(amount)} kWh/mês</span>
               <span>
                 {result.energy_cost_by_category_brl?.[category] == null
-                  ? 'Custo pendente'
+                  ? 'Tarifa não informada'
                   : formatCurrency(result.energy_cost_by_category_brl[category])}
               </span>
             </li>

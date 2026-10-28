@@ -72,3 +72,60 @@ it('shows daily and annual estimates without calculating in the frontend', () =>
   expect(screen.getByText('3,15 kWh/dia')).toBeVisible();
   expect(screen.getByText('1.152 kWh/ano')).toBeVisible();
 });
+
+it('does not ask for a tariff that is already filled when energy is missing', () => {
+  render(
+    <ResultsPanel
+      result={
+        {
+          ...fixture,
+          monthly_energy: null,
+          monthly_cost: null,
+          annual_energy: null,
+          annual_cost: null,
+        } as CalculationResult
+      }
+      tariff="0.8"
+      loading={false}
+      stale={false}
+    />,
+  );
+  expect(screen.queryByText('Informe a tarifa em R$/kWh')).toBeNull();
+  expect(screen.getAllByText('Informe o consumo para estimar o custo')).toHaveLength(2);
+});
+
+it('marks partial energy indicators as known subtotals and avoids unknown power as zero', () => {
+  render(
+    <ResultsPanel
+      result={
+        {
+          ...fixture,
+          installed_power: { value: '0', unit: 'W', status: 'pending' },
+          installed_power_kw: { value: '0', unit: 'kW', status: 'pending' },
+          unknown_load_ids: ['a'],
+          load_results: [
+            {
+              load_id: 'a',
+              name: 'Geladeira',
+              electrical_input_w: null,
+              thermal_capacity_w: null,
+              apparent_power_va: null,
+              unit_current_a: null,
+              energy_basis: 'stated',
+              status: 'pending',
+              steps: [],
+              warnings: [],
+            },
+          ],
+          monthly_energy: { value: '35', unit: 'kWh', status: 'pending' },
+          energy_unknown_load_ids: ['b'],
+        } as CalculationResult
+      }
+      loading={false}
+      stale={false}
+    />,
+  );
+  expect(screen.getByText('Potência ainda não informada')).toBeVisible();
+  expect(screen.getByText('Consumo mensal estimado · subtotal conhecido')).toBeVisible();
+  expect(screen.getByText('Consumo anual estimado · subtotal conhecido')).toBeVisible();
+});

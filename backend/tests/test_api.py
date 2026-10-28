@@ -1239,3 +1239,70 @@ async def test_old_project_keeps_manual_values_and_archived_studies_on_open_edit
     history = (await client.get(f"/api/v1/projects/{saved['id']}/history")).json()
     assert [item["version"] for item in history] == [2, 1]
     assert history[-1]["inputs"]["environments"][0]["loads"][0]["unit_power_w"] == "600"
+
+
+async def test_opaque_legacy_study_without_id_can_be_saved_twice(client):
+    data = dict(name="Estudo legado preservado", circuits=[{"annotation": "sem identidade"}])
+    created = await client.post("/api/v1/projects", json=data)
+    assert created.status_code == 201
+    saved = created.json()
+    response = await client.put(f"/api/v1/projects/{saved['id']}?expected_version=1", json=data)
+    assert response.status_code == 200
+    assert response.json()["version"] == 1
+    assert response.json()["circuits"] == data["circuits"]
+
+
+@pytest.mark.parametrize(
+    "field",
+    ["circuits", "service_entry", "energisa_demand", "bathroom_geometry", "load_classification"],
+)
+async def test_nonfinite_opaque_metadata_is_rejected_before_persistence(client, field):
+    import json
+
+    data = {
+        "name": "Dados inválidos",
+        "environments": [{"name": "Sala", "loads": [{"name": "TV", "unit_power_w": "100"}]}],
+    }
+    opaque = {"annotation": [float("nan")]}
+    if field == "circuits":
+        data[field] = [opaque]
+    elif field == "bathroom_geometry":
+        data["environments"][0][field] = opaque
+    elif field == "load_classification":
+        data["environments"][0]["loads"][0]["energisa_demand"] = opaque
+    else:
+        data[field] = opaque
+    response = await client.post(
+        "/api/v1/projects", content=json.dumps(data), headers={"Content-Type": "application/json"}
+    )
+    assert response.status_code == 422
+    assert (await client.get("/api/v1/projects")).json() == []
+
+
+async def test_empty_delete_all_and_new_project_cycle_preserves_catalog_and_revision_archive(
+    client,
+):
+    assert (await client.get("/api/v1/projects")).json() == []
+    catalog = (await client.get("/api/v1/equipment")).json()
+    for index in range(3):
+        saved = (await client.post("/api/v1/projects", json={"name": f"Temporário {index}"})).json()
+        moved = await client.delete(f"/api/v1/projects/{saved['id']}?expected_version=1")
+        assert moved.status_code == 204
+        deleted = (await client.get("/api/v1/projects?archived=true")).json()
+        row = next(item for item in deleted if item["id"] == saved["id"])
+        assert (
+            await client.delete(
+                f"/api/v1/projects/{saved['id']}/permanent?expected_version={row['version']}"
+            )
+        ).status_code == 204
+    assert (await client.get("/api/v1/projects")).json() == []
+    assert (await client.get("/api/v1/projects?archived=true")).json() == []
+    assert (await client.get("/api/v1/equipment")).json() == catalog
+    assert len((await client.get("/api/v1/technical/revisions")).json()) == 1
+    fresh = (
+        await client.post(
+            "/api/v1/projects", json={"name": "Recomeço planejado", "property_stage": "planned"}
+        )
+    ).json()
+    assert fresh["version"] == 1 and fresh["environments"] == []
+    assert len((await client.get(f"/api/v1/projects/{fresh['id']}/history")).json()) == 1

@@ -48,7 +48,16 @@ export function Field({
   const { profile } = useExperience();
   const rule = useContext(RequirementsContext)[field];
   const operation = useContext(CalculationScopeContext);
+  const optionalPowerForStatedEnergy =
+    operation === 'installed' &&
+    [
+      'load.unit_power_w',
+      'load.parameters.mechanical_power',
+      'load.parameters.efficiency',
+    ].includes(field) &&
+    (parameters.monthly_energy_kwh != null || parameters.annual_energy_kwh != null);
   const required =
+    !optionalPowerForStatedEnergy &&
     !!rule &&
     (rule.required_for ?? ['installed', 'apparent', 'current', 'normative']).includes(operation) &&
     (!rule.when || Object.entries(rule.when).every(([key, value]) => parameters[key] === value));

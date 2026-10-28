@@ -2,6 +2,30 @@
 
 Este documento organiza os resultados conhecidos. A fotografia operacional está em [CURRENT_STATE](CURRENT_STATE.md); regras e condições de aplicação estão em [standards](standards.md). Uma suíte aprovada verifica os cenários exercitados e não declara conformidade elétrica integral.
 
+## Vistoria de consumo residencial — 28/10/2026, 0.25.1
+
+Vistoria do produto reformulado, com o banco que o usuário já havia esvaziado. As **12 tabelas reais ficaram idênticas** ao checkpoint inicial `20261028T214022868431Z`: 0 projetos/0 históricos, 12 revisões técnicas e acervo preservado. Testes funcionais gravaram somente em bancos de QA e localStorage de contextos temporários.
+
+| Área | Evidência desta vistoria |
+| --- | --- |
+| Backend e scripts | 601 pytest e 85 subtestes aprovados; exemplos independentes de potência, horários, etiquetas mensais/anuais, zero, cobertura parcial, comparação e relatórios |
+| Frontend | 128 testes aprovados; manuais/referências, debounce/abort, identidade, formulários, rascunhos, conflitos, comparação e avisos |
+| Navegador local | 41 E2E amplos aprovados; cenário adicional e repetições direcionadas cobrem 42 casos, três perfis, criação/edição/salvamento/reabertura, duplicação, lixeira, PDF/JSON, acessibilidade e geometria |
+| Acesso remoto | 1 E2E HTTPS com duas contas aprovado, incluindo isolamento de projetos/rascunhos e cookies |
+| Runtime estático | Build e Pyodide reais: cálculo 36→72 kWh/mês, custo pela tarifa manual fictícia, autosave, comparação com diferença 36, PDF e reload/reabertura; sem chamadas ao backend local ou regras normativas |
+| Qualidade | Contratos oficiais, TypeScript, ESLint, Prettier, Ruff/checkformat, pip check e npm ls aprovados; builds nativo e estático concluídos |
+| Serviços | localhost3000/8000 mantidos e HTTP confirmado; API reiniciada graciosamente; servidor estático de QA encerrado |
+
+Causas/correções confirmadas por regressão:
+
+- A referência da comparação acompanhava `saved.version` e desaparecia no autosave. Agora captura o snapshot por abertura/primeiro salvamento e só muda por escolha explícita; troca de projeto e edição invalidam estados corretamente.
+- A idempotência assumia que todo metadado legado de circuito tinha `id`. A guarda agora preserva dados sem identidade, na API e no browser, sem erro 500 ou histórico duplicado.
+- Metadados opacos permitiam números não finitos que não pertencem a JSON interoperável. Validação estrutural rejeita NaN/infinito antes da persistência; não aplica critérios de instalações.
+- Consumo parcial/ausência de potência e custo sem energia tinham mensagens imprecisas. Subtotais e campos faltantes agora são explícitos; kWh declarados dispensam potência e produzem informação, não erro de consumo.
+- O guia mantinha expectativas antigas sobre município obrigatório. Testes agora verificam o município opcional e a edição de nome válido/vazio. Painéis têm chaves React distintas.
+
+Fórmulas e motor 0.13.0 não mudaram. Não revalidados em máquinas próprias: Windows/macOS/ARM, Docker/PostgreSQL, carga/pentest ou leitor real. O teste de Pyodide usa o bundle atual em servidor HTTP temporário e contexto Chromium separado; não verifica dados existentes no navegador pessoal do usuário. Registros abaixo são históricos e não substituem esta vistoria.
+
 ## Automação de consumo — 0.24.0 / motor0.12.0
 
 Revisados motor/precisão, parâmetros/validação/contratos, catálogo/instância, edição/ajuda, salvamento/reabertura e relatórios.587testes backend/85subtestes,128frontend,37E2E locais e1HTTPS aprovados, além de contratos/tipos/lint/formatação/Ruff/build isolado. E2E novo cobre os3perfis, minutos/anual, rotina em lote sem substituição, custos/participação/projeção, PDF, persistência, edição, axe e320/390/768/1440px. Erros de relatório/base latente e de correção de unidade foram corrigidos; seletores ajustados à inclusão de details aninhados. Fontes/limites em standards/calculations e resultados operacionais em CURRENT_STATE.

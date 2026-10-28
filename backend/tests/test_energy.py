@@ -182,3 +182,23 @@ def test_api_schema_energy_limits(params):
 def test_energy_quantity_validation(quantity):
     with pytest.raises(ValueError):
         total_energy_kwh(quantity, D(40))
+
+
+@pytest.mark.parametrize(
+    "parameters",
+    [
+        {"monthly_energy_kwh": "35"},
+        {"monthly_energy_kwh": "0"},
+        {"annual_energy_kwh": "420"},
+        {"annual_energy_kwh": "0"},
+    ],
+)
+def test_declared_energy_without_power_is_information_not_a_consumption_error(parameters):
+    result = run([dict(name="Etiqueta", unit_power_w=None, parameters=parameters)])
+    assert result["monthly_energy"] is not None
+    power_issue = next(
+        item for item in result["notifications"] if item["target_id"].endswith(".unit_power_w")
+    )
+    assert power_issue["category"] == "info"
+    assert "kWh já está disponível" in power_issue["problem"]
+    assert result["installed_power"]["status"] == "pending"

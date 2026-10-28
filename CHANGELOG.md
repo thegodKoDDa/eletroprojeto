@@ -1,5 +1,13 @@
 # Histórico de alterações
 
+## 0.25.1 — 28/10/2026 / motor 0.13.0 preservado
+
+- Corrigido: autosave não apaga mais a referência da comparação; atualização da referência é explícita.
+- Corrigido: salvar novamente metadados legados sem id não causa erro nem duplica histórico, na API e no navegador.
+- Corrigido: tarifa já preenchida, subtotais parciais, potência desconhecida e ambientes vazios recebem mensagens adequadas; potência fica opcional quando há kWh declarados.
+- Segurança de dados: números não finitos em metadados opacos são rejeitados antes da persistência, sem dependência normativa.
+- Vistoria: 601 pytest/85 subtestes, 128 frontend, 42 cenários E2E cobertos, 1 HTTPS e Pyodide real aprovados; builds e qualidade conferidos. Banco já limpo pelo usuário preservado sem projetos de teste.
+
 ## 0.25.0 — 28/10/2026 / motor0.13.0
 
 - Alterado: escopo oficial para estimativas de consumo residencial, em qualquer estágio do imóvel, sem dependências normativas de fornecimento.

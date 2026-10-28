@@ -1,4 +1,4 @@
-# Arquitetura — estimativas residenciais 0.25.0
+# Arquitetura — estimativas residenciais 0.25.1
 
 Next.js App Router/TypeScript/Tailwind apresenta formulários, biblioteca de projetos, resultados e relatórios. Python/FastAPI/Pydantic2 valida contratos; SQLAlchemy2/Alembic preservam SQLite e portabilidade PostgreSQL. Início/sidebar e três perfis permanecem. Fluxo: Projeto/Imóvel → Ambientes/Equipamentos → Resultados e Estimativas → Relatório.
 
@@ -29,3 +29,5 @@ Reutilizar backend/.venv e frontend/node_modules. Na raiz: `python3 scripts/star
 ## Comparação opcional de cenários
 
 A comparação explícita usa `/calculations/compare` nos mesmos módulos Python; não grava dados nem consulta o acervo. O cliente cancela a requisição e oculta diferenças quando a edição muda.
+
+Ajustes 0.25.1: ScenarioComparison usa fronteira por projeto/abertura e snapshot de referência independente de saved.version, com mudança explícita e cancelamento/ocultação em edições. A idempotência aceita metadados legados sem id; validação desses metadados exige somente números JSON finitos. Potência pendente com energia declarada é informação para W, sem bloquear kWh.

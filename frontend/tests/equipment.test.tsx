@@ -560,3 +560,22 @@ test('documented shower variants are selectable without losing usage or manual p
   expect(screen.getByLabelText('Dias de uso por mês')).toHaveValue(30);
   expect(shower.reference_power_w).toBe('7500');
 });
+
+test.each([{ monthly_energy_kwh: '35' }, { annual_energy_kwh: '0' }])(
+  'declared energy makes missing power optional without inventing it: %j',
+  (parameters) => {
+    render(
+      <Editor
+        initial={{
+          ...newLoad(reference),
+          unit_power_w: null,
+          parameters: { ...technicalDefaults(), ...parameters },
+        }}
+      />,
+    );
+    const power = screen.getByLabelText('Potência unitária (W)');
+    expect(power).toHaveValue(null);
+    expect(power).toHaveAttribute('aria-required', 'false');
+    expect(power).toHaveAttribute('aria-invalid', 'false');
+  },
+);

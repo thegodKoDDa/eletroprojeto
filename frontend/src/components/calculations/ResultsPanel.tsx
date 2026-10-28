@@ -14,6 +14,7 @@ export function ResultsPanel({
   loading,
   stale,
   environments,
+  tariff,
 }: {
   result?: CalculationResult;
   reviewed?: boolean;
@@ -26,6 +27,10 @@ export function ResultsPanel({
   onScopeChange?: (scope: ProjectInput['analysis_scope']) => void;
 }) {
   const heightRef = useStableHeight('estimates', loading);
+  const partialEnergy = !!result?.energy_unknown_load_ids?.length;
+  const onlyUnknownPower =
+    !!result?.unknown_load_ids?.length &&
+    result.unknown_load_ids.length === result.load_results?.length;
   return (
     <section
       ref={heightRef}
@@ -69,7 +74,9 @@ export function ResultsPanel({
             {[
               [
                 'Potência instalada',
-                `${format(result.installed_power_kw.value)} kW · ${format(result.installed_power.value)} W${result.unknown_load_ids?.length ? ' · subtotal' : ''}`,
+                onlyUnknownPower
+                  ? 'Potência ainda não informada'
+                  : `${format(result.installed_power_kw.value)} kW · ${format(result.installed_power.value)} W${result.unknown_load_ids?.length ? ' · subtotal' : ''}`,
               ],
               [
                 'Consumo diário estimado · média anualizada',
@@ -93,17 +100,24 @@ export function ResultsPanel({
                 'Custo mensal estimado',
                 result.monthly_cost
                   ? formatCurrency(result.monthly_cost.value)
-                  : 'Informe a tarifa em R$/kWh',
+                  : tariff == null
+                    ? 'Informe a tarifa em R$/kWh'
+                    : 'Informe o consumo para estimar o custo',
               ],
               [
                 'Custo anual estimado',
                 result.annual_cost
                   ? formatCurrency(result.annual_cost.value)
-                  : 'Informe a tarifa em R$/kWh',
+                  : tariff == null
+                    ? 'Informe a tarifa em R$/kWh'
+                    : 'Informe o consumo para estimar o custo',
               ],
             ].map(([label, value]) => (
               <div key={label}>
-                <p className="text-xs muted">{label}</p>
+                <p className="text-xs muted">
+                  {label}
+                  {partialEnergy && label !== 'Potência instalada' ? ' · subtotal conhecido' : ''}
+                </p>
                 <p className="mt-2 text-xl font-semibold">{value}</p>
               </div>
             ))}

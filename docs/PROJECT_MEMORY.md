@@ -36,4 +36,4 @@ AGENTS define as rotinas; [continuity](continuity.md) descreve backup SQLite API
 
 ## Comparação opcional de cenários
 
-Comparação opcional entre edição e versão salva reutiliza o motor Python sem sobrescrever projetos; comportamento em [usage](usage.md) e matemática em [calculations](calculations.md).
+Comparação opcional entre edição e referência salva reutiliza o motor Python sem sobrescrever projetos. A referência é capturada na abertura/primeiro salvamento, permanece durante o autosave e é trocada explicitamente; reinicia ao reabrir. comportamento em [usage](usage.md) e matemática em [calculations](calculations.md).

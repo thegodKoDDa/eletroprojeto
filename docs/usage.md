@@ -30,4 +30,4 @@ Exportar PDF ou JSON usa cálculo atual conferido pelo servidor: identificação
 
 ## Comparação opcional de cenários
 
-Abra Comparar cenários de consumo, salve uma configuração e altere aparelhos ou hábitos. Comparar com versão salva mostra diferenças sem sobrescrever o original. Para manter as duas configurações, use Salvar como novo projeto. Valores negativos indicam redução; dados insuficientes ficam explícitos. Trocar entradas invalida a comparação anterior.
+Abra Comparar cenários de consumo, salve uma configuração e altere aparelhos ou hábitos. Comparar com versão salva mostra diferenças sem sobrescrever o original. A referência permanece durante o autosave; Usar versão salva mais recente como referência troca essa base explicitamente. Reabrir/recarregar inicia outra referência. Para manter as duas configurações, use Salvar como novo projeto. Valores negativos indicam redução; dados insuficientes ficam explícitos. Trocar entradas invalida a comparação anterior.

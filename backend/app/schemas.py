@@ -1,9 +1,10 @@
+import math
 from datetime import datetime
 from decimal import Decimal
 from typing import Annotated, Literal
 from uuid import UUID, uuid4
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import AfterValidator, BaseModel, ConfigDict, Field, model_validator
 
 Nonnegative = Annotated[Decimal, Field(ge=0, allow_inf_nan=False, max_digits=18, decimal_places=6)]
 Positive = Annotated[Decimal, Field(gt=0, allow_inf_nan=False, max_digits=18, decimal_places=6)]
@@ -11,6 +12,28 @@ Text = Annotated[str, Field(min_length=1, max_length=200)]
 Status = Literal[
     "calculated", "estimated", "pending", "invalid", "out_of_scope", "awaiting_technical_validation"
 ]
+
+
+def finite_legacy_metadata(value):
+    """Keep archived metadata opaque, while requiring serializable finite JSON numbers."""
+
+    def check(item):
+        if isinstance(item, float) and not math.isfinite(item):
+            raise ValueError("Metadados não podem conter NaN ou infinito")
+        if isinstance(item, Decimal) and not item.is_finite():
+            raise ValueError("Metadados não podem conter NaN ou infinito")
+        if isinstance(item, dict):
+            for child in item.values():
+                check(child)
+        elif isinstance(item, (list, tuple)):
+            for child in item:
+                check(child)
+
+    check(value)
+    return value
+
+
+LegacyMetadata = Annotated[dict, AfterValidator(finite_legacy_metadata)]
 
 
 class Schema(BaseModel):
@@ -158,7 +181,9 @@ class ProjectEnergisaDemandSettings(Schema):
 
 
 class Load(Schema):
-    energisa_demand: dict | None = Field(default=None, json_schema_extra={"deprecated": True})
+    energisa_demand: LegacyMetadata | None = Field(
+        default=None, json_schema_extra={"deprecated": True}
+    )
     id: UUID = Field(default_factory=uuid4)
     name: Text
     category: Text = "Outros"
@@ -233,7 +258,9 @@ class BathroomGeometry(Schema):
 
 
 class Environment(Schema):
-    bathroom_geometry: dict | None = Field(default=None, json_schema_extra={"deprecated": True})
+    bathroom_geometry: LegacyMetadata | None = Field(
+        default=None, json_schema_extra={"deprecated": True}
+    )
     id: UUID = Field(default_factory=uuid4)
     name: Text
     type: Literal[
@@ -353,11 +380,15 @@ class ServiceEntryInput(Schema):
 
 
 class ProjectInput(Schema):
-    service_entry: dict | None = Field(default=None, json_schema_extra={"deprecated": True})
-    circuits: list[dict] = Field(
+    service_entry: LegacyMetadata | None = Field(
+        default=None, json_schema_extra={"deprecated": True}
+    )
+    circuits: list[LegacyMetadata] = Field(
         default_factory=list, max_length=200, json_schema_extra={"deprecated": True}
     )
-    energisa_demand: dict | None = Field(default=None, json_schema_extra={"deprecated": True})
+    energisa_demand: LegacyMetadata | None = Field(
+        default=None, json_schema_extra={"deprecated": True}
+    )
     analysis_scope: Literal["installed", "apparent", "current", "normative"] = "installed"
     name: Text
     municipality: str = Field(default="", max_length=200)

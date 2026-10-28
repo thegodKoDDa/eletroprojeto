@@ -99,7 +99,11 @@ def _same_input(payload: dict, data: ProjectInput) -> bool:
             if "id" not in load.model_fields_set:
                 current["loads"][position]["id"] = old_room["loads"][position]["id"]
     for index, circuit in enumerate(data.circuits):
-        if index < len(previous["circuits"]) and "id" not in circuit:
+        if (
+            index < len(previous["circuits"])
+            and "id" not in circuit
+            and "id" in previous["circuits"][index]
+        ):
             incoming["circuits"][index]["id"] = previous["circuits"][index]["id"]
     return previous == incoming
 

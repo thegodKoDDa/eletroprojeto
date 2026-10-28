@@ -1,4 +1,4 @@
-# Formulários e relatórios — consumo residencial0.25.0
+# Formulários e relatórios — consumo residencial0.25.1
 
 Comportamento de uso em [usage](usage.md), contratos/fluxos em [architecture](architecture.md), fórmulas em [calculations](calculations.md). Histórico anterior preservado em [history](history/README.md).
 
@@ -15,3 +15,5 @@ Autosave, rascunhos, histórico, idempotência inicial, conflito409 e lixeira pr
 ## Comparação opcional de cenários
 
 O painel opcional compara edição e versão salva sem gravar. Suas diferenças são exibidas na tela; PDF/JSON exportam o cenário atual, sem tabela comparativa entre snapshots.
+
+Vistoria 0.25.1: kWh mensais/anuais declarados tornam os campos de potência opcionais na apresentação; falta de potência é informação para completar W, não erro de consumo. Subtotais aparecem nos indicadores e tarifa já preenchida não é solicitada novamente quando faltam dados energéticos. Metadados legados continuam opacos, exigindo apenas números JSON finitos. Referência do comparador permanece no autosave e é trocada por ação explícita.

@@ -256,3 +256,26 @@ def test_browser_scenario_comparison_without_normative_routes():
     assert result["body"]["differences"]["monthly_energy"]["value"] == "0"
     for path in ("/technical/rules", "/standards"):
         assert dispatch_request("GET", path)["status"] == 404
+
+
+def test_opaque_legacy_study_without_id_stays_idempotent_in_browser_store():
+    payload = dict(name="Metadados preservados", circuits=[{"annotation": "sem identidade"}])
+    created = dispatch_request("POST", "/projects", json.dumps(payload))
+    assert created["status"] == 201
+    saved = created["body"]
+    updated = dispatch_request(
+        "PUT",
+        f"/projects/{saved['id']}?expected_version=1",
+        json.dumps(payload),
+        store_json=created["store_json"],
+    )
+    assert updated["status"] == 200
+    assert updated["body"]["version"] == 1
+    assert updated["body"]["circuits"] == payload["circuits"]
+
+
+def test_browser_nonfinite_legacy_metadata_never_enters_store():
+    payload = dict(name="Inválido", service_entry={"annotation": float("inf")})
+    result = dispatch_request("POST", "/projects", json.dumps(payload))
+    assert result["status"] == 422
+    assert result["store_json"] is None
