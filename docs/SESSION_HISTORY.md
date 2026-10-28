@@ -746,3 +746,8 @@ As12tabelas reais conferidas integralmente contra o ponto inicial já limpo perm
 Documentos responsáveis, CURRENT_STATE, audit, memória/uso/arquitetura/pendências e CHANGELOG atualizados. Sincronização normal e checkpoint verificado são executados ao finalizar a entrega, preservando serviços; não se trata de pedido de encerramento. Resultado do Pages/commit final/ponto é conferido na saída e latest.json. Próximo passo: uso do sistema limpo e próxima tarefa, sem retomar antigas pendências normativas.
 
 Conferência final:27documentos e links locais aprovados;32caminhos de código/docs revisados sem indicadores conhecidos de segredos, SQLite/.env/checkpoints ignorados. Arquivos gerados de QA(next-env/tsconfig) inspecionados e restaurados. Não houve limpeza de dados; serviços3000/8000 permanecem ativos.
+
+
+## 28/10/2026 — encerramento após vistoria 0.25.1
+
+Usuário solicitou encerrar por agora. Entrega anterior fe8d0e8 sincronizada, Pages publicado com sucesso e versão0.25.1 conferida. Nenhuma alteração funcional posterior; suítes aprovadas da vistoria não repetidas sem motivo. Revisados estado do Git/disco (920GiB livres) e integridade/contagens SQLite: agora1projeto e2históricos, posteriores à vistoria, preservados integralmente; integrityok/FKvazio. Interface/API200. Nenhum projeto excluído foi restaurado. Atualizados CURRENT_STATE e este histórico; commit documental revisado e rotina `python3 scripts/continuity.py encerrar --sync` executada em seguida, com resultado final e referência em latest.json. Sem limpeza, instalação, restauração de projetos, fechamento forçado ou desligamento. Próxima sessão: RETOMAR ELETROPROJETO e próximo pedido no escopo residencial.
