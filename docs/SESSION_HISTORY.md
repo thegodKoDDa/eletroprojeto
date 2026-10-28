@@ -756,3 +756,8 @@ Usuário solicitou encerrar por agora. Entrega anterior fe8d0e8 sincronizada, Pa
 ## 28/10/2026 — publicação da release v0.25.1
 
 Usuário pediu estudar o projeto, testar tudo e publicar a release que faltava no GitHub, mantendo o restante como encontrado. Revisão sem alterar código: 560 pytest/85 subtestes, 41 testes de scripts, 128 Vitest, 42 E2E, 1 E2E HTTPS, builds Webpack e estático (bundle de 24 arquivos, sem módulos normativos), Ruff, ESLint, Prettier e tsc aprovados; migrações verificadas em banco QA. Efeitos colaterais de QA em tsconfig/next-env e diretório de build isolado foram revertidos; banco, checkpoints e serviços preservados. Documentos que declaravam a release 0.24.1 como Latest (README, arquitetura, estado, limitações, CHANGELOG) foram alinhados. Pacote gerado por scripts/package_release.py exclusivamente do commit documental, publicado como v0.25.1 (Latest) com ZIP, manifesto e SHA-256; a v0.24.1 permanece disponível.
+
+
+## 28/10/2026 — encerramento após release v0.25.1
+
+Usuário pediu encerrar e fechar tudo. Revisados Git (limpo e sincronizado em 47f529f antes deste commit), disco (920GiB livres) e banco (1 projeto, 2 históricos, 13 revisões técnicas, integrity ok, FK vazio). Clean simulado sem aplicação. CURRENT_STATE atualizado; commit documental único e `continuity.py encerrar --sync` em seguida, com restauração isolada e latest.json como referência. API e interface locais encerradas graciosamente por pedido; sem fechamento forçado, desligamento, reset ou exclusão. Próxima sessão: RETOMAR ELETROPROJETO.
