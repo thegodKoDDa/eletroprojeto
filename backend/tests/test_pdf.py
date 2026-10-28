@@ -78,11 +78,8 @@ def test_summary_results_unicode_and_structure():
     assert "36 W" in text and "0,036 kW" in text
     assert "Pendente" in text and "Não disponível" in text
     for omitted in [
-        "Memória de cálculo",
         "Referências utilizadas",
-        "Fonte oficial",
         result["input_digest"],
-        "×",
     ]:
         assert omitted not in text
     xref = int(re.search(rb"startxref\n(\d+)", pdf).group(1))
@@ -121,7 +118,8 @@ def test_dimensions_points_and_brasilia_time():
     inputs, result = sample()
     inputs["environments"][0].update(area_m2="12.5", perimeter_m="15", lighting_points=2, outlets=4)
     text = "\n".join(extract_pages(render_report(inputs, result)))
-    assert "12,5" in text and "15" in text and "2 / 4" in text
+    assert "12,5" in text
+    assert "Luz/TUG" not in text and "Perímetro" not in text
     assert "Área construída: 60 m²" in text
     assert "Horário de Brasília" in text and " UTC" not in text
 
@@ -165,7 +163,7 @@ def test_energy_results_export_without_formulas_and_with_incomplete_coverage():
     assert "5,4 kWh" in text
     assert "R$ 4,32" in text
     assert "não é fatura completa" in text
-    assert "E_mês" not in text
+    assert "E_mês" in text
 
 
 def test_money_has_two_decimals_and_sections_stay_with_content():

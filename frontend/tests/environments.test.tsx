@@ -19,7 +19,7 @@ test('removing loads clears only their circuit associations without mutating sna
       { id: 'one', load_ids: ['a', 'b'] },
       { id: 'two', load_ids: ['missing'] },
     ],
-  } as ProjectInput;
+  } as unknown as ProjectInput;
   const original = structuredClone(input);
   const next = removeProjectLoads(input, ['a']);
   expect(next.environments?.[0].loads?.map((load) => load.id)).toEqual(['b']);

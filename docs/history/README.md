@@ -16,3 +16,16 @@ Registros anteriores preservados para rastreabilidade. Para o comportamento atua
 | [Revisão de 21/10/2026](review-2026-10-21.md) | Avaliação datada |
 
 Requisitos, fontes disponíveis e verificações mudaram ao longo do desenvolvimento. Um resultado ou uma limitação histórica não descreve automaticamente o estado atual. As instruções vigentes continuam em [AGENTS.md](../../AGENTS.md); sessões e entregas permanecem nos respectivos [registro cumulativo](../SESSION_HISTORY.md) e [changelog](../../CHANGELOG.md).
+
+## Escopo anterior a 0.25.0
+
+Os documentos abaixo descrevem o produto anterior à decisão de 28/10/2026. Não são requisitos nem pendências do motor atual. Código/testes de funcionalidades retiradas permanecem recuperáveis no Git, baseline `6b55071`. Acervo e banco não foram apagados.
+
+- [architecture.md anterior](architecture-before-consumption-scope.md)
+- [calculations.md anterior](calculations-before-consumption-scope.md)
+- [standards.md anterior](standards-before-consumption-scope.md)
+- [KNOWN_ISSUES.md anterior](KNOWN_ISSUES-before-consumption-scope.md)
+- [roadmap.md anterior](roadmap-before-consumption-scope.md)
+- [PROJECT_MEMORY.md anterior](PROJECT_MEMORY-before-consumption-scope.md)
+- [forms-and-pdf.md anterior](forms-and-pdf-before-consumption-scope.md)
+- [usage.md anterior](usage-before-consumption-scope.md)

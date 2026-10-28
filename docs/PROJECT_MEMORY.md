@@ -1,118 +1,39 @@
 # Memória permanente — EletroProjeto
 
-## Produto e escopo
+## Definição vigente em 28/10/2026
 
-Estimativa de consumo elétrico residencial com três apresentações escolhidas na abertura: **leigo, profissional e exploração**, para moradia pronta ou planejada. Todos os recursos continuam disponíveis. Preservar produto, dados e identidade visual. Percurso principal: **01 Projeto → 02 Ambientes → 03 Conferência**. Início mantém sidebar/marca e três cartões. Circuitos, entrada e demanda continuam opcionais depois dos resultados. Leigo/exploração os mantêm recolhidos; profissional destaca o grupo, os parâmetros e os atalhos sem tornar os estudos obrigatórios.
+Plataforma de estimativa e análise de consumo energético residencial. Casas, apartamentos, kitnets, studios, sobrados e outros imóveis usam o mesmo motor, planejados, em construção, prontos ou em reforma. Não dimensiona instalações nem aprova fornecimento. Não reintroduzir dependências normativas sem decisão explícita de mudança de escopo.
 
-Refinamento0.22.1: navegação recolhível no celular/tablet para leigo/profissional, ações de projeto visíveis, alternativas de consumo agrupadas e atalhos que abrem os detalhes antes de focar. Preservar horários ao informar/limpar kWh, inclusive zero.
+## História recuperável e decisão
 
-Consumo/custo recebem destaque, tarifa fica visível e uso dos aparelhos é explícito. Medidas/pontos, dados extras, potência, memória e previsões ficam em detalhes. Catálogo sugere referências, não potências universais; valores manuais válidos prevalecem. A biblioteca técnica serve para melhorar utilidades verificadas, não para exigir novos formulários ou presumir dados.
+Os registros disponíveis em Git, CHANGELOG e SESSION_HISTORY documentam a evolução de cadastro de cargas, persistência/histórico, consumo/custos, acervo técnico, estudos normativos, perfis, automação e estabilidade. A motivação anterior aos registros não é recuperável integralmente e não foi inventada. A versão 0.24.1 implementava estudos condicionais de demanda Energisa, circuitos/proteções e geometria; em 28/10/2026 o usuário determinou retirar esse escopo do produto. A pesquisa permanece em disco, nos módulos puros independentes e no [arquivo histórico](history/README.md); não é dependência nem trabalho pendente do consumo.
 
-Uso local. GitHub público distribui a fonte/histórico; dados privados continuam locais; Pages foi publicado por autorização posterior em 27/10/2026; CI geral, impressão física e cópia externa de dados privados continuam fora do escopo. O agente executa rotinas de terminal, sem delegá-las ao usuário. Autorização de manutenção/sincronização revisada em24/10/2026 está no AGENTS; não repetir perguntas para essas rotinas.
+## Fontes principais
 
-## Visual e ajuda progressiva — 0.23.0
+- [Uso](usage.md): cadastro, salvar/salvar como, duplicar, lixeira/restaurar, referências e relatórios.
+- [Arquitetura](architecture.md): API, frontend, SQLite/PostgreSQL, Pyodide, persistência e contratos.
+- [Cálculos](calculations.md): matemática, bases de consumo, unidades, cobertura e exemplos.
+- [Referências](standards.md): procedência do catálogo e acervo separado.
+- [Estado atual](CURRENT_STATE.md), [sessões](SESSION_HISTORY.md), [roadmap](roadmap.md) e [limitações](KNOWN_ISSUES.md): entrega efetiva, verificações e próximo passo.
 
-Usar tokens compartilhados, PageHeading/SectionHeading/Feedback e estados com texto/símbolos além das cores. Superfícies neutras, controles de44px, cartões, tipografia do sistema e espaçamentos comuns em todas as telas; manter responsividade e teclado. Ajuda do leigo acompanha cinco tarefas e destaca automaticamente a próxima, sem roubar foco ou salvar por conta própria. Profissional tem atalhos explicados e acompanhamento opcional recolhido; exploração mantém organização com visual comum e ajuda opcional.
+## Decisões permanentes
 
-Progresso é derivado de entradas, limites da API e resultado atual; consumo zero válido. Conferência explícita vinculada ao digest/escopo em memória do Workspace, invalidada em edição diferente, nova abertura/projeto; não é histórico técnico nem conformidade. Atalhos de uso aguardam recálculo e erros levam ao campo da API. Não tornar guia obrigatório para salvar/exportar, nem completar normas pendentes a partir de campos preenchidos. Detalhes em forms-and-pdf e usage.
+Um motor Python em backend/app/calculations, funções puras e Decimal. Frontend formata/valida, preserva debounce400ms, cancelamento e ocultação de resultados antigos. Distribuidora e estado são identificação; tarifa manual opcional, sem inferência. Catálogo é referência inicial, não obrigação: potência manual válida prevalece, não altera catálogo nem outras instâncias. kWh não são W, BTU/h é capacidade térmica e VA não é consumo. Consumo declarado pode existir sem potência conhecida.
 
-## Automação de consumo — 0.24.0 / motor0.12.0
+Prioridade de energia unitária: mensal declarado > anual declarado > potência elétrica e horários efetivos. Não presumir uso24h, ciclos, hábitos, eficiência, tarifa ou sazonalidade. Subtotais parciais são identificados; vazio não vira zero. Média diária é projeção anual/365, não consumo de um dia típico medido. Custos não incluem automaticamente a fatura completa.
 
-Todos os perfis: consumo mensal ou anual unitário, tempo em horas/minutos, rotina comum explícita apenas para aparelhos sem energia/horários, projeções e custos por ambiente/categoria e participação/ranking calculados no backend. Prioridade mensal > anual > horário escolhido; zero válido. Dados de unidades latentes, rotinas parciais e catálogo/histórico preservados. Não inferir W de kWh, ciclos, hábitos, tarifa ou sazonalidade. Projeção anual conserva base anual original; percentuais de subtotal zero são nulos. Fontes/aritmética/limites em standards/calculations, comportamento em forms-and-pdf. Novos campos opcionais não regravam projetos; relatório1.4 aditivo e revalidação explícita.
+## Dados e apresentação
 
-## Estabilidade de interface — 0.24.1
+Três perfis mudam apresentação e orientação, mantendo cálculos/dados/permissões. Alterar perfil mantém Workspace montado. Identificação/imóvel → ambientes/aparelhos → estimativas → relatório. Memória é secundária e informa fórmulas, parâmetros/fontes e premissas. Acervo só carrega quando o usuário o consulta.
 
-Manter aviso de recálculo em área fixa e feedback fora do fluxo. Resultado anterior fica montado para conservar disclosures/altura, porém visibility:hidden + aria-hidden + inert enquanto stale; nunca expor números velhos. Altura só é reservada durante a espera, sem prender o recolhimento voluntário. Asides/scrollbars têm largura estável e menu sobreposto com posição medida, não conteúdo expansível que empurra a página.
+SQLite contém projetos, lixeira, históricos e revisões. Campos normativos legados continuam preservados nos payloads e cópias, sem serem executados pelo motor; nenhuma migração destrutiva. Estágio e nome livre da distribuidora são aditivos opcionais. Abrir não regrava projetos; salvar edição explícita registra nova versão com revisão do motor independente das normas. PUT idêntico não duplica histórico; conflitos409, idempotência inicial, autosave e rascunhos mantidos.
 
-Identidade normaliza somente defaults gerados de Pydantic/OpenAPI e ordem de chaves. Null/zero/false/IDs/ordem de arrays e dados desconhecidos continuam distintos. Gerar input-defaults.generated.json junto de api.generated.ts via types:sync; não duplicar defaults à mão. Autosave mantém navegação de consulta, foco e menu; novas/substituições/recuperação/logout continuam bloqueados durante gravação. Exportação continua dependente de cálculo atual. Detalhes em architecture/forms-and-pdf.
+Pages executa os mesmos módulos Python via Pyodide e persiste em localStorage independente do SQLite. Limpeza do navegador pode apagar esses dados; PDF/JSON2.0 são relatórios, não backup completo. Publicação existente foi autorizada em27/10; nova implantação/release não é implicada por mudança local.
 
-## Invariantes
+## Continuidade
 
-- Um motor Python em `backend/app/calculations`, funções puras, Decimal, unidades explícitas e sem arredondamento intermediário. Frontend valida/formata; não replica fórmulas.
-- W, VA, kWh, BTU/h e potência mecânica são distintos. Desconhecido/regra não validada é null com motivo, nunca zero fictício. Corrente por aparelho não dimensiona circuito. Não declarar conformidade final/aprovação da distribuidora.
-- Regras novas exigem fonte oficial, edição, condições, cláusulas, limites, exemplos independentes e testes; registrar em standards/calculations. OCR/importação não habilita regra automaticamente.
-- Preservar SQLite, migrações0001–0007, histórico e snapshots. Editar instância não muda catálogo global. Não resetar banco nem atualizar projetos antigos silenciosamente.
-- Resultados antigos ficam ocultos para entradas novas, com debounce400ms, cancelamento/rejeição de respostas antigas e exportações vinculadas ao snapshot atual. Metadados não devem refazer matemática sem necessidade.
+AGENTS define as rotinas; [continuity](continuity.md) descreve backup SQLite API/WAL, ZIP, bundle Git, hashes e restauração isolada. Código/docs públicos no destino autorizado; banco/.env/checkpoints/originais privados ficam locais. Nunca restaurar banco antigo sobre uso posterior nem resetar migrações. Manter SESSION_HISTORY cumulativo, CURRENT_STATE conciso e documentos responsáveis atualizados durante mudanças. Checkpoint antes de estrutura e no encerramento. Não prometer preservação de buffers externos ou rascunhos não enviados, nem trabalho após desligamento.
 
-## Projetos e recuperação
+## Comparação opcional de cenários
 
-Início, edição, biblioteca e lixeira são independentes; navegar mantém a edição na aba. GET summaries traz metadados; abrir busca payload completo. PUT idêntico na mesma revisão não gera versão/histórico. POST inicial com Idempotency-Key UUID permite repetir após resposta perdida sem duplicar; payload diferente retorna409. Preservar edições feitas durante o envio.
-
-Autosave somente após primeiro salvamento manual, debounce1,5s; renomeação/conflito pausam. Falha não aparece como Salvo nem cria repetição infinita. Conflito409 permite copiar edição local ou carregar servidor preservando rascunho.
-
-Rascunhos por conta/aba/slot em localStorage, escrita agrupada250ms e flush ao ocultar/sair/desmontar. Recuperar não envia automaticamente. Limpeza do navegador, outra máquina e término abrupto sem eventos limitam recuperação; SQLite/checkpoints não capturam dados ainda não enviados ao servidor.
-
-Remover cargas/ambientes limpa associações atuais; histórico/catálogo permanecem intactos. Referências ausentes em projetos antigos têm reparo explícito. Revalidação compara edição salva e registra nova versão conscientemente, preservando entradas manuais. Histórico ordenado por versão resolve timestamps iguais.
-
-PDF principal/JSON secundário incluem consumo, hipóteses, cobertura e pendências; JSON de relatório não é backup completo. Assinatura inclui circuitos/proteções/entrada. Horários públicos America/Sao_Paulo; armazenamento/checkpoints UTC.
-
-## Motor e acervo
-
-Versões e contagens atuais em CURRENT_STATE; fontes/condições em standards/calculations. NDU-0017.0 d1–d5 exige inventário/classificação/escopo e revisão vinculada por digest; somente residência individual Energisa Sul-Sudeste/SP até75kW. Na0.19.0,d6/d7/centrais têm parâmetros/fontes próprios revisados; dados ausentes ou ordenaçãoW/VA conflitante emd7 mantêm demanda nula; reservas saem da demanda, mas entram na instalada do limite. Não inferir grupo, distribuidora municipal, FP ou converter VA/BTU/energia em W.
-
-Estudos condicionais de circuitos Cu/PVC70/A1/A2/B1/B2/C,mono ou tri equilibrado sem neutro (seções1,5–95mm² na0.19.0), proteção e entrada ESS220/127V/tabela16 permanecem limitados às condições documentadas; não equivalem a dimensionamento final universal. Sem inferir DPS, seletividade, geometria, ensaios ou parâmetros do produto.
-
-Acervo local:2.196objetos técnicos,2.082documentos/51.324unidades/3.788fontes. OCR recuperou963páginas,97vazias; nenhuma falha. Método/confiança separados de validação normativa.199objetos sem utilidade foram descartados com autorização/auditoria anterior; não reimportar inventário histórico nem tratar `library/objects` como cache. Originais Energisa7.0/6.3 e quatro JSONs de auditoria permanecem locais. Revisão humana integral do acervo não concluída.
-
-## Estrutura e continuidade
-
-Backend: REST/main, schemas/contratos, projects/histórico, database/ORM, reports, calculations. Frontend: page orquestra; componentes projects/equipment/calculations/layout e hooks em lib. Pesquisa explícita do catálogo considera todos os equipamentos encontrados, sem excluir pelo ambiente; sugestões ficam para busca vazia. Pendências/resultados de consumo identificam ambiente/aparelho, com atalhos individuais e para tarifa. Descrições de consumo e tarifa são vinculadas aos controles; validação com leitor de tela real foi explicitamente descartada pelo usuário em25/10/2026 e não deve voltar como pendência sem novo pedido. Preservar acessibilidade implementada e testes automáticos/teclado. PageHeading/SectionHeading/Feedback/Pagination e tokens CSS padronizam páginas,seções,avisos e navegação; reutilizar esses padrões. Erros de exportação preservam notificações localizadas como no salvamento; leitura/fontes possuem retry sem perder filtros. `use-workspace-resources` carrega recursos independentemente; cliente centraliza erros/cabeçalhos/CSRF. Modo local loopback e autenticação remota/HTTPS/isolamento já implementados são preservados.
-
-Fonte de dependências são manifests/locks. Reutilizar `.venv`, `.venv-windows` e node_modules; não reinstalar por hábito. Contratos somente por `npm run types:sync`. Não rodar build e E2E simultaneamente; QA usa bancos/portas e diretórios próprios.
-
-GitHub: `https://github.com/thegodKoDDa/eletroprojeto`, origin/main, público por autorização explícita em 26/10/2026, workflow Pages habilitado por autorização posterior; quality.yml desativado. Encerramento autorizado envia commits revisados apenas para esse destino após conferir destino e visibilidade pública; sem force-push ou merge automático. Credencial existente via Git Credential Manager do Windows, sem token em URL/arquivo/log. Código/docs no GitHub; banco, checkpoints, `.env` e originais do acervo continuam locais.
-
-Rotina em AGENTS e detalhes em continuity.md. Retomar lê AGENTS/CURRENT_STATE/esta memória e executa continuity retomar; documentos históricos são consultados conforme necessidade. Encerrar atualiza docs uma vez, testa proporcionalmente, faz commit revisado e executa encerrar --sync. Sem rede, checkpoint local é preservado e sincronização fica pendente. Não criar commit extra pelo caminho do ponto; consultar `.checkpoints/latest.json`.
-
-Checkpoints mantêm fonte/SQLite/bundle, hashes e restauração completa isolada. Bancos idênticos compartilham armazenamento por hardlinks, sem apagar pontos; ausência de suporte mantém cópias independentes. Não editar snapshots; restaurar para arquivo novo. Marker não substitui verificar. Clean/doctor/compact só quando necessário, preservando dados, referências, instalações úteis e recuperação. Exportador GPG fora de uso retirado; versões antigas estão no Git. POSIX0700/0600 nos privados; não mudar política global/ACL Windows indiscriminadamente.
-
-## Ampliação0.19.0 / motor0.10.0
-
-Demanda especial, circuitos/fases e geometria têm limites/fontes emstandards/calculations; não duplicar tabelas aqui. Parâmetros/fontes especiais participam do digest; dados de classificação anterior podem ser preservados, mas a memória usa somente a fonte do grupo atual. W/FP cadastrados não são substituídos por valores normativos. Localização usa envelopes completos e apenas o arranjo de chuveiro dafigura18 sem piso-boxe/rebaixo/delimitação, piso único e sem divisórias intermediárias; não amplia automaticamente a banheiras/cabines ou conformidade final.
-
-Coleta territorial original ANEEL121feições preservada emreferences/territory,ignorada noGit e incluída nocheckpointlocal; não é cache dispensável. app/territory consulta por coordenadasSIRGAS2000 comhash conferido e períodos explícitos. A camada intituladaATUAL inclui registros encerrados/sucessores sobrepostos; não inferir sucessão, vigência jurídica atual, atendimento de imóvel ou mapeamento municipal por essa nomenclatura. Busca opcional não salva coordenadas nem troca distribuidora. Alterações de coordenadas cancelam/ocultam resposta anterior. Sem rede durante consulta; nova coletaCLIcria diretório novo sem apagar originais.
-
-## Apresentação e navegação do repositório
-
-README apresenta o produto e a prévia real; instruções de agente e detalhes da instalação local ficam nos documentos responsáveis. `docs/setup.md` e `docs/usage.md` atendem instalação/uso, `CONTRIBUTING.md` reúne desenvolvimento e testes, e `docs/README.md` organiza os caminhos. Descrição/tópicos do GitHub foram alinhados ao produto usando Minecoord como referência de apresentação; privacidade e workflow Pages habilitado por autorização posterior; quality.yml desativado preservados.
-
-Revisões anteriores de auditoria/formulários/expansão inicial estão em `docs/history`, com índice e conteúdo preservados. `docs/audit.md` e `docs/forms-and-pdf.md` descrevem o estado atual e apontam para o histórico. Não voltar a apresentar registros antigos como comportamento vigente nem colocar logs de sessão na página de apresentação. Imagens em `docs/assets` contêm somente interface e dados fictícios; manter essa condição ao atualizá-las.
-
-## Distribuição pública — 0.20.0
-
-Usuário autorizou explicitamente tornar `thegodKoDDa/eletroprojeto` público e preparar formas de uso em 26/10/2026. Visibilidade pública passa a ser a condição do sincronizador; destino, main limpa, revisão de arquivos, ausência de divergência e sem force-push continuam obrigatórios. Histórico preservado. Pages foi autorizado e publicado em 27/10/2026; quality.yml permanece desativado. Não enviar dados privados.
-
-ZIP de fontes com iniciadores Windows/Linux/macOS requer Python/Node; Docker contém runtimes e volume SQLite próprio. Não prometer `.exe`, `index.html` independente ou teste nativo Windows/macOS não realizado. Licença ISC do código original; componentes preservam avisos próprios. Iniciadores recusam portas ocupadas e reutilizam dependências compatíveis; não tocam serviços existentes. Native legado usa backend/eletroprojeto.db se presente, cópia nova usa data/eletroprojeto.db, e --data-dir escolhe outra instalação. Nunca remover volume/pasta de dados para atualizar.
-
-Pacote é gerado de commit por scripts/package_release.py, com manifesto/hash e sem arquivos privados. Contexto Docker é uma lista de inclusão; não afrouxar a exclusão de banco/acervo/credenciais. Código compilado sem bloqueios novos; biblioteca/território ausentes permanecem pendentes, não zero. Continuidade de dados e restrições normativas anteriores permanecem.
-
-
-## Revisão0.21.0 / motor0.11.0
-
-Usuário pediu revisar e resolver pendências, ignorando as já resolvidas/descartadas. Revisão/estado por item em KNOWN_ISSUES; fontes/condições em standards e matemática em calculations. Circuitos acrescentam XLPE/EPR90 e D/E/F/G sob condições explícitas; D distingue temperatura do solo e bloqueia outros arranjos, G somente três fases espaçadas/circuito único. Não liberar alumínio residencial ou neutro/desequilíbrio/harmônicas por analogia. Queda nos novos casos exige impedância documentada própria; valores de fixtures não são sugestões. Divergência do manual C/90°C/10mm² resolvida pela tabela normativa, sem modificar o original.
-
-DPS/seletividade são comparações documentais condicionadas a estudo/produtos/fontes, sem seleção ou análise integral automática. Catálogo ABNT já identifica NBR5419:2026/VC2026; não usar versões antigas como validação da edição atual. Revisão humana integral do acervo e inspeção/ensaios no local não foram executados pelo agente e não podem ser atestados por importação/simulação.
-
-Relações municipais INDGER/IBGE disponíveis por código oficial, preservando múltiplas empresas e mês próprio por CNPJ; atrasos/linhas sem município/código não associado ficam explícitos. Não confundir declaração mensal com vigência jurídica/exclusividade ou atendimento do endereço. Coletas locais em references/municipalities, ignoradas e preservadas; o coletor cria novo diretório, não altera banco. Não alterar o estado jurídico dos IDs internos nem a seleção manual automaticamente. Releasev0.20.0 com três arquivos foi confirmada publicada; esta revisão não criou novo pacote/release.
-
-
-## Perfis de apresentação — 0.22.0
-
-Pedido explícito do usuário: tela inicial com USUÁRIO LEIGO, USUÁRIO PROFISSIONAL e ESTOU APENAS DANDO UMA OLHADA, preservando todos os recursos nas três apresentações. Motor0.11.0, cálculos, contratos de dados e pendências normativas não mudaram. O perfil é preferência de apresentação, não habilitação profissional nem permissão de acesso.
-
-ExperienceBoundary fica dentro de AccessBoundary, isolada pela conta. sessionStorage por conta/aba lembra a escolha ao recarregar; aba nova começa na escolha. Falha do armazenamento não bloqueia a seleção. Alterar perfil abre diálogo com teclado/fechamento por Escape, mantendo Workspace montado: edição, rascunhos, salvamento, referências e resultados permanecem. O perfil não entra no projeto, assinatura de cálculo ou exportação; trocar perfil não dispara nova matemática.
-
-Leigo destaca requisitos recebidos da API e dados recomendados de consumo/custo, abre Consumo mensal e oferece caminho de três passos. Profissional destaca dados elétricos/medidas/memória e atalhos para todos os estudos, mantendo-os condicionados. Exploração preserva início com lixeira, controles e recolhimentos originais. Biblioteca substitui o atalho principal da lixeira nos novos perfis; lixeira permanece na navegação. O seletor redundante de apresentação nos novos perfis vira controle de detalhamento; exploração mantém o original. Revisão dos grupos de opções em forms-and-pdf; não apagar funcionalidades de recuperação/dados sob pretexto de simplificar.
-
-
-## Download atualizado — 0.24.1
-
-Release estável v0.24.1 publicada a pedido do usuário, com ZIP, manifesto e hashes gerados de92fe605. Latest e links de download apontam para essa versão; v0.20.0 preservada no histórico. Código funcional e pacote estão alinhados; posteriores commits apenas documentais não exigem republicar os mesmos binários/fontes. Confirmados downloads públicos e hashes; dados locais nunca fazem parte do pacote.
-
-## GitHub Pages com motor Python via Pyodide — 0.24.1
-
-A pedido explícito do usuário em 27/10/2026, o `README.md` inclui o acesso online pelo navegador em `https://thegodkodda.github.io/eletroprojeto/` no mesmo padrão do `minecoord`, com publicação via `.github/workflows/pages.yml` e `scripts/build_pages.py` (`quality.yml` permanece desativado). Para respeitar a regra permanente de nunca duplicar fórmulas elétricas no frontend, a edição estática executa os próprios módulos Python de `backend/app` no navegador via Pyodide (`backend/app/browser_runtime.py` + `frontend/src/lib/browser-backend.ts`) e armazena projetos apenas no `localStorage` do navegador do usuário (`eletroprojeto.browser.store.v1` / `eletroprojeto.browser.backup.v1`). Banco SQLite local, checkpoints e acervo técnico continuam exclusivamente locais e fora do Git/Pages.
-
-## Fontes da memória e uso
-
-A história recuperável está em CHANGELOG, SESSION_HISTORY, Git e docs/history; não há registro completo da motivação inicial anterior aos arquivos disponíveis. O guia operacional principal é [usage.md](usage.md): criação, Salvar/Salvar Como, duplicação, lixeira/restauração, ambientes, equipamentos, edição manual e exportação. [architecture.md](architecture.md), [calculations.md](calculations.md) e [standards.md](standards.md) são as fontes técnicas, evitando duplicar fórmulas e regras nesta memória. Implementação/testes não equivalem a validação normativa; situação operacional em CURRENT_STATE e limitações em KNOWN_ISSUES.
+Comparação opcional entre edição e versão salva reutiliza o motor Python sem sobrescrever projetos; comportamento em [usage](usage.md) e matemática em [calculations](calculations.md).

@@ -16,7 +16,6 @@ export function ProjectActions({
   onPdf,
   onJson,
   onDelete,
-  onCheck,
   hideNew = false,
 }: {
   hideNew?: boolean;
@@ -33,7 +32,6 @@ export function ProjectActions({
   onPdf: () => void;
   onJson: () => void;
   onDelete: () => void;
-  onCheck: () => void;
 }) {
   const menu = useRef<HTMLDetailsElement>(null);
   const locked = busy || saving || exporting;
@@ -177,14 +175,6 @@ export function ProjectActions({
           </button>
           {saved && (
             <>
-              <button
-                disabled={locked && !automaticSaving}
-                aria-disabled={locked}
-                onClick={() => run(onCheck)}
-              >
-                <WorkspaceIcon name="library" />
-                <span>Verificar referências</span>
-              </button>
               <button
                 className="danger"
                 disabled={locked && !automaticSaving}

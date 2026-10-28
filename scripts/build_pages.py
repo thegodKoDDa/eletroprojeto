@@ -13,9 +13,10 @@ ROOT = Path(__file__).resolve().parents[1]
 ENGINE_MODULES = [
     "app/__init__.py",
     "app/version.py",
+    "app/estimate_metadata.py",
+    "app/locations.py",
     "app/schemas.py",
     "app/validation.py",
-    "app/technical.py",
     "app/catalog.py",
     "app/equipment_relevance.py",
     "app/municipalities.py",
@@ -30,10 +31,20 @@ ENGINE_MODULES = [
 
 
 def engine_files(backend_root: Path) -> list[str]:
-    calc_files = sorted(
-        p.relative_to(backend_root).as_posix()
-        for p in (backend_root / "app/calculations").glob("*.py")
-    )
+    # Explicit production surface: archived installation research is never shipped.
+    calc_files = [
+        f"app/calculations/{name}.py"
+        for name in (
+            "__init__",
+            "engine",
+            "equipment",
+            "power",
+            "energy",
+            "current",
+            "units",
+            "comparison",
+        )
+    ]
     return sorted(set(ENGINE_MODULES + calc_files))
 
 

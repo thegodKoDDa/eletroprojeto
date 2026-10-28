@@ -2,7 +2,7 @@
 
 Entenda o consumo de energia da sua casa.
 
-Organize ambientes e aparelhos, informe como são usados e acompanhe uma estimativa de consumo e custo mensal. Para moradias prontas ou planejadas: **Projeto → Ambientes → Conferência**.
+Organize ambientes e aparelhos, informe como são usados e acompanhe uma estimativa de consumo e custo mensal. Para moradias prontas ou planejadas: **Projeto → Imóvel → Ambientes → Equipamentos → Estimativas → Relatório**.
 
 **[Abrir no navegador (GitHub Pages)](https://thegodkodda.github.io/eletroprojeto/)** · **[Baixar ZIP com iniciadores](https://github.com/thegodKoDDa/eletroprojeto/releases/latest/download/EletroProjeto-source.zip)** · [Todas as versões](https://github.com/thegodKoDDa/eletroprojeto/releases) · [Licença ISC](LICENSE)
 
@@ -15,9 +15,10 @@ Organize ambientes e aparelhos, informe como são usados e acompanhe uma estimat
 - Custo mensal pela tarifa informada, com detalhamento por ambiente e aparelho.
 - Projetos versionados, autosave, recuperação de rascunhos e lixeira.
 - PDF e JSON com resultados, hipóteses e dados pendentes.
-- Estudos elétricos opcionais, com fontes, condições de aplicação e memória de cálculo.
+- Potência instalada, média diária anualizada, consumo mensal/anual, custos, ranking e memória de cálculo.
+- Tipo e estágio do imóvel: planejado, em construção, pronto ou em reforma.
 
-Os resultados dependem dos dados informados. Consumo estimado não representa a fatura completa; estudos elétricos não substituem o projeto e a verificação da instalação.
+Os resultados são estimativas matemáticas, não medições reais. Potências do catálogo são sugestões editáveis. Consumo funciona sem distribuidora ou instalação definitiva; custo usa tarifa manual opcional e não representa a fatura completa.
 
 ## Escolha como usar
 
@@ -64,13 +65,13 @@ Configuração de portas, dados, atualização e execução manual: [guia de ins
 
 ## Como usar
 
-Na versão 0.24.1, disponível no ZIP e na `main`, escolha **USUÁRIO LEIGO**, **USUÁRIO PROFISSIONAL** ou **ESTOU APENAS DANDO UMA OLHADA** na abertura. Os três perfis oferecem todos os recursos, com destaques diferentes; use **Alterar perfil** para trocar sem perder a edição. O leigo conta com tarefas concluídas e próximo passo destacado; o profissional tem atalhos explicados e acompanhamento opcional. A distribuição estável publicada é a [v0.24.1](https://github.com/thegodKoDDa/eletroprojeto/releases/tag/v0.24.1).
+A `main`0.25.0 concentra o sistema em estimativas residenciais. A release estável publicada0.24.1 é anterior à reformulação; uma nova release/implantação não foi presumida. Escolha **USUÁRIO LEIGO**, **USUÁRIO PROFISSIONAL** ou **ESTOU APENAS DANDO UMA OLHADA**; os perfis mudam apresentação, sem alterar cálculos, dados ou permissões.
 
-1. **Projeto:** identifique a residência e informe a tarifa, se quiser estimar o custo.
-2. **Ambientes:** adicione aparelhos, confira suas potências e informe horários ou consumo mensal.
-3. **Conferência:** consulte resultados e pendências, salve e exporte um relatório.
+1. **Projeto e imóvel:** nome, localização contextual, tipo/estágio e tarifa opcional.
+2. **Ambientes e aparelhos:** referências editáveis, kWh da etiqueta ou potência e horários efetivos.
+3. **Resultados e Estimativas:** potência, média diária, consumo mensal/anual, custos e distribuições; salve/exporte o relatório atual.
 
-Demanda, circuitos, localização e referências territoriais ficam em **Estudos técnicos**, sem tornar o cadastro básico obrigatório mais complexo. Veja o [guia de uso](docs/usage.md).
+Normas de fornecimento, demanda, circuitos e proteções foram retirados do fluxo/API de estimativas. Acervo e projetos anteriores permanecem preservados e desacoplados. Veja o [guia de uso](docs/usage.md).
 
 ## Dados e recuperação
 

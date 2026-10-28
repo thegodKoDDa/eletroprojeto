@@ -279,23 +279,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/calculations/demand": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Full */
-        post: operations["full_api_v1_calculations_demand_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/v1/calculations/loads": {
         parameters: {
             query?: never;
@@ -313,7 +296,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/calculations/energisa-demand": {
+    "/api/v1/calculations/compare": {
         parameters: {
             query?: never;
             header?: never;
@@ -322,11 +305,8 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /**
-         * Energisa Demand
-         * @description NDU-001 v7 residencial individual d1–d7, inventário explícito; sem dimensionamento final.
-         */
-        post: operations["energisa_demand_api_v1_calculations_energisa_demand_post"];
+        /** Compare */
+        post: operations["compare_api_v1_calculations_compare_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -401,23 +381,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/standards": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Standards */
-        get: operations["standards_api_v1_standards_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/v1/projects/{project_id}/report": {
         parameters: {
             query?: never;
@@ -469,57 +432,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/technical/documents": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Documents */
-        get: operations["documents_api_v1_technical_documents_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/technical/applicability": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Applicable */
-        get: operations["applicable_api_v1_technical_applicability_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/technical/integrity": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Validate Registry */
-        get: operations["validate_registry_api_v1_technical_integrity_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/v1/technical/revisions": {
         parameters: {
             query?: never;
@@ -546,23 +458,6 @@ export interface paths {
         };
         /** Revision */
         get: operations["revision_api_v1_technical_revisions__revision_id__get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/projects/{project_id}/revalidation": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Revalidation */
-        get: operations["revalidation_api_v1_projects__project_id__revalidation_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -599,23 +494,6 @@ export interface paths {
         put?: never;
         /** Duplicate */
         post: operations["duplicate_api_v1_projects__project_id__duplicate_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/technical/rules": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Computational Rules */
-        get: operations["computational_rules_api_v1_technical_rules_get"];
-        put?: never;
-        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -708,98 +586,29 @@ export interface components {
             /** Csrf */
             csrf: string | null;
         };
-        /** BathroomGeometry */
-        BathroomGeometry: {
-            /**
-             * Scope Confirmed
-             * @default false
-             */
-            scope_confirmed: boolean;
-            /** Shower X M */
-            shower_x_m?: number | string | null;
-            /** Shower Y M */
-            shower_y_m?: number | string | null;
-            /** Measurement Source */
-            measurement_source?: string | null;
-            /** Points */
-            points?: components["schemas"]["BathroomInstallationPoint"][];
-        };
-        /** BathroomGeometryResult */
-        BathroomGeometryResult: {
-            /** Environment Id */
-            environment_id: string;
-            /** Name */
-            name: string;
-            /**
-             * Status
-             * @enum {string}
-             */
-            status: "calculated" | "estimated" | "pending" | "invalid" | "out_of_scope" | "awaiting_technical_validation";
-            /** Points */
-            points: components["schemas"]["BathroomPointResult"][];
-            /** Pending Checks */
-            pending_checks: string[];
-            /** Reference */
-            reference: string;
-            /** Reference Urls */
-            reference_urls: string[];
-            /** Limitations */
-            limitations: string[];
-        };
-        /** BathroomInstallationPoint */
-        BathroomInstallationPoint: {
-            /** Id */
-            id?: string;
-            /**
-             * Name
-             * @default Novo componente
-             */
-            name: string;
-            /**
-             * Kind
-             * @default other
-             * @enum {string}
-             */
-            kind: "socket" | "switch" | "water_heater" | "luminaire" | "other";
-            /** X Min M */
-            x_min_m?: number | string | null;
-            /** X Max M */
-            x_max_m?: number | string | null;
-            /** Y Min M */
-            y_min_m?: number | string | null;
-            /** Y Max M */
-            y_max_m?: number | string | null;
-            /** Z Min M */
-            z_min_m?: number | string | null;
-            /** Z Max M */
-            z_max_m?: number | string | null;
-        };
-        /** BathroomPointResult */
-        BathroomPointResult: {
-            /** Point Id */
-            point_id: string;
-            /** Name */
-            name: string;
-            /**
-             * Status
-             * @enum {string}
-             */
-            status: "calculated" | "estimated" | "pending" | "invalid" | "out_of_scope" | "awaiting_technical_validation";
-            /** Volume */
-            volume: ("1" | "2" | "3" | "outside") | null;
-            /** Nearest Horizontal Distance M */
-            nearest_horizontal_distance_m: number | string | null;
-            /** Ordinary Socket Or Switch Forbidden */
-            ordinary_socket_or_switch_forbidden: boolean | null;
-            /** Pending Checks */
-            pending_checks: string[];
-        };
         /** CalculationInput */
         CalculationInput: {
-            service_entry?: components["schemas"]["ServiceEntryInput"] | null;
-            /** Circuits */
-            circuits?: components["schemas"]["CircuitInput"][];
-            energisa_demand?: components["schemas"]["ProjectEnergisaDemandSettings"] | null;
+            /**
+             * Service Entry
+             * @deprecated
+             */
+            service_entry?: {
+                [key: string]: unknown;
+            } | null;
+            /**
+             * Circuits
+             * @deprecated
+             */
+            circuits?: {
+                [key: string]: unknown;
+            }[];
+            /**
+             * Energisa Demand
+             * @deprecated
+             */
+            energisa_demand?: {
+                [key: string]: unknown;
+            } | null;
             /**
              * Analysis Scope
              * @default installed
@@ -828,6 +637,10 @@ export interface components {
              * @enum {string}
              */
             utility: "energisa_sul_sudeste" | "cpfl_paulista" | "cpfl_piratininga" | "cpfl_santa_cruz" | "neoenergia_elektro" | "enel_sp" | "edp_sp" | "unconfirmed";
+            /** Property Stage */
+            property_stage?: ("planned" | "construction" | "ready" | "renovation") | null;
+            /** Utility Name */
+            utility_name?: string | null;
             /**
              * Residence Type
              * @default Casa
@@ -857,16 +670,6 @@ export interface components {
         };
         /** CalculationResult */
         CalculationResult: {
-            service_entry?: components["schemas"]["ServiceEntryResult"] | null;
-            /** Bathroom Geometry Results */
-            bathroom_geometry_results?: components["schemas"]["BathroomGeometryResult"][];
-            /** Circuit Results */
-            circuit_results?: components["schemas"]["CircuitResult"][];
-            energisa_demand?: components["schemas"]["ProjectEnergisaDemandResult"] | null;
-            /** Normative Environments */
-            normative_environments?: components["schemas"]["NormativeEnvironment"][];
-            /** Normative Capabilities */
-            normative_capabilities?: components["schemas"]["NormativeCapability"][];
             /** Notifications */
             notifications?: components["schemas"]["Notification"][];
             /** Field Issues */
@@ -896,12 +699,6 @@ export interface components {
                 [key: string]: number | string;
             };
             apparent_power: components["schemas"]["Value"] | null;
-            /** Normative */
-            normative: {
-                [key: string]: {
-                    [key: string]: unknown;
-                };
-            };
             /** Memory */
             memory: components["schemas"]["Memory"][];
             /** Warnings */
@@ -915,6 +712,7 @@ export interface components {
             apparent_power_kva?: components["schemas"]["Value"] | null;
             /** Aggregate Steps */
             aggregate_steps?: components["schemas"]["TechnicalStep"][];
+            daily_energy?: components["schemas"]["Value"] | null;
             monthly_energy?: components["schemas"]["Value"] | null;
             monthly_cost?: components["schemas"]["Value"] | null;
             /** Energy Unknown Load Ids */
@@ -1028,215 +826,6 @@ export interface components {
             note: string;
             parameters?: components["schemas"]["TechnicalParameters"];
         };
-        /** CircuitInput */
-        CircuitInput: {
-            /**
-             * Air Layout
-             * @default unknown
-             * @enum {string}
-             */
-            air_layout: "unknown" | "trefoil" | "flat_touching" | "horizontal_spaced" | "vertical_spaced";
-            /** Soil Temperature C */
-            soil_temperature_c?: (10 | 15 | 20 | 25 | 30 | 35 | 40 | 45 | 50 | 55 | 60) | null;
-            /**
-             * Buried Reference Confirmed
-             * @default false
-             */
-            buried_reference_confirmed: boolean;
-            /**
-             * Insulation
-             * @default PVC70
-             * @enum {string}
-             */
-            insulation: "PVC70" | "XLPE90" | "EPR90";
-            /**
-             * Terminals 90C Confirmed
-             * @default false
-             */
-            terminals_90c_confirmed: boolean;
-            /** Hot Resistivity Ohm Mm2 M */
-            hot_resistivity_ohm_mm2_m?: number | string | null;
-            /** Reactance Ohm M */
-            reactance_ohm_m?: number | string | null;
-            /** Impedance Source */
-            impedance_source?: string | null;
-            /**
-             * Configuration
-             * @default single_phase
-             * @enum {string}
-             */
-            configuration: "single_phase" | "balanced_three_phase_without_neutral";
-            protections?: components["schemas"]["CircuitProtectionInput"] | null;
-            /** Id */
-            id?: string;
-            /**
-             * Name
-             * @default Novo circuito
-             */
-            name: string;
-            /**
-             * Purpose
-             * @default sockets
-             * @enum {string}
-             */
-            purpose: "lighting" | "sockets" | "dedicated";
-            /** Load Ids */
-            load_ids?: string[];
-            /**
-             * Method
-             * @default unknown
-             * @enum {string}
-             */
-            method: "unknown" | "A1" | "A2" | "B1" | "B2" | "C" | "D" | "E" | "F" | "G";
-            /** Voltage V */
-            voltage_v?: number | string | null;
-            /** Length M */
-            length_m?: number | string | null;
-            /** Ambient Temperature C */
-            ambient_temperature_c?: (10 | 15 | 20 | 25 | 30 | 35 | 40 | 45 | 50 | 55 | 60) | null;
-            /** Grouped Circuits */
-            grouped_circuits?: number | null;
-            /**
-             * Scope Confirmed
-             * @default false
-             */
-            scope_confirmed: boolean;
-            /**
-             * Voltage Drop Model Confirmed
-             * @default false
-             */
-            voltage_drop_model_confirmed: boolean;
-            /**
-             * Overload Duration Confirmed
-             * @default false
-             */
-            overload_duration_confirmed: boolean;
-            /** Breaker Ratings A */
-            breaker_ratings_a?: (number | string)[];
-            /** Breaker I2 Factor */
-            breaker_i2_factor?: number | string | null;
-            /** Breaker Source */
-            breaker_source?: string | null;
-            /** Prospective Short Circuit Ka */
-            prospective_short_circuit_ka?: number | string | null;
-            /** Breaking Capacity Ka */
-            breaking_capacity_ka?: number | string | null;
-            /**
-             * Supply Origin
-             * @default unknown
-             * @enum {string}
-             */
-            supply_origin: "unknown" | "public_lv_delivery" | "own_transformer" | "delivery_at_transformer" | "generator";
-            /** Upstream Drop Percent */
-            upstream_drop_percent?: number | string | null;
-        };
-        /** CircuitProtectionCheck */
-        CircuitProtectionCheck: {
-            /** Code */
-            code: string;
-            /** Label */
-            label: string;
-            /** Value */
-            value: number | string | null;
-            /** Passed */
-            passed: boolean | null;
-            /** Reason */
-            reason: string;
-        };
-        /** CircuitProtectionInput */
-        CircuitProtectionInput: {
-            selectivity?: components["schemas"]["SelectivityInput"] | null;
-            surge?: components["schemas"]["SurgeProtectionInput"] | null;
-            /** Source */
-            source?: string | null;
-            /** Device Rated A */
-            device_rated_a?: number | string | null;
-            /** Cable K */
-            cable_k?: number | string | null;
-            /** Let Through A2S */
-            let_through_a2s?: number | string | null;
-            /** Short Duration S */
-            short_duration_s?: number | string | null;
-            /**
-             * Earthing System
-             * @default unknown
-             * @enum {string}
-             */
-            earthing_system: "unknown" | "TN" | "TT";
-            /** Phase Earth Voltage V */
-            phase_earth_voltage_v?: number | string | null;
-            /** Tn Situation */
-            tn_situation?: (1 | 2) | null;
-            /** Fault Loop Ohm */
-            fault_loop_ohm?: number | string | null;
-            /** Trip Current A */
-            trip_current_a?: number | string | null;
-            /** Trip Time S */
-            trip_time_s?: number | string | null;
-            /** Tt Ra Ohm */
-            tt_ra_ohm?: number | string | null;
-            /** Touch Limit V */
-            touch_limit_v?: (12 | 25 | 50) | null;
-            /** Rcd Sensitivity Ma */
-            rcd_sensitivity_ma?: number | string | null;
-            /**
-             * Rcd Type Compatible Confirmed
-             * @default false
-             */
-            rcd_type_compatible_confirmed: boolean;
-            /** Rcd Additional Required */
-            rcd_additional_required?: boolean | null;
-        };
-        /** CircuitResult */
-        CircuitResult: {
-            /** Study Conditions */
-            study_conditions?: string[];
-            /** Protection Checks */
-            protection_checks?: components["schemas"]["CircuitProtectionCheck"][];
-            /** Circuit Id */
-            circuit_id: string;
-            /** Name */
-            name: string;
-            /**
-             * Status
-             * @enum {string}
-             */
-            status: "calculated" | "estimated" | "pending" | "invalid" | "out_of_scope" | "awaiting_technical_validation";
-            /** Design Current A */
-            design_current_a: number | string | null;
-            /** Power Factor */
-            power_factor: number | string | null;
-            /** Breaker A */
-            breaker_a: number | string | null;
-            /** Conventional Current A */
-            conventional_current_a: number | string | null;
-            /** Phase Section Mm2 */
-            phase_section_mm2: number | string | null;
-            /** Pe Section Mm2 */
-            pe_section_mm2: number | string | null;
-            /** Capacity A */
-            capacity_a: number | string | null;
-            /** Temperature Factor */
-            temperature_factor: number | string | null;
-            /** Grouping Factor */
-            grouping_factor: number | string | null;
-            /** Voltage Drop V */
-            voltage_drop_v: number | string | null;
-            /** Voltage Drop Percent */
-            voltage_drop_percent: number | string | null;
-            /** Total Drop Percent */
-            total_drop_percent: number | string | null;
-            /** Breaking Capacity Ok */
-            breaking_capacity_ok: boolean | null;
-            /** Pending Checks */
-            pending_checks: string[];
-            /** Reference */
-            reference: string;
-            /** Reference Urls */
-            reference_urls?: string[];
-            /** Limitations */
-            limitations: string[];
-        };
         /** Credentials */
         Credentials: {
             /** Username */
@@ -1244,256 +833,15 @@ export interface components {
             /** Password */
             password: string;
         };
-        /** DocumentRegistry */
-        DocumentRegistry: {
-            /** Registry Version */
-            registry_version: string;
-            /** Documents */
-            documents: components["schemas"]["TechnicalDocument"][];
-        };
-        /** EnergisaCentralData */
-        EnergisaCentralData: {
-            /** Configuration */
-            configuration?: ("single_phase" | "balanced_three_phase") | null;
-            /**
-             * Voltage V
-             * @description Tensão aplicada; entre fases para trifásico equilibrado.
-             */
-            voltage_v?: number | string | null;
-            /** Maximum Total Current A */
-            maximum_total_current_a?: number | string | null;
-            /** Power Factor */
-            power_factor?: number | string | null;
-            /**
-             * Source
-             * @description Fabricante: corrente máxima total, tensão, configuração e FP no mesmo regime. Não usar MCA, corrente nominal ou corrente de partida como corrente máxima total.
-             */
-            source?: string | null;
-        };
-        /** EnergisaDemandBand */
-        EnergisaDemandBand: {
-            /** Installed Band W */
-            installed_band_w: number | string;
-            /** Factor */
-            factor: number | string;
-            /** Demand W */
-            demand_w: number | string;
-        };
-        /** EnergisaDemandComponent */
-        EnergisaDemandComponent: {
-            /** Name */
-            name: string;
-            /** Quantity */
-            quantity: number;
-            /** Table */
-            table: string;
-            /** Unit Apparent Demand Va */
-            unit_apparent_demand_va: number | string;
-            /** Power Factor */
-            power_factor: number | string;
-            /** Factor */
-            factor?: number | string | null;
-            /** Demand W */
-            demand_w: number | string;
-            /** Source */
-            source: string;
-        };
-        /** EnergisaDemandGroupResult */
-        EnergisaDemandGroupResult: {
-            /**
-             * Group
-             * @enum {string}
-             */
-            group: "d1" | "d2" | "d3" | "d4" | "d5" | "d6" | "d7";
-            /** Quantity */
-            quantity: number;
-            /** Installed Power W */
-            installed_power_w: number | string | null;
-            /** Factor */
-            factor: number | string | null;
-            /** Demand W */
-            demand_w: number | string | null;
-            /** Table */
-            table: string;
-            /** Reason */
-            reason: string | null;
-            /** Bands */
-            bands?: components["schemas"]["EnergisaDemandBand"][];
-            /** Components */
-            components?: components["schemas"]["EnergisaDemandComponent"][];
-        };
-        /**
-         * EnergisaDemandInput
-         * @example {
-         *       "confirmed_absent_groups": [
-         *         "d3",
-         *         "d4",
-         *         "d5",
-         *         "d6",
-         *         "d7"
-         *       ],
-         *       "has_signage_or_display_lighting": false,
-         *       "inventory_reviewed": true,
-         *       "loads": [
-         *         {
-         *           "group": "d1",
-         *           "name": "Iluminação/TUG — exemplo fictício",
-         *           "quantity": 1,
-         *           "unit_power_w": "1000"
-         *         },
-         *         {
-         *           "group": "d2",
-         *           "name": "Chuveiro — exemplo manual",
-         *           "quantity": 1,
-         *           "unit_power_w": "5500"
-         *         }
-         *       ],
-         *       "simultaneous_lighting_outlets": false,
-         *       "state": "SP",
-         *       "unit_type": "individual_residential",
-         *       "utility": "energisa_sul_sudeste"
-         *     }
-         */
-        EnergisaDemandInput: {
-            /** Utility */
-            utility: string;
-            /** State */
-            state: string;
-            /**
-             * Unit Type
-             * @enum {string}
-             */
-            unit_type: "individual_residential" | "grouped" | "non_residential";
-            /**
-             * Inventory Reviewed
-             * @description Confirma inventário completo, classificação de cada carga uma única vez, quantidades, potências adotadas e identificação das reservas (§9.1 notaVI).
-             */
-            inventory_reviewed: boolean;
-            /**
-             * Has Signage Or Display Lighting
-             * @description Letreiros/iluminação de vitrines não são abrangidos pela Tabela5; presença deixa este método fora de escopo.
-             */
-            has_signage_or_display_lighting: boolean;
-            /** Simultaneous Lighting Outlets */
-            simultaneous_lighting_outlets?: boolean | null;
-            /** Loads */
-            loads: components["schemas"]["EnergisaDemandLoad"][];
-            /** Confirmed Absent Groups */
-            confirmed_absent_groups: ("d1" | "d2" | "d3" | "d4" | "d5" | "d6" | "d7")[];
-        };
-        /** EnergisaDemandLoad */
-        EnergisaDemandLoad: {
-            motor?: components["schemas"]["EnergisaMotorData"] | null;
-            central?: components["schemas"]["EnergisaCentralData"] | null;
-            special?: components["schemas"]["EnergisaSpecialData"] | null;
-            /** Name */
-            name: string;
-            /**
-             * Group
-             * @description Classificação explícita §9.1: d1 iluminação/TUG; d2 aquecimento de água; d3 secadora de roupas/micro-ondas/lava-louças/hidromassagem; d4 fogão/forno elétrico; d5 AC janela/individual/central; d6 motores/solda motor-gerador; d7 solda transformador/raios-X/galvanização. Sem classificação automática.
-             * @enum {string}
-             */
-            group: "d1" | "d2" | "d3" | "d4" | "d5" | "d6" | "d7";
-            /** Quantity */
-            quantity: number;
-            /**
-             * Unit Power W
-             * @description Potência elétrica por unidade, em W, adotada pelo responsável. Não informar VA normativo, potência térmica ou kWh. Valores manuais válidos prevalecem sobre referências.
-             */
-            unit_power_w: number | string | null;
-            /**
-             * Reserve
-             * @default false
-             */
-            reserve: boolean;
-            /**
-             * Air Conditioning Type
-             * @default unconfirmed
-             * @enum {string}
-             */
-            air_conditioning_type: "unconfirmed" | "window_or_individual" | "central_unit";
-        };
-        /** EnergisaDemandResult */
-        EnergisaDemandResult: {
-            /** Value */
-            value: number | string | null;
-            /**
-             * Unit
-             * @constant
-             */
-            unit: "kVA";
-            /**
-             * Status
-             * @enum {string}
-             */
-            status: "calculated" | "estimated" | "pending" | "invalid" | "out_of_scope" | "awaiting_technical_validation";
-            /** Installed Power W */
-            installed_power_w: number | string | null;
-            /** Demanded Power Kw */
-            demanded_power_kw: number | string | null;
-            /** Groups */
-            groups: components["schemas"]["EnergisaDemandGroupResult"][];
-            /** Pending Checks */
-            pending_checks: string[];
-            /** Ignored Reserve Loads */
-            ignored_reserve_loads: string[];
-            /** Limitations */
-            limitations: string[];
-            reference: components["schemas"]["ResearchEvidence"];
-        };
-        /** EnergisaLoadClassification */
-        EnergisaLoadClassification: {
-            /** Group */
-            group?: ("d1" | "d2" | "d3" | "d4" | "d5" | "d6" | "d7") | null;
-            motor?: components["schemas"]["EnergisaMotorData"] | null;
-            central?: components["schemas"]["EnergisaCentralData"] | null;
-            special?: components["schemas"]["EnergisaSpecialData"] | null;
-            /**
-             * Reserve
-             * @default false
-             */
-            reserve: boolean;
-            /**
-             * Air Conditioning Type
-             * @default unconfirmed
-             * @enum {string}
-             */
-            air_conditioning_type: "unconfirmed" | "window_or_individual" | "central_unit";
-        };
-        /** EnergisaMotorData */
-        EnergisaMotorData: {
-            /** Configuration */
-            configuration?: ("single_phase" | "three_phase") | null;
-            /**
-             * Shaft Power Cv
-             * @description Potência de eixo em cv, conforme linha exata das Tabelas12/13. Frações: 1/6,1/4,1/3,1/2,2/3,3/4; demais: 1,1.5,2,3,4,5,6,7.5,10,12.5,15,20,25,30. Não converter HP automaticamente.
-             */
-            shaft_power_cv?: string | null;
-            /**
-             * Source
-             * @description Placa/ficha que identifica fases e potência de eixo; motor ou solda motor-gerador.
-             */
-            source?: string | null;
-        };
-        /** EnergisaSpecialData */
-        EnergisaSpecialData: {
-            /** Equipment Type */
-            equipment_type?: ("arc_welder" | "resistance_welder" | "x_ray" | "galvanization") | null;
-            /** Connection */
-            connection?: ("standard" | "inverted_v_v" | "not_applicable") | null;
-            /** Input Apparent Power Va */
-            input_apparent_power_va?: number | string | null;
-            /** Power Factor */
-            power_factor?: number | string | null;
-            /**
-             * Source
-             * @description Placa/fabricante: potência aparente elétrica absorvida, FP no mesmo regime e ligação; não potência de saída.
-             */
-            source?: string | null;
-        };
         /** Environment */
         Environment: {
-            bathroom_geometry?: components["schemas"]["BathroomGeometry"] | null;
+            /**
+             * Bathroom Geometry
+             * @deprecated
+             */
+            bathroom_geometry?: {
+                [key: string]: unknown;
+            } | null;
             /**
              * Id
              * Format: uuid
@@ -1523,6 +871,20 @@ export interface components {
             outlets: number;
             /** Loads */
             loads?: components["schemas"]["Load"][];
+        };
+        /** EstimateComparison */
+        EstimateComparison: {
+            baseline: components["schemas"]["CalculationResult"];
+            scenario: components["schemas"]["CalculationResult"];
+            /** Differences */
+            differences: {
+                [key: string]: components["schemas"]["Value"] | null;
+            };
+        };
+        /** EstimateComparisonInput */
+        EstimateComparisonInput: {
+            baseline: components["schemas"]["CalculationInput"];
+            scenario: components["schemas"]["CalculationInput"];
         };
         /** FieldIssue */
         FieldIssue: {
@@ -1711,7 +1073,13 @@ export interface components {
         };
         /** Load */
         Load: {
-            energisa_demand?: components["schemas"]["EnergisaLoadClassification"] | null;
+            /**
+             * Energisa Demand
+             * @deprecated
+             */
+            energisa_demand?: {
+                [key: string]: unknown;
+            } | null;
             /**
              * Id
              * Format: uuid
@@ -1951,67 +1319,6 @@ export interface components {
             /** Reason */
             reason: string;
         };
-        /** NormativeCapability */
-        NormativeCapability: {
-            /**
-             * Code
-             * @enum {string}
-             */
-            code: "lighting" | "outlets" | "demand";
-            /** Label */
-            label: string;
-            /** Purpose */
-            purpose: string;
-            /** Available */
-            available: boolean;
-            /**
-             * Status
-             * @enum {string}
-             */
-            status: "calculated" | "estimated" | "pending" | "invalid" | "out_of_scope" | "awaiting_technical_validation";
-            /** Reason */
-            reason: string;
-            /** Evidence */
-            evidence: components["schemas"]["ResearchEvidence"][];
-            /** Pending Checks */
-            pending_checks: string[];
-        };
-        /** NormativeEnvironment */
-        NormativeEnvironment: {
-            /** Environment Id */
-            environment_id: string;
-            /** Name */
-            name: string;
-            /**
-             * Status
-             * @enum {string}
-             */
-            status: "calculated" | "estimated" | "pending" | "invalid" | "out_of_scope" | "awaiting_technical_validation";
-            /** Lighting Va */
-            lighting_va: number | string | null;
-            /** Minimum Lighting Points */
-            minimum_lighting_points: number | null;
-            /** Registered Lighting Points */
-            registered_lighting_points: number;
-            /** Lighting Points Missing */
-            lighting_points_missing: number | null;
-            /** Minimum Outlet Points */
-            minimum_outlet_points: number | null;
-            /** Registered Outlet Points */
-            registered_outlet_points: number;
-            /** Outlet Points Missing */
-            outlet_points_missing: number | null;
-            /** Outlet Basis Points */
-            outlet_basis_points: number | null;
-            /** Outlets Va */
-            outlets_va: number | string | null;
-            /** Missing Fields */
-            missing_fields: ("area_m2" | "perimeter_m")[];
-            /** Notes */
-            notes: string[];
-            /** Reason */
-            reason: string;
-        };
         /** Notification */
         Notification: {
             /** Id */
@@ -2020,7 +1327,7 @@ export interface components {
              * Category
              * @enum {string}
              */
-            category: "error" | "technical" | "normative" | "info" | "estimate";
+            category: "error" | "technical" | "info" | "estimate";
             /** Location */
             location: string[];
             /** Problem */
@@ -2048,10 +1355,27 @@ export interface components {
         };
         /** Project */
         Project: {
-            service_entry?: components["schemas"]["ServiceEntryInput"] | null;
-            /** Circuits */
-            circuits?: components["schemas"]["CircuitInput"][];
-            energisa_demand?: components["schemas"]["ProjectEnergisaDemandSettings"] | null;
+            /**
+             * Service Entry
+             * @deprecated
+             */
+            service_entry?: {
+                [key: string]: unknown;
+            } | null;
+            /**
+             * Circuits
+             * @deprecated
+             */
+            circuits?: {
+                [key: string]: unknown;
+            }[];
+            /**
+             * Energisa Demand
+             * @deprecated
+             */
+            energisa_demand?: {
+                [key: string]: unknown;
+            } | null;
             /**
              * Analysis Scope
              * @default installed
@@ -2060,7 +1384,10 @@ export interface components {
             analysis_scope: "installed" | "apparent" | "current" | "normative";
             /** Name */
             name: string;
-            /** Municipality */
+            /**
+             * Municipality
+             * @default
+             */
             municipality: string;
             /**
              * State
@@ -2074,6 +1401,10 @@ export interface components {
              * @enum {string}
              */
             utility: "energisa_sul_sudeste" | "cpfl_paulista" | "cpfl_piratininga" | "cpfl_santa_cruz" | "neoenergia_elektro" | "enel_sp" | "edp_sp" | "unconfirmed";
+            /** Property Stage */
+            property_stage?: ("planned" | "construction" | "ready" | "renovation") | null;
+            /** Utility Name */
+            utility_name?: string | null;
             /**
              * Residence Type
              * @default Casa
@@ -2122,98 +1453,29 @@ export interface components {
             /** Standards Version */
             standards_version: string;
         };
-        /** ProjectEnergisaDemandInventoryItem */
-        ProjectEnergisaDemandInventoryItem: {
-            motor?: components["schemas"]["EnergisaMotorData"] | null;
-            central?: components["schemas"]["EnergisaCentralData"] | null;
-            special?: components["schemas"]["EnergisaSpecialData"] | null;
-            /** Load Id */
-            load_id: string;
-            /** Environment Id */
-            environment_id: string;
-            /** Environment */
-            environment: string;
-            /** Name */
-            name: string;
-            /** Group */
-            group: ("d1" | "d2" | "d3" | "d4" | "d5" | "d6" | "d7") | null;
-            /** Quantity */
-            quantity: number;
-            /** Unit Power W */
-            unit_power_w: number | string | null;
-            /** Reserve */
-            reserve: boolean;
-            /**
-             * Air Conditioning Type
-             * @enum {string}
-             */
-            air_conditioning_type: "unconfirmed" | "window_or_individual" | "central_unit";
-        };
-        /** ProjectEnergisaDemandResult */
-        ProjectEnergisaDemandResult: {
-            /** Value */
-            value: number | string | null;
-            /**
-             * Unit
-             * @constant
-             */
-            unit: "kVA";
-            /**
-             * Status
-             * @enum {string}
-             */
-            status: "calculated" | "estimated" | "pending" | "invalid" | "out_of_scope" | "awaiting_technical_validation";
-            /** Installed Power W */
-            installed_power_w: number | string | null;
-            /** Demanded Power Kw */
-            demanded_power_kw: number | string | null;
-            /** Groups */
-            groups: components["schemas"]["EnergisaDemandGroupResult"][];
-            /** Pending Checks */
-            pending_checks: string[];
-            /** Ignored Reserve Loads */
-            ignored_reserve_loads: string[];
-            /** Limitations */
-            limitations: string[];
-            reference: components["schemas"]["ResearchEvidence"];
-            declarations: components["schemas"]["ProjectEnergisaDemandSettings"];
-            /** Inventory Digest */
-            inventory_digest: string;
-            /** Inventory Reviewed */
-            inventory_reviewed: boolean;
-            /** Unclassified Load Ids */
-            unclassified_load_ids: string[];
-            /** Inventory */
-            inventory: components["schemas"]["ProjectEnergisaDemandInventoryItem"][];
-        };
-        /** ProjectEnergisaDemandSettings */
-        ProjectEnergisaDemandSettings: {
-            /**
-             * Enabled
-             * @default false
-             */
-            enabled: boolean;
-            /**
-             * Unit Type
-             * @default unconfirmed
-             * @enum {string}
-             */
-            unit_type: "unconfirmed" | "individual_residential" | "grouped" | "non_residential";
-            /** Has Signage Or Display Lighting */
-            has_signage_or_display_lighting?: boolean | null;
-            /** Simultaneous Lighting Outlets */
-            simultaneous_lighting_outlets?: boolean | null;
-            /** Confirmed Absent Groups */
-            confirmed_absent_groups?: ("d1" | "d2" | "d3" | "d4" | "d5" | "d6" | "d7")[];
-            /** Reviewed Inventory Digest */
-            reviewed_inventory_digest?: string | null;
-        };
         /** ProjectInput */
         ProjectInput: {
-            service_entry?: components["schemas"]["ServiceEntryInput"] | null;
-            /** Circuits */
-            circuits?: components["schemas"]["CircuitInput"][];
-            energisa_demand?: components["schemas"]["ProjectEnergisaDemandSettings"] | null;
+            /**
+             * Service Entry
+             * @deprecated
+             */
+            service_entry?: {
+                [key: string]: unknown;
+            } | null;
+            /**
+             * Circuits
+             * @deprecated
+             */
+            circuits?: {
+                [key: string]: unknown;
+            }[];
+            /**
+             * Energisa Demand
+             * @deprecated
+             */
+            energisa_demand?: {
+                [key: string]: unknown;
+            } | null;
             /**
              * Analysis Scope
              * @default installed
@@ -2222,7 +1484,10 @@ export interface components {
             analysis_scope: "installed" | "apparent" | "current" | "normative";
             /** Name */
             name: string;
-            /** Municipality */
+            /**
+             * Municipality
+             * @default
+             */
             municipality: string;
             /**
              * State
@@ -2236,6 +1501,10 @@ export interface components {
              * @enum {string}
              */
             utility: "energisa_sul_sudeste" | "cpfl_paulista" | "cpfl_piratininga" | "cpfl_santa_cruz" | "neoenergia_elektro" | "enel_sp" | "edp_sp" | "unconfirmed";
+            /** Property Stage */
+            property_stage?: ("planned" | "construction" | "ready" | "renovation") | null;
+            /** Utility Name */
+            utility_name?: string | null;
             /**
              * Residence Type
              * @default Casa
@@ -2262,31 +1531,6 @@ export interface components {
             notes: string;
             /** Environments */
             environments?: components["schemas"]["Environment"][];
-        };
-        /** ProjectRevalidation */
-        ProjectRevalidation: {
-            /**
-             * Project Id
-             * Format: uuid
-             */
-            project_id: string;
-            /** Project Version */
-            project_version: number;
-            /** Previous Registry Version */
-            previous_registry_version: string;
-            /** Current Registry Version */
-            current_registry_version: string;
-            /** Previous Engine Version */
-            previous_engine_version: string | null;
-            /** Requires Revalidation */
-            requires_revalidation: boolean;
-            /** Previous Result */
-            previous_result: {
-                [key: string]: unknown;
-            } | null;
-            current_result: components["schemas"]["CalculationResult"];
-            /** Notice */
-            notice: string;
         };
         /** ProjectSummary */
         ProjectSummary: {
@@ -2319,181 +1563,6 @@ export interface components {
             deleted_at: string | null;
             /** Standards Version */
             standards_version: string;
-        };
-        /** RegionalMethodInfo */
-        RegionalMethodInfo: {
-            /** Code */
-            code: string;
-            /** Endpoint */
-            endpoint: string;
-            /**
-             * Status
-             * @enum {string}
-             */
-            status: "calculated" | "estimated" | "pending" | "invalid" | "out_of_scope" | "awaiting_technical_validation";
-            /** Available */
-            available: boolean;
-            /** Scope */
-            scope: string;
-            /** Supported Utilities */
-            supported_utilities: string[];
-            /** Supported States */
-            supported_states: string[];
-            reference: components["schemas"]["ResearchEvidence"];
-        };
-        /** ResearchEvidence */
-        ResearchEvidence: {
-            /** Title */
-            title: string;
-            /** Url */
-            url: string;
-            /** Finding */
-            finding: string;
-            /**
-             * Access
-             * @enum {string}
-             */
-            access: "official_metadata" | "official_index" | "institutional_full_text" | "official_full_text" | "user_supplied_full_text";
-            /** Consulted On */
-            consulted_on: string;
-            /** Section */
-            section?: string | null;
-            /** File Name */
-            file_name?: string | null;
-            /** Sha256 */
-            sha256?: string | null;
-        };
-        /** SelectivityInput */
-        SelectivityInput: {
-            /** Upstream Device */
-            upstream_device?: string | null;
-            /** Downstream Device */
-            downstream_device?: string | null;
-            /** Downstream Rated A */
-            downstream_rated_a?: number | string | null;
-            /** Source */
-            source?: string | null;
-            /**
-             * Conditions Confirmed
-             * @default false
-             */
-            conditions_confirmed: boolean;
-            /** Limit Ka */
-            limit_ka?: number | string | null;
-        };
-        /** ServiceEntryInput */
-        ServiceEntryInput: {
-            /**
-             * Network
-             * @default unknown
-             * @enum {string}
-             */
-            network: "unknown" | "220_127";
-            /**
-             * Route
-             * @default unknown
-             * @enum {string}
-             */
-            route: "unknown" | "embedded" | "underground";
-            /**
-             * Insulation
-             * @default unknown
-             * @enum {string}
-             */
-            insulation: "unknown" | "PVC70" | "XLPE90";
-            /** Requested Phases */
-            requested_phases?: (1 | 2 | 3) | null;
-            /**
-             * Scope Confirmed
-             * @default false
-             */
-            scope_confirmed: boolean;
-            /**
-             * Special Loads Reviewed
-             * @default false
-             */
-            special_loads_reviewed: boolean;
-        };
-        /** ServiceEntryResult */
-        ServiceEntryResult: {
-            /**
-             * Status
-             * @enum {string}
-             */
-            status: "calculated" | "estimated" | "pending" | "invalid" | "out_of_scope" | "awaiting_technical_validation";
-            /** Category */
-            category: string | null;
-            /** Phases */
-            phases: number | null;
-            /** Basis Value */
-            basis_value: number | string | null;
-            /** Basis Unit */
-            basis_unit: string | null;
-            /** Minimum Phase Mm2 */
-            minimum_phase_mm2: number | string | null;
-            /** Minimum Neutral Mm2 */
-            minimum_neutral_mm2: number | string | null;
-            /** Minimum Earthing Mm2 */
-            minimum_earthing_mm2: number | string | null;
-            /** Band Breaker References A */
-            band_breaker_references_a: (number | string)[];
-            /** Pending Checks */
-            pending_checks: string[];
-            /** Reference */
-            reference: string;
-        };
-        /** SurgeProtectionInput */
-        SurgeProtectionInput: {
-            /** Device */
-            device?: string | null;
-            /** Source */
-            source?: string | null;
-            /** Requirements Source */
-            requirements_source?: string | null;
-            /**
-             * Conditions Confirmed
-             * @default false
-             */
-            conditions_confirmed: boolean;
-            /** Uc V */
-            uc_v?: number | string | null;
-            /** Required Uc V */
-            required_uc_v?: number | string | null;
-            /** Effective Up V */
-            effective_up_v?: number | string | null;
-            /** Withstand Voltage V */
-            withstand_voltage_v?: number | string | null;
-            /** Discharge Ka */
-            discharge_ka?: number | string | null;
-            /** Required Discharge Ka */
-            required_discharge_ka?: number | string | null;
-            /** Waveform */
-            waveform?: ("8/20" | "10/350") | null;
-            /** Requirement Waveform */
-            requirement_waveform?: ("8/20" | "10/350") | null;
-            /** Short Withstand Ka */
-            short_withstand_ka?: number | string | null;
-        };
-        /** TechnicalDocument */
-        TechnicalDocument: {
-            /** Id */
-            id: string;
-            /** Title */
-            title: string;
-            /** Edition */
-            edition: string | null;
-            /** Effective Date */
-            effective_date: string | null;
-            /** Source */
-            source: string;
-            /** Status */
-            status: string;
-            /** Consulted On */
-            consulted_on: string;
-            /** Source File */
-            source_file?: string | null;
-            /** Sha256 */
-            sha256?: string | null;
         };
         /** TechnicalParameters */
         TechnicalParameters: {
@@ -2559,25 +1628,6 @@ export interface components {
             /** Maximum Current A */
             maximum_current_a?: number | string | null;
         };
-        /** TechnicalRules */
-        TechnicalRules: {
-            /** Regional Methods */
-            regional_methods?: components["schemas"]["RegionalMethodInfo"][];
-            /** Registry Version */
-            registry_version: string;
-            /** Mathematical */
-            mathematical: {
-                [key: string]: unknown;
-            }[];
-            /** Normative */
-            normative: {
-                [key: string]: unknown;
-            }[];
-            /** Coverage */
-            coverage: components["schemas"]["NormativeCapability"][];
-            /** Notice */
-            notice: string;
-        };
         /** TechnicalStep */
         TechnicalStep: {
             /** Calculation */
@@ -2592,7 +1642,7 @@ export interface components {
              * Unit
              * @enum {string}
              */
-            unit: "W" | "kW" | "VA" | "kVA" | "A" | "kWh" | "BRL";
+            unit: "W" | "kW" | "VA" | "kVA" | "A" | "kWh" | "kWh/dia" | "BRL";
             /** Source */
             source?: string | null;
             /** Assumptions */
@@ -2664,9 +1714,10 @@ export interface components {
             document_ids: string[];
             /**
              * Status
-             * @enum {string}
+             * @default contextual
+             * @constant
              */
-            status: "calculated" | "estimated" | "pending" | "invalid" | "out_of_scope" | "awaiting_technical_validation";
+            status: "contextual";
             /**
              * Municipality Mapping
              * @constant
@@ -2681,7 +1732,7 @@ export interface components {
              * Unit
              * @enum {string}
              */
-            unit: "W" | "kW" | "VA" | "kVA" | "A" | "kWh" | "BRL";
+            unit: "W" | "kW" | "VA" | "kVA" | "A" | "kWh" | "kWh/dia" | "BRL";
             /**
              * Status
              * @enum {string}
@@ -3311,39 +2362,6 @@ export interface operations {
             };
         };
     };
-    full_api_v1_calculations_demand_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["CalculationInput"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["CalculationResult"];
-                };
-            };
-            /** @description Entradas inválidas; avisos localizados quando disponíveis. */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["InputValidationError"];
-                };
-            };
-        };
-    };
     full_api_v1_calculations_loads_post: {
         parameters: {
             query?: never;
@@ -3377,7 +2395,7 @@ export interface operations {
             };
         };
     };
-    energisa_demand_api_v1_calculations_energisa_demand_post: {
+    compare_api_v1_calculations_compare_post: {
         parameters: {
             query?: never;
             header?: never;
@@ -3386,7 +2404,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["EnergisaDemandInput"];
+                "application/json": components["schemas"]["EstimateComparisonInput"];
             };
         };
         responses: {
@@ -3396,7 +2414,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["EnergisaDemandResult"];
+                    "application/json": components["schemas"]["EstimateComparison"];
                 };
             };
             /** @description Entradas inválidas; avisos localizados quando disponíveis. */
@@ -3539,35 +2557,6 @@ export interface operations {
             };
         };
     };
-    standards_api_v1_standards_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-            /** @description Entradas inválidas; avisos localizados quando disponíveis. */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["InputValidationError"];
-                };
-            };
-        };
-    };
     report_api_v1_projects__project_id__report_get: {
         parameters: {
             query?: never;
@@ -3659,96 +2648,6 @@ export interface operations {
             };
         };
     };
-    documents_api_v1_technical_documents_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DocumentRegistry"];
-                };
-            };
-            /** @description Entradas inválidas; avisos localizados quando disponíveis. */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["InputValidationError"];
-                };
-            };
-        };
-    };
-    applicable_api_v1_technical_applicability_get: {
-        parameters: {
-            query: {
-                utility: string;
-                state?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-            /** @description Entradas inválidas; avisos localizados quando disponíveis. */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["InputValidationError"];
-                };
-            };
-        };
-    };
-    validate_registry_api_v1_technical_integrity_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-            /** @description Entradas inválidas; avisos localizados quando disponíveis. */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["InputValidationError"];
-                };
-            };
-        };
-    };
     revisions_api_v1_technical_revisions_get: {
         parameters: {
             query?: never;
@@ -3796,37 +2695,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": unknown;
-                };
-            };
-            /** @description Entradas inválidas; avisos localizados quando disponíveis. */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["InputValidationError"];
-                };
-            };
-        };
-    };
-    revalidation_api_v1_projects__project_id__revalidation_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                project_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ProjectRevalidation"];
                 };
             };
             /** @description Entradas inválidas; avisos localizados quando disponíveis. */
@@ -3891,38 +2759,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Project"];
-                };
-            };
-            /** @description Entradas inválidas; avisos localizados quando disponíveis. */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["InputValidationError"];
-                };
-            };
-        };
-    };
-    computational_rules_api_v1_technical_rules_get: {
-        parameters: {
-            query?: {
-                utility?: string;
-                state?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["TechnicalRules"];
                 };
             };
             /** @description Entradas inválidas; avisos localizados quando disponíveis. */

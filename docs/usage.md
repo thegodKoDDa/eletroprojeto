@@ -1,93 +1,33 @@
-# Guia de uso
+# Usar o EletroProjeto — estimativas residenciais
 
-O EletroProjeto estima o consumo elétrico de uma residência pronta ou planejada. Você informa os aparelhos e como são usados; a aplicação organiza os resultados por ambiente e equipamento.
+Escolha Leigo, Profissional ou Exploração. Todos usam os mesmos cálculos; Alterar perfil conserva a edição. Funciona com casa pronta, planejada, em construção ou reforma, apartamento, kitnet, studio, sobrado ou outro imóvel residencial.
 
-## Escolha como quer usar
+## Projeto e imóvel
 
-Na abertura, escolha uma apresentação:
+Clique Criar novo projeto. Informe nome, UF e, se quiser, município e tarifa emR$/kWh. Em Outros dados do projeto registre tipo/estágio, área/pavimentos e distribuidora selecionada ou nome informado. Distribuidora/área/geometria/instalação definitiva não são exigências para kWh; sem tarifa, apenas o custo fica indisponível.
 
-- **USUÁRIO LEIGO:** preenchimento essencial em destaque, consumo mensal dos aparelhos aberto e orientação para chegar à estimativa. Os campos necessários seguem os requisitos da operação atual; a tarifa é opcional para estimar o consumo e necessária para estimar o custo.
-- **USUÁRIO PROFISSIONAL:** dados elétricos, medidas, memória de cálculo e atalhos de demanda, circuitos/proteções, localização, território e biblioteca técnica em destaque. Todos os limites e condições dos estudos permanecem.
-- **ESTOU APENAS DANDO UMA OLHADA:** organização original, com consumo primeiro e estudos técnicos recolhidos.
+## Ambientes e equipamentos
 
-No celular e tablet, leigo e profissional têm um botão **Navegação** para abrir os acessos a início, projetos, lixeira e biblioteca. Selecionar um destino recolhe esse menu; salvar e exportar continuam visíveis durante a edição. No computador a navegação permanece aberta.
+Adicione ambientes, escolha tipo e nome personalizados. Catálogo oferece sugestões por ambiente; busca encontra também equipamentos incomuns. Marca/modelo não são obrigatórios. Potência da referência é ponto de partida: altere para o valor adotado da estimativa sem modificar o catálogo ou outra instância. Duplicar ambiente/aparelho cria IDs independentes. Restaurar sugestão recupera referência sem apagar consumo/horários.
 
-Todos os recursos estão disponíveis em qualquer perfil. Use **Alterar perfil** na navegação para trocar a apresentação sem perder o projeto ou a edição. O diálogo também pode ser fechado por Escape ou **Voltar sem alterar**. A escolha é lembrada nesta aba, inclusive ao recarregar; uma aba nova começa com a tela de escolha. A preferência é separada por conta quando há autenticação e não é gravada no projeto ou relatório.
+Em Consumo mensal informe kWh mensais/anuais unitários da etiqueta/medição ou potência elétrica e tempo efetivo (horas/minutos, dias/mês). Mensal declarado prevalece sobre anual e horários; anual é dividido por12 só para média mensal. Não use automaticamente potência nominal×24h de uma geladeira; use consumo declarado ou uma premissa explícita de tempo efetivo. Não sabe? Deixe vazio: conhecidos continuam em subtotal identificado.
 
-Nos perfis leigo e profissional, a biblioteca técnica ocupa o terceiro atalho da tela inicial; a lixeira continua disponível na navegação. Na exploração, o terceiro atalho continua sendo a lixeira. Em detalhes dos resultados, **Mostrar verificações e memória detalhadas** permite aprofundar a consulta em qualquer um dos novos perfis; a exploração conserva o seletor original.
+## Resultados e Estimativas
 
-## 1. Projeto
+Potência instalada, média diária anualizada, energia mensal/anual e custo quando há tarifa. Consulte ambientes/categorias e maiores consumos; detalhes mostram fórmulas, parâmetros, fonte e premissas. Média diária é anual/365; hábitos e clima reais variam. Alterar potência, quantidade, horários, kWh ou tarifa recalcula automaticamente, ocultando números antigos durante a atualização. Avisos tratam entradas ou cobertura, sem pendências de fornecimento.
 
-Na tela inicial, escolha **Criar novo projeto**. Informe um nome e o município. A tarifa é opcional: sem ela, o consumo ainda pode ser estimado; com ela, aparece também o custo calculado para a energia informada.
+## Salvar, copiar, excluir e restaurar
 
-Use a tarifa da sua conta ou contrato. O custo apresentado não inclui automaticamente bandeiras, tributos, iluminação pública ou outras parcelas da fatura.
+Salvar projeto cria registro com histórico. Salvar como novo projeto (menu Mais ações) conserva o original e registra outra cópia; duplicar na biblioteca faz cópia independente. Use nomes para comparar cenários e modificar apenas uma cópia. Autosave inicia após primeiro salvamento manual, com pausa em renomeação/conflito. Conflito409 oferece preservar a edição local como cópia ou carregar a versão salva; não sobrescreve silenciosamente.
 
-## 2. Ambientes
+Projetos salvos abre a biblioteca; remover envia à lixeira, restaurar recupera com histórico. Exclusão definitiva continua explícita/versionada, sem apagar outras instâncias. Projetos antigos abrem com ambientes, equipamentos, valores manuais e localização; estudos normativos antigos continuam no snapshot histórico, sem execução/exibição ou atualização em massa.
 
-Adicione os cômodos e escolha os aparelhos no catálogo, ou cadastre uma carga personalizada. Confira a quantidade e a potência elétrica. Uma referência de catálogo representa um modelo identificado; valores da placa ou do fabricante têm prioridade.
+Rascunhos por conta/aba ajudam a recuperar edição local ainda não salva; limpar navegador ou usar outro dispositivo limita recuperação. Pages guarda projetos em localStorage, separado do SQLite local. Não confundir exportar relatório com salvar/backup.
 
-Para estimar o consumo de cada unidade, informe uma das bases:
+## Relatório
 
-- **Consumo mensal em kWh:** da etiqueta, de uma medição ou de outra referência identificada.
-- **Horários de uso:** potência elétrica, horas por dia e dias por mês, considerando as condições de funcionamento do aparelho.
+Exportar PDF ou JSON usa cálculo atual conferido pelo servidor: identificação/imóvel/localização, equipamentos, potências, energia/custos/distribuições, memória e premissas. JSON2.0 não é backup completo. Não inclui demanda, circuitos, fornecimento ou aprovação técnica. [Continuidade](continuity.md) descreve salvamento completo, checkpoints e recuperação.
 
-A aplicação não presume horários, tarifas ou potência elétrica a partir de BTU/h. Se um dado não é conhecido, mantenha-o ausente; um campo pendente não significa consumo zero. Equipamentos cíclicos podem exigir medição ou uma referência de consumo mais adequada que a potência nominal.
+## Comparação opcional de cenários
 
-## 3. Conferência
-
-Consulte o consumo e o custo estimados, o detalhamento por aparelho e as pendências. Os atalhos levam ao ambiente e ao campo que precisa de informação. Ao editar uma entrada, o resultado anterior fica oculto até o novo cálculo.
-
-![Conferência com dados fictícios: quatro lâmpadas de 10 W, cinco horas por dia, trinta dias e tarifa de R$ 0,80/kWh](assets/consumption.png)
-
-A imagem é um exemplo fictício de funcionamento, não uma recomendação de potência, tarifa ou horário.
-
-## Salvar e recuperar
-
-**Salvar projeto** registra a edição e seu histórico. O salvamento automático pode ser ativado depois do primeiro salvamento manual. Rascunhos locais ajudam a recuperar edições ainda não enviadas; não substituem o banco e podem se perder ao limpar o navegador ou trocar de dispositivo.
-
-Use **Abrir projetos salvos** para continuar um projeto. A lixeira permite restaurar projetos removidos. Em caso de conflito entre versões, escolha a recuperação indicada pela interface; não há sobrescrita silenciosa.
-
-## Exportar
-
-PDF e JSON apresentam o resultado atual, as hipóteses de uso, a cobertura e as pendências. Um cálculo desatualizado precisa terminar antes da exportação. JSON de relatório não é um backup completo para restaurar projetos.
-
-Detalhes do formato e da rastreabilidade estão em [formulários e relatórios](forms-and-pdf.md); cópias completas e recuperação, em [continuidade](continuity.md).
-
-## Estudos técnicos opcionais
-
-Na conferência, abra **Estudos técnicos** apenas quando precisar de uma análise adicional. Demanda, circuitos, localização de componentes e consulta territorial exigem dados e condições específicos. Nenhum desses estudos é obrigatório para estimar o consumo.
-
-Os procedimentos têm cobertura limitada e fontes identificadas. Uma posição, seção ou demanda estimada não declara conformidade final da instalação. Consulte [cálculos](calculations.md), [referências](standards.md) e [limitações conhecidas](KNOWN_ISSUES.md).
-
-
-Nos circuitos, escolha isolação/método/arranjo reais; terminais para90°C, condições enterradas e afastamentos precisam ser conferidos. D exige temperatura do solo e referência limitada; G exige circuito único trifásico equilibrado sem neutro. Dados de impedância próprios são necessários para queda em XLPE/EPR e D/E/F/G. Os painéis DPS/seletividade comparam documentação de produtos e estudo informado, sem selecionar proteção final.
-
-Em **Referência territorial · ANEEL**, a consulta municipal opcional usa código IBGE de sete dígitos, mostra todas as empresas com relação positiva no último mês declarado por cada uma e preserva datas/atrasos. Confirme a empresa que atende o endereço pela fatura/contrato; a consulta não troca a distribuidora do projeto.
-
-Na edição do aparelho, **Etiqueta ou medição** reúne os kWh mensais; **Estimativa por horários** reúne horas e dias. São alternativas: kWh informados, inclusive zero, prevalecem. Limpar os kWh reabilita os horários preservados. **Restaurar referência** recupera os dados técnicos sugeridos sem apagar consumo/horários; duplicar cria outra instância, sem modificar o catálogo. No perfil profissional, **Parâmetros dos aparelhos** leva aos dados do primeiro aparelho e **Resultados e memória** reabre os detalhes quando necessário.
-
-## Acompanhe o próximo passo
-
-No perfil leigo, o quadro Passo a passo mostra o que já está concluído e a próxima ação. Preencha os dados no seu ritmo: o destaque avança sem tirar o cursor do campo. No celular, Ver todas as etapas expande a lista completa; a próxima ação continua visível quando a lista está recolhida. Use Ir para identificação/cadastro/dados de uso/conferência/salvamento para chegar ao destino e abrir os detalhes necessários. Não precisa seguir a ordem para usar os recursos.
-
-A sequência é identificar o projeto → cadastrar ambientes e aparelhos → informar o uso → conferir a estimativa → salvar. Consumo pendente pode ficar em aberto quando você não conhece o dado. Zero informado é válido e diferente de vazio. A tarifa é opcional; os estudos técnicos também.
-
-Quando houver consumo para todos os aparelhos cadastrados, leia os resultados e os avisos e clique Já conferi a estimativa. O quadro destaca o salvamento se ele estiver pendente. Alterar os dados pede nova conferência; reabrir ou recarregar também não presume que você leu a nova estimativa. Conferência do usuário não é aprovação técnica da instalação.
-
-No profissional, Acompanhar as etapas da estimativa oferece o mesmo percurso de forma opcional, abaixo dos atalhos explicados. Em qualquer perfil, Precisa de ajuda? explica as alternativas de preenchimento e o significado dos estados. Verde com confirmação indica tarefa concluída; âmbar indica pendência; vermelho indica correção; azul indica informação. Texto e símbolos acompanham as cores.
-
-## Menos contas e preenchimento repetido
-
-Em qualquer perfil, você pode informar o tempo de funcionamento em **minutos por dia**. Selecione a unidade e digite o tempo; o motor converte para calcular os kWh. Os valores de horas e minutos são preservados separadamente; a unidade selecionada determina qual será usado.
-
-Se a etiqueta trouxer **kWh/ano**, abra Minha etiqueta informa kWh/ano e digite o valor por unidade. O programa calcula a média mensal. Um consumo mensal já preenchido, inclusive zero, continua prioritário; limpe-o se quiser usar o anual. Energia anual prevalece sobre horários. Não é necessário inventar uma potência para calcular energia conhecida pela etiqueta.
-
-Para vários aparelhos com o mesmo uso, abra **Preencher uma rotina para vários aparelhos** dentro do ambiente. Informe tempo e dias uma vez e aplique. Só aparelhos sem consumo e sem rotina recebem esses valores; dados parciais ou preenchidos são preservados. Escolha os aparelhos adequados: uma geladeira não funciona continuamente na potência máxima só porque fica ligada24h.
-
-Na conferência, **Contas automáticas: ambientes, maiores consumos e12meses** reúne custo por ambiente/categoria, até cinco maiores consumos, percentuais e projeção anual. Os percentuais usam o subtotal conhecido. Sem tarifa, o consumo continua disponível e o custo fica pendente. Sem dados suficientes, não há zero fictício. Projeções não incluem sazonalidade, reajuste de tarifa ou encargos fixos.
-
-## Avisos e menu lateral
-
-O estado do cálculo fica visível em uma área estável; ele não empurra o cadastro ao aparecer. Enquanto recalcula, os números anteriores ficam ocultos até chegar a resposta correspondente aos seus dados. Salvar/exportar mostram um aviso no canto, que pode ser fechado pelo botão Fechar aviso da operação.
-
-Mais ações abre um menu sobre a interface, sem aumentar a barra lateral. Em janelas baixas, ele abre para cima ou oferece rolagem. Escape fecha e devolve o foco ao botão. O salvamento automático mantém a navegação de consulta disponível e preserva o menu; aguarde a gravação terminar para criar outro projeto ou substituir a edição atual.
+Abra Comparar cenários de consumo, salve uma configuração e altere aparelhos ou hábitos. Comparar com versão salva mostra diferenças sem sobrescrever o original. Para manter as duas configurações, use Salvar como novo projeto. Valores negativos indicam redução; dados insuficientes ficam explícitos. Trocar entradas invalida a comparação anterior.

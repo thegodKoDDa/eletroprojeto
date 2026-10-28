@@ -81,34 +81,21 @@ for (const profile of Object.keys(labels) as (keyof typeof labels)[]) {
         page.getByRole('region', { name: 'Orientação para estimar consumo' }),
       ).toBeVisible();
       expect(await page.locator('label[data-emphasis="essential"]').count()).toBeGreaterThan(0);
-      await expect(page.locator('.technical-tools')).not.toHaveAttribute('open');
+      await expect(page.locator('.technical-tools')).toHaveCount(0);
     } else if (profile === 'professional') {
       await expect(page.getByRole('region', { name: 'Atalhos profissionais' })).toBeVisible();
       await expect(page.locator('.project-extra')).toHaveAttribute('open');
       await expect(page.locator('.room-measurements')).toHaveAttribute('open');
-      await expect(page.locator('.technical-tools')).toHaveAttribute('open');
-      await expect(page.locator('.result-details')).toHaveAttribute('open');
-      await expect(
-        page.getByRole('checkbox', { name: 'Mostrar verificações e memória detalhadas' }),
-      ).toBeChecked();
+      await expect(page.locator('.technical-tools')).toHaveCount(0);
+      await expect(page.locator('.result-details')).not.toHaveAttribute('open');
     } else {
       await expect(page.locator('.experience-guide')).toHaveCount(0);
       await expect(page.locator('.project-extra')).not.toHaveAttribute('open');
-      await expect(page.locator('.technical-tools')).not.toHaveAttribute('open');
+      await expect(page.locator('.technical-tools')).toHaveCount(0);
     }
-    // Every profile can reach the full circuit study without modifying its data.
-    if (profile === 'professional') {
-      await page
-        .getByRole('navigation', { name: 'Ferramentas profissionais' })
-        .getByRole('button', { name: 'Circuitos e proteções' })
-        .click();
-    } else {
-      await page.getByText('Estudos técnicos (opcional)', { exact: true }).click();
-      await page.getByText('Circuitos e entrada de energia', { exact: true }).click();
-    }
-    await expect(
-      page.getByRole('button', { name: 'Adicionar circuito', exact: true }),
-    ).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Adicionar circuito', exact: true })).toHaveCount(
+      0,
+    );
     const savedResponse = page.waitForResponse(
       (r) => r.url().endsWith('/projects') && r.request().method() === 'POST',
     );

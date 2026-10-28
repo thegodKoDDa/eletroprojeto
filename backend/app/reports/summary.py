@@ -4,7 +4,7 @@ from datetime import datetime
 from decimal import Decimal
 from zoneinfo import ZoneInfo
 
-from ..technical import UTILITIES
+from ..locations import UTILITIES
 
 POWER_ORIGINS = {
     "nameplate": "Placa informada",
@@ -150,9 +150,6 @@ def build_summary(project: dict, result: dict, project_version: int | None = Non
                 id=room["id"],
                 nome=room["name"],
                 area_m2=room.get("area_m2"),
-                perimetro_m=room.get("perimeter_m"),
-                pontos_de_luz=room.get("lighting_points"),
-                tug=room.get("outlets"),
                 potencia_conhecida_w=result["by_environment_w"].get(room["id"]),
                 potencia_incompleta=any(load["id"] in unknown_power for load in room["loads"]),
                 cargas_sem_potencia=sum(load["id"] in unknown_power for load in room["loads"]),
@@ -170,26 +167,8 @@ def build_summary(project: dict, result: dict, project_version: int | None = Non
     utility = next(
         (item["name"] for item in UTILITIES if item["id"] == project["utility"]), "Não confirmada"
     )
-    demand = result["normative"]["demand"]
-    demand_available = demand.get("value") is not None and demand.get("status") in (
-        "calculated",
-        "estimated",
-    )
-    demand_reason = (
-        "Demanda sujeita à revisão do projeto e aos requisitos locais."
-        if demand_available
-        else "Distribuidora ainda não confirmada."
-        if project["utility"] == "unconfirmed"
-        else "Localidade/distribuidora fora da cobertura validada neste estudo."
-        if result.get("technical_context", {}).get("status") == "out_of_scope"
-        else demand.get("reason")
-        or "Procedimento de demanda desta distribuidora ainda indisponível neste estudo."
-    )
     return dict(
-        formato_versao="1.4",
-        circuitos=result.get("circuit_results", []),
-        localizacao_banheiros=result.get("bathroom_geometry_results", []),
-        entrada_de_energia=result.get("service_entry"),
+        formato_versao="2.0",
         emissao=dict(
             data_hora=datetime.now(ZoneInfo("America/Sao_Paulo")).strftime("%d/%m/%Y, %H:%M:%S"),
             fuso="America/Sao_Paulo",
@@ -198,16 +177,18 @@ def build_summary(project: dict, result: dict, project_version: int | None = Non
             area_construida_m2=project.get("built_area_m2"),
             pavimentos=project.get("floors"),
             tipo_residencia=project.get("residence_type"),
+            estagio_imovel=project.get("property_stage"),
             nome=project["name"],
             municipio=project["municipality"],
             uf=project["state"],
             observacoes=project.get("notes", ""),
-            distribuidora=utility,
+            distribuidora=project.get("utility_name") or utility,
             distribuidora_id=project["utility"],
             revisao_salva=project_version,
         ),
-        aviso="Estudo preliminar de cargas; não constitui dimensionamento final. Valores nulos não representam zero.",
+        aviso="Estimativas dos equipamentos e hábitos informados, não medições reais. Valores nulos não representam zero.",
         resultados=dict(
+            media_diaria_anualizada=measurement(result.get("daily_energy"), "kWh/dia"),
             consumo_mensal=measurement(result.get("monthly_energy"), "kWh"),
             custo_mensal_estimado=measurement(result.get("monthly_cost"), "BRL"),
             projecao_consumo_anual=measurement(result.get("annual_energy"), "kWh"),
@@ -233,27 +214,6 @@ def build_summary(project: dict, result: dict, project_version: int | None = Non
         ambientes=rooms,
         equipamentos=equipment,
         pendencias_consumo=pending,
-        previsao_residencial_por_ambiente=[
-            dict(
-                ambiente_id=r["environment_id"],
-                nome=r["name"],
-                situacao=r["status"],
-                iluminacao_va=r["lighting_va"],
-                minimo_pontos_de_luz=r["minimum_lighting_points"],
-                minimo_pontos_tug=r["minimum_outlet_points"],
-                pontos_tug_considerados=r["outlet_basis_points"],
-                previsao_tug_va=r["outlets_va"],
-                faltam_pontos_de_luz=r["lighting_points_missing"],
-                faltam_pontos_tug=r["outlet_points_missing"],
-                dados_faltantes=[
-                    "área (m²)" if field == "area_m2" else "perímetro (m)"
-                    for field in r["missing_fields"]
-                ],
-                observacoes=r["notes"],
-                motivo=r["reason"],
-            )
-            for r in result.get("normative_environments", [])
-        ],
         categorias=[
             dict(
                 nome=name,
@@ -265,32 +225,6 @@ def build_summary(project: dict, result: dict, project_version: int | None = Non
                 **result["by_category_w"],
             }.items()
         ],
-        previsoes_normativas={
-            key: dict(
-                valor=item.get("value"),
-                unidade=item.get("unit"),
-                situacao=item["status"],
-                resultado_disponivel=item.get("value") is not None,
-                motivo=demand_reason
-                if key == "demand"
-                else "Previsão residencial não solicitada neste estudo."
-                if project.get("analysis_scope") != "normative"
-                else "Confira dimensões e classificação dos ambientes."
-                if item.get("value") is None
-                else "Previsão quantitativa de ambientes residenciais.",
-            )
-            for key, item in result["normative"].items()
-        },
-        demanda_revisada=result.get("energisa_demand"),
-        atendimento_distribuidora=dict(
-            demanda_disponivel=demand_available,
-            situacao="Demanda estimada disponível para revisão"
-            if demand_available
-            else "Demanda e padrão de entrada ainda exigem revisão",
-            motivo=demand_reason,
-            cobertura_territorial="Informe e confirme a distribuidora responsável pelo endereço."
-            if project["utility"] == "unconfirmed"
-            else "Distribuidora selecionada pelo usuário; atendimento ao município ainda não verificado automaticamente.",
-            orientacao="kWh/mês expressa consumo. W/kW expressa potência instalada; kVA pode expressar demanda. Consumo mensal não define sozinho o tipo de ligação ou o padrão de entrada. Confirme a distribuidora e seus requisitos locais antes de solicitar ligação ou alteração de carga.",
-        ),
+        memoria_calculo=result.get("load_results", []),
+        agregacoes=result.get("aggregate_steps", []),
     )

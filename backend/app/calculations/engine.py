@@ -1,18 +1,11 @@
 import hashlib
 import json
-from dataclasses import asdict
 from decimal import Decimal, localcontext
 
 from ..version import APP_VERSION, ENGINE_VERSION
-from .bathroom_geometry import calculate_bathroom_geometry
-from .circuits import calculate_circuits
 from .energy import energy_breakdown, energy_cost, resolve_energy
 from .equipment import resolve_equipment
 from .power import installed_power, watts_to_kw
-from .project_demand import project_energisa_demand
-from .residential import residential_prevision
-from .service_entry import service_entry
-from .standards import ENERGISA_V7_EVIDENCE, pending_rule
 from .units import va_to_kva
 
 
@@ -22,24 +15,21 @@ def calculate(project: dict) -> dict:
     Installed and apparent values are known subtotals when coverage is incomplete.
     Each load is counted once; thermal/mechanical/energy values are never added.
     """
-    from ..technical import applicability, normative_capabilities, registry_version
+    from ..estimate_metadata import revision
     from ..validation import field_issues
 
-    context = applicability(project["utility"], project.get("state", "SP"))
-    context["app_version"] = APP_VERSION
-    context["registry_version"] = registry_version()
+    context = {"app_version": APP_VERSION, "registry_version": revision()}
     calculation_inputs = {
         key: project.get(key)
         for key in (
-            "analysis_scope",
             "state",
             "municipality",
             "utility",
             "environments",
             "energy_tariff_brl_per_kwh",
-            "energisa_demand",
-            "circuits",
-            "service_entry",
+            "property_stage",
+            "residence_type",
+            "utility_name",
         )
     }
     digest = hashlib.sha256(
@@ -245,22 +235,12 @@ def calculate(project: dict) -> dict:
         def value(number, unit, state=status):
             return {"value": number, "unit": unit, "status": state}
 
-        residential, normative_rooms = residential_prevision(project)
-        regional_demand = project_energisa_demand(project)
-        if regional_demand is not None:
-            regional_demand["reference"] = asdict(ENERGISA_V7_EVIDENCE)
         output = {
-            "bathroom_geometry_results": calculate_bathroom_geometry(project),
-            "energisa_demand": regional_demand,
-            "normative_environments": normative_rooms,
-            "normative_capabilities": normative_capabilities(
-                project["utility"], project.get("state", "SP")
-            ),
             "field_issues": field_issues(project),
             "input_digest": digest,
             "engine_version": ENGINE_VERSION,
             "technical_context": context,
-            "status": "awaiting_technical_validation",
+            "status": "estimated",
             "installed_power": value(total, "W"),
             "installed_power_kw": value(watts_to_kw(total), "kW"),
             "lighting_nominal": value(
@@ -292,39 +272,34 @@ def calculate(project: dict) -> dict:
             "by_category_w": by_category,
             "apparent_power": value(apparent, "VA") if all_pf else None,
             "apparent_power_kva": value(va_to_kva(apparent), "kVA") if all_pf else None,
-            "normative": {
-                **residential,
-                "demand": pending_rule("demand")
-                if project["utility"] == "energisa_sul_sudeste"
-                and project.get("state", "SP") == "SP"
-                else {
-                    "value": None,
-                    "unit": "kVA",
-                    "status": context["status"],
-                    "reference": context["documents"],
-                    "reason": context["reason"],
-                },
-            },
             "memory": memory,
             "aggregate_steps": aggregates,
             "load_results": load_results,
             "unknown_load_ids": unknown,
             "warnings": warnings,
-            "counting_policy": "Cada instância é somada uma vez. Iluminação é subconjunto da potência instalada. Previsão TUG/iluminação normativa e demanda são bases separadas. BTU/h, kWh/mês e saída do micro-ondas não são potências elétricas de entrada. Valores W com cargas pendentes são subtotais conhecidos; VA é soma escalar, não análise vetorial.",
+            "counting_policy": "Cada instância é somada uma vez. Iluminação é subconjunto da potência instalada. BTU/h, kWh/mês e saída do micro-ondas não são potências elétricas de entrada. Valores W com cargas pendentes são subtotais conhecidos; VA é soma escalar, não análise vetorial.",
         }
 
-        if regional_demand is not None:
-            output["normative"]["demand"] = {
-                "value": regional_demand["value"],
-                "unit": "kVA",
-                "status": regional_demand["status"],
-                "reference": regional_demand["reference"],
-                "reason": "; ".join(regional_demand["pending_checks"])
-                or "Estimativa NDU-001 7.0 d1–d7 com inventário revisado; sem dimensionamento final.",
-            }
         from ..validation import notifications
 
-        output["service_entry"] = service_entry(project, total, unknown, regional_demand)
-        output["circuit_results"] = calculate_circuits(project, output["load_results"])
         output["notifications"] = notifications(project, output)
+        if output["monthly_energy"] is not None:
+            output["daily_energy"] = value(
+                output["annual_energy"]["value"] / Decimal(365),
+                "kWh/dia",
+                "pending" if energy_unknown else "estimated",
+            )
+            aggregates.append(
+                dict(
+                    calculation="Média diária anualizada",
+                    formula="E_dia_médio = E_ano / 365",
+                    substituted=f"{output['annual_energy']['value']} kWh/ano / 365 = {output['daily_energy']['value']} kWh/dia",
+                    value=output["daily_energy"]["value"],
+                    unit="kWh/dia",
+                    source=None,
+                    assumptions="Indicador médio de planejamento; não representa um dia específico nem medição real.",
+                )
+            )
+        else:
+            output["daily_energy"] = None
         return output

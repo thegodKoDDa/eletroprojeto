@@ -43,7 +43,7 @@ for (const profile of ['LEIGO', 'PROFISSIONAL']) {
     await expect(hours).toHaveValue('5');
     if (profile === 'PROFISSIONAL') {
       await page.getByRole('button', { name: 'Parâmetros dos aparelhos', exact: true }).click();
-      await expect(page.locator('[id$=".voltage_v"]').first()).toBeFocused();
+      await expect(page.locator('[id$=".unit_power_w"]').first()).toBeFocused();
       await page.locator('#results-memory').click();
       await page.getByRole('button', { name: 'Resultados e memória', exact: true }).click();
       await expect(page.locator('.result-details')).toHaveAttribute('open');

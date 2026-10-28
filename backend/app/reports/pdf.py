@@ -293,7 +293,7 @@ def render_report(project, result, project_version=None):
 
     rooms = project["environments"]
     doc.line(project.get("name") or "Projeto sem nome", heading=True)
-    doc.line("Consumo residencial e resumo de cargas · estudo preliminar")
+    doc.line("Estimativas de consumo energético residencial")
     doc.line(" · ".join(filter(None, [project.get("municipality"), project.get("state")])))
     doc.line("Emissão: " + summary["emissao"]["data_hora"] + " · Horário de Brasília")
     if project_version is not None:
@@ -302,6 +302,16 @@ def render_report(project, result, project_version=None):
     doc.line("Área construída: " + val(project.get("built_area_m2")) + " m²")
     if project.get("residence_type"):
         doc.line("Tipo de residência: " + project["residence_type"])
+    if project.get("property_stage"):
+        doc.line(
+            "Estágio do imóvel: "
+            + {
+                "planned": "Planejado",
+                "construction": "Em construção",
+                "ready": "Pronto",
+                "renovation": "Em reforma",
+            }[project["property_stage"]]
+        )
     if project.get("floors") is not None:
         doc.line("Pavimentos: " + str(project["floors"]))
     doc.line(
@@ -317,6 +327,7 @@ def render_report(project, result, project_version=None):
                 else "Consumo mensal estimado",
                 result.get("monthly_energy"),
             ),
+            row("Média diária anualizada", result.get("daily_energy")),
             row("Custo mensal estimado da energia", result.get("monthly_cost")),
             row("Projeção de consumo em 12 meses", result.get("annual_energy")),
             row("Projeção de custo em 12 meses", result.get("annual_cost")),
@@ -362,9 +373,7 @@ def render_report(project, result, project_version=None):
             "Projeção de 12 meses: repete o uso mensal ou usa a energia anual declarada. Sem sazonalidade ou reajuste de tarifa presumidos; subtotal quando há pendências."
         )
     if result.get("apparent_power") is None:
-        doc.line(
-            "VA indisponível: confira potência elétrica e fator de potência dos equipamentos. Esses dados não impedem a estimativa de consumo em kWh quando há dados suficientes de uso."
-        )
+        doc.line("Indicadores elétricos opcionais não interferem no consumo em kWh.")
     doc.section("Consumo por ambiente")
     doc.table(
         ["Ambiente", "kWh/mês", "Custo BRL/mês", "Cobertura"],
@@ -385,13 +394,11 @@ def render_report(project, result, project_version=None):
     )
     doc.section("Potência por ambiente")
     doc.table(
-        ["Ambiente", "Área m²", "Perímetro m", "Luz/TUG", "Potência conhecida (W)"],
+        ["Ambiente", "Área m²", "Potência conhecida (W)"],
         [
             (
                 room["name"],
                 val(room.get("area_m2")),
-                val(room.get("perimeter_m")),
-                f"{room.get('lighting_points') if room.get('lighting_points') is not None else '—'} / {room.get('outlets') if room.get('outlets') is not None else '—'}",
                 val(result["by_environment_w"].get(room["id"]))
                 + (
                     " (parcial)"
@@ -403,57 +410,11 @@ def render_report(project, result, project_version=None):
             )
             for room in rooms
         ],
-        [28, 14, 16, 14, 28],
+        [40, 20, 40],
     )
     doc.line(
-        "Luz/TUG: pontos de luz e tomadas cadastrados; não representam mínimos normativos. W parcial é somente o subtotal conhecido, não o total do ambiente."
+        "W parcial representa somente os equipamentos com potência conhecida, não o total do ambiente."
     )
-    if result.get("normative_environments"):
-        doc.section("Previsão residencial por ambiente")
-        doc.table(
-            ["Ambiente", "Luz VA", "Mín. luz", "Mín. TUG", "TUG VA"],
-            [
-                (
-                    r["name"],
-                    val(r["lighting_va"]),
-                    str(r["minimum_lighting_points"] or "—"),
-                    str(r["minimum_outlet_points"] or "—"),
-                    val(r["outlets_va"]),
-                )
-                for r in result["normative_environments"]
-            ],
-            [32, 17, 17, 17, 17],
-        )
-        for room in summary["previsao_residencial_por_ambiente"]:
-            if (
-                room["faltam_pontos_de_luz"]
-                or room["faltam_pontos_tug"]
-                or room["dados_faltantes"]
-                or room["situacao"] == "out_of_scope"
-            ):
-                doc.line(
-                    room["nome"]
-                    + ": "
-                    + (
-                        "faltam " + str(room["faltam_pontos_de_luz"]) + " ponto(s) de luz; "
-                        if room["faltam_pontos_de_luz"]
-                        else ""
-                    )
-                    + (
-                        "faltam " + str(room["faltam_pontos_tug"]) + " ponto(s) TUG; "
-                        if room["faltam_pontos_tug"]
-                        else ""
-                    )
-                    + (
-                        "informar " + ", ".join(room["dados_faltantes"])
-                        if room["dados_faltantes"]
-                        else ""
-                    )
-                    + (room["motivo"] if room["situacao"] == "out_of_scope" else "")
-                )
-        doc.line(
-            "TUG considera o maior entre os pontos cadastrados e o mínimo previsto. VA separado de W. Localização, distribuição e proteção não verificadas."
-        )
     if summary["equipamentos"]:
         doc.section("Equipamentos e uso considerado")
         offset = 0
@@ -524,213 +485,22 @@ def render_report(project, result, project_version=None):
         ],
         [36, 32, 32],
     )
-    doc.section("Cobertura normativa")
-    doc.table(
-        ["Resultado", "Valor", "Situação"],
-        [
-            row(title, result["normative"][key])
-            for key, title in [
-                ("lighting", "Iluminação mínima"),
-                ("outlets", "Previsão de tomadas"),
-                ("demand", "Demanda da distribuidora"),
-            ]
-        ],
-        [45, 25, 30],
-    )
-    if project.get("analysis_scope") != "normative":
-        doc.line("Previsão residencial de iluminação/TUG não solicitada neste estudo.")
+    doc.section("Memória de cálculo e premissas")
+    for room in project["environments"]:
+        for load in room["loads"]:
+            doc.line(room["name"] + " / " + load["name"], heading=True)
+            doc.line("Fonte dos valores: " + load.get("source", "Informada pelo usuário"))
+            for item in result.get("load_results", []):
+                if item["load_id"] == load["id"]:
+                    for step in item["steps"]:
+                        doc.line(step["formula"] + " · " + step["substituted"])
+                        doc.line(step["assumptions"])
+    doc.section("Premissas e limitações")
+    doc.line(summary["aviso"])
+    doc.line("kWh/mês expressa consumo; W expressa potência. Não são grandezas equivalentes.")
+    doc.line("Média diária = projeção anual / 365 dias; não representa o uso em um dia específico.")
     doc.line(
-        "Previsões normativas indisponíveis neste estudo não indicam falhas no cadastro. Valores nulos não representam zero."
-    )
-    regional = result.get("energisa_demand")
-    if regional:
-        doc.section("Demanda revisada — NDU-001 7.0")
-        doc.line(
-            "Estimativa d1–d7; inventário e classificação declarados. Não dimensiona a instalação."
-        )
-        declarations = regional["declarations"]
-        unit_labels = {
-            "individual_residential": "Residência individual",
-            "grouped": "Unidades agrupadas",
-            "non_residential": "Não residencial",
-            "unconfirmed": "Não confirmado",
-        }
-
-        def answer(value):
-            return "Sim" if value is True else "Não" if value is False else "Não confirmado"
-
-        doc.line(
-            "Unidade declarada: " + unit_labels.get(declarations.get("unit_type"), "Não confirmado")
-        )
-        doc.line(
-            "Letreiros/vitrines: "
-            + answer(declarations.get("has_signage_or_display_lighting"))
-            + "; uso simultâneo de luz/TUG: "
-            + answer(declarations.get("simultaneous_lighting_outlets"))
-        )
-        doc.line(
-            "Reservas não entram na demanda; suas potências permanecem na conferência do limite de carga instalada."
-        )
-        doc.line(
-            "Grupos confirmados ausentes: "
-            + ", ".join(declarations.get("confirmed_absent_groups", []))
-        )
-        doc.line(
-            "Inventário revisado: "
-            + ("Sim" if regional["inventory_reviewed"] else "Não / confirmação desatualizada")
-        )
-        doc.table(
-            ["Ambiente / equipamento", "Grupo", "Reserva", "Quantidade", "W/unidade"],
-            [
-                (
-                    f"{item['environment']} / {item['name']}",
-                    item["group"] or "Pendente",
-                    "Sim" if item["reserve"] else "Não",
-                    str(item["quantity"]),
-                    val(item["unit_power_w"]),
-                )
-                for item in regional["inventory"]
-            ],
-            [44, 12, 12, 14, 18],
-        )
-        if regional["groups"]:
-            doc.table(
-                ["Grupo", "Quantidade", "Instalada W", "Demanda W"],
-                [
-                    (
-                        item["group"],
-                        str(item["quantity"]),
-                        val(item["installed_power_w"]),
-                        val(item["demand_w"]),
-                    )
-                    for item in regional["groups"]
-                ],
-                [20, 20, 30, 30],
-            )
-        for group in regional["groups"]:
-            if group["factor"] is not None:
-                doc.line(group["group"] + " — fator por quantidade: " + val(group["factor"]))
-            if group["bands"]:
-                doc.line(group["group"] + " — parcelas de iluminação/TUG ou AC individual")
-                doc.table(
-                    ["Faixa W", "Fator", "Demanda W"],
-                    [
-                        (val(band["installed_band_w"]), val(band["factor"]), val(band["demand_w"]))
-                        for band in group["bands"]
-                    ],
-                    [35, 30, 35],
-                )
-            for component in group.get("components", []):
-                doc.line(
-                    component["name"]
-                    + " — "
-                    + str(component["quantity"])
-                    + " unidade(s); referência "
-                    + component["table"]
-                    + "; VA/unidade="
-                    + val(component["unit_apparent_demand_va"])
-                    + "; FP="
-                    + val(component["power_factor"])
-                    + "; fator="
-                    + val(component["factor"])
-                    + "; demanda W="
-                    + val(component["demand_w"])
-                    + "; fonte: "
-                    + component["source"]
-                )
-        for message in regional["pending_checks"] + regional["limitations"]:
-            doc.line(message)
-        doc.line(
-            "Referência: "
-            + regional["reference"]["title"]
-            + "; "
-            + regional["reference"]["section"]
-        )
-    if result.get("bathroom_geometry_results"):
-        doc.section("Localização — volumes de chuveiro (estudo condicionado)")
-        for room in result["bathroom_geometry_results"]:
-            doc.line(room["name"] + " — " + room["status"])
-            for point in room["points"]:
-                doc.line(
-                    point["name"]
-                    + "; volume="
-                    + (point["volume"] or "pendente")
-                    + "; distância horizontal mínima="
-                    + val(point["nearest_horizontal_distance_m"])
-                    + " m"
-                )
-                for message in point["pending_checks"]:
-                    doc.line(message)
-            for message in room["pending_checks"] + room["limitations"]:
-                doc.line(message)
-            doc.line(room["reference"])
-    if result.get("circuit_results"):
-        doc.section("Estudo de circuitos — seleção condicionada")
-        for circuit in result["circuit_results"]:
-            doc.line(circuit["name"])
-            for condition in circuit.get("study_conditions", []):
-                doc.line(condition)
-            doc.line(
-                "Ib="
-                + val(circuit["design_current_a"])
-                + " A; In="
-                + val(circuit["breaker_a"])
-                + " A; fase="
-                + val(circuit["phase_section_mm2"])
-                + " mm²; PE="
-                + val(circuit["pe_section_mm2"])
-                + " mm²"
-            )
-            doc.line(
-                "Queda estimada="
-                + val(circuit["voltage_drop_percent"])
-                + "%; total="
-                + val(circuit["total_drop_percent"])
-                + "%"
-            )
-            for check in circuit["pending_checks"]:
-                doc.line("Pendente: " + check)
-            for check in circuit.get("protection_checks", []):
-                doc.line(
-                    check["label"]
-                    + ": "
-                    + (
-                        "atende ao critério informado"
-                        if check["passed"] is True
-                        else "não atende"
-                        if check["passed"] is False
-                        else "pendente"
-                    )
-                    + "; "
-                    + check["reason"]
-                )
-            doc.line(circuit["reference"])
-    entry = result.get("service_entry")
-    if entry is not None:
-        doc.section("Entrada de energia — referência limitada")
-        doc.line(
-            "Categoria=" + (entry["category"] or "Pendente") + "; fases=" + val(entry["phases"])
-        )
-        doc.line(
-            "Mínimos fase/neutro/terra: "
-            + val(entry["minimum_phase_mm2"])
-            + "/"
-            + val(entry["minimum_neutral_mm2"])
-            + "/"
-            + val(entry["minimum_earthing_mm2"])
-            + " mm²"
-        )
-        for check in entry["pending_checks"]:
-            doc.line(check)
-        doc.line(entry["reference"])
-    doc.section("Para conversar com a distribuidora")
-    doc.line(summary["atendimento_distribuidora"]["situacao"])
-    if not summary["atendimento_distribuidora"]["demanda_disponivel"]:
-        doc.line(summary["atendimento_distribuidora"]["motivo"])
-    doc.line(summary["atendimento_distribuidora"]["cobertura_territorial"])
-    doc.line(summary["atendimento_distribuidora"]["orientacao"])
-    doc.line(
-        "Estudo preliminar de cargas; não constitui dimensionamento final nem aprovação do pedido de ligação."
+        "Clima, ciclos e hábitos reais podem diferir. Tarifa informada não inclui automaticamente encargos fixos ou impostos adicionais."
     )
     if project.get("notes"):
         doc.section("Observações do projeto")

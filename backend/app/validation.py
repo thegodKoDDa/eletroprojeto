@@ -5,17 +5,17 @@ from decimal import Decimal
 # Required means necessary for the named operation, not a blanket ban on drafts.
 REQUIREMENTS = {
     "project.name": ("Nome do projeto", "salvar projeto", None),
-    "project.municipality": ("Município", "salvar projeto", None),
-    "project.utility": ("Concessionária", "demanda da distribuidora", None),
+    "project.municipality": ("Município", "identificação contextual", None),
+    "project.utility": ("Concessionária", "identificação contextual", None),
     "project.state": ("Estado", "localização", None),
     "project.built_area_m2": ("Área construída (m²)", "salvar projeto", None),
     "project.residence_type": ("Tipo de residência", "salvar projeto", None),
     "project.floors": ("Pavimentos", "salvar projeto", None),
     "project.reference_voltage_v": ("Tensão de referência (V)", "salvar projeto", None),
     "environment.name": ("Nome", "identificar ambiente", None),
-    "environment.type": ("Tipo", "previsão normativa", None),
-    "environment.area_m2": ("Área (m²)", "previsão normativa de iluminação", None),
-    "environment.perimeter_m": ("Perímetro (m)", "previsão normativa de tomadas", None),
+    "environment.type": ("Tipo", "identificação do ambiente", None),
+    "environment.area_m2": ("Área (m²)", "identificação do ambiente", None),
+    "environment.perimeter_m": ("Perímetro (m)", "identificação do ambiente", None),
     "environment.lighting_points": ("Pontos de luz", "conferir pontos cadastrados", None),
     "environment.outlets": ("Pontos de tomadas", "conferir pontos cadastrados", None),
     "load.name": ("Identificação da carga", "identificar carga", None),
@@ -80,9 +80,10 @@ def requirements():
         "load.parameters.efficiency": (0.000001, 1, False),
         "load.parameters.mechanical_power": (0.000001, None, False),
     }
-    # Geometry/utility are saved metadata until their normative operation is available.
+    # Contextual and legacy metadata never require input for energy estimates.
     scopes = {
         "project.utility": [],
+        "project.municipality": [],
         "project.built_area_m2": [],
         "project.residence_type": [],
         "project.floors": [],
@@ -98,6 +99,13 @@ def requirements():
     }
     result = {}
     for key, (label, purpose, when) in REQUIREMENTS.items():
+        if key in {
+            "project.reference_voltage_v",
+            "environment.perimeter_m",
+            "environment.lighting_points",
+            "environment.outlets",
+        }:
+            continue
         minimum, maximum, integer = bounds.get(key, (None, None, False))
         max_length = (
             1000
@@ -122,7 +130,7 @@ def requirements():
             maximum=maximum,
             integer=integer,
             max_length=max_length,
-            required_for=scopes.get(key, ["installed", "apparent", "current", "normative"]),
+            required_for=scopes.get(key, ["installed"]),
         )
     for key, (_, maximum_length, minimum) in OPTIONAL_FIELDS.items():
         result[key].update(required_for=[], max_length=maximum_length, minimum=minimum)
@@ -135,7 +143,7 @@ def requirements():
 def field_issues(project):
     issues = []
     rules = requirements()
-    operation = project.get("analysis_scope", "installed")
+    operation = "installed"
     location = ["Projeto"]
 
     def check(path, field, value, *, zero=False, unknown=False, required=False):
@@ -200,27 +208,11 @@ def field_issues(project):
             )
 
     check("project.utility", "project.utility", project.get("utility", "unconfirmed"), unknown=True)
-    for key in ("name", "municipality"):
+    for key in ("name",):
         check(f"project.{key}", f"project.{key}", project.get(key))
     for room in project["environments"]:
         location = [room.get("name") or "Ambiente sem nome"]
         prefix = f"environments.{room['id']}"
-        from .calculations.residential import INDOOR
-
-        residential = operation == "normative" and room.get("type", "other") in INDOOR
-        for key in ("area_m2", "perimeter_m"):
-            needs_perimeter = room.get("type", "other") in (
-                "living",
-                "bedroom",
-                "kitchen",
-                "laundry",
-            ) or (
-                room.get("type", "other") not in ("bathroom",)
-                and room.get("area_m2") is not None
-                and Decimal(str(room["area_m2"])) > 6
-            )
-            required = residential and (key == "area_m2" or needs_perimeter)
-            check(f"{prefix}.{key}", f"environment.{key}", room.get(key), required=required)
         for load in room["loads"]:
             location = [
                 room.get("name") or "Ambiente sem nome",
@@ -259,23 +251,6 @@ def notifications(project, result):
                 target_id=issue["target_id"],
             )
         )
-    for room in result.get("normative_environments", []):
-        for field, deficit, label in (
-            ("lighting_points", room["lighting_points_missing"], "ponto(s) de luz"),
-            ("outlets", room["outlet_points_missing"], "ponto(s) de tomada"),
-        ):
-            if deficit:
-                notices.append(
-                    dict(
-                        id=f"residential.{room['environment_id']}.{field}",
-                        category="technical",
-                        location=[room["name"]],
-                        problem=f"Quantidade cadastrada abaixo da previsão residencial: faltam {deficit} {label}.",
-                        solution="Revise os pontos previstos no ambiente e sua distribuição. O cadastro não foi alterado automaticamente.",
-                        affected_results=["Previsão residencial de pontos"],
-                        target_id=f"room.{room['environment_id']}.{field}",
-                    )
-                )
     for room in project["environments"]:
         for load in room["loads"]:
             location = [room.get("name") or room["id"], load["name"]]

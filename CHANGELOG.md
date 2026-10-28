@@ -1,5 +1,15 @@
 # Histórico de alterações
 
+## 0.25.0 — 28/10/2026 / motor0.13.0
+
+- Alterado: escopo oficial para estimativas de consumo residencial, em qualquer estágio do imóvel, sem dependências normativas de fornecimento.
+- Removido do produto ativo: execução de demanda, circuitos/proteções/entrada e geometria normativa, interfaces e rotas correspondentes. Acervo, metadados legados e pesquisa matemática preservados.
+- Adicionado: estágio do imóvel, distribuidora contextual em nome livre, município opcional, média diária anualizada e comparação de edição com versão salva via Python.
+- Reconstruído: Resultados e Estimativas, memória secundária, indicadores/distribuições/ranking visual e relatórios PDF/JSON2.0 de consumo e premissas.
+- Corrigido: salto de16px ao recalcular, identificador do botão de conferência e quebra de números longos na memória em telas estreitas.
+- Preservado: Decimal, referências editáveis, valores manuais, autosave/rascunhos/conflitos, histórico, dados e migrações. Sem atualização em massa dos projetos.
+- Verificação:588pytest/85subtestes,122frontend,40cenáriosE2E cobertos com repetições dos afetados; contratos/tipos/lint/Ruff/build nativo aprovados. Evidências/limites em CURRENT_STATE/SESSION_HISTORY.
+
 ## 28/10/2026 — continuidade documental (0.24.1 preservada)
 
 - Manual permanente reforçado, estado atual reduzido e fotografia anterior preservada em docs/history.

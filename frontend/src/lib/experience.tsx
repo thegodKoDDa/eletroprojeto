@@ -21,10 +21,10 @@ export const experienceProfiles = {
     shortLabel: 'Profissional',
     title: 'Aprofunde o seu estudo.',
     description:
-      'Dados elétricos, memória de cálculo e estudos técnicos em destaque, junto da estimativa de consumo.',
+      'Parâmetros dos aparelhos, premissas e memória de cálculo para analisar as estimativas.',
     features: [
       'Parâmetros elétricos e referências',
-      'Demanda, circuitos e proteções',
+      'Hábitos e cenários de consumo',
       'Memória de cálculo e relatórios',
     ],
     action: 'Abrir espaço profissional',
@@ -34,9 +34,8 @@ export const experienceProfiles = {
     label: 'ESTOU APENAS DANDO UMA OLHADA',
     shortLabel: 'Exploração',
     title: 'Explore no seu ritmo.',
-    description:
-      'A organização atual do EletroProjeto, com consumo em primeiro plano e estudos técnicos recolhidos.',
-    features: ['Consumo em primeiro plano', 'Estudos técnicos recolhidos', 'Navegação original'],
+    description: 'Explore ambientes, aparelhos, consumo e custos com detalhes quando precisar.',
+    features: ['Consumo em primeiro plano', 'Detalhes sob demanda', 'Navegação original'],
     action: 'Conhecer o EletroProjeto',
     icon: 'library',
   },

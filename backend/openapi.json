@@ -2,8 +2,8 @@
   "openapi": "3.1.0",
   "info": {
     "title": "EletroProjeto",
-    "description": "Cálculos de cargas residenciais: potência instalada (W/kW), potência aparente (VA/kVA), correntes, conversões, consumo mensal e estimativa de custo pela tarifa informada. Valores padrão são sugestões documentadas; valores manuais válidos são respeitados e recalculados. Previsão residencial de iluminação e TUG disponível por seleção explícita, com escopo e limites documentados. Demanda Energisa residencial parametrizada disponível em escopo limitado e inventário explícito. Demanda automática do cadastro e dimensionamento final permanecem pendentes.",
-    "version": "0.24.1"
+    "description": "Estimativas residenciais de potência, energia e custo pelos equipamentos e hábitos informados. Sem demanda de fornecimento ou dimensionamento de instalações.",
+    "version": "0.25.0"
   },
   "paths": {
     "/api/v1/auth/session": {
@@ -1046,47 +1046,6 @@
         }
       }
     },
-    "/api/v1/calculations/demand": {
-      "post": {
-        "tags": [
-          "Cálculos"
-        ],
-        "summary": "Full",
-        "operationId": "full_api_v1_calculations_demand_post",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CalculationInput"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CalculationResult"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Entradas inválidas; avisos localizados quando disponíveis.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/InputValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/v1/calculations/loads": {
       "post": {
         "tags": [
@@ -1128,19 +1087,18 @@
         }
       }
     },
-    "/api/v1/calculations/energisa-demand": {
+    "/api/v1/calculations/compare": {
       "post": {
         "tags": [
           "Cálculos"
         ],
-        "summary": "Energisa Demand",
-        "description": "NDU-001 v7 residencial individual d1–d7, inventário explícito; sem dimensionamento final.",
-        "operationId": "energisa_demand_api_v1_calculations_energisa_demand_post",
+        "summary": "Compare",
+        "operationId": "compare_api_v1_calculations_compare_post",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/EnergisaDemandInput"
+                "$ref": "#/components/schemas/EstimateComparisonInput"
               }
             }
           },
@@ -1152,7 +1110,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/EnergisaDemandResult"
+                  "$ref": "#/components/schemas/EstimateComparison"
                 }
               }
             }
@@ -1421,35 +1379,6 @@
         }
       }
     },
-    "/api/v1/standards": {
-      "get": {
-        "tags": [
-          "Referências técnicas"
-        ],
-        "summary": "Standards",
-        "operationId": "standards_api_v1_standards_get",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          },
-          "422": {
-            "description": "Entradas inválidas; avisos localizados quando disponíveis.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/InputValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/v1/projects/{project_id}/report": {
       "get": {
         "tags": [
@@ -1567,117 +1496,6 @@
         }
       }
     },
-    "/api/v1/technical/documents": {
-      "get": {
-        "tags": [
-          "Referências técnicas"
-        ],
-        "summary": "Documents",
-        "operationId": "documents_api_v1_technical_documents_get",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DocumentRegistry"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Entradas inválidas; avisos localizados quando disponíveis.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/InputValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/v1/technical/applicability": {
-      "get": {
-        "tags": [
-          "Referências técnicas"
-        ],
-        "summary": "Applicable",
-        "operationId": "applicable_api_v1_technical_applicability_get",
-        "parameters": [
-          {
-            "name": "utility",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "Utility"
-            }
-          },
-          {
-            "name": "state",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "pattern": "^[A-Z]{2}$",
-              "default": "SP",
-              "title": "State"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          },
-          "422": {
-            "description": "Entradas inválidas; avisos localizados quando disponíveis.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/InputValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/v1/technical/integrity": {
-      "get": {
-        "tags": [
-          "Referências técnicas"
-        ],
-        "summary": "Validate Registry",
-        "operationId": "validate_registry_api_v1_technical_integrity_get",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          },
-          "422": {
-            "description": "Entradas inválidas; avisos localizados quando disponíveis.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/InputValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/v1/technical/revisions": {
       "get": {
         "tags": [
@@ -1731,49 +1549,6 @@
             "content": {
               "application/json": {
                 "schema": {}
-              }
-            }
-          },
-          "422": {
-            "description": "Entradas inválidas; avisos localizados quando disponíveis.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/InputValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/v1/projects/{project_id}/revalidation": {
-      "get": {
-        "tags": [
-          "Projetos"
-        ],
-        "summary": "Revalidation",
-        "operationId": "revalidation_api_v1_projects__project_id__revalidation_get",
-        "parameters": [
-          {
-            "name": "project_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "title": "Project Id"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProjectRevalidation"
-                }
               }
             }
           },
@@ -1869,61 +1644,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Project"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Entradas inválidas; avisos localizados quando disponíveis.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/InputValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/v1/technical/rules": {
-      "get": {
-        "tags": [
-          "Referências técnicas"
-        ],
-        "summary": "Computational Rules",
-        "operationId": "computational_rules_api_v1_technical_rules_get",
-        "parameters": [
-          {
-            "name": "utility",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "maxLength": 100,
-              "default": "unconfirmed",
-              "title": "Utility"
-            }
-          },
-          {
-            "name": "state",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "pattern": "^[A-Z]{2}$",
-              "default": "SP",
-              "title": "State"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TechnicalRules"
                 }
               }
             }
@@ -2149,374 +1869,43 @@
         ],
         "title": "AccessSession"
       },
-      "BathroomGeometry": {
-        "properties": {
-          "scope_confirmed": {
-            "type": "boolean",
-            "title": "Scope Confirmed",
-            "default": false
-          },
-          "shower_x_m": {
-            "anyOf": [
-              {
-                "type": "number",
-                "minimum": 0.0
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Shower X M"
-          },
-          "shower_y_m": {
-            "anyOf": [
-              {
-                "type": "number",
-                "minimum": 0.0
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Shower Y M"
-          },
-          "measurement_source": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 200,
-                "minLength": 1
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Measurement Source"
-          },
-          "points": {
-            "items": {
-              "$ref": "#/components/schemas/BathroomInstallationPoint"
-            },
-            "type": "array",
-            "maxItems": 200,
-            "title": "Points"
-          }
-        },
-        "additionalProperties": false,
-        "type": "object",
-        "title": "BathroomGeometry"
-      },
-      "BathroomGeometryResult": {
-        "properties": {
-          "environment_id": {
-            "type": "string",
-            "title": "Environment Id"
-          },
-          "name": {
-            "type": "string",
-            "title": "Name"
-          },
-          "status": {
-            "type": "string",
-            "enum": [
-              "calculated",
-              "estimated",
-              "pending",
-              "invalid",
-              "out_of_scope",
-              "awaiting_technical_validation"
-            ],
-            "title": "Status"
-          },
-          "points": {
-            "items": {
-              "$ref": "#/components/schemas/BathroomPointResult"
-            },
-            "type": "array",
-            "title": "Points"
-          },
-          "pending_checks": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array",
-            "title": "Pending Checks"
-          },
-          "reference": {
-            "type": "string",
-            "title": "Reference"
-          },
-          "reference_urls": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array",
-            "title": "Reference Urls"
-          },
-          "limitations": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array",
-            "title": "Limitations"
-          }
-        },
-        "additionalProperties": false,
-        "type": "object",
-        "required": [
-          "environment_id",
-          "name",
-          "status",
-          "points",
-          "pending_checks",
-          "reference",
-          "reference_urls",
-          "limitations"
-        ],
-        "title": "BathroomGeometryResult"
-      },
-      "BathroomInstallationPoint": {
-        "properties": {
-          "id": {
-            "type": "string",
-            "maxLength": 200,
-            "minLength": 1,
-            "title": "Id"
-          },
-          "name": {
-            "type": "string",
-            "maxLength": 200,
-            "minLength": 1,
-            "title": "Name",
-            "default": "Novo componente"
-          },
-          "kind": {
-            "type": "string",
-            "enum": [
-              "socket",
-              "switch",
-              "water_heater",
-              "luminaire",
-              "other"
-            ],
-            "title": "Kind",
-            "default": "other"
-          },
-          "x_min_m": {
-            "anyOf": [
-              {
-                "type": "number",
-                "minimum": 0.0
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "X Min M"
-          },
-          "x_max_m": {
-            "anyOf": [
-              {
-                "type": "number",
-                "minimum": 0.0
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "X Max M"
-          },
-          "y_min_m": {
-            "anyOf": [
-              {
-                "type": "number",
-                "minimum": 0.0
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Y Min M"
-          },
-          "y_max_m": {
-            "anyOf": [
-              {
-                "type": "number",
-                "minimum": 0.0
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Y Max M"
-          },
-          "z_min_m": {
-            "anyOf": [
-              {
-                "type": "number",
-                "minimum": 0.0
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Z Min M"
-          },
-          "z_max_m": {
-            "anyOf": [
-              {
-                "type": "number",
-                "minimum": 0.0
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Z Max M"
-          }
-        },
-        "additionalProperties": false,
-        "type": "object",
-        "title": "BathroomInstallationPoint"
-      },
-      "BathroomPointResult": {
-        "properties": {
-          "point_id": {
-            "type": "string",
-            "title": "Point Id"
-          },
-          "name": {
-            "type": "string",
-            "title": "Name"
-          },
-          "status": {
-            "type": "string",
-            "enum": [
-              "calculated",
-              "estimated",
-              "pending",
-              "invalid",
-              "out_of_scope",
-              "awaiting_technical_validation"
-            ],
-            "title": "Status"
-          },
-          "volume": {
-            "anyOf": [
-              {
-                "type": "string",
-                "enum": [
-                  "1",
-                  "2",
-                  "3",
-                  "outside"
-                ]
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Volume"
-          },
-          "nearest_horizontal_distance_m": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Nearest Horizontal Distance M"
-          },
-          "ordinary_socket_or_switch_forbidden": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Ordinary Socket Or Switch Forbidden"
-          },
-          "pending_checks": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array",
-            "title": "Pending Checks"
-          }
-        },
-        "additionalProperties": false,
-        "type": "object",
-        "required": [
-          "point_id",
-          "name",
-          "status",
-          "volume",
-          "nearest_horizontal_distance_m",
-          "ordinary_socket_or_switch_forbidden",
-          "pending_checks"
-        ],
-        "title": "BathroomPointResult"
-      },
       "CalculationInput": {
         "properties": {
           "service_entry": {
             "anyOf": [
               {
-                "$ref": "#/components/schemas/ServiceEntryInput"
+                "additionalProperties": true,
+                "type": "object"
               },
               {
                 "type": "null"
               }
-            ]
+            ],
+            "title": "Service Entry",
+            "deprecated": true
           },
           "circuits": {
             "items": {
-              "$ref": "#/components/schemas/CircuitInput"
+              "additionalProperties": true,
+              "type": "object"
             },
             "type": "array",
             "maxItems": 200,
-            "title": "Circuits"
+            "title": "Circuits",
+            "deprecated": true
           },
           "energisa_demand": {
             "anyOf": [
               {
-                "$ref": "#/components/schemas/ProjectEnergisaDemandSettings"
+                "additionalProperties": true,
+                "type": "object"
               },
               {
                 "type": "null"
               }
-            ]
+            ],
+            "title": "Energisa Demand",
+            "deprecated": true
           },
           "analysis_scope": {
             "type": "string",
@@ -2589,6 +1978,35 @@
             ],
             "title": "Utility",
             "default": "unconfirmed"
+          },
+          "property_stage": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "planned",
+                  "construction",
+                  "ready",
+                  "renovation"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Property Stage"
+          },
+          "utility_name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Utility Name"
           },
           "residence_type": {
             "anyOf": [
@@ -2685,54 +2103,6 @@
       },
       "CalculationResult": {
         "properties": {
-          "service_entry": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/ServiceEntryResult"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "bathroom_geometry_results": {
-            "items": {
-              "$ref": "#/components/schemas/BathroomGeometryResult"
-            },
-            "type": "array",
-            "title": "Bathroom Geometry Results"
-          },
-          "circuit_results": {
-            "items": {
-              "$ref": "#/components/schemas/CircuitResult"
-            },
-            "type": "array",
-            "title": "Circuit Results"
-          },
-          "energisa_demand": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/ProjectEnergisaDemandResult"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "normative_environments": {
-            "items": {
-              "$ref": "#/components/schemas/NormativeEnvironment"
-            },
-            "type": "array",
-            "title": "Normative Environments"
-          },
-          "normative_capabilities": {
-            "items": {
-              "$ref": "#/components/schemas/NormativeCapability"
-            },
-            "type": "array",
-            "title": "Normative Capabilities"
-          },
           "notifications": {
             "items": {
               "$ref": "#/components/schemas/Notification"
@@ -2819,14 +2189,6 @@
               }
             ]
           },
-          "normative": {
-            "additionalProperties": {
-              "additionalProperties": true,
-              "type": "object"
-            },
-            "type": "object",
-            "title": "Normative"
-          },
           "memory": {
             "items": {
               "$ref": "#/components/schemas/Memory"
@@ -2875,6 +2237,16 @@
             },
             "type": "array",
             "title": "Aggregate Steps"
+          },
+          "daily_energy": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Value"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "monthly_energy": {
             "anyOf": [
@@ -3026,7 +2398,6 @@
           "by_environment_w",
           "by_category_w",
           "apparent_power",
-          "normative",
           "memory",
           "warnings",
           "counting_policy"
@@ -3268,927 +2639,6 @@
         ],
         "title": "CatalogItem"
       },
-      "CircuitInput": {
-        "properties": {
-          "air_layout": {
-            "type": "string",
-            "enum": [
-              "unknown",
-              "trefoil",
-              "flat_touching",
-              "horizontal_spaced",
-              "vertical_spaced"
-            ],
-            "title": "Air Layout",
-            "default": "unknown"
-          },
-          "soil_temperature_c": {
-            "anyOf": [
-              {
-                "type": "integer",
-                "enum": [
-                  10,
-                  15,
-                  20,
-                  25,
-                  30,
-                  35,
-                  40,
-                  45,
-                  50,
-                  55,
-                  60
-                ]
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Soil Temperature C"
-          },
-          "buried_reference_confirmed": {
-            "type": "boolean",
-            "title": "Buried Reference Confirmed",
-            "default": false
-          },
-          "insulation": {
-            "type": "string",
-            "enum": [
-              "PVC70",
-              "XLPE90",
-              "EPR90"
-            ],
-            "title": "Insulation",
-            "default": "PVC70"
-          },
-          "terminals_90c_confirmed": {
-            "type": "boolean",
-            "title": "Terminals 90C Confirmed",
-            "default": false
-          },
-          "hot_resistivity_ohm_mm2_m": {
-            "anyOf": [
-              {
-                "type": "number",
-                "exclusiveMinimum": 0.0
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Hot Resistivity Ohm Mm2 M"
-          },
-          "reactance_ohm_m": {
-            "anyOf": [
-              {
-                "type": "number",
-                "minimum": 0.0
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Reactance Ohm M"
-          },
-          "impedance_source": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 200,
-                "minLength": 1
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Impedance Source"
-          },
-          "configuration": {
-            "type": "string",
-            "enum": [
-              "single_phase",
-              "balanced_three_phase_without_neutral"
-            ],
-            "title": "Configuration",
-            "default": "single_phase"
-          },
-          "protections": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/CircuitProtectionInput"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "id": {
-            "type": "string",
-            "maxLength": 200,
-            "minLength": 1,
-            "title": "Id"
-          },
-          "name": {
-            "type": "string",
-            "maxLength": 200,
-            "minLength": 1,
-            "title": "Name",
-            "default": "Novo circuito"
-          },
-          "purpose": {
-            "type": "string",
-            "enum": [
-              "lighting",
-              "sockets",
-              "dedicated"
-            ],
-            "title": "Purpose",
-            "default": "sockets"
-          },
-          "load_ids": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array",
-            "maxItems": 1000,
-            "title": "Load Ids"
-          },
-          "method": {
-            "type": "string",
-            "enum": [
-              "unknown",
-              "A1",
-              "A2",
-              "B1",
-              "B2",
-              "C",
-              "D",
-              "E",
-              "F",
-              "G"
-            ],
-            "title": "Method",
-            "default": "unknown"
-          },
-          "voltage_v": {
-            "anyOf": [
-              {
-                "type": "number",
-                "exclusiveMinimum": 0.0
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Voltage V"
-          },
-          "length_m": {
-            "anyOf": [
-              {
-                "type": "number",
-                "exclusiveMinimum": 0.0
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Length M"
-          },
-          "ambient_temperature_c": {
-            "anyOf": [
-              {
-                "type": "integer",
-                "enum": [
-                  10,
-                  15,
-                  20,
-                  25,
-                  30,
-                  35,
-                  40,
-                  45,
-                  50,
-                  55,
-                  60
-                ]
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Ambient Temperature C"
-          },
-          "grouped_circuits": {
-            "anyOf": [
-              {
-                "type": "integer",
-                "maximum": 8.0,
-                "minimum": 1.0
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Grouped Circuits"
-          },
-          "scope_confirmed": {
-            "type": "boolean",
-            "title": "Scope Confirmed",
-            "default": false
-          },
-          "voltage_drop_model_confirmed": {
-            "type": "boolean",
-            "title": "Voltage Drop Model Confirmed",
-            "default": false
-          },
-          "overload_duration_confirmed": {
-            "type": "boolean",
-            "title": "Overload Duration Confirmed",
-            "default": false
-          },
-          "breaker_ratings_a": {
-            "items": {
-              "anyOf": [
-                {
-                  "type": "number",
-                  "exclusiveMinimum": 0.0
-                },
-                {
-                  "type": "string"
-                }
-              ]
-            },
-            "type": "array",
-            "maxItems": 50,
-            "title": "Breaker Ratings A"
-          },
-          "breaker_i2_factor": {
-            "anyOf": [
-              {
-                "type": "number",
-                "maximum": 10.0,
-                "minimum": 1.0
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Breaker I2 Factor"
-          },
-          "breaker_source": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 200,
-                "minLength": 1
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Breaker Source"
-          },
-          "prospective_short_circuit_ka": {
-            "anyOf": [
-              {
-                "type": "number",
-                "exclusiveMinimum": 0.0
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Prospective Short Circuit Ka"
-          },
-          "breaking_capacity_ka": {
-            "anyOf": [
-              {
-                "type": "number",
-                "exclusiveMinimum": 0.0
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Breaking Capacity Ka"
-          },
-          "supply_origin": {
-            "type": "string",
-            "enum": [
-              "unknown",
-              "public_lv_delivery",
-              "own_transformer",
-              "delivery_at_transformer",
-              "generator"
-            ],
-            "title": "Supply Origin",
-            "default": "unknown"
-          },
-          "upstream_drop_percent": {
-            "anyOf": [
-              {
-                "type": "number",
-                "minimum": 0.0
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Upstream Drop Percent"
-          }
-        },
-        "additionalProperties": false,
-        "type": "object",
-        "title": "CircuitInput"
-      },
-      "CircuitProtectionCheck": {
-        "properties": {
-          "code": {
-            "type": "string",
-            "title": "Code"
-          },
-          "label": {
-            "type": "string",
-            "title": "Label"
-          },
-          "value": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Value"
-          },
-          "passed": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Passed"
-          },
-          "reason": {
-            "type": "string",
-            "title": "Reason"
-          }
-        },
-        "additionalProperties": false,
-        "type": "object",
-        "required": [
-          "code",
-          "label",
-          "value",
-          "passed",
-          "reason"
-        ],
-        "title": "CircuitProtectionCheck"
-      },
-      "CircuitProtectionInput": {
-        "properties": {
-          "selectivity": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/SelectivityInput"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "surge": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/SurgeProtectionInput"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "source": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 200,
-                "minLength": 1
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Source"
-          },
-          "device_rated_a": {
-            "anyOf": [
-              {
-                "type": "number",
-                "exclusiveMinimum": 0.0
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Device Rated A"
-          },
-          "cable_k": {
-            "anyOf": [
-              {
-                "type": "number",
-                "exclusiveMinimum": 0.0
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Cable K"
-          },
-          "let_through_a2s": {
-            "anyOf": [
-              {
-                "type": "number",
-                "minimum": 0.0
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Let Through A2S"
-          },
-          "short_duration_s": {
-            "anyOf": [
-              {
-                "type": "number",
-                "exclusiveMinimum": 0.0
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Short Duration S"
-          },
-          "earthing_system": {
-            "type": "string",
-            "enum": [
-              "unknown",
-              "TN",
-              "TT"
-            ],
-            "title": "Earthing System",
-            "default": "unknown"
-          },
-          "phase_earth_voltage_v": {
-            "anyOf": [
-              {
-                "type": "number",
-                "exclusiveMinimum": 0.0
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Phase Earth Voltage V"
-          },
-          "tn_situation": {
-            "anyOf": [
-              {
-                "type": "integer",
-                "enum": [
-                  1,
-                  2
-                ]
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Tn Situation"
-          },
-          "fault_loop_ohm": {
-            "anyOf": [
-              {
-                "type": "number",
-                "exclusiveMinimum": 0.0
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Fault Loop Ohm"
-          },
-          "trip_current_a": {
-            "anyOf": [
-              {
-                "type": "number",
-                "exclusiveMinimum": 0.0
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Trip Current A"
-          },
-          "trip_time_s": {
-            "anyOf": [
-              {
-                "type": "number",
-                "exclusiveMinimum": 0.0
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Trip Time S"
-          },
-          "tt_ra_ohm": {
-            "anyOf": [
-              {
-                "type": "number",
-                "exclusiveMinimum": 0.0
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Tt Ra Ohm"
-          },
-          "touch_limit_v": {
-            "anyOf": [
-              {
-                "type": "integer",
-                "enum": [
-                  12,
-                  25,
-                  50
-                ]
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Touch Limit V"
-          },
-          "rcd_sensitivity_ma": {
-            "anyOf": [
-              {
-                "type": "number",
-                "exclusiveMinimum": 0.0
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Rcd Sensitivity Ma"
-          },
-          "rcd_type_compatible_confirmed": {
-            "type": "boolean",
-            "title": "Rcd Type Compatible Confirmed",
-            "default": false
-          },
-          "rcd_additional_required": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Rcd Additional Required"
-          }
-        },
-        "additionalProperties": false,
-        "type": "object",
-        "title": "CircuitProtectionInput"
-      },
-      "CircuitResult": {
-        "properties": {
-          "study_conditions": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array",
-            "title": "Study Conditions"
-          },
-          "protection_checks": {
-            "items": {
-              "$ref": "#/components/schemas/CircuitProtectionCheck"
-            },
-            "type": "array",
-            "title": "Protection Checks"
-          },
-          "circuit_id": {
-            "type": "string",
-            "title": "Circuit Id"
-          },
-          "name": {
-            "type": "string",
-            "title": "Name"
-          },
-          "status": {
-            "type": "string",
-            "enum": [
-              "calculated",
-              "estimated",
-              "pending",
-              "invalid",
-              "out_of_scope",
-              "awaiting_technical_validation"
-            ],
-            "title": "Status"
-          },
-          "design_current_a": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Design Current A"
-          },
-          "power_factor": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Power Factor"
-          },
-          "breaker_a": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Breaker A"
-          },
-          "conventional_current_a": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Conventional Current A"
-          },
-          "phase_section_mm2": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Phase Section Mm2"
-          },
-          "pe_section_mm2": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Pe Section Mm2"
-          },
-          "capacity_a": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Capacity A"
-          },
-          "temperature_factor": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Temperature Factor"
-          },
-          "grouping_factor": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Grouping Factor"
-          },
-          "voltage_drop_v": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Voltage Drop V"
-          },
-          "voltage_drop_percent": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Voltage Drop Percent"
-          },
-          "total_drop_percent": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Total Drop Percent"
-          },
-          "breaking_capacity_ok": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Breaking Capacity Ok"
-          },
-          "pending_checks": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array",
-            "title": "Pending Checks"
-          },
-          "reference": {
-            "type": "string",
-            "title": "Reference"
-          },
-          "reference_urls": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array",
-            "title": "Reference Urls"
-          },
-          "limitations": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array",
-            "title": "Limitations"
-          }
-        },
-        "additionalProperties": false,
-        "type": "object",
-        "required": [
-          "circuit_id",
-          "name",
-          "status",
-          "design_current_a",
-          "power_factor",
-          "breaker_a",
-          "conventional_current_a",
-          "phase_section_mm2",
-          "pe_section_mm2",
-          "capacity_a",
-          "temperature_factor",
-          "grouping_factor",
-          "voltage_drop_v",
-          "voltage_drop_percent",
-          "total_drop_percent",
-          "breaking_capacity_ok",
-          "pending_checks",
-          "reference",
-          "limitations"
-        ],
-        "title": "CircuitResult"
-      },
       "Credentials": {
         "properties": {
           "username": {
@@ -4212,880 +2662,20 @@
         ],
         "title": "Credentials"
       },
-      "DocumentRegistry": {
-        "properties": {
-          "registry_version": {
-            "type": "string",
-            "title": "Registry Version"
-          },
-          "documents": {
-            "items": {
-              "$ref": "#/components/schemas/TechnicalDocument"
-            },
-            "type": "array",
-            "title": "Documents"
-          }
-        },
-        "additionalProperties": false,
-        "type": "object",
-        "required": [
-          "registry_version",
-          "documents"
-        ],
-        "title": "DocumentRegistry"
-      },
-      "EnergisaCentralData": {
-        "properties": {
-          "configuration": {
-            "anyOf": [
-              {
-                "type": "string",
-                "enum": [
-                  "single_phase",
-                  "balanced_three_phase"
-                ]
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Configuration"
-          },
-          "voltage_v": {
-            "anyOf": [
-              {
-                "type": "number",
-                "maximum": 1000.0,
-                "exclusiveMinimum": 0.0
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Voltage V",
-            "description": "Tensão aplicada; entre fases para trifásico equilibrado."
-          },
-          "maximum_total_current_a": {
-            "anyOf": [
-              {
-                "type": "number",
-                "exclusiveMinimum": 0.0
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Maximum Total Current A"
-          },
-          "power_factor": {
-            "anyOf": [
-              {
-                "type": "number",
-                "maximum": 1.0,
-                "exclusiveMinimum": 0.0
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Power Factor"
-          },
-          "source": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 200,
-                "minLength": 1
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Source",
-            "description": "Fabricante: corrente máxima total, tensão, configuração e FP no mesmo regime. Não usar MCA, corrente nominal ou corrente de partida como corrente máxima total."
-          }
-        },
-        "additionalProperties": false,
-        "type": "object",
-        "title": "EnergisaCentralData"
-      },
-      "EnergisaDemandBand": {
-        "properties": {
-          "installed_band_w": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "string"
-              }
-            ],
-            "title": "Installed Band W"
-          },
-          "factor": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "string"
-              }
-            ],
-            "title": "Factor"
-          },
-          "demand_w": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "string"
-              }
-            ],
-            "title": "Demand W"
-          }
-        },
-        "additionalProperties": false,
-        "type": "object",
-        "required": [
-          "installed_band_w",
-          "factor",
-          "demand_w"
-        ],
-        "title": "EnergisaDemandBand"
-      },
-      "EnergisaDemandComponent": {
-        "properties": {
-          "name": {
-            "type": "string",
-            "title": "Name"
-          },
-          "quantity": {
-            "type": "integer",
-            "title": "Quantity"
-          },
-          "table": {
-            "type": "string",
-            "title": "Table"
-          },
-          "unit_apparent_demand_va": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "string"
-              }
-            ],
-            "title": "Unit Apparent Demand Va"
-          },
-          "power_factor": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "string"
-              }
-            ],
-            "title": "Power Factor"
-          },
-          "factor": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Factor"
-          },
-          "demand_w": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "string"
-              }
-            ],
-            "title": "Demand W"
-          },
-          "source": {
-            "type": "string",
-            "title": "Source"
-          }
-        },
-        "additionalProperties": false,
-        "type": "object",
-        "required": [
-          "name",
-          "quantity",
-          "table",
-          "unit_apparent_demand_va",
-          "power_factor",
-          "demand_w",
-          "source"
-        ],
-        "title": "EnergisaDemandComponent"
-      },
-      "EnergisaDemandGroupResult": {
-        "properties": {
-          "group": {
-            "type": "string",
-            "enum": [
-              "d1",
-              "d2",
-              "d3",
-              "d4",
-              "d5",
-              "d6",
-              "d7"
-            ],
-            "title": "Group"
-          },
-          "quantity": {
-            "type": "integer",
-            "title": "Quantity"
-          },
-          "installed_power_w": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Installed Power W"
-          },
-          "factor": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Factor"
-          },
-          "demand_w": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Demand W"
-          },
-          "table": {
-            "type": "string",
-            "title": "Table"
-          },
-          "reason": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Reason"
-          },
-          "bands": {
-            "items": {
-              "$ref": "#/components/schemas/EnergisaDemandBand"
-            },
-            "type": "array",
-            "title": "Bands"
-          },
-          "components": {
-            "items": {
-              "$ref": "#/components/schemas/EnergisaDemandComponent"
-            },
-            "type": "array",
-            "title": "Components"
-          }
-        },
-        "additionalProperties": false,
-        "type": "object",
-        "required": [
-          "group",
-          "quantity",
-          "installed_power_w",
-          "factor",
-          "demand_w",
-          "table",
-          "reason"
-        ],
-        "title": "EnergisaDemandGroupResult"
-      },
-      "EnergisaDemandInput": {
-        "properties": {
-          "utility": {
-            "type": "string",
-            "maxLength": 100,
-            "minLength": 1,
-            "title": "Utility"
-          },
-          "state": {
-            "type": "string",
-            "pattern": "^[A-Z]{2}$",
-            "title": "State"
-          },
-          "unit_type": {
-            "type": "string",
-            "enum": [
-              "individual_residential",
-              "grouped",
-              "non_residential"
-            ],
-            "title": "Unit Type"
-          },
-          "inventory_reviewed": {
-            "type": "boolean",
-            "title": "Inventory Reviewed",
-            "description": "Confirma inventário completo, classificação de cada carga uma única vez, quantidades, potências adotadas e identificação das reservas (§9.1 notaVI)."
-          },
-          "has_signage_or_display_lighting": {
-            "type": "boolean",
-            "title": "Has Signage Or Display Lighting",
-            "description": "Letreiros/iluminação de vitrines não são abrangidos pela Tabela5; presença deixa este método fora de escopo."
-          },
-          "simultaneous_lighting_outlets": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Simultaneous Lighting Outlets"
-          },
-          "loads": {
-            "items": {
-              "$ref": "#/components/schemas/EnergisaDemandLoad"
-            },
-            "type": "array",
-            "maxItems": 1000,
-            "title": "Loads"
-          },
-          "confirmed_absent_groups": {
-            "items": {
-              "type": "string",
-              "enum": [
-                "d1",
-                "d2",
-                "d3",
-                "d4",
-                "d5",
-                "d6",
-                "d7"
-              ]
-            },
-            "type": "array",
-            "maxItems": 7,
-            "title": "Confirmed Absent Groups"
-          }
-        },
-        "additionalProperties": false,
-        "type": "object",
-        "required": [
-          "utility",
-          "state",
-          "unit_type",
-          "inventory_reviewed",
-          "has_signage_or_display_lighting",
-          "loads",
-          "confirmed_absent_groups"
-        ],
-        "title": "EnergisaDemandInput",
-        "examples": [
-          {
-            "confirmed_absent_groups": [
-              "d3",
-              "d4",
-              "d5",
-              "d6",
-              "d7"
-            ],
-            "has_signage_or_display_lighting": false,
-            "inventory_reviewed": true,
-            "loads": [
-              {
-                "group": "d1",
-                "name": "Iluminação/TUG — exemplo fictício",
-                "quantity": 1,
-                "unit_power_w": "1000"
-              },
-              {
-                "group": "d2",
-                "name": "Chuveiro — exemplo manual",
-                "quantity": 1,
-                "unit_power_w": "5500"
-              }
-            ],
-            "simultaneous_lighting_outlets": false,
-            "state": "SP",
-            "unit_type": "individual_residential",
-            "utility": "energisa_sul_sudeste"
-          }
-        ]
-      },
-      "EnergisaDemandLoad": {
-        "properties": {
-          "motor": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/EnergisaMotorData"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "central": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/EnergisaCentralData"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "special": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/EnergisaSpecialData"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "name": {
-            "type": "string",
-            "maxLength": 200,
-            "minLength": 1,
-            "title": "Name"
-          },
-          "group": {
-            "type": "string",
-            "enum": [
-              "d1",
-              "d2",
-              "d3",
-              "d4",
-              "d5",
-              "d6",
-              "d7"
-            ],
-            "title": "Group",
-            "description": "Classificação explícita §9.1: d1 iluminação/TUG; d2 aquecimento de água; d3 secadora de roupas/micro-ondas/lava-louças/hidromassagem; d4 fogão/forno elétrico; d5 AC janela/individual/central; d6 motores/solda motor-gerador; d7 solda transformador/raios-X/galvanização. Sem classificação automática."
-          },
-          "quantity": {
-            "type": "integer",
-            "maximum": 100000.0,
-            "minimum": 1.0,
-            "title": "Quantity"
-          },
-          "unit_power_w": {
-            "anyOf": [
-              {
-                "type": "number",
-                "minimum": 0.0
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Unit Power W",
-            "description": "Potência elétrica por unidade, em W, adotada pelo responsável. Não informar VA normativo, potência térmica ou kWh. Valores manuais válidos prevalecem sobre referências."
-          },
-          "reserve": {
-            "type": "boolean",
-            "title": "Reserve",
-            "default": false
-          },
-          "air_conditioning_type": {
-            "type": "string",
-            "enum": [
-              "unconfirmed",
-              "window_or_individual",
-              "central_unit"
-            ],
-            "title": "Air Conditioning Type",
-            "default": "unconfirmed"
-          }
-        },
-        "additionalProperties": false,
-        "type": "object",
-        "required": [
-          "name",
-          "group",
-          "quantity",
-          "unit_power_w"
-        ],
-        "title": "EnergisaDemandLoad"
-      },
-      "EnergisaDemandResult": {
-        "properties": {
-          "value": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Value"
-          },
-          "unit": {
-            "type": "string",
-            "const": "kVA",
-            "title": "Unit"
-          },
-          "status": {
-            "type": "string",
-            "enum": [
-              "calculated",
-              "estimated",
-              "pending",
-              "invalid",
-              "out_of_scope",
-              "awaiting_technical_validation"
-            ],
-            "title": "Status"
-          },
-          "installed_power_w": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Installed Power W"
-          },
-          "demanded_power_kw": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Demanded Power Kw"
-          },
-          "groups": {
-            "items": {
-              "$ref": "#/components/schemas/EnergisaDemandGroupResult"
-            },
-            "type": "array",
-            "title": "Groups"
-          },
-          "pending_checks": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array",
-            "title": "Pending Checks"
-          },
-          "ignored_reserve_loads": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array",
-            "title": "Ignored Reserve Loads"
-          },
-          "limitations": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array",
-            "title": "Limitations"
-          },
-          "reference": {
-            "$ref": "#/components/schemas/ResearchEvidence"
-          }
-        },
-        "additionalProperties": false,
-        "type": "object",
-        "required": [
-          "value",
-          "unit",
-          "status",
-          "installed_power_w",
-          "demanded_power_kw",
-          "groups",
-          "pending_checks",
-          "ignored_reserve_loads",
-          "limitations",
-          "reference"
-        ],
-        "title": "EnergisaDemandResult"
-      },
-      "EnergisaLoadClassification": {
-        "properties": {
-          "group": {
-            "anyOf": [
-              {
-                "type": "string",
-                "enum": [
-                  "d1",
-                  "d2",
-                  "d3",
-                  "d4",
-                  "d5",
-                  "d6",
-                  "d7"
-                ]
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Group"
-          },
-          "motor": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/EnergisaMotorData"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "central": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/EnergisaCentralData"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "special": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/EnergisaSpecialData"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "reserve": {
-            "type": "boolean",
-            "title": "Reserve",
-            "default": false
-          },
-          "air_conditioning_type": {
-            "type": "string",
-            "enum": [
-              "unconfirmed",
-              "window_or_individual",
-              "central_unit"
-            ],
-            "title": "Air Conditioning Type",
-            "default": "unconfirmed"
-          }
-        },
-        "additionalProperties": false,
-        "type": "object",
-        "title": "EnergisaLoadClassification"
-      },
-      "EnergisaMotorData": {
-        "properties": {
-          "configuration": {
-            "anyOf": [
-              {
-                "type": "string",
-                "enum": [
-                  "single_phase",
-                  "three_phase"
-                ]
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Configuration"
-          },
-          "shaft_power_cv": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 20,
-                "minLength": 1
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Shaft Power Cv",
-            "description": "Potência de eixo em cv, conforme linha exata das Tabelas12/13. Frações: 1/6,1/4,1/3,1/2,2/3,3/4; demais: 1,1.5,2,3,4,5,6,7.5,10,12.5,15,20,25,30. Não converter HP automaticamente."
-          },
-          "source": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 200,
-                "minLength": 1
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Source",
-            "description": "Placa/ficha que identifica fases e potência de eixo; motor ou solda motor-gerador."
-          }
-        },
-        "additionalProperties": false,
-        "type": "object",
-        "title": "EnergisaMotorData"
-      },
-      "EnergisaSpecialData": {
-        "properties": {
-          "equipment_type": {
-            "anyOf": [
-              {
-                "type": "string",
-                "enum": [
-                  "arc_welder",
-                  "resistance_welder",
-                  "x_ray",
-                  "galvanization"
-                ]
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Equipment Type"
-          },
-          "connection": {
-            "anyOf": [
-              {
-                "type": "string",
-                "enum": [
-                  "standard",
-                  "inverted_v_v",
-                  "not_applicable"
-                ]
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Connection"
-          },
-          "input_apparent_power_va": {
-            "anyOf": [
-              {
-                "type": "number",
-                "exclusiveMinimum": 0.0
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Input Apparent Power Va"
-          },
-          "power_factor": {
-            "anyOf": [
-              {
-                "type": "number",
-                "maximum": 1.0,
-                "exclusiveMinimum": 0.0
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Power Factor"
-          },
-          "source": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 200,
-                "minLength": 1
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Source",
-            "description": "Placa/fabricante: potência aparente elétrica absorvida, FP no mesmo regime e ligação; não potência de saída."
-          }
-        },
-        "additionalProperties": false,
-        "type": "object",
-        "title": "EnergisaSpecialData"
-      },
       "Environment": {
         "properties": {
           "bathroom_geometry": {
             "anyOf": [
               {
-                "$ref": "#/components/schemas/BathroomGeometry"
+                "additionalProperties": true,
+                "type": "object"
               },
               {
                 "type": "null"
               }
-            ]
+            ],
+            "title": "Bathroom Geometry",
+            "deprecated": true
           },
           "id": {
             "type": "string",
@@ -5172,6 +2762,55 @@
           "name"
         ],
         "title": "Environment"
+      },
+      "EstimateComparison": {
+        "properties": {
+          "baseline": {
+            "$ref": "#/components/schemas/CalculationResult"
+          },
+          "scenario": {
+            "$ref": "#/components/schemas/CalculationResult"
+          },
+          "differences": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/Value"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "type": "object",
+            "title": "Differences"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "baseline",
+          "scenario",
+          "differences"
+        ],
+        "title": "EstimateComparison"
+      },
+      "EstimateComparisonInput": {
+        "properties": {
+          "baseline": {
+            "$ref": "#/components/schemas/CalculationInput"
+          },
+          "scenario": {
+            "$ref": "#/components/schemas/CalculationInput"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "baseline",
+          "scenario"
+        ],
+        "title": "EstimateComparisonInput"
       },
       "FieldIssue": {
         "properties": {
@@ -5683,12 +3322,15 @@
           "energisa_demand": {
             "anyOf": [
               {
-                "$ref": "#/components/schemas/EnergisaLoadClassification"
+                "additionalProperties": true,
+                "type": "object"
               },
               {
                 "type": "null"
               }
-            ]
+            ],
+            "title": "Energisa Demand",
+            "deprecated": true
           },
           "id": {
             "type": "string",
@@ -6371,231 +4013,6 @@
         ],
         "title": "MunicipalityLookup"
       },
-      "NormativeCapability": {
-        "properties": {
-          "code": {
-            "type": "string",
-            "enum": [
-              "lighting",
-              "outlets",
-              "demand"
-            ],
-            "title": "Code"
-          },
-          "label": {
-            "type": "string",
-            "title": "Label"
-          },
-          "purpose": {
-            "type": "string",
-            "title": "Purpose"
-          },
-          "available": {
-            "type": "boolean",
-            "title": "Available"
-          },
-          "status": {
-            "type": "string",
-            "enum": [
-              "calculated",
-              "estimated",
-              "pending",
-              "invalid",
-              "out_of_scope",
-              "awaiting_technical_validation"
-            ],
-            "title": "Status"
-          },
-          "reason": {
-            "type": "string",
-            "title": "Reason"
-          },
-          "evidence": {
-            "items": {
-              "$ref": "#/components/schemas/ResearchEvidence"
-            },
-            "type": "array",
-            "title": "Evidence"
-          },
-          "pending_checks": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array",
-            "title": "Pending Checks"
-          }
-        },
-        "additionalProperties": false,
-        "type": "object",
-        "required": [
-          "code",
-          "label",
-          "purpose",
-          "available",
-          "status",
-          "reason",
-          "evidence",
-          "pending_checks"
-        ],
-        "title": "NormativeCapability"
-      },
-      "NormativeEnvironment": {
-        "properties": {
-          "environment_id": {
-            "type": "string",
-            "title": "Environment Id"
-          },
-          "name": {
-            "type": "string",
-            "title": "Name"
-          },
-          "status": {
-            "type": "string",
-            "enum": [
-              "calculated",
-              "estimated",
-              "pending",
-              "invalid",
-              "out_of_scope",
-              "awaiting_technical_validation"
-            ],
-            "title": "Status"
-          },
-          "lighting_va": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Lighting Va"
-          },
-          "minimum_lighting_points": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Minimum Lighting Points"
-          },
-          "registered_lighting_points": {
-            "type": "integer",
-            "title": "Registered Lighting Points"
-          },
-          "lighting_points_missing": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Lighting Points Missing"
-          },
-          "minimum_outlet_points": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Minimum Outlet Points"
-          },
-          "registered_outlet_points": {
-            "type": "integer",
-            "title": "Registered Outlet Points"
-          },
-          "outlet_points_missing": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Outlet Points Missing"
-          },
-          "outlet_basis_points": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Outlet Basis Points"
-          },
-          "outlets_va": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Outlets Va"
-          },
-          "missing_fields": {
-            "items": {
-              "type": "string",
-              "enum": [
-                "area_m2",
-                "perimeter_m"
-              ]
-            },
-            "type": "array",
-            "title": "Missing Fields"
-          },
-          "notes": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array",
-            "title": "Notes"
-          },
-          "reason": {
-            "type": "string",
-            "title": "Reason"
-          }
-        },
-        "additionalProperties": false,
-        "type": "object",
-        "required": [
-          "environment_id",
-          "name",
-          "status",
-          "lighting_va",
-          "minimum_lighting_points",
-          "registered_lighting_points",
-          "lighting_points_missing",
-          "minimum_outlet_points",
-          "registered_outlet_points",
-          "outlet_points_missing",
-          "outlet_basis_points",
-          "outlets_va",
-          "missing_fields",
-          "notes",
-          "reason"
-        ],
-        "title": "NormativeEnvironment"
-      },
       "Notification": {
         "properties": {
           "id": {
@@ -6607,7 +4024,6 @@
             "enum": [
               "error",
               "technical",
-              "normative",
               "info",
               "estimate"
             ],
@@ -6720,30 +4136,38 @@
           "service_entry": {
             "anyOf": [
               {
-                "$ref": "#/components/schemas/ServiceEntryInput"
+                "additionalProperties": true,
+                "type": "object"
               },
               {
                 "type": "null"
               }
-            ]
+            ],
+            "title": "Service Entry",
+            "deprecated": true
           },
           "circuits": {
             "items": {
-              "$ref": "#/components/schemas/CircuitInput"
+              "additionalProperties": true,
+              "type": "object"
             },
             "type": "array",
             "maxItems": 200,
-            "title": "Circuits"
+            "title": "Circuits",
+            "deprecated": true
           },
           "energisa_demand": {
             "anyOf": [
               {
-                "$ref": "#/components/schemas/ProjectEnergisaDemandSettings"
+                "additionalProperties": true,
+                "type": "object"
               },
               {
                 "type": "null"
               }
-            ]
+            ],
+            "title": "Energisa Demand",
+            "deprecated": true
           },
           "analysis_scope": {
             "type": "string",
@@ -6765,8 +4189,8 @@
           "municipality": {
             "type": "string",
             "maxLength": 200,
-            "minLength": 1,
-            "title": "Municipality"
+            "title": "Municipality",
+            "default": ""
           },
           "state": {
             "type": "string",
@@ -6816,6 +4240,35 @@
             ],
             "title": "Utility",
             "default": "unconfirmed"
+          },
+          "property_stage": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "planned",
+                  "construction",
+                  "ready",
+                  "renovation"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Property Stage"
+          },
+          "utility_name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Utility Name"
           },
           "residence_type": {
             "anyOf": [
@@ -6945,7 +4398,6 @@
         "type": "object",
         "required": [
           "name",
-          "municipality",
           "id",
           "version",
           "created_at",
@@ -6954,364 +4406,43 @@
         ],
         "title": "Project"
       },
-      "ProjectEnergisaDemandInventoryItem": {
-        "properties": {
-          "motor": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/EnergisaMotorData"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "central": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/EnergisaCentralData"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "special": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/EnergisaSpecialData"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "load_id": {
-            "type": "string",
-            "title": "Load Id"
-          },
-          "environment_id": {
-            "type": "string",
-            "title": "Environment Id"
-          },
-          "environment": {
-            "type": "string",
-            "title": "Environment"
-          },
-          "name": {
-            "type": "string",
-            "title": "Name"
-          },
-          "group": {
-            "anyOf": [
-              {
-                "type": "string",
-                "enum": [
-                  "d1",
-                  "d2",
-                  "d3",
-                  "d4",
-                  "d5",
-                  "d6",
-                  "d7"
-                ]
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Group"
-          },
-          "quantity": {
-            "type": "integer",
-            "title": "Quantity"
-          },
-          "unit_power_w": {
-            "anyOf": [
-              {
-                "type": "number",
-                "minimum": 0.0
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Unit Power W"
-          },
-          "reserve": {
-            "type": "boolean",
-            "title": "Reserve"
-          },
-          "air_conditioning_type": {
-            "type": "string",
-            "enum": [
-              "unconfirmed",
-              "window_or_individual",
-              "central_unit"
-            ],
-            "title": "Air Conditioning Type"
-          }
-        },
-        "additionalProperties": false,
-        "type": "object",
-        "required": [
-          "load_id",
-          "environment_id",
-          "environment",
-          "name",
-          "group",
-          "quantity",
-          "unit_power_w",
-          "reserve",
-          "air_conditioning_type"
-        ],
-        "title": "ProjectEnergisaDemandInventoryItem"
-      },
-      "ProjectEnergisaDemandResult": {
-        "properties": {
-          "value": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Value"
-          },
-          "unit": {
-            "type": "string",
-            "const": "kVA",
-            "title": "Unit"
-          },
-          "status": {
-            "type": "string",
-            "enum": [
-              "calculated",
-              "estimated",
-              "pending",
-              "invalid",
-              "out_of_scope",
-              "awaiting_technical_validation"
-            ],
-            "title": "Status"
-          },
-          "installed_power_w": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Installed Power W"
-          },
-          "demanded_power_kw": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Demanded Power Kw"
-          },
-          "groups": {
-            "items": {
-              "$ref": "#/components/schemas/EnergisaDemandGroupResult"
-            },
-            "type": "array",
-            "title": "Groups"
-          },
-          "pending_checks": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array",
-            "title": "Pending Checks"
-          },
-          "ignored_reserve_loads": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array",
-            "title": "Ignored Reserve Loads"
-          },
-          "limitations": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array",
-            "title": "Limitations"
-          },
-          "reference": {
-            "$ref": "#/components/schemas/ResearchEvidence"
-          },
-          "declarations": {
-            "$ref": "#/components/schemas/ProjectEnergisaDemandSettings"
-          },
-          "inventory_digest": {
-            "type": "string",
-            "title": "Inventory Digest"
-          },
-          "inventory_reviewed": {
-            "type": "boolean",
-            "title": "Inventory Reviewed"
-          },
-          "unclassified_load_ids": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array",
-            "title": "Unclassified Load Ids"
-          },
-          "inventory": {
-            "items": {
-              "$ref": "#/components/schemas/ProjectEnergisaDemandInventoryItem"
-            },
-            "type": "array",
-            "title": "Inventory"
-          }
-        },
-        "additionalProperties": false,
-        "type": "object",
-        "required": [
-          "value",
-          "unit",
-          "status",
-          "installed_power_w",
-          "demanded_power_kw",
-          "groups",
-          "pending_checks",
-          "ignored_reserve_loads",
-          "limitations",
-          "reference",
-          "declarations",
-          "inventory_digest",
-          "inventory_reviewed",
-          "unclassified_load_ids",
-          "inventory"
-        ],
-        "title": "ProjectEnergisaDemandResult"
-      },
-      "ProjectEnergisaDemandSettings": {
-        "properties": {
-          "enabled": {
-            "type": "boolean",
-            "title": "Enabled",
-            "default": false
-          },
-          "unit_type": {
-            "type": "string",
-            "enum": [
-              "unconfirmed",
-              "individual_residential",
-              "grouped",
-              "non_residential"
-            ],
-            "title": "Unit Type",
-            "default": "unconfirmed"
-          },
-          "has_signage_or_display_lighting": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Has Signage Or Display Lighting"
-          },
-          "simultaneous_lighting_outlets": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Simultaneous Lighting Outlets"
-          },
-          "confirmed_absent_groups": {
-            "items": {
-              "type": "string",
-              "enum": [
-                "d1",
-                "d2",
-                "d3",
-                "d4",
-                "d5",
-                "d6",
-                "d7"
-              ]
-            },
-            "type": "array",
-            "maxItems": 7,
-            "title": "Confirmed Absent Groups"
-          },
-          "reviewed_inventory_digest": {
-            "anyOf": [
-              {
-                "type": "string",
-                "pattern": "^[a-f0-9]{64}$"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Reviewed Inventory Digest"
-          }
-        },
-        "additionalProperties": false,
-        "type": "object",
-        "title": "ProjectEnergisaDemandSettings"
-      },
       "ProjectInput": {
         "properties": {
           "service_entry": {
             "anyOf": [
               {
-                "$ref": "#/components/schemas/ServiceEntryInput"
+                "additionalProperties": true,
+                "type": "object"
               },
               {
                 "type": "null"
               }
-            ]
+            ],
+            "title": "Service Entry",
+            "deprecated": true
           },
           "circuits": {
             "items": {
-              "$ref": "#/components/schemas/CircuitInput"
+              "additionalProperties": true,
+              "type": "object"
             },
             "type": "array",
             "maxItems": 200,
-            "title": "Circuits"
+            "title": "Circuits",
+            "deprecated": true
           },
           "energisa_demand": {
             "anyOf": [
               {
-                "$ref": "#/components/schemas/ProjectEnergisaDemandSettings"
+                "additionalProperties": true,
+                "type": "object"
               },
               {
                 "type": "null"
               }
-            ]
+            ],
+            "title": "Energisa Demand",
+            "deprecated": true
           },
           "analysis_scope": {
             "type": "string",
@@ -7333,8 +4464,8 @@
           "municipality": {
             "type": "string",
             "maxLength": 200,
-            "minLength": 1,
-            "title": "Municipality"
+            "title": "Municipality",
+            "default": ""
           },
           "state": {
             "type": "string",
@@ -7384,6 +4515,35 @@
             ],
             "title": "Utility",
             "default": "unconfirmed"
+          },
+          "property_stage": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "planned",
+                  "construction",
+                  "ready",
+                  "renovation"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Property Stage"
+          },
+          "utility_name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Utility Name"
           },
           "residence_type": {
             "anyOf": [
@@ -7477,79 +4637,9 @@
         "additionalProperties": false,
         "type": "object",
         "required": [
-          "name",
-          "municipality"
+          "name"
         ],
         "title": "ProjectInput"
-      },
-      "ProjectRevalidation": {
-        "properties": {
-          "project_id": {
-            "type": "string",
-            "format": "uuid",
-            "title": "Project Id"
-          },
-          "project_version": {
-            "type": "integer",
-            "title": "Project Version"
-          },
-          "previous_registry_version": {
-            "type": "string",
-            "title": "Previous Registry Version"
-          },
-          "current_registry_version": {
-            "type": "string",
-            "title": "Current Registry Version"
-          },
-          "previous_engine_version": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Previous Engine Version"
-          },
-          "requires_revalidation": {
-            "type": "boolean",
-            "title": "Requires Revalidation"
-          },
-          "previous_result": {
-            "anyOf": [
-              {
-                "additionalProperties": true,
-                "type": "object"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Previous Result"
-          },
-          "current_result": {
-            "$ref": "#/components/schemas/CalculationResult"
-          },
-          "notice": {
-            "type": "string",
-            "title": "Notice"
-          }
-        },
-        "additionalProperties": false,
-        "type": "object",
-        "required": [
-          "project_id",
-          "project_version",
-          "previous_registry_version",
-          "current_registry_version",
-          "previous_engine_version",
-          "requires_revalidation",
-          "previous_result",
-          "current_result",
-          "notice"
-        ],
-        "title": "ProjectRevalidation"
       },
       "ProjectSummary": {
         "properties": {
@@ -7620,699 +4710,6 @@
           "standards_version"
         ],
         "title": "ProjectSummary"
-      },
-      "RegionalMethodInfo": {
-        "properties": {
-          "code": {
-            "type": "string",
-            "title": "Code"
-          },
-          "endpoint": {
-            "type": "string",
-            "title": "Endpoint"
-          },
-          "status": {
-            "type": "string",
-            "enum": [
-              "calculated",
-              "estimated",
-              "pending",
-              "invalid",
-              "out_of_scope",
-              "awaiting_technical_validation"
-            ],
-            "title": "Status"
-          },
-          "available": {
-            "type": "boolean",
-            "title": "Available"
-          },
-          "scope": {
-            "type": "string",
-            "title": "Scope"
-          },
-          "supported_utilities": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array",
-            "title": "Supported Utilities"
-          },
-          "supported_states": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array",
-            "title": "Supported States"
-          },
-          "reference": {
-            "$ref": "#/components/schemas/ResearchEvidence"
-          }
-        },
-        "additionalProperties": false,
-        "type": "object",
-        "required": [
-          "code",
-          "endpoint",
-          "status",
-          "available",
-          "scope",
-          "supported_utilities",
-          "supported_states",
-          "reference"
-        ],
-        "title": "RegionalMethodInfo"
-      },
-      "ResearchEvidence": {
-        "properties": {
-          "title": {
-            "type": "string",
-            "title": "Title"
-          },
-          "url": {
-            "type": "string",
-            "title": "Url"
-          },
-          "finding": {
-            "type": "string",
-            "title": "Finding"
-          },
-          "access": {
-            "type": "string",
-            "enum": [
-              "official_metadata",
-              "official_index",
-              "institutional_full_text",
-              "official_full_text",
-              "user_supplied_full_text"
-            ],
-            "title": "Access"
-          },
-          "consulted_on": {
-            "type": "string",
-            "title": "Consulted On"
-          },
-          "section": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Section"
-          },
-          "file_name": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "File Name"
-          },
-          "sha256": {
-            "anyOf": [
-              {
-                "type": "string",
-                "pattern": "^[a-f0-9]{64}$"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Sha256"
-          }
-        },
-        "additionalProperties": false,
-        "type": "object",
-        "required": [
-          "title",
-          "url",
-          "finding",
-          "access",
-          "consulted_on"
-        ],
-        "title": "ResearchEvidence"
-      },
-      "SelectivityInput": {
-        "properties": {
-          "upstream_device": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 200,
-                "minLength": 1
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Upstream Device"
-          },
-          "downstream_device": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 200,
-                "minLength": 1
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Downstream Device"
-          },
-          "downstream_rated_a": {
-            "anyOf": [
-              {
-                "type": "number",
-                "exclusiveMinimum": 0.0
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Downstream Rated A"
-          },
-          "source": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 200,
-                "minLength": 1
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Source"
-          },
-          "conditions_confirmed": {
-            "type": "boolean",
-            "title": "Conditions Confirmed",
-            "default": false
-          },
-          "limit_ka": {
-            "anyOf": [
-              {
-                "type": "number",
-                "exclusiveMinimum": 0.0
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Limit Ka"
-          }
-        },
-        "additionalProperties": false,
-        "type": "object",
-        "title": "SelectivityInput"
-      },
-      "ServiceEntryInput": {
-        "properties": {
-          "network": {
-            "type": "string",
-            "enum": [
-              "unknown",
-              "220_127"
-            ],
-            "title": "Network",
-            "default": "unknown"
-          },
-          "route": {
-            "type": "string",
-            "enum": [
-              "unknown",
-              "embedded",
-              "underground"
-            ],
-            "title": "Route",
-            "default": "unknown"
-          },
-          "insulation": {
-            "type": "string",
-            "enum": [
-              "unknown",
-              "PVC70",
-              "XLPE90"
-            ],
-            "title": "Insulation",
-            "default": "unknown"
-          },
-          "requested_phases": {
-            "anyOf": [
-              {
-                "type": "integer",
-                "enum": [
-                  1,
-                  2,
-                  3
-                ]
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Requested Phases"
-          },
-          "scope_confirmed": {
-            "type": "boolean",
-            "title": "Scope Confirmed",
-            "default": false
-          },
-          "special_loads_reviewed": {
-            "type": "boolean",
-            "title": "Special Loads Reviewed",
-            "default": false
-          }
-        },
-        "additionalProperties": false,
-        "type": "object",
-        "title": "ServiceEntryInput"
-      },
-      "ServiceEntryResult": {
-        "properties": {
-          "status": {
-            "type": "string",
-            "enum": [
-              "calculated",
-              "estimated",
-              "pending",
-              "invalid",
-              "out_of_scope",
-              "awaiting_technical_validation"
-            ],
-            "title": "Status"
-          },
-          "category": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Category"
-          },
-          "phases": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Phases"
-          },
-          "basis_value": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Basis Value"
-          },
-          "basis_unit": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Basis Unit"
-          },
-          "minimum_phase_mm2": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Minimum Phase Mm2"
-          },
-          "minimum_neutral_mm2": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Minimum Neutral Mm2"
-          },
-          "minimum_earthing_mm2": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Minimum Earthing Mm2"
-          },
-          "band_breaker_references_a": {
-            "items": {
-              "anyOf": [
-                {
-                  "type": "number"
-                },
-                {
-                  "type": "string"
-                }
-              ]
-            },
-            "type": "array",
-            "title": "Band Breaker References A"
-          },
-          "pending_checks": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array",
-            "title": "Pending Checks"
-          },
-          "reference": {
-            "type": "string",
-            "title": "Reference"
-          }
-        },
-        "additionalProperties": false,
-        "type": "object",
-        "required": [
-          "status",
-          "category",
-          "phases",
-          "basis_value",
-          "basis_unit",
-          "minimum_phase_mm2",
-          "minimum_neutral_mm2",
-          "minimum_earthing_mm2",
-          "band_breaker_references_a",
-          "pending_checks",
-          "reference"
-        ],
-        "title": "ServiceEntryResult"
-      },
-      "SurgeProtectionInput": {
-        "properties": {
-          "device": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 200,
-                "minLength": 1
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Device"
-          },
-          "source": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 200,
-                "minLength": 1
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Source"
-          },
-          "requirements_source": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 200,
-                "minLength": 1
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Requirements Source"
-          },
-          "conditions_confirmed": {
-            "type": "boolean",
-            "title": "Conditions Confirmed",
-            "default": false
-          },
-          "uc_v": {
-            "anyOf": [
-              {
-                "type": "number",
-                "exclusiveMinimum": 0.0
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Uc V"
-          },
-          "required_uc_v": {
-            "anyOf": [
-              {
-                "type": "number",
-                "exclusiveMinimum": 0.0
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Required Uc V"
-          },
-          "effective_up_v": {
-            "anyOf": [
-              {
-                "type": "number",
-                "exclusiveMinimum": 0.0
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Effective Up V"
-          },
-          "withstand_voltage_v": {
-            "anyOf": [
-              {
-                "type": "number",
-                "exclusiveMinimum": 0.0
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Withstand Voltage V"
-          },
-          "discharge_ka": {
-            "anyOf": [
-              {
-                "type": "number",
-                "exclusiveMinimum": 0.0
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Discharge Ka"
-          },
-          "required_discharge_ka": {
-            "anyOf": [
-              {
-                "type": "number",
-                "exclusiveMinimum": 0.0
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Required Discharge Ka"
-          },
-          "waveform": {
-            "anyOf": [
-              {
-                "type": "string",
-                "enum": [
-                  "8/20",
-                  "10/350"
-                ]
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Waveform"
-          },
-          "requirement_waveform": {
-            "anyOf": [
-              {
-                "type": "string",
-                "enum": [
-                  "8/20",
-                  "10/350"
-                ]
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Requirement Waveform"
-          },
-          "short_withstand_ka": {
-            "anyOf": [
-              {
-                "type": "number",
-                "exclusiveMinimum": 0.0
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Short Withstand Ka"
-          }
-        },
-        "additionalProperties": false,
-        "type": "object",
-        "title": "SurgeProtectionInput"
-      },
-      "TechnicalDocument": {
-        "properties": {
-          "id": {
-            "type": "string",
-            "title": "Id"
-          },
-          "title": {
-            "type": "string",
-            "title": "Title"
-          },
-          "edition": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Edition"
-          },
-          "effective_date": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Effective Date"
-          },
-          "source": {
-            "type": "string",
-            "title": "Source"
-          },
-          "status": {
-            "type": "string",
-            "title": "Status"
-          },
-          "consulted_on": {
-            "type": "string",
-            "title": "Consulted On"
-          },
-          "source_file": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Source File"
-          },
-          "sha256": {
-            "anyOf": [
-              {
-                "type": "string",
-                "pattern": "^[a-f0-9]{64}$"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Sha256"
-          }
-        },
-        "additionalProperties": false,
-        "type": "object",
-        "required": [
-          "id",
-          "title",
-          "edition",
-          "effective_date",
-          "source",
-          "status",
-          "consulted_on"
-        ],
-        "title": "TechnicalDocument"
       },
       "TechnicalParameters": {
         "properties": {
@@ -8607,58 +5004,6 @@
         "type": "object",
         "title": "TechnicalParameters"
       },
-      "TechnicalRules": {
-        "properties": {
-          "regional_methods": {
-            "items": {
-              "$ref": "#/components/schemas/RegionalMethodInfo"
-            },
-            "type": "array",
-            "title": "Regional Methods"
-          },
-          "registry_version": {
-            "type": "string",
-            "title": "Registry Version"
-          },
-          "mathematical": {
-            "items": {
-              "additionalProperties": true,
-              "type": "object"
-            },
-            "type": "array",
-            "title": "Mathematical"
-          },
-          "normative": {
-            "items": {
-              "additionalProperties": true,
-              "type": "object"
-            },
-            "type": "array",
-            "title": "Normative"
-          },
-          "coverage": {
-            "items": {
-              "$ref": "#/components/schemas/NormativeCapability"
-            },
-            "type": "array",
-            "title": "Coverage"
-          },
-          "notice": {
-            "type": "string",
-            "title": "Notice"
-          }
-        },
-        "additionalProperties": false,
-        "type": "object",
-        "required": [
-          "registry_version",
-          "mathematical",
-          "normative",
-          "coverage",
-          "notice"
-        ],
-        "title": "TechnicalRules"
-      },
       "TechnicalStep": {
         "properties": {
           "calculation": {
@@ -8693,6 +5038,7 @@
               "kVA",
               "A",
               "kWh",
+              "kWh/dia",
               "BRL"
             ],
             "title": "Unit"
@@ -8909,15 +5255,9 @@
           },
           "status": {
             "type": "string",
-            "enum": [
-              "calculated",
-              "estimated",
-              "pending",
-              "invalid",
-              "out_of_scope",
-              "awaiting_technical_validation"
-            ],
-            "title": "Status"
+            "const": "contextual",
+            "title": "Status",
+            "default": "contextual"
           },
           "municipality_mapping": {
             "type": "string",
@@ -8932,7 +5272,6 @@
           "name",
           "states",
           "document_ids",
-          "status",
           "municipality_mapping"
         ],
         "title": "UtilityInfo"
@@ -8959,6 +5298,7 @@
               "kVA",
               "A",
               "kWh",
+              "kWh/dia",
               "BRL"
             ],
             "title": "Unit"

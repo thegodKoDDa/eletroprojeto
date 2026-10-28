@@ -64,7 +64,7 @@ test('shared interface and real report validation preserve the simple workflow',
   }
   await sidebar.getByRole('button', { name: 'Projeto em edição', exact: true }).click();
   await expect(page.getByTestId('equipment-editor')).toHaveCount(1);
-  await expect(page.locator('.technical-tools')).not.toHaveAttribute('open', '');
+  await expect(page.locator('.technical-tools')).toHaveCount(0);
   expect(errors).toEqual([]);
 });
 

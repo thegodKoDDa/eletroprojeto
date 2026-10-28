@@ -47,23 +47,23 @@ test('stale notices are replaced with an explicit revalidation state', () => {
   expect(screen.getByText(/Revalidando avisos/)).toBeVisible();
 });
 
-test('internal normative limitations never create a fake correction button', () => {
+test('estimate assumptions without a field target never create a fake correction button', () => {
   render(
     <CalculationNotices
       stale={false}
       notices={[
         {
-          id: 'normative.lighting',
-          category: 'normative',
-          location: ['Sistema', 'Regra lighting'],
-          problem: 'ABNT NBR 5410: edição e cláusula não conferidas.',
-          solution: 'Depende da revisão técnica do sistema.',
-          affected_results: ['Iluminação mínima'],
+          id: 'estimate.assumption',
+          category: 'estimate',
+          location: ['Estimativa'],
+          problem: 'Consumo real pode variar com o clima.',
+          solution: 'Revise suas premissas de utilização.',
+          affected_results: ['Consumo mensal'],
           target_id: null,
         },
       ]}
     />,
   );
   expect(screen.queryByRole('button', { name: /Corrigir/ })).toBeNull();
-  expect(screen.getByText(/edição e cláusula não conferidas/)).toBeInTheDocument();
+  expect(screen.getByText(/Consumo real pode variar com o clima/)).toBeInTheDocument();
 });

@@ -59,7 +59,6 @@ export function estimateJourney(
   const loads = rooms.flatMap((room) => room.loads ?? []);
   const identification =
     filled(input.name, 'project.name', requirements) &&
-    filled(input.municipality, 'project.municipality', requirements) &&
     !!input.state &&
     !result?.notifications?.some(
       (notice) =>
@@ -81,12 +80,8 @@ export function estimateJourney(
     {
       id: 'identity',
       title: 'Identificar o projeto',
-      help: 'Preencha nome, estado e município. A tarifa é opcional e permite estimar o custo.',
-      target: !filled(input.name, 'project.name', requirements)
-        ? 'project.name'
-        : !filled(input.municipality, 'project.municipality', requirements)
-          ? 'project.municipality'
-          : 'project.state',
+      help: 'Preencha nome e estado. Município, distribuidora e tarifa são opcionais; a tarifa permite estimar o custo.',
+      target: !filled(input.name, 'project.name', requirements) ? 'project.name' : 'project.state',
       complete: identification,
     },
     {

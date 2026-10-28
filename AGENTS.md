@@ -1,6 +1,10 @@
 # EletroProjeto — manual permanente
 
-Estimativa de consumo elétrico residencial para leigos, profissionais e exploração, com estudos técnicos opcionais e condicionados à validação normativa. Frontend Next.js comunica com API FastAPI e persistência SQLAlchemy/SQLite; a edição Pages executa o mesmo motor Python via Pyodide. Arquitetura em `docs/architecture.md`, uso em `docs/usage.md` e fontes em `docs/standards.md`. Não recriar o projeto ou alterar aparência/funcionalidades sem pedido; não esconder problemas com resultados fictícios.
+## Escopo vigente desde 28/10/2026
+
+O EletroProjeto estima consumo energético residencial, não dimensiona instalações. Esta decisão substitui o escopo técnico anterior abaixo: não reintroduzir demanda normativa, circuitos, proteções ou requisitos de fornecimento no fluxo/API de estimativas sem decisão explícita do usuário. Acervo, pesquisa histórica e campos legados são preservados, mas não executados pelo motor. Estado/distribuidora são contexto; tarifa é manual, sem valores inventados. Referências do catálogo são sugestões e valores manuais válidos prevalecem. Imóveis planejados, em construção, prontos ou em reforma usam o mesmo motor.
+
+Estimativa de consumo elétrico residencial para leigos, profissionais e exploração, com referências editáveis e premissas explícitas. Frontend Next.js comunica com API FastAPI e persistência SQLAlchemy/SQLite; a edição Pages executa o mesmo motor Python via Pyodide. Arquitetura em `docs/architecture.md`, uso em `docs/usage.md` e fontes em `docs/standards.md`. Não recriar o projeto ou alterar aparência/funcionalidades sem pedido; não esconder problemas com resultados fictícios.
 
 # Regras permanentes
 
@@ -16,11 +20,11 @@ Estimativa de consumo elétrico residencial para leigos, profissionais e explora
 - Gerar contratos com `npm run types:sync`. Nunca editar `api.generated.ts` manualmente.
 - Preservar migrações e histórico dos projetos. Não modificar catálogo ao editar instância.
 - Não exibir resultado antigo para entradas novas. Preservar debounce e cancelamento de requisições.
-- Priorizar Etapa 1. Não declarar conformidade ou dimensionamento final enquanto houver pendências normativas.
+- Priorizar estimativas residenciais. Não declarar medição real, conformidade ou dimensionamento de instalações.
 
 ## Produto e execução
 
-- Entrada com três escolhas: USUÁRIO LEIGO, USUÁRIO PROFISSIONAL e ESTOU APENAS DANDO UMA OLHADA. Todos os recursos permanecem disponíveis; o perfil muda destaque e apresentação, nunca cálculos, permissões ou dados. Leigo prioriza consumo e preenchimento essencial; profissional destaca dados elétricos, memória e atalhos técnicos; exploração preserva a organização original. Preservar início/sidebar e fluxo 01 Projeto → 02 Ambientes → 03 Conferência. Estudos técnicos continuam opcionais: recolhidos no leigo/exploração e destacados no profissional. Trocar perfil não perde a edição.
+- Entrada com três escolhas: USUÁRIO LEIGO, USUÁRIO PROFISSIONAL e ESTOU APENAS DANDO UMA OLHADA. Todos os recursos permanecem disponíveis; o perfil muda destaque e apresentação, nunca cálculos, permissões ou dados. Leigo prioriza consumo e preenchimento essencial; profissional destaca dados elétricos, memória e atalhos técnicos; exploração preserva a organização original. Preservar início/sidebar e fluxo 01 Projeto → 02 Ambientes → 03 Resultados e Estimativas. Estudos de instalações não fazem parte do produto ativo; acervo permanece consulta independente. Trocar perfil não perde a edição.
 - O agente executa as rotinas de terminal. Autorização permanente revisada em 26/10/2026: testes proporcionais, contratos, migrações sem reset, serviços, limpeza de gerados permitidos, compactação de backups idênticos e sincronização normal de commits revisados com o repositório PÚBLICO `thegodKoDDa/eletroprojeto`. Não pedir confirmação novamente para essas rotinas.
 - Tornar este repositório público e preparar distribuição local/ZIP/Docker foram autorizados explicitamente pelo usuário em 26/10/2026. A autorização permanente não inclui apagar dados/referências/pontos únicos de recuperação, force-push, reescrever histórico, mudar o destino ou novamente a visibilidade, publicar o site ou alterar políticas globais de segurança. Restrições obrigatórias do ambiente permanecem válidas.
 - Usar instalações e serviços existentes. Não reinstalar, atualizar versões ou repetir baterias aprovadas sem mudança relevante/falha. Atualizações usam manifests/locks e revisão; nunca `audit fix --force` ou reset do banco.

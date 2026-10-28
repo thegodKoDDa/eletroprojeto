@@ -79,7 +79,7 @@ async def test_calculation(client, payload):
     assert response.status_code == 200
     data = response.json()
     assert data["installed_power"]["value"] == "15000"
-    assert data["normative"]["demand"]["value"] is None
+    assert "normative" not in data
 
 
 async def test_lifecycle(client, payload):
@@ -203,7 +203,7 @@ async def test_full_reference_flow_with_manual_edit(client):
     assert after["installed_power"]["value"] == "14296"
     assert sorted(after["by_environment_w"].values()) == ["1296", "13000"]
     assert after["input_digest"] != before["input_digest"]
-    assert after["normative"]["demand"]["value"] is None
+    assert "normative" not in after
     saved = (await client.post("/api/v1/projects", json=project)).json()
     restored = (await client.get(f"/api/v1/projects/{saved['id']}")).json()
     used = restored["environments"][1]["loads"][1]
@@ -304,59 +304,7 @@ async def test_simple_selection_keeps_sources_and_advanced_inputs_on_reopen(clie
         Decimal(result["load_results"][0]["unit_current_a"])
         - Decimal("0.7386363636363636363636363636363636363636")
     ) < Decimal("1e-30")
-    assert result["normative"]["demand"]["value"] is None
-
-
-async def test_regional_rules_never_fall_back_to_energisa(client, payload):
-    for utility in (
-        "cpfl_paulista",
-        "cpfl_piratininga",
-        "cpfl_santa_cruz",
-        "enel_sp",
-        "edp_sp",
-        "neoenergia_elektro",
-        "unconfirmed",
-    ):
-        result = (
-            await client.post("/api/v1/calculations/full", json={**payload, "utility": utility})
-        ).json()
-        assert result["normative"]["demand"]["value"] is None
-        assert "NDU-001" not in str(result["normative"]["demand"])
-        assert result["technical_context"]["utility"] == utility
-    result = (
-        await client.post(
-            "/api/v1/calculations/full",
-            json={**payload, "utility": "energisa_sul_sudeste", "state": "MG"},
-        )
-    ).json()
-    assert result["technical_context"]["status"] == "out_of_scope"
-    assert "NDU-001" not in str(result["normative"]["demand"])
-
-
-async def test_registry_and_revalidation_preserve_manual_values(client, payload):
-    created = (await client.post("/api/v1/projects", json=payload)).json()
-    pid = created["id"]
-    assert created["version"] == 1
-    comparison = (await client.get(f"/api/v1/projects/{pid}/revalidation")).json()
-    assert comparison["requires_revalidation"] is False
-    assert comparison["current_result"]["installed_power"]["value"] == "15000"
-    revisions = (await client.get("/api/v1/technical/revisions")).json()
-    assert len(revisions) == 1
-    snapshot = (await client.get("/api/v1/technical/revisions/" + revisions[0]["id"])).json()
-    assert len(snapshot["snapshot"]["equipment"]) == 37
-    updated = (await client.post(f"/api/v1/projects/{pid}/recalculate?expected_version=1")).json()
-    assert updated["version"] == 2
-    assert updated["environments"] == created["environments"]
-    assert (
-        await client.post(f"/api/v1/projects/{pid}/recalculate?expected_version=1")
-    ).status_code == 409
-    history = (await client.get(f"/api/v1/projects/{pid}/history")).json()
-    assert len(history) == 2
-    assert history[0]["version"] == 2
-    assert history[1]["version"] == 1
-    copy = (await client.post(f"/api/v1/projects/{pid}/duplicate")).json()
-    assert copy["id"] != pid
-    assert copy["environments"] == created["environments"]
+    assert "normative" not in result
 
 
 async def test_territorial_candidates_do_not_claim_municipality_coverage(client):
@@ -365,21 +313,7 @@ async def test_territorial_candidates_do_not_claim_municipality_coverage(client)
     assert all(item["municipality_mapping"] == "unverified" for item in candidates)
     assert (await client.get("/api/v1/utilities?state=MG")).json() == []
     assert len((await client.get("/api/v1/locations/states")).json()) == 27
-    assert (await client.get("/api/v1/technical/integrity")).json()["structural_integrity"] is True
-
-
-async def test_registry_change_detected_without_modifying_project(client, payload, monkeypatch):
-    from app import technical
-
-    created = (await client.post("/api/v1/projects", json=payload)).json()
-    old_documents = technical.DOCUMENTS
-    monkeypatch.setattr(
-        technical, "DOCUMENTS", [*old_documents, dict(id="test_update", title="Unpublished test")]
-    )
-    result = (await client.get(f"/api/v1/projects/{created['id']}/revalidation")).json()
-    assert result["requires_revalidation"] is True
-    unchanged = (await client.get(f"/api/v1/projects/{created['id']}")).json()
-    assert unchanged == created
+    assert (await client.get("/api/v1/technical/integrity")).status_code == 404
 
 
 async def test_reference_lookup_search_and_rules(client):
@@ -388,18 +322,8 @@ async def test_reference_lookup_search_and_rules(client):
     for item in items:
         assert (await client.get("/api/v1/equipment/" + item["id"])).json() == item
     assert (await client.get("/api/v1/equipment/missing")).status_code == 404
-    rules = (await client.get("/api/v1/technical/rules")).json()
-    assert all(rule["normative"] is False for rule in rules["mathematical"])
-    assert {rule["code"]: rule["status"] for rule in rules["normative"]} == {
-        "lighting": "calculated",
-        "outlets": "calculated",
-        "demand": "estimated",
-    }
-    documents = (await client.get("/api/v1/technical/documents")).json()
-    ndu = next(doc for doc in documents["documents"] if doc["id"] == "ndu001")
-    assert ndu["edition"] == "7.0"
-    assert ndu["effective_date"] == "2024-11-01"
-    assert ndu["status"] != "rules_validated"
+    for path in ("/technical/rules", "/technical/documents", "/standards"):
+        assert (await client.get("/api/v1" + path)).status_code == 404
 
 
 async def test_verified_9000_btu_reference_uses_electrical_input(client, payload):
@@ -421,7 +345,7 @@ async def test_verified_9000_btu_reference_uses_electrical_input(client, payload
     result = (await client.post("/api/v1/calculations/full", json=payload)).json()
     assert result["installed_power"]["value"] == "1600"
     assert result["apparent_power"] is None
-    assert result["normative"]["demand"]["value"] is None
+    assert "normative" not in result
 
 
 async def test_missing_room_dimensions_do_not_block_known_power(client, payload):
@@ -433,11 +357,9 @@ async def test_missing_room_dimensions_do_not_block_known_power(client, payload)
     data = response.json()
     assert data["installed_power"]["value"] == "15000"
     assert data["installed_power"]["status"] == "calculated"
-    assert {issue["field"] for issue in data["field_issues"]} == {"environment.area_m2"}
-    assert len(data["normative_capabilities"]) == 3
-    assert sum(item["available"] for item in data["normative_capabilities"]) == 2
-    assert data["normative"]["lighting"]["value"] is None
-    assert data["normative"]["outlets"]["value"] == "600"  # bathroom needs no perimeter
+    assert data["field_issues"] == []
+    assert "normative" not in data
+    assert "normative_capabilities" not in data
     assert (
         await client.post("/api/v1/projects", json=payload)
     ).status_code == 201  # explicit draft
@@ -454,12 +376,7 @@ async def test_field_issues_disappear_and_return_bidirectionally(client, payload
         return {issue["field"] for issue in data["field_issues"]}, data
 
     before, _ = await issues()
-    assert {
-        "load.unit_power_w",
-        "load.voltage_v",
-        "load.power_factor",
-        "load.parameters.configuration",
-    } <= before
+    assert before == {"load.unit_power_w"}
     load.update(
         unit_power_w="7500",
         voltage_v="220",
@@ -469,10 +386,10 @@ async def test_field_issues_disappear_and_return_bidirectionally(client, payload
     after, result = await issues()
     assert not after
     assert result["load_results"][0]["unit_current_a"].startswith("34.090909")
-    assert result["normative"]["demand"]["value"] is None  # filling fields never validates a rule
+    assert "normative" not in result
     load["voltage_v"] = None
     again, result = await issues()
-    assert again == {"load.voltage_v"}
+    assert again == set()
     assert result["load_results"][0]["unit_current_a"] is None
     assert result["installed_power"]["value"] == "15000"
     load["voltage_v"] = "-220"
@@ -530,7 +447,7 @@ async def test_pdf_snapshot_export_and_stale_protection(client, payload):
         {"circuits": [], "service_entry": None},
     ],
 )
-async def test_report_guards_include_circuits_protections_and_entry(
+async def test_archived_study_metadata_does_not_change_energy_report(
     client, payload, format, changed
 ):
     from app.schemas import CalculationInput
@@ -544,7 +461,7 @@ async def test_report_guards_include_circuits_protections_and_entry(
         expected_registry_version=calculation["technical_context"]["registry_version"],
         expected_engine_version=calculation["engine_version"],
     )
-    assert (await client.post(f"/api/v1/reports/{format}", json=request)).status_code == 409
+    assert (await client.post(f"/api/v1/reports/{format}", json=request)).status_code == 200
 
 
 async def test_latest_recorded_calculation_is_stable_with_identical_timestamps(
@@ -561,11 +478,6 @@ async def test_latest_recorded_calculation_is_stable_with_identical_timestamps(
     payload["environments"][0]["loads"][0]["unit_power_w"] = "5500"
     updated = await client.put(f"/api/v1/projects/{created['id']}?expected_version=1", json=payload)
     assert updated.status_code == 200
-    comparison = (await client.get(f"/api/v1/projects/{created['id']}/revalidation")).json()
-    assert comparison["project_id"] == created["id"]
-    assert comparison["project_version"] == 2
-    assert comparison["previous_engine_version"] == comparison["current_result"]["engine_version"]
-    assert comparison["previous_result"]["installed_power"]["value"] == "11000"
     report = (await client.get(f"/api/v1/projects/{created['id']}/report")).json()
     assert report["recorded_calculation"]["installed_power"]["value"] == "11000"
     history = (await client.get(f"/api/v1/projects/{created['id']}/history")).json()
@@ -644,18 +556,12 @@ async def test_scope_limits_required_fields_without_changing_known_watts(client,
     assert not any(item["category"] == "error" for item in installed["notifications"])
     payload["analysis_scope"] = "current"
     current = (await client.post("/api/v1/calculations/full", json=payload)).json()
-    voltage = next(
-        item
-        for item in current["notifications"]
-        if item.get("target_id", "").endswith(".voltage_v")
-    )
-    assert voltage["location"] == ["Banheiro", "Chuveiro"]
-    assert voltage["solution"] and voltage["affected_results"] == ["corrente"]
+    assert not current["notifications"]
     assert current["installed_power"]["value"] == "15000"
     assert len({item["id"] for item in current["notifications"]}) == len(current["notifications"])
     assert not any(item["category"] == "normative" for item in current["notifications"])
     assert not any(item["target_id"] == "project.utility" for item in current["notifications"])
-    assert len(current["normative_capabilities"]) == 3
+    assert "normative_capabilities" not in current
 
 
 async def test_edited_power_voltage_pf_quantity_category_propagate_independently(client, payload):
@@ -691,7 +597,7 @@ async def test_edited_power_voltage_pf_quantity_category_propagate_independently
     assert Decimal(final["load_results"][0]["unit_current_a"]) == Decimal("16")
     assert final["by_category_w"] == {"Teste B": "5280"}
     assert len(final["memory"]) == 1
-    assert final["normative"]["demand"]["value"] is None
+    assert "normative" not in final
     assert final["input_digest"] != first["input_digest"]
 
 
@@ -889,23 +795,7 @@ async def test_documented_ac_capacities_are_electrical_inputs_not_thermal_watts(
         ).json()
         assert result["installed_power"]["value"] == str(int(watts) * 2)
         assert result["load_results"][0]["unit_current_a"] is None
-        assert result["normative"]["demand"]["value"] is None
-
-
-async def test_demand_input_pending_and_unverified_rule_are_different_states(client, payload):
-    payload["utility"] = "unconfirmed"
-    missing = (await client.post("/api/v1/calculations/full", json=payload)).json()
-    assert missing["normative"]["demand"]["status"] == "pending"
-    assert not any(n["target_id"] == "project.utility" for n in missing["notifications"])
-    payload["utility"] = "energisa_sul_sudeste"
-    known = (await client.post("/api/v1/calculations/full", json=payload)).json()
-    assert known["normative"]["demand"]["status"] == "pending"
-    assert known["normative"]["demand"]["value"] is None
-    rule = next(n for n in known["normative_capabilities"] if n["code"] == "demand")
-    assert rule["available"]
-    assert "9.1" in rule["reason"]
-    assert any("Energisa" in item["title"] for item in rule["evidence"])
-    assert known["installed_power"]["value"] == missing["installed_power"]["value"] == "15000"
+        assert "normative" not in result
 
 
 async def test_invalid_save_has_actionable_field_notice(client, payload):
@@ -1031,11 +921,11 @@ async def test_api_manual_recalculation_preserves_reference_and_saves_current_va
             )
         ],
     )
-    for route in ("loads", "demand", "full"):
+    for route in ("loads", "full"):
         result = (await client.post(f"/api/v1/calculations/{route}", json=data)).json()
         assert result["installed_power"]["value"] == "36"
         assert result["lighting_nominal"]["value"] == "36"
-        assert all(item["value"] is None for item in result["normative"].values())
+        assert "normative" not in result
     load = data["environments"][0]["loads"][0]
     load.update(
         unit_power_w="12.345678",
@@ -1118,42 +1008,6 @@ async def test_energy_persistence_recalculation_and_invalid_schedule(client, pay
     )
 
 
-async def test_research_is_exposed_as_coverage_not_as_project_errors(client, payload):
-    payload["utility"] = "energisa_sul_sudeste"
-    calculated = (await client.post("/api/v1/calculations/full", json=payload)).json()
-    registry = (
-        await client.get("/api/v1/technical/rules?utility=energisa_sul_sudeste&state=SP")
-    ).json()
-    assert registry["registry_version"] == calculated["technical_context"]["registry_version"]
-    assert registry["coverage"] == calculated["normative_capabilities"]
-    assert {item["code"] for item in registry["coverage"]} == {"lighting", "outlets", "demand"}
-    assert not any(n["category"] == "normative" for n in calculated["notifications"])
-    assert not any(n["target_id"] == "project.utility" for n in calculated["notifications"])
-    for item in registry["coverage"]:
-        assert item["available"] is True
-        assert item["label"] and item["purpose"] and item["reason"]
-        assert bool(item["pending_checks"]) is (item["code"] == "demand")
-        assert item["evidence"]
-        for evidence in item["evidence"]:
-            assert evidence["url"].startswith("https://")
-            assert evidence["consulted_on"] == (
-                "2026-10-26" if evidence["access"] == "user_supplied_full_text" else "2026-10-22"
-            )
-            assert evidence["access"] in (
-                "official_index",
-                "user_supplied_full_text",
-                "official_metadata",
-                "institutional_full_text",
-                "official_full_text",
-            )
-        assert calculated["normative"][item["code"]]["value"] is None
-    demand = next(item for item in registry["coverage"] if item["code"] == "demand")
-    assert any("9.1" in (e["section"] or "") for e in demand["evidence"])
-    assert all(
-        bool(rule["procedure"]) == bool(rule["tests"]) is True for rule in registry["normative"]
-    )
-
-
 @pytest.fixture
 def energisa_payload():
     return dict(
@@ -1169,143 +1023,6 @@ def energisa_payload():
         ],
         confirmed_absent_groups=["d3", "d4", "d5", "d6", "d7"],
     )
-
-
-async def test_energisa_endpoint_has_traceable_method_and_preserves_project_flow(
-    client, energisa_payload, payload
-):
-    from decimal import Decimal, localcontext
-
-    response = await client.post("/api/v1/calculations/energisa-demand", json=energisa_payload)
-    assert response.status_code == 200, response.text
-    data = response.json()
-    with localcontext() as context:
-        context.prec = 40
-        assert Decimal(data["value"]) == Decimal("6.36") / Decimal(".92")
-    assert data["status"] == "estimated" and data["unit"] == "kVA"
-    assert (
-        data["reference"]["sha256"]
-        == "940b4aab66afc741e2f1f20d88ef2630672dcac2499928af31d807ac8d7442e2"
-    )
-    assert data["reference"]["access"] == "user_supplied_full_text"
-    assert (await client.get("/api/v1/projects")).json() == []
-    registry = (
-        await client.get("/api/v1/technical/rules?utility=energisa_sul_sudeste&state=SP")
-    ).json()
-    assert registry["regional_methods"][0]["endpoint"].endswith("/calculations/energisa-demand")
-    payload["utility"] = "energisa_sul_sudeste"
-    normal = (await client.post("/api/v1/calculations/full", json=payload)).json()
-    assert (
-        normal["normative"]["demand"]["value"] is None
-    )  # no guessed classification of old projects
-
-
-@pytest.mark.parametrize(
-    "change", ["missing_power", "missing_absence", "review", "central", "motor", "foreign_utility"]
-)
-async def test_energisa_endpoint_pending_and_scope(client, energisa_payload, change):
-    if change == "missing_power":
-        energisa_payload["loads"][1]["unit_power_w"] = None
-    elif change == "missing_absence":
-        energisa_payload["confirmed_absent_groups"] = []
-    elif change == "review":
-        energisa_payload["inventory_reviewed"] = False
-    elif change == "foreign_utility":
-        energisa_payload["utility"] = "enel_sp"
-    else:
-        group = "d5" if change == "central" else "d6"
-        energisa_payload["confirmed_absent_groups"].remove(group)
-        energisa_payload["loads"].append(
-            dict(
-                name="Carga adicional",
-                group=group,
-                quantity=1,
-                unit_power_w="1000",
-                air_conditioning_type="central_unit",
-            )
-        )
-    response = await client.post("/api/v1/calculations/energisa-demand", json=energisa_payload)
-    assert response.status_code == 200
-    assert response.json()["value"] is None and response.json()["pending_checks"]
-
-
-@pytest.mark.parametrize(
-    "change",
-    ["contradiction", "duplicate_absence", "bool_quantity", "negative", "nan", "missing_scope"],
-)
-async def test_energisa_endpoint_rejects_bad_inputs(client, energisa_payload, change):
-    if change == "contradiction":
-        energisa_payload["confirmed_absent_groups"].append("d2")
-    elif change == "duplicate_absence":
-        energisa_payload["confirmed_absent_groups"].append("d3")
-    elif change == "bool_quantity":
-        energisa_payload["loads"][1]["quantity"] = True
-    elif change == "negative":
-        energisa_payload["loads"][1]["unit_power_w"] = "-1"
-    elif change == "nan":
-        energisa_payload["loads"][1]["unit_power_w"] = "NaN"
-    else:
-        energisa_payload.pop("unit_type")
-    assert (
-        await client.post("/api/v1/calculations/energisa-demand", json=energisa_payload)
-    ).status_code == 422
-
-
-@pytest.mark.parametrize(
-    "utility,state",
-    [
-        ("unconfirmed", "SP"),
-        ("cpfl_paulista", "SP"),
-        ("enel_sp", "SP"),
-        ("energisa_sul_sudeste", "RJ"),
-    ],
-)
-async def test_coverage_never_borrows_energisa_research_for_another_scope(client, utility, state):
-    registry = (
-        await client.get("/api/v1/technical/rules", params=dict(utility=utility, state=state))
-    ).json()
-    demand = next(item for item in registry["coverage"] if item["code"] == "demand")
-    assert demand["available"] is False
-    assert "NDU-001" not in str(demand)
-    assert "energisa.com.br" not in str(demand)
-
-
-async def test_research_snapshot_is_versioned_without_mutating_saved_history(client, payload):
-    saved = (await client.post("/api/v1/projects", json=payload)).json()
-    before = (await client.get(f"/api/v1/projects/{saved['id']}/history")).json()
-    registry = (
-        await client.get("/api/v1/technical/revisions/" + saved["standards_version"])
-    ).json()
-    assert all(
-        rule["evidence"] and (rule["pending_checks"] or rule["tests"])
-        for rule in registry["snapshot"]["rules"]
-    )
-    preview = (await client.get(f"/api/v1/projects/{saved['id']}/revalidation")).json()
-    assert len(preview["current_result"]["normative_capabilities"]) == 3
-    assert before == (await client.get(f"/api/v1/projects/{saved['id']}/history")).json()
-
-
-async def test_residential_api_recalculates_without_rewriting_previous_history(client, payload):
-    payload["analysis_scope"] = "normative"
-    payload["utility"] = "energisa_sul_sudeste"
-    room = payload["environments"][0]
-    room.update(type="kitchen", area_m2="9", perimeter_m="12", lighting_points=1, outlets=5)
-    saved = (await client.post("/api/v1/projects", json=payload)).json()
-    before = (await client.get(f"/api/v1/projects/{saved['id']}/history")).json()
-    original = before[0]["result"]
-    assert original["normative"]["lighting"]["value"] == "100"
-    assert original["normative"]["outlets"]["value"] == "2000"
-    assert original["installed_power"]["value"] == "15000"
-    assert original["normative_environments"][0]["registered_outlet_points"] == 5
-    room.update(area_m2="14", outlets=8)
-    current = (await client.post("/api/v1/calculations/full", json=payload)).json()
-    assert current["normative"]["lighting"]["value"] == "220"
-    assert current["normative"]["outlets"]["value"] == "2300"
-    assert current["normative"]["demand"]["value"] is None
-    assert (await client.get(f"/api/v1/projects/{saved['id']}/history")).json() == before
-    assert (await client.get(f"/api/v1/projects/{saved['id']}")).json()["environments"][0][
-        "outlets"
-    ] == 5
 
 
 async def test_json_report_recalculates_and_guards_snapshot_without_saving(client, payload):
@@ -1333,7 +1050,7 @@ async def test_json_report_recalculates_and_guards_snapshot_without_saving(clien
     assert report["projeto"]["nome"] == payload["name"]
     assert report["emissao"]["fuso"] == "America/Sao_Paulo"
     assert report["equipamentos"][0]["quantidade"] == 2
-    assert report["previsoes_normativas"]["demand"]["valor"] is None
+    assert "previsoes_normativas" not in report
     assert "source_url" not in response.text and "aggregate_steps" not in response.text
     assert response.headers["cache-control"] == "no-store"
     assert "Casa%20teste.json" in response.headers["content-disposition"]
@@ -1343,56 +1060,6 @@ async def test_json_report_recalculates_and_guards_snapshot_without_saving(clien
         assert (await client.post("/api/v1/reports/json", json=changed)).status_code == 409
     body["project"]["environments"][0]["loads"][0]["quantity"] = 3
     assert (await client.post("/api/v1/reports/json", json=body)).status_code == 409
-
-
-async def test_project_demand_persistence_exports_and_stale_guard(client, payload):
-    from app.schemas import CalculationInput
-
-    payload["utility"] = "energisa_sul_sudeste"
-    payload["energisa_demand"] = dict(
-        enabled=True,
-        unit_type="individual_residential",
-        has_signage_or_display_lighting=False,
-        confirmed_absent_groups=["d1", "d3", "d4", "d5", "d6", "d7"],
-    )
-    payload["environments"][0]["loads"][0]["energisa_demand"] = dict(group="d2")
-    # Normalize IDs before review exactly as the editor does; unsaved omitted UUIDs
-    # intentionally create a new inventory and cannot reuse another review.
-    payload = CalculationInput.model_validate(payload).model_dump(mode="json")
-    first = (await client.post("/api/v1/calculations/full", json=payload)).json()
-    assert first["energisa_demand"]["status"] == "pending"
-    payload["energisa_demand"]["reviewed_inventory_digest"] = first["energisa_demand"][
-        "inventory_digest"
-    ]
-    response = await client.post("/api/v1/calculations/full", json=payload)
-    assert response.status_code == 200
-    result = response.json()
-    assert result["energisa_demand"]["inventory_reviewed"]
-    assert result["energisa_demand"]["demanded_power_kw"] == "11.25"
-    saved_response = await client.post("/api/v1/projects", json=payload)
-    assert saved_response.status_code == 201
-    saved = saved_response.json()
-    loaded = (await client.get(f"/api/v1/projects/{saved['id']}")).json()
-    assert loaded["energisa_demand"] == payload["energisa_demand"]
-    export = dict(
-        project=payload,
-        expected_input_digest=result["input_digest"],
-        expected_engine_version=result["engine_version"],
-        expected_registry_version=result["technical_context"]["registry_version"],
-    )
-    report = await client.post("/api/v1/reports/json", json=export)
-    assert report.status_code == 200
-    summary = report.json()
-    assert summary["demanda_revisada"]["value"] == result["energisa_demand"]["value"]
-    pdf = await client.post("/api/v1/reports/pdf", json=export)
-    assert pdf.status_code == 200 and pdf.content.startswith(b"%PDF")
-    payload["environments"][0]["loads"][0]["quantity"] = 3
-    changed = (await client.post("/api/v1/calculations/full", json=payload)).json()
-    assert not changed["energisa_demand"]["inventory_reviewed"]
-    assert changed["normative"]["demand"]["value"] is None
-    export["project"] = payload
-    rejected = await client.post("/api/v1/reports/json", json=export)
-    assert rejected.status_code == 409
 
 
 async def test_lightweight_summary_search_trash_and_full_open(client, payload):
@@ -1467,3 +1134,108 @@ async def test_territory_api_validates_coordinate_limits_and_no_snapshot(client,
         "latitude=NaN&longitude=0",
     ]:
         assert (await client.get("/api/v1/locations/territory?" + query)).status_code == 422
+
+
+async def test_estimates_save_export_without_normative_registry(client, monkeypatch):
+    from app import technical
+
+    def obsolete(*args, **kwargs):
+        raise AssertionError("Normative registry must not be accessed")
+
+    monkeypatch.setattr(technical, "registry_version", obsolete)
+    monkeypatch.setattr(technical, "snapshot", obsolete)
+    data = dict(
+        name="Kitnet planejada",
+        property_stage="planned",
+        residence_type="Kitnet",
+        environments=[
+            dict(
+                name="Escritório",
+                loads=[
+                    dict(
+                        name="Computador",
+                        quantity=1,
+                        unit_power_w="600",
+                        parameters=dict(usage_hours_per_day="4", usage_days_per_month=20),
+                    )
+                ],
+            )
+        ],
+    )
+    from app.schemas import CalculationInput
+
+    data = CalculationInput.model_validate(data).model_dump(mode="json")
+    calculation = (await client.post("/api/v1/calculations/full", json=data)).json()
+    assert calculation["monthly_energy"]["value"] == "48"
+    saved = (await client.post("/api/v1/projects", json=data)).json()
+    assert saved["id"]
+    report = dict(
+        project=data,
+        expected_input_digest=calculation["input_digest"],
+        expected_engine_version=calculation["engine_version"],
+        expected_registry_version=calculation["technical_context"]["registry_version"],
+    )
+    for kind in ("json", "pdf"):
+        response = await client.post("/api/v1/reports/" + kind, json=report)
+        assert response.status_code == 200
+    comparison = await client.post(
+        "/api/v1/calculations/compare", json={"baseline": data, "scenario": data}
+    )
+    assert comparison.status_code == 200
+    assert comparison.json()["differences"]["monthly_energy"]["value"] == "0"
+    for path in (
+        "/technical/rules",
+        "/technical/applicability",
+        "/technical/documents",
+        "/standards",
+        "/projects/" + saved["id"] + "/revalidation",
+    ):
+        assert (await client.get("/api/v1" + path)).status_code == 404
+    assert (await client.post("/api/v1/calculations/energisa-demand", json={})).status_code == 404
+
+
+async def test_old_project_keeps_manual_values_and_archived_studies_on_open_edit_and_export(
+    client, payload
+):
+    import copy
+
+    payload.update(
+        analysis_scope="normative",
+        circuits=[dict(id="old", name="Estudo anterior", length_m="20")],
+        energisa_demand=dict(enabled=True),
+        service_entry=dict(scope_confirmed=True),
+    )
+    payload["environments"][0]["loads"][0]["unit_power_w"] = "600"
+    saved = (await client.post("/api/v1/projects", json=payload)).json()
+    original = copy.deepcopy(saved)
+    reopened = (await client.get("/api/v1/projects/" + saved["id"])).json()
+    assert reopened == original
+    inputs = {
+        k: v
+        for k, v in reopened.items()
+        if k not in ("id", "version", "created_at", "updated_at", "standards_version", "deleted_at")
+    }
+    energy_only = {
+        k: v for k, v in inputs.items() if k not in ("circuits", "service_entry", "energisa_demand")
+    }
+    energy_only["analysis_scope"] = "installed"
+    calculation = (await client.post("/api/v1/calculations/full", json=energy_only)).json()
+    export = dict(
+        project=inputs,
+        saved_project_id=saved["id"],
+        saved_project_version=1,
+        expected_input_digest=calculation["input_digest"],
+        expected_registry_version=calculation["technical_context"]["registry_version"],
+        expected_engine_version=calculation["engine_version"],
+    )
+    assert (await client.post("/api/v1/reports/json", json=export)).status_code == 200
+    inputs["environments"][0]["loads"][0]["unit_power_w"] = "650"
+    updated = (
+        await client.put(f"/api/v1/projects/{saved['id']}?expected_version=1", json=inputs)
+    ).json()
+    assert updated["circuits"] == original["circuits"]
+    assert updated["service_entry"] == original["service_entry"]
+    assert updated["energisa_demand"] == original["energisa_demand"]
+    history = (await client.get(f"/api/v1/projects/{saved['id']}/history")).json()
+    assert [item["version"] for item in history] == [2, 1]
+    assert history[-1]["inputs"]["environments"][0]["loads"][0]["unit_power_w"] == "600"

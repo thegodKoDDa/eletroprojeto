@@ -18,7 +18,7 @@ Para conhecer o projeto, comece pelo [README principal](../README.md). Escolha a
 | [Contribuir](../CONTRIBUTING.md) | Organização, testes e geração de contratos |
 | [Arquitetura](architecture.md) | Componentes, persistência e integração |
 | [Cálculos](calculations.md) | Unidades, procedimentos e limites implementados |
-| [Fontes e validação](standards.md) | Evidências, edições e condições normativas |
+| [Referências e acervo](standards.md) | Procedência do catálogo e pesquisa normativa desacoplada |
 | [Segurança](security.md) | Acesso, sessões e operação local/remota |
 | [Verificações](audit.md) | Evidências atuais e registros de auditoria |
 | [Limitações conhecidas](KNOWN_ISSUES.md) | Pendências e casos ainda não cobertos |

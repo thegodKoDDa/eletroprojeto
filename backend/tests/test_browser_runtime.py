@@ -26,8 +26,7 @@ def test_browser_runtime_resources_and_calculations():
     assert len(equipment["body"]) >= 1
 
     rules = dispatch_request("GET", "/technical/rules?utility=energisa_sul_sudeste&state=SP")
-    assert rules["status"] == 200
-    assert "registry_version" in rules["body"]
+    assert rules["status"] == 404
 
     calc_payload = {
         "name": "Casa Teste",
@@ -171,7 +170,7 @@ def test_browser_runtime_project_crud_and_reports():
     )
     assert json_resp["status"] == 200
     parsed_report = json.loads(base64.b64decode(json_resp["body_base64"]).decode("utf-8"))
-    assert parsed_report["formato_versao"] == "1.4"
+    assert parsed_report["formato_versao"] == "2.0"
 
     # Soft delete, restore, permanent delete
     deleted = dispatch_request(
@@ -229,3 +228,31 @@ def test_browser_runtime_validation_error_notifications():
     assert resp["body"]["notifications"][0]["target_id"] == (
         "load.22222222-2222-4222-8222-222222222222.unit_power_w"
     )
+
+
+def test_browser_scenario_comparison_without_normative_routes():
+    from app.schemas import CalculationInput
+
+    data = CalculationInput.model_validate(
+        dict(
+            environments=[
+                dict(
+                    name="Sala",
+                    loads=[
+                        dict(
+                            name="TV",
+                            unit_power_w="100",
+                            parameters=dict(usage_hours_per_day="4", usage_days_per_month=30),
+                        )
+                    ],
+                )
+            ]
+        )
+    ).model_dump(mode="json")
+    result = dispatch_request(
+        "POST", "/calculations/compare", json.dumps(dict(baseline=data, scenario=data))
+    )
+    assert result["status"] == 200
+    assert result["body"]["differences"]["monthly_energy"]["value"] == "0"
+    for path in ("/technical/rules", "/standards"):
+        assert dispatch_request("GET", path)["status"] == 404

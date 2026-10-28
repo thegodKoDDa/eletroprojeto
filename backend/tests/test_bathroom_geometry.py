@@ -1,12 +1,7 @@
-from copy import deepcopy
 from decimal import Decimal as D
 
 import pytest
 from app.calculations.bathroom_geometry import calculate_bathroom_geometry
-from app.calculations.engine import calculate
-from app.reports.pdf import render_report
-from app.reports.summary import build_summary
-from app.schemas import CalculationInput, CalculationResult
 
 
 def project(x="0.5", z="1", kind="socket"):
@@ -123,19 +118,3 @@ def test_inverted_envelope_nonbathroom_and_empty_points():
     data = project()
     data["environments"][0]["bathroom_geometry"]["points"] = []
     assert calculate_bathroom_geometry(data)[0]["status"] == "pending"
-
-
-def test_integration_contract_pdf_json_and_input_preservation():
-    data = CalculationInput.model_validate(project()).model_dump(mode="json")
-    before = deepcopy(data)
-    result = calculate(data)
-    assert data == before
-    assert CalculationResult.model_validate(result)
-    assert result["bathroom_geometry_results"][0]["points"][0]["volume"] == "1"
-    assert (
-        build_summary(data, result)["localizacao_banheiros"] == result["bathroom_geometry_results"]
-    )
-    assert render_report(data, result).startswith(b"%PDF")
-    data["environments"][0]["bathroom_geometry"]["points"][0]["x_min_m"] = "2"
-    assert calculate(data)["input_digest"] != result["input_digest"]
-    assert calculate_bathroom_geometry(dict(environments=[dict(id="legacy", name="Antigo")])) == []

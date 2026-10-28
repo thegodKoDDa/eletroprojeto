@@ -206,9 +206,9 @@ def test_entry_trifasico_requires_reviewed_demand_and_subterranean_insulation():
     assert service_entry(project, D(1000), [], None)["status"] == "out_of_scope"
 
 
-def test_project_contract_rejects_duplicate_circuit_ids():
-    with pytest.raises(ValueError, match="circuitos"):
-        CalculationInput(circuits=[dict(id="same"), dict(id="same")])
+def test_legacy_circuit_metadata_never_blocks_consumption_input():
+    payload = [{"id": "same", "unknown_archived_field": True}, {"id": "same"}]
+    assert CalculationInput(circuits=payload).model_dump()["circuits"] == payload
 
 
 def test_short_energy_tn_and_tt_checks_use_explicit_product_data():
@@ -259,51 +259,6 @@ def test_short_thermal_constraint_increases_section_before_returning_candidate()
     row = calculate_circuits(project, loads)[0]
     assert row["phase_section_mm2"] == 10
     assert row["protection_checks"][0]["passed"] is True
-
-
-def test_engine_json_and_pdf_include_circuits_without_unknown_as_zero():
-    from app.calculations.engine import calculate
-    from app.reports.pdf import render_report
-    from app.reports.summary import build_summary
-
-    pdf = pytest.importorskip("pymupdf")
-    _, resolved = setup_circuit()
-    circuit = setup_circuit()[0]["circuits"][0]
-    circuit["load_ids"] = ["22222222-2222-4222-8222-222222222222"]
-    project = CalculationInput(
-        name="Circuito de verificação",
-        municipality="Município QA",
-        circuits=[circuit],
-        environments=[
-            dict(
-                id="11111111-1111-4111-8111-111111111111",
-                name="Ambiente",
-                loads=[
-                    dict(
-                        id=circuit["load_ids"][0],
-                        name="Carga",
-                        category="Outros",
-                        quantity=1,
-                        unit_power_w="4400",
-                        voltage_v="220",
-                        power_factor="1",
-                        parameters=dict(configuration="single_phase"),
-                    )
-                ],
-            )
-        ],
-    ).model_dump(mode="json")
-    result = calculate(project)
-    assert result["circuit_results"][0]["phase_section_mm2"] == 4
-    summary = build_summary(project, result)
-    assert summary["formato_versao"] == "1.4"
-    assert summary["circuitos"][0]["breaker_a"] == 25
-    data = render_report(project, result)
-    with pdf.open(stream=data, filetype="pdf") as document:
-        text = "\n".join(page.get_text() for page in document)
-    assert "Estudo de circuitos" in text
-    assert "fase=4" in text
-    assert "None" not in text
 
 
 @pytest.mark.parametrize(

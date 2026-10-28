@@ -4,7 +4,6 @@ type Notice = components['schemas']['Notification'];
 const groups: { category: Notice['category']; label: string; color: string }[] = [
   { category: 'error', label: 'Dados necessários ao cálculo selecionado', color: 'text-red-300' },
   { category: 'technical', label: 'Alertas técnicos', color: 'text-amber-200' },
-  { category: 'normative', label: 'Cobertura normativa do sistema', color: 'text-amber-200' },
   { category: 'estimate', label: 'Valores estimados', color: 'muted' },
   { category: 'info', label: 'Informações', color: 'muted' },
 ];
@@ -52,7 +51,7 @@ export function CalculationNotices({ notices, stale }: { notices: Notice[]; stal
             data-tone={
               group.category === 'error'
                 ? 'error'
-                : ['technical', 'normative'].includes(group.category)
+                : group.category === 'technical'
                   ? 'warning'
                   : 'info'
             }

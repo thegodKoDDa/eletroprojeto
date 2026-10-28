@@ -158,7 +158,7 @@ class ProjectEnergisaDemandSettings(Schema):
 
 
 class Load(Schema):
-    energisa_demand: EnergisaLoadClassification | None = None
+    energisa_demand: dict | None = Field(default=None, json_schema_extra={"deprecated": True})
     id: UUID = Field(default_factory=uuid4)
     name: Text
     category: Text = "Outros"
@@ -233,7 +233,7 @@ class BathroomGeometry(Schema):
 
 
 class Environment(Schema):
-    bathroom_geometry: BathroomGeometry | None = None
+    bathroom_geometry: dict | None = Field(default=None, json_schema_extra={"deprecated": True})
     id: UUID = Field(default_factory=uuid4)
     name: Text
     type: Literal[
@@ -353,12 +353,14 @@ class ServiceEntryInput(Schema):
 
 
 class ProjectInput(Schema):
-    service_entry: ServiceEntryInput | None = None
-    circuits: list[CircuitInput] = Field(default_factory=list, max_length=200)
-    energisa_demand: ProjectEnergisaDemandSettings | None = None
+    service_entry: dict | None = Field(default=None, json_schema_extra={"deprecated": True})
+    circuits: list[dict] = Field(
+        default_factory=list, max_length=200, json_schema_extra={"deprecated": True}
+    )
+    energisa_demand: dict | None = Field(default=None, json_schema_extra={"deprecated": True})
     analysis_scope: Literal["installed", "apparent", "current", "normative"] = "installed"
     name: Text
-    municipality: Text
+    municipality: str = Field(default="", max_length=200)
     state: Literal[
         "AC",
         "AL",
@@ -398,6 +400,8 @@ class ProjectInput(Schema):
         "edp_sp",
         "unconfirmed",
     ] = "unconfirmed"
+    property_stage: Literal["planned", "construction", "ready", "renovation"] | None = None
+    utility_name: str | None = Field(default=None, max_length=200)
     residence_type: Text | None = "Casa"
     built_area_m2: Positive | None = None
     floors: int | None = Field(default=1, ge=1, le=100, strict=True)
@@ -412,9 +416,6 @@ class ProjectInput(Schema):
         loads = [load.id for room in self.environments for load in room.loads]
         if len(set(rooms)) != len(rooms) or len(set(loads)) != len(loads):
             raise ValueError("Identificadores duplicados de ambientes ou cargas")
-        circuits = [c.id for c in self.circuits]
-        if len(circuits) != len(set(circuits)):
-            raise ValueError("Identificadores duplicados de circuitos")
         return self
 
 
@@ -449,7 +450,7 @@ class ProjectSummary(Schema):
 
 class Value(Schema):
     value: Decimal
-    unit: Literal["W", "kW", "VA", "kVA", "A", "kWh", "BRL"]
+    unit: Literal["W", "kW", "VA", "kVA", "A", "kWh", "kWh/dia", "BRL"]
     status: Status
 
 
@@ -486,7 +487,7 @@ class TechnicalStep(Schema):
     formula: str
     substituted: str
     value: Decimal
-    unit: Literal["W", "kW", "VA", "kVA", "A", "kWh", "BRL"]
+    unit: Literal["W", "kW", "VA", "kVA", "A", "kWh", "kWh/dia", "BRL"]
     source: str | None = None
     assumptions: str
 
@@ -781,12 +782,6 @@ class ServiceEntryResult(Schema):
 
 
 class CalculationResult(Schema):
-    service_entry: ServiceEntryResult | None = None
-    bathroom_geometry_results: list[BathroomGeometryResult] = Field(default_factory=list)
-    circuit_results: list[CircuitResult] = Field(default_factory=list)
-    energisa_demand: ProjectEnergisaDemandResult | None = None
-    normative_environments: list[NormativeEnvironment] = Field(default_factory=list)
-    normative_capabilities: list[NormativeCapability] = Field(default_factory=list)
     notifications: list["Notification"] = Field(default_factory=list)
     field_issues: list["FieldIssue"] = Field(default_factory=list)
     technical_context: dict = Field(default_factory=dict)
@@ -799,7 +794,6 @@ class CalculationResult(Schema):
     by_environment_w: dict[str, Decimal]
     by_category_w: dict[str, Decimal]
     apparent_power: Value | None
-    normative: dict[str, dict]
     memory: list[Memory]
     warnings: list[str]
     counting_policy: str
@@ -807,6 +801,7 @@ class CalculationResult(Schema):
     load_results: list[LoadTechnicalResult] = Field(default_factory=list)
     apparent_power_kva: Value | None = None
     aggregate_steps: list[TechnicalStep] = Field(default_factory=list)
+    daily_energy: Value | None = None
     monthly_energy: Value | None = None
     monthly_cost: Value | None = None
     energy_unknown_load_ids: list[str] = Field(default_factory=list)
@@ -820,6 +815,17 @@ class CalculationResult(Schema):
     energy_ranked_load_ids: list[str] = Field(default_factory=list)
     energy_known_load_count: int = 0
     energy_pending_load_count: int = 0
+
+
+class EstimateComparisonInput(Schema):
+    baseline: CalculationInput
+    scenario: CalculationInput
+
+
+class EstimateComparison(Schema):
+    baseline: CalculationResult
+    scenario: CalculationResult
+    differences: dict[str, Value | None]
 
 
 class ProjectRevalidation(Schema):
@@ -900,7 +906,7 @@ class UtilityInfo(Schema):
     name: str
     states: list[str]
     document_ids: list[str]
-    status: Status
+    status: Literal["contextual"] = "contextual"
     municipality_mapping: Literal["unverified"]
 
 
@@ -958,7 +964,7 @@ class PDFExportInput(Schema):
 
 class Notification(Schema):
     id: str
-    category: Literal["error", "technical", "normative", "info", "estimate"]
+    category: Literal["error", "technical", "info", "estimate"]
     location: list[str]
     problem: str
     solution: str

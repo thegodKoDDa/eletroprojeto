@@ -8,7 +8,9 @@ test('home preserves sidebar branding and equipment disclosures stay compact and
   const sidebar = page.locator('.workspace-sidebar');
   await expect(sidebar).toBeVisible();
   await expect(sidebar.locator('.brand-name')).toHaveText('EletroProjeto');
-  await expect(page.locator('.workspace-footer')).toContainText('Estudo preliminar');
+  await expect(page.locator('.workspace-footer')).toContainText(
+    'Estimativa de consumo residencial',
+  );
   expect(
     (await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze())
       .violations,

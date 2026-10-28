@@ -9,12 +9,12 @@ export function useCalculation(input: ProjectInput, scope = 'default', enabled =
     () =>
       inputIdentity(
         {
-          analysis_scope: input.analysis_scope ?? 'installed',
-          energisa_demand: input.energisa_demand ?? null,
-          circuits: input.circuits ?? [],
-          service_entry: input.service_entry ?? null,
+          analysis_scope: 'installed',
           energy_tariff_brl_per_kwh: input.energy_tariff_brl_per_kwh ?? null,
           name: input.name,
+          property_stage: input.property_stage ?? null,
+          residence_type: input.residence_type ?? null,
+          utility_name: input.utility_name ?? null,
           built_area_m2: input.built_area_m2 === '' ? null : input.built_area_m2,
           state: input.state ?? 'SP',
           municipality: input.municipality ?? '',
@@ -25,11 +25,10 @@ export function useCalculation(input: ProjectInput, scope = 'default', enabled =
       ),
     [
       input.energy_tariff_brl_per_kwh,
-      input.analysis_scope,
-      input.energisa_demand,
-      input.circuits,
-      input.service_entry,
       input.name,
+      input.property_stage,
+      input.residence_type,
+      input.utility_name,
       input.built_area_m2,
       input.state,
       input.municipality,

@@ -77,10 +77,8 @@ def test_export_complete_energy_with_unknown_power_never_equates_kwh_to_w():
     ]
     assert report["pendencias_consumo"] == []
     assert report["projeto"]["distribuidora"] == "Energisa Sul-Sudeste"
-    assert not report["atendimento_distribuidora"]["demanda_disponivel"]
-    assert report["previsoes_normativas"]["demand"]["valor"] is None
-    assert report["previsao_residencial_por_ambiente"][0]["minimo_pontos_tug"] == 3
-    assert report["previsao_residencial_por_ambiente"][0]["pontos_tug_considerados"] == 4
+    assert "atendimento_distribuidora" not in report
+    assert "previsoes_normativas" not in report
     text = "\n".join(extract_pages(render_report(project, result)))
     assert "85,4 kWh" in text and "R$ 68,32" in text
     assert "4 de 4" not in text

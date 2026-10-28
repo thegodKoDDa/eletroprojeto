@@ -250,19 +250,6 @@ def test_manual_override_and_snapshot_preserved():
     assert CATALOG[0]["reference_power_w"] == "9"
 
 
-def test_unclassified_load_never_completes_demand():
-    result = run(dict(name="Carga sem grupo", unit_power_w="100", demand_classification=None))
-    assert result["normative"]["demand"]["value"] is None
-    assert result["status"] == "awaiting_technical_validation"
-    assert not any("classificação" in warning for warning in result["warnings"])
-    assert (
-        next(item for item in result["normative_capabilities"] if item["code"] == "demand")[
-            "available"
-        ]
-        is False
-    )
-
-
 def test_aggregate_memory_contains_independent_substitutions():
     result = run(dict(name="Chuveiro", unit_power_w="7500", quantity=2, power_factor="1"))
     steps = {step["calculation"]: step for step in result["aggregate_steps"]}

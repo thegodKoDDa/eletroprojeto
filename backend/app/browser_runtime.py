@@ -17,10 +17,12 @@ from zoneinfo import ZoneInfo
 
 from pydantic import ValidationError
 
-from .calculations.energisa import calculate_energisa_demand
+from .calculations.comparison import compare_estimates
 from .calculations.engine import ENGINE_VERSION, calculate
-from .calculations.standards import ENERGISA_V7_EVIDENCE, RULES
 from .catalog import CATALOG
+from .estimate_metadata import revision as registry_version
+from .estimate_metadata import snapshot
+from .locations import STATES, UTILITIES
 from .municipalities import lookup as municipality_lookup
 from .reports.pdf import render_report
 from .reports.summary import build_summary
@@ -28,32 +30,17 @@ from .schemas import (
     CalculationInput,
     CalculationResult,
     CatalogItem,
-    DocumentRegistry,
-    EnergisaDemandInput,
-    EnergisaDemandResult,
+    EstimateComparison,
+    EstimateComparisonInput,
     FieldRequirement,
     HealthInfo,
     MunicipalityLookup,
     PDFExportInput,
     Project,
     ProjectInput,
-    ProjectRevalidation,
     ProjectSummary,
-    TechnicalRules,
     TerritoryLookup,
     UtilityInfo,
-)
-from .technical import (
-    DOCUMENTS,
-    MATHEMATICAL_RULES,
-    REGIONAL_METHODS,
-    STATES,
-    UTILITIES,
-    applicability,
-    integrity,
-    normative_capabilities,
-    registry_version,
-    snapshot,
 )
 from .territory import lookup as territory_lookup
 from .validation import field_issues, input_error_notifications, requirements
@@ -112,7 +99,7 @@ def _same_input(payload: dict, data: ProjectInput) -> bool:
             if "id" not in load.model_fields_set:
                 current["loads"][position]["id"] = old_room["loads"][position]["id"]
     for index, circuit in enumerate(data.circuits):
-        if index < len(previous["circuits"]) and "id" not in circuit.model_fields_set:
+        if index < len(previous["circuits"]) and "id" not in circuit:
             incoming["circuits"][index]["id"] = previous["circuits"][index]["id"]
     return previous == incoming
 
@@ -186,7 +173,7 @@ def _record_history(store: dict, row: dict):
             "id": version,
             "payload": snapshot(),
             "created_at": _utcnow_iso(),
-            "review_status": "normative_rules_pending",
+            "review_status": "estimate_revision",
         }
     result = CalculationResult.model_validate(
         calculate(CalculationInput.model_validate(row["payload"]).model_dump(mode="json"))
@@ -394,6 +381,17 @@ def dispatch_request(
             ]
             return _json_response(200, items)
 
+        if method == "POST" and path == "/calculations/compare":
+            data = _validate_model(EstimateComparisonInput, _parse_json_body(body))
+            return _json_response(
+                200,
+                EstimateComparison.model_validate(
+                    compare_estimates(
+                        data.baseline.model_dump(mode="json"), data.scenario.model_dump(mode="json")
+                    )
+                ).model_dump(mode="json"),
+            )
+
         if method == "GET" and path == "/equipment":
             q = (_query_param(query, "q", "") or "")[:200]
             category = _query_param(query, "category")
@@ -415,80 +413,6 @@ def dispatch_request(
             if item is None:
                 raise _HTTPError(404, "Referência de equipamento não encontrada")
             return _json_response(200, CatalogItem.model_validate(item).model_dump(mode="json"))
-
-        if method == "GET" and path == "/standards":
-            return _json_response(200, _to_jsonable([asdict(rule) for rule in RULES]))
-
-        if method == "GET" and path == "/technical/documents":
-            payload = DocumentRegistry(
-                registry_version=registry_version(), documents=DOCUMENTS
-            ).model_dump(mode="json")
-            return _json_response(200, payload)
-
-        if method == "GET" and path == "/technical/applicability":
-            utility = _query_param(query, "utility")
-            if not utility:
-                raise _HTTPError(422, "Parâmetro utility obrigatório")
-            state = _query_param(query, "state", "SP") or "SP"
-            if not re.fullmatch(r"^[A-Z]{2}$", state):
-                raise _HTTPError(422, "UF inválida")
-            return _json_response(200, _to_jsonable(applicability(utility, state)))
-
-        if method == "GET" and path == "/technical/integrity":
-            return _json_response(200, _to_jsonable(integrity()))
-
-        if method == "GET" and path == "/technical/revisions":
-            revs = sorted(
-                store["revisions"].values(), key=lambda item: item["created_at"], reverse=True
-            )
-            return _json_response(
-                200,
-                [
-                    {
-                        "id": row["id"],
-                        "created_at": _brasilia_iso(row["created_at"]),
-                        "status": row["review_status"],
-                    }
-                    for row in revs
-                ],
-            )
-
-        if method == "GET" and path.startswith("/technical/revisions/"):
-            rev_id = path.removeprefix("/technical/revisions/")
-            row = store["revisions"].get(rev_id)
-            if row is None:
-                raise _HTTPError(404, "Versão técnica não encontrada")
-            return _json_response(
-                200,
-                _to_jsonable(
-                    {"id": row["id"], "snapshot": row["payload"], "status": row["review_status"]}
-                ),
-            )
-
-        if method == "GET" and path == "/technical/rules":
-            utility = _query_param(query, "utility", "unconfirmed") or "unconfirmed"
-            state = _query_param(query, "state", "SP") or "SP"
-            if not re.fullmatch(r"^[A-Z]{2}$", state):
-                raise _HTTPError(422, "UF inválida")
-            payload = TechnicalRules.model_validate(
-                {
-                    "registry_version": registry_version(),
-                    "coverage": normative_capabilities(utility, state),
-                    "mathematical": MATHEMATICAL_RULES,
-                    "normative": [asdict(rule) for rule in RULES],
-                    "regional_methods": [
-                        method_info
-                        for method_info in REGIONAL_METHODS
-                        if utility == "unconfirmed"
-                        or (
-                            utility in method_info["supported_utilities"]
-                            and state in method_info["supported_states"]
-                        )
-                    ],
-                    "notice": "Validação matemática não implica conformidade normativa.",
-                }
-            ).model_dump(mode="json")
-            return _json_response(200, payload)
 
         if method == "GET" and path == "/locations/municipality":
             code = _query_param(query, "code", "") or ""
@@ -526,7 +450,6 @@ def dispatch_request(
         if method == "POST" and path in (
             "/calculations/full",
             "/calculations/loads",
-            "/calculations/demand",
         ):
             parsed_body = _parse_json_body(body)
             calc_input = _validate_model(CalculationInput, parsed_body)
@@ -534,15 +457,6 @@ def dispatch_request(
                 calculate(calc_input.model_dump(mode="json"))
             ).model_dump(mode="json")
             return _json_response(200, result)
-
-        if method == "POST" and path == "/calculations/energisa-demand":
-            parsed_body = _parse_json_body(body)
-            demand_input = _validate_model(EnergisaDemandInput, parsed_body)
-            result = calculate_energisa_demand(demand_input.model_dump(mode="json"))
-            payload = EnergisaDemandResult.model_validate(
-                {**result, "reference": asdict(ENERGISA_V7_EVIDENCE)}
-            ).model_dump(mode="json")
-            return _json_response(200, payload)
 
         if method == "GET" and path == "/projects":
             archived = _query_bool(query, "archived", False)
@@ -759,36 +673,9 @@ def dispatch_request(
                         "recorded_registry_version": row["standards_version"],
                         "current_registry_version": registry_version(),
                         "recorded_calculation": latest["result"] if latest else None,
-                        "notice": "Documento parcial. Não substitui revisão e responsabilidade técnica profissional.",
+                        "notice": "Estimativa dos equipamentos e hábitos informados; não é medição real.",
                     },
                 )
-
-            if action == "revalidation" and method == "GET":
-                row = _find_active_project(store, project_id)
-                current = registry_version()
-                latest = _latest_history(store, row["id"])
-                prev_engine = (
-                    latest["result"].get("engine_version")
-                    if latest and latest.get("result")
-                    else None
-                )
-                reval = ProjectRevalidation(
-                    project_id=row["id"],
-                    project_version=row["version"],
-                    previous_engine_version=prev_engine,
-                    previous_registry_version=row["standards_version"],
-                    current_registry_version=current,
-                    requires_revalidation=row["standards_version"] != current
-                    or (latest is not None and prev_engine != ENGINE_VERSION),
-                    previous_result=latest["result"] if latest else None,
-                    current_result=CalculationResult.model_validate(
-                        calculate(
-                            CalculationInput.model_validate(row["payload"]).model_dump(mode="json")
-                        )
-                    ),
-                    notice="Comparação conservadora. Valores manuais e histórico permanecem preservados.",
-                ).model_dump(mode="json")
-                return _json_response(200, reval)
 
             if action == "recalculate" and method == "POST":
                 expected_version = _query_int(query, "expected_version", minimum=1)

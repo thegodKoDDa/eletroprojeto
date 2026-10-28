@@ -10,8 +10,9 @@ from sqlalchemy.orm import Session
 
 from .calculations.engine import calculate
 from .database import HistoryRow, ProjectRow, TechnicalRevisionRow, utcnow
+from .estimate_metadata import revision as registry_version
+from .estimate_metadata import snapshot
 from .schemas import CalculationInput, CalculationResult, Project, ProjectInput
-from .technical import registry_version, snapshot
 
 
 def find(session: Session, project_id: UUID):
@@ -91,7 +92,7 @@ def record(session: Session, row: ProjectRow):
                 id=version,
                 payload=snapshot(),
                 created_at=utcnow(),
-                review_status="normative_rules_pending",
+                review_status="estimate_revision",
             )
         )
         session.flush()
@@ -131,7 +132,7 @@ def same_input(payload: dict, data: ProjectInput) -> bool:
             if "id" not in load.model_fields_set:
                 current["loads"][position]["id"] = old_room["loads"][position]["id"]
     for index, circuit in enumerate(data.circuits):
-        if index < len(previous["circuits"]) and "id" not in circuit.model_fields_set:
+        if index < len(previous["circuits"]) and "id" not in circuit:
             incoming["circuits"][index]["id"] = previous["circuits"][index]["id"]
     return previous == incoming
 

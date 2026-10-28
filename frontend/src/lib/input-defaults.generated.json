@@ -5,8 +5,11 @@
       "circuits": [],
       "energisa_demand": null,
       "analysis_scope": "installed",
+      "municipality": "",
       "state": "SP",
       "utility": "unconfirmed",
+      "property_stage": null,
+      "utility_name": null,
       "residence_type": "Casa",
       "built_area_m2": null,
       "floors": 1,
@@ -15,132 +18,10 @@
       "notes": "",
       "environments": []
     },
-    "objects": {
-      "service_entry": "ServiceEntryInput",
-      "energisa_demand": "ProjectEnergisaDemandSettings"
-    },
+    "objects": {},
     "arrays": {
-      "circuits": "CircuitInput",
       "environments": "Environment"
     }
-  },
-  "ServiceEntryInput": {
-    "defaults": {
-      "network": "unknown",
-      "route": "unknown",
-      "insulation": "unknown",
-      "requested_phases": null,
-      "scope_confirmed": false,
-      "special_loads_reviewed": false
-    },
-    "objects": {},
-    "arrays": {}
-  },
-  "CircuitInput": {
-    "defaults": {
-      "air_layout": "unknown",
-      "soil_temperature_c": null,
-      "buried_reference_confirmed": false,
-      "insulation": "PVC70",
-      "terminals_90c_confirmed": false,
-      "hot_resistivity_ohm_mm2_m": null,
-      "reactance_ohm_m": null,
-      "impedance_source": null,
-      "configuration": "single_phase",
-      "protections": null,
-      "name": "Novo circuito",
-      "purpose": "sockets",
-      "load_ids": [],
-      "method": "unknown",
-      "voltage_v": null,
-      "length_m": null,
-      "ambient_temperature_c": null,
-      "grouped_circuits": null,
-      "scope_confirmed": false,
-      "voltage_drop_model_confirmed": false,
-      "overload_duration_confirmed": false,
-      "breaker_ratings_a": [],
-      "breaker_i2_factor": null,
-      "breaker_source": null,
-      "prospective_short_circuit_ka": null,
-      "breaking_capacity_ka": null,
-      "supply_origin": "unknown",
-      "upstream_drop_percent": null
-    },
-    "objects": {
-      "protections": "CircuitProtectionInput"
-    },
-    "arrays": {}
-  },
-  "CircuitProtectionInput": {
-    "defaults": {
-      "selectivity": null,
-      "surge": null,
-      "source": null,
-      "device_rated_a": null,
-      "cable_k": null,
-      "let_through_a2s": null,
-      "short_duration_s": null,
-      "earthing_system": "unknown",
-      "phase_earth_voltage_v": null,
-      "tn_situation": null,
-      "fault_loop_ohm": null,
-      "trip_current_a": null,
-      "trip_time_s": null,
-      "tt_ra_ohm": null,
-      "touch_limit_v": null,
-      "rcd_sensitivity_ma": null,
-      "rcd_type_compatible_confirmed": false,
-      "rcd_additional_required": null
-    },
-    "objects": {
-      "selectivity": "SelectivityInput",
-      "surge": "SurgeProtectionInput"
-    },
-    "arrays": {}
-  },
-  "SelectivityInput": {
-    "defaults": {
-      "upstream_device": null,
-      "downstream_device": null,
-      "downstream_rated_a": null,
-      "source": null,
-      "conditions_confirmed": false,
-      "limit_ka": null
-    },
-    "objects": {},
-    "arrays": {}
-  },
-  "SurgeProtectionInput": {
-    "defaults": {
-      "device": null,
-      "source": null,
-      "requirements_source": null,
-      "conditions_confirmed": false,
-      "uc_v": null,
-      "required_uc_v": null,
-      "effective_up_v": null,
-      "withstand_voltage_v": null,
-      "discharge_ka": null,
-      "required_discharge_ka": null,
-      "waveform": null,
-      "requirement_waveform": null,
-      "short_withstand_ka": null
-    },
-    "objects": {},
-    "arrays": {}
-  },
-  "ProjectEnergisaDemandSettings": {
-    "defaults": {
-      "enabled": false,
-      "unit_type": "unconfirmed",
-      "has_signage_or_display_lighting": null,
-      "simultaneous_lighting_outlets": null,
-      "confirmed_absent_groups": [],
-      "reviewed_inventory_digest": null
-    },
-    "objects": {},
-    "arrays": {}
   },
   "Environment": {
     "defaults": {
@@ -152,39 +33,10 @@
       "outlets": 0,
       "loads": []
     },
-    "objects": {
-      "bathroom_geometry": "BathroomGeometry"
-    },
+    "objects": {},
     "arrays": {
       "loads": "Load"
     }
-  },
-  "BathroomGeometry": {
-    "defaults": {
-      "scope_confirmed": false,
-      "shower_x_m": null,
-      "shower_y_m": null,
-      "measurement_source": null,
-      "points": []
-    },
-    "objects": {},
-    "arrays": {
-      "points": "BathroomInstallationPoint"
-    }
-  },
-  "BathroomInstallationPoint": {
-    "defaults": {
-      "name": "Novo componente",
-      "kind": "other",
-      "x_min_m": null,
-      "x_max_m": null,
-      "y_min_m": null,
-      "y_max_m": null,
-      "z_min_m": null,
-      "z_max_m": null
-    },
-    "objects": {},
-    "arrays": {}
   },
   "Load": {
     "defaults": {
@@ -207,57 +59,9 @@
       "power_user_edited": false
     },
     "objects": {
-      "energisa_demand": "EnergisaLoadClassification",
       "parameters": "TechnicalParameters",
       "catalog_reference": "CatalogItem"
     },
-    "arrays": {}
-  },
-  "EnergisaLoadClassification": {
-    "defaults": {
-      "group": null,
-      "motor": null,
-      "central": null,
-      "special": null,
-      "reserve": false,
-      "air_conditioning_type": "unconfirmed"
-    },
-    "objects": {
-      "motor": "EnergisaMotorData",
-      "central": "EnergisaCentralData",
-      "special": "EnergisaSpecialData"
-    },
-    "arrays": {}
-  },
-  "EnergisaMotorData": {
-    "defaults": {
-      "configuration": null,
-      "shaft_power_cv": null,
-      "source": null
-    },
-    "objects": {},
-    "arrays": {}
-  },
-  "EnergisaCentralData": {
-    "defaults": {
-      "configuration": null,
-      "voltage_v": null,
-      "maximum_total_current_a": null,
-      "power_factor": null,
-      "source": null
-    },
-    "objects": {},
-    "arrays": {}
-  },
-  "EnergisaSpecialData": {
-    "defaults": {
-      "equipment_type": null,
-      "connection": null,
-      "input_apparent_power_va": null,
-      "power_factor": null,
-      "source": null
-    },
-    "objects": {},
     "arrays": {}
   },
   "TechnicalParameters": {
@@ -322,6 +126,8 @@
       "municipality": "",
       "state": "SP",
       "utility": "unconfirmed",
+      "property_stage": null,
+      "utility_name": null,
       "residence_type": "Casa",
       "built_area_m2": null,
       "floors": 1,
@@ -330,12 +136,8 @@
       "notes": "",
       "environments": []
     },
-    "objects": {
-      "service_entry": "ServiceEntryInput",
-      "energisa_demand": "ProjectEnergisaDemandSettings"
-    },
+    "objects": {},
     "arrays": {
-      "circuits": "CircuitInput",
       "environments": "Environment"
     }
   }

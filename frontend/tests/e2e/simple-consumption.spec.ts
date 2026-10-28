@@ -14,7 +14,7 @@ test('three-step consumption journey stays simple and technical studies remain o
   await page.getByLabel('Tarifa de energia (R$/kWh)', { exact: true }).fill('0.8');
   await expect(page.getByText('01 / PROJETO', { exact: true })).toBeVisible();
   await expect(page.getByText('02 / AMBIENTES', { exact: true })).toBeVisible();
-  await expect(page.getByText('03 / CONFERÊNCIA', { exact: true })).toBeVisible();
+  await expect(page.getByText('03 / ESTIMATIVAS', { exact: true })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Estudo de circuitos', exact: true })).toHaveCount(
     0,
   );
@@ -47,9 +47,7 @@ test('three-step consumption journey stays simple and technical studies remain o
   await expect(complete).toHaveCount(0);
   await expect(page.getByLabel('Apresentação', { exact: true })).toBeHidden();
   await expect(page.getByText('Potência aparente · soma escalar', { exact: true })).toBeHidden();
-  await expect(
-    page.getByText('Estudos técnicos (opcional)', { exact: true }).locator('..'),
-  ).not.toHaveAttribute('open', '');
+  await expect(page.getByText('Estudos técnicos (opcional)', { exact: true })).toHaveCount(0);
   await expect(equipment.getByTestId('equipment-advanced')).not.toHaveAttribute('open', '');
   // Updating usage hides previous figures until the backend answers, and then shows the new estimate.
   await equipment.getByLabel('Horas de uso por dia', { exact: true }).fill('4');

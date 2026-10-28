@@ -1,4 +1,5 @@
 'use client';
+import { ScenarioComparison } from '@/components/calculations/ScenarioComparison';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import {
   request,
@@ -13,7 +14,6 @@ import {
 } from '@/lib/api';
 import { duplicateEnvironment, removeProjectLoads } from '@/lib/environments';
 import { useWorkspaceResources } from '@/lib/use-workspace-resources';
-import { ProjectRevalidation } from '@/components/projects/ProjectRevalidation';
 import { draftKey, readDrafts, writeDraft, type Draft } from '@/lib/drafts';
 import { ExperienceBoundary, ExperienceSwitcher } from '@/components/projects/ExperienceBoundary';
 import { ExperienceGuide } from '@/components/projects/ExperienceGuide';
@@ -27,16 +27,12 @@ import { ContextHelp } from '@/components/ui/ContextHelp';
 import { PageHeading } from '@/components/ui/PageHeading';
 import { Feedback, type FeedbackTone } from '@/components/ui/Feedback';
 import { SectionHeading } from '@/components/ui/SectionHeading';
-import { DemandReview } from '@/components/calculations/DemandReview';
 import { UsageBatch } from '@/components/equipment/UsageBatch';
 import { EquipmentEditor } from '@/components/equipment/EquipmentEditor';
 import { Field, RequirementsContext, CalculationScopeContext } from '@/components/ui/Field';
 import type { components } from '@/lib/api.generated';
 import { RoomEquipmentPicker } from '@/components/equipment/RoomEquipmentPicker';
 import { SectionNavigation } from '@/components/projects/SectionNavigation';
-import { TerritoryStudy } from '@/components/projects/TerritoryStudy';
-import { BathroomStudy } from '@/components/projects/BathroomStudy';
-import { CircuitStudy } from '@/components/projects/CircuitStudy';
 import { KnowledgeLibrary } from '@/components/projects/KnowledgeLibrary';
 import { WorkspaceHome } from '@/components/projects/WorkspaceHome';
 import { ProjectWorkspace } from '@/components/projects/ProjectWorkspace';
@@ -115,10 +111,6 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
   const [draftIssue, setDraftIssue] = useState('');
   const [conflict, setConflict] = useState<Project>();
   const [conflictPending, setConflictPending] = useState(false);
-  const [review, setReview] = useState<{
-    input: ProjectInput;
-    data: components['schemas']['ProjectRevalidation'];
-  }>();
   useEffect(() => {
     draftSlot.current ??= draftKey(draftOwner);
     let active = true;
@@ -562,60 +554,6 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
       setBusy(false);
     }
   }
-  async function checkReferences() {
-    if (!saved || busy || exporting) return;
-    if (dirty) {
-      setMessage('Salve suas alterações antes de comparar as referências do projeto.');
-      return;
-    }
-    setBusy(true);
-    setReview(undefined);
-    setMessage('Verificando referências do projeto…');
-    const snapshot = currentInput.current;
-    try {
-      const check = await request<components['schemas']['ProjectRevalidation']>(
-        `/projects/${saved.id}/revalidation`,
-      );
-      if (currentInput.current !== snapshot) return;
-      if (check.project_version !== saved.version) {
-        setMessage('O projeto mudou no servidor. Abra a versão atual antes de revisar.');
-        return;
-      }
-      setReview({ input: snapshot, data: check });
-      setMessage(
-        check.requires_revalidation
-          ? 'Referências alteradas: revalidação necessária. Histórico e valores manuais preservados.'
-          : 'Referências correspondem à revisão registrada. Consulte o alcance normativo nos resultados.',
-      );
-    } catch (e) {
-      setMessage((e as Error).message, 'error');
-    } finally {
-      setBusy(false);
-    }
-  }
-  async function registerRevalidation() {
-    if (!saved || !review || dirty || busy || exporting || input !== review.input) return;
-    const snapshot = currentInput.current;
-    setBusy(true);
-    try {
-      const project = await request<Project>(
-        `/projects/${saved.id}/recalculate?expected_version=${review.data.project_version}`,
-        { method: 'POST' },
-      );
-      setSaved(project);
-      if (currentInput.current === snapshot) setInput(projectInputs(project));
-      setReview(undefined);
-      setMessage(
-        'Revalidação registrada em nova versão. Histórico e valores manuais preservados.',
-        'success',
-      );
-      await refresh();
-    } catch (reason) {
-      setMessage((reason as Error).message, 'error');
-    } finally {
-      setBusy(false);
-    }
-  }
   async function purgeProject(project: Pick<Project, 'id' | 'version' | 'name'>) {
     if (
       !window.confirm(
@@ -681,7 +619,7 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
   }
   return (
     <RequirementsContext.Provider value={requirements}>
-      <CalculationScopeContext.Provider value={input.analysis_scope ?? 'installed'}>
+      <CalculationScopeContext.Provider value="installed">
         <div
           data-experience={profile}
           data-automatic-saving={automaticSaving}
@@ -697,7 +635,7 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
               </span>
               <div>
                 <p className="brand-name">EletroProjeto</p>
-                <p className="brand-caption">Estudos elétricos residenciais</p>
+                <p className="brand-caption">Estimativas de consumo residencial</p>
               </div>
             </div>
             <ExperienceSwitcher />
@@ -753,7 +691,6 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                   onPdf={() => exportReport('pdf')}
                   onJson={() => exportReport('json')}
                   onDelete={() => remove()}
-                  onCheck={checkReferences}
                 />
               </div>
             )}
@@ -962,21 +899,11 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
             )}
             {view === 'project' && (
               <>
-                {review?.input === input &&
-                  review.data.project_id === saved?.id &&
-                  review.data.project_version === saved.version && (
-                    <ProjectRevalidation
-                      review={review.data}
-                      busy={busy || exporting}
-                      onRegister={registerRevalidation}
-                      onClose={() => setReview(undefined)}
-                    />
-                  )}
                 <header className="page-header">
                   <PageHeading
                     title={professional ? 'Estudo da residência' : 'Consumo da residência'}
                     eyebrow={
-                      professional ? 'CONSUMO E ESTUDOS TÉCNICOS' : 'SEU CONSUMO EM 3 PASSOS'
+                      professional ? 'ANÁLISE DE CONSUMO RESIDENCIAL' : 'SEU CONSUMO EM 3 PASSOS'
                     }
                     description={
                       professional
@@ -1158,6 +1085,16 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                         </select>
                       </Field>
 
+                      <label className="field">
+                        Nome da distribuidora (opcional)
+                        <input
+                          aria-label="Nome da distribuidora (opcional)"
+                          value={input.utility_name ?? ''}
+                          maxLength={200}
+                          onChange={(e) => change('utility_name', e.target.value || null)}
+                          placeholder="Para outras distribuidoras ou regiões"
+                        />
+                      </label>
                       <Field field="project.built_area_m2" label="Área construída (m²)">
                         <input
                           type="number"
@@ -1180,19 +1117,45 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                         />
                       </Field>
 
+                      <label className="field">
+                        Estágio do imóvel
+                        <select
+                          aria-label="Estágio do imóvel"
+                          value={input.property_stage ?? ''}
+                          onChange={(e) =>
+                            change(
+                              'property_stage',
+                              (e.target.value || null) as ProjectInput['property_stage'],
+                            )
+                          }
+                        >
+                          <option value="">Não informado</option>
+                          <option value="planned">Planejado</option>
+                          <option value="construction">Em construção</option>
+                          <option value="ready">Pronto</option>
+                          <option value="renovation">Em reforma</option>
+                        </select>
+                      </label>
                       <Field field="project.residence_type" label="Tipo de residência">
+                        <datalist id="residence-types">
+                          {[
+                            'Casa',
+                            'Apartamento',
+                            'Kitnet',
+                            'Studio',
+                            'Sobrado',
+                            'Outro residencial',
+                          ].map((name) => (
+                            <option key={name} value={name} />
+                          ))}
+                        </datalist>
                         <input
+                          list="residence-types"
                           value={input.residence_type ?? ''}
                           onChange={(e) => change('residence_type', e.target.value || null)}
                         />
                       </Field>
                     </div>
-                    {input.reference_voltage_v != null && (
-                      <p className="field-hint mt-3">
-                        Tensão de referência cadastrada: {input.reference_voltage_v} V
-                        (informativa). Cada equipamento utiliza sua própria tensão.
-                      </p>
-                    )}
                   </details>
                   <div className="project-notes">
                     <Field field="project.notes" label="Observações">
@@ -1346,10 +1309,9 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                           open={professional || undefined}
                           className="room-measurements mt-3"
                         >
-                          <summary>Medidas, iluminação e tomadas (opcional)</summary>
+                          <summary>Área do ambiente (opcional)</summary>
                           <p className="mt-2 text-xs muted">
-                            Usados na previsão de pontos de luz e tomadas. Não são necessários para
-                            estimar o consumo dos aparelhos.
+                            Informação contextual opcional, sem alterar o consumo dos aparelhos.
                           </p>
                           <div className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
                             <Field
@@ -1364,56 +1326,6 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                                 value={room.area_m2 ?? ''}
                                 onChange={(e) =>
                                   updateRoom(room.id!, { area_m2: e.target.value || null })
-                                }
-                              />
-                            </Field>
-                            <Field
-                              field="environment.perimeter_m"
-                              label="Perímetro (m)"
-                              path={`room.${room.id}.perimeter_m`}
-                            >
-                              <input
-                                type="number"
-                                min="0.001"
-                                step="any"
-                                value={room.perimeter_m ?? ''}
-                                onChange={(e) =>
-                                  updateRoom(room.id!, { perimeter_m: e.target.value || null })
-                                }
-                              />
-                            </Field>
-                            <Field
-                              field="environment.lighting_points"
-                              label="Pontos de luz"
-                              path={`room.${room.id}.lighting_points`}
-                            >
-                              <input
-                                type="number"
-                                min="0"
-                                value={
-                                  Number.isNaN(room.lighting_points) ? '' : room.lighting_points
-                                }
-                                onChange={(e) =>
-                                  updateRoom(room.id!, {
-                                    lighting_points:
-                                      e.target.value === '' ? NaN : Number(e.target.value),
-                                  })
-                                }
-                              />
-                            </Field>
-                            <Field
-                              field="environment.outlets"
-                              label="Pontos de tomadas"
-                              path={`room.${room.id}.outlets`}
-                            >
-                              <input
-                                type="number"
-                                min="0"
-                                value={Number.isNaN(room.outlets) ? '' : room.outlets}
-                                onChange={(e) =>
-                                  updateRoom(room.id!, {
-                                    outlets: e.target.value === '' ? NaN : Number(e.target.value),
-                                  })
                                 }
                               />
                             </Field>
@@ -1504,6 +1416,7 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                   environments={input.environments}
                   onScopeChange={(value) => change('analysis_scope', value)}
                 />
+                <ScenarioComparison input={input} saved={saved} ready={!!currentResult} />
                 <div id="calculation-issues">
                   {operationIssues?.input === input && !error && (
                     <CalculationNotices
@@ -1525,47 +1438,6 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                     </Feedback>
                   )}
                 </div>
-                <details
-                  key={`technical-${calculationScope}`}
-                  open={professional || undefined}
-                  className="technical-tools mt-6"
-                >
-                  <summary>Estudos técnicos (opcional)</summary>
-                  <p className="mt-3 mb-4 text-sm muted">
-                    Para quem precisa estudar a instalação: demanda, circuitos e entrada de energia.
-                    Estes dados não são necessários para estimar o consumo mensal. Estudos salvos
-                    são mantidos.
-                  </p>
-                  <details className="mb-4">
-                    <summary id="technical-territory">Referência territorial · ANEEL</summary>
-                    <TerritoryStudy />
-                  </details>
-                  <details className="mb-4">
-                    <summary id="technical-demand">Demanda da residência · Energisa</summary>
-                    <DemandReview
-                      input={input}
-                      result={currentResult}
-                      onChange={(value) => change('energisa_demand', value)}
-                      onLoadChange={updateLoad}
-                    />
-                  </details>
-                  <details className="mb-4">
-                    <summary id="technical-bathroom">
-                      Localização de componentes no banheiro
-                    </summary>
-                    <BathroomStudy input={input} result={currentResult} onChange={updateRoom} />
-                  </details>
-                  <details>
-                    <summary id="technical-circuits">Circuitos e entrada de energia</summary>
-                    <CircuitStudy
-                      key={calculationScope}
-                      input={input}
-                      result={currentResult}
-                      onChange={(value) => change('circuits', value)}
-                      onEntryChange={(value) => change('service_entry', value)}
-                    />
-                  </details>
-                </details>
               </>
             )}
             <footer className="workspace-footer">
@@ -1589,8 +1461,8 @@ function Workspace({ draftOwner, logout }: { draftOwner: string; logout?: () => 
                     : 'Conexão não confirmada'}
               </p>
               <p className="footer-scope">
-                Estudo preliminar de cargas residenciais. Consulte o alcance dos resultados e conte
-                com a revisão de um profissional habilitado.
+                Estimativa de consumo residencial baseada nos equipamentos e hábitos informados. Os
+                resultados podem diferir do consumo real.
               </p>
             </footer>
           </main>

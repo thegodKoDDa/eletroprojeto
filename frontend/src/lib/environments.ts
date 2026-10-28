@@ -11,7 +11,9 @@ export function removeProjectLoads(input: ProjectInput, ids: readonly string[]):
     })),
     circuits: input.circuits?.map((circuit) => ({
       ...circuit,
-      load_ids: circuit.load_ids?.filter((id) => !removed.has(id)),
+      load_ids: Array.isArray(circuit.load_ids)
+        ? circuit.load_ids.filter((id: unknown) => typeof id !== 'string' || !removed.has(id))
+        : circuit.load_ids,
     })),
   };
 }

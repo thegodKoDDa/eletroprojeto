@@ -161,9 +161,7 @@ export function ExperienceGuide({
             <div>
               <p className="eyebrow">FERRAMENTAS DO ESTUDO</p>
               <h2>Acesse o que precisa analisar</h2>
-              <p>
-                Os estudos são opcionais. Confira o escopo, as fontes e as pendências em cada um.
-              </p>
+              <p>Confira as premissas, os aparelhos e as estimativas de consumo.</p>
             </div>
             <span className="status-pill">Uso profissional</span>
           </div>
@@ -174,22 +172,6 @@ export function ExperienceGuide({
                 'project.utility',
                 'Confirme a distribuidora e os dados do projeto.',
               ],
-              ['Demanda', 'technical-demand', 'Revise inventário, condições e fontes do método.'],
-              [
-                'Circuitos e proteções',
-                'technical-circuits',
-                'Estude cabos e proteções no escopo disponível.',
-              ],
-              [
-                'Localização',
-                'technical-bathroom',
-                'Informe medidas e confira os limites geométricos.',
-              ],
-              [
-                'Território',
-                'technical-territory',
-                'Consulte registros oficiais sem seleção automática.',
-              ],
               [
                 'Resultados e memória',
                 'results-memory',
@@ -199,8 +181,8 @@ export function ExperienceGuide({
                 ? [
                     [
                       'Parâmetros dos aparelhos',
-                      `load.${firstLoadId}.voltage_v`,
-                      'Revise tensão, fator de potência e dados da referência.',
+                      `load.${firstLoadId}.unit_power_w`,
+                      'Revise potência, tempo de uso e dados da referência.',
                     ],
                   ]
                 : []),

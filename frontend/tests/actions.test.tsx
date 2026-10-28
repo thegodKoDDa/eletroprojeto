@@ -10,7 +10,6 @@ it('keeps save and PDF visible, with independent actions in a secondary disclosu
     onPdf: vi.fn(),
     onJson: vi.fn(),
     onDelete: vi.fn(),
-    onCheck: vi.fn(),
   };
   render(
     <ProjectActions
@@ -50,7 +49,6 @@ it('disables exports until their own calculation dependencies exist', () => {
       onPdf={noop}
       onJson={noop}
       onDelete={noop}
-      onCheck={noop}
     />,
   );
   expect(screen.getByRole('button', { name: 'Salvando…' })).toBeDisabled();
@@ -73,7 +71,6 @@ it('locks all project actions and prevents opening the menu during export', () =
       onPdf={noop}
       onJson={noop}
       onDelete={noop}
-      onCheck={noop}
     />,
   );
   expect(screen.getByRole('button', { name: 'Salvar projeto' })).toBeDisabled();

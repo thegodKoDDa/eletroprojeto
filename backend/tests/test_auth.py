@@ -53,7 +53,7 @@ async def signin(client, username):
 async def test_owner_isolation_csrf_and_revocation(secured):
     client, sessions = secured
     assert (await client.get("/api/v1/projects")).status_code == 401
-    assert (await client.post("/api/v1/calculations/energisa-demand", json={})).status_code == 401
+    assert (await client.post("/api/v1/calculations/full", json={})).status_code == 401
     headers = await signin(client, "alice")
     payload = {"name": "Privado", "municipality": "São Paulo", "environments": []}
     assert (await client.post("/api/v1/projects", json=payload)).status_code == 403

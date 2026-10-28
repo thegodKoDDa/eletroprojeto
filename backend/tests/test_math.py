@@ -116,10 +116,8 @@ class EngineTests(unittest.TestCase):
 
     def test_normative_values_blocked(self):
         result = calculate(fixture())
-        self.assertEqual(result["status"], "awaiting_technical_validation")
-        for value in result["normative"].values():
-            self.assertIsNone(value["value"])
-            self.assertIn(value["status"], ("pending", "awaiting_technical_validation"))
+        self.assertEqual(result["status"], "estimated")
+        self.assertNotIn("normative", result)
 
     def test_memory(self):
         entry = calculate(fixture())["memory"][0]
@@ -153,7 +151,7 @@ class EngineTests(unittest.TestCase):
     def test_empty_project(self):
         result = calculate({"utility": "unconfirmed", "environments": []})
         self.assertEqual(result["installed_power"]["value"], D(0))
-        self.assertEqual(result["status"], "awaiting_technical_validation")
+        self.assertEqual(result["status"], "estimated")
 
 
 if __name__ == "__main__":

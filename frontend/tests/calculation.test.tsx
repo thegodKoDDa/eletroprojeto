@@ -193,113 +193,34 @@ test('Strict Mode cleans up the first effect and sends one settled request', asy
   expect(fetch).toHaveBeenCalledTimes(1);
 });
 
-test('changing requested operation invalidates diagnostics and recalculates the same loads', async () => {
-  const fetch = vi.fn().mockResolvedValue({
-    ok: true,
-    status: 200,
-    json: async () => ({ installed_power: { value: '7500' }, notifications: [] }),
-  });
-  vi.stubGlobal('fetch', fetch);
-  const { result, rerender } = renderHook(({ data }) => useCalculation(data), {
-    initialProps: { data: input },
-  });
-  await act(async () => {
-    await vi.advanceTimersByTimeAsync(400);
-  });
-  rerender({ data: { ...input, analysis_scope: 'current' } });
-  expect(result.current.result).toBeUndefined();
-  expect(result.current.notifications).toEqual([]);
-  await act(async () => {
-    await vi.advanceTimersByTimeAsync(400);
-  });
-  expect(JSON.parse(fetch.mock.calls[1][1].body).analysis_scope).toBe('current');
-  expect(result.current.result?.installed_power.value).toBe('7500');
-});
-
-test('demand settings invalidate the current result and are included in recalculation', async () => {
-  const fetch = vi.fn().mockResolvedValue({
-    ok: true,
-    status: 200,
-    json: async () => ({ installed_power: { value: '0' } }),
-  });
-  vi.stubGlobal('fetch', fetch);
-  const { result, rerender } = renderHook(({ data }) => useCalculation(data), {
-    initialProps: { data: input },
-  });
-  await act(async () => {
-    await vi.advanceTimersByTimeAsync(400);
-  });
-  rerender({
-    data: {
-      ...input,
-      energisa_demand: {
-        enabled: true,
-        unit_type: 'individual_residential',
-        confirmed_absent_groups: [],
-      },
-    },
-  });
-  expect(result.current.result).toBeUndefined();
-  expect(result.current.stale).toBe(true);
-  await act(async () => {
-    await vi.advanceTimersByTimeAsync(400);
-  });
-  expect(JSON.parse(fetch.mock.calls[1][1].body).energisa_demand.enabled).toBe(true);
-});
-
 test.each([
-  {
-    circuits: [
-      {
-        id: 'circuit',
-        insulation: 'PVC70' as const,
-        air_layout: 'unknown' as const,
-        buried_reference_confirmed: false,
-        terminals_90c_confirmed: false,
-        name: 'Circuito',
-        configuration: 'single_phase' as const,
-        purpose: 'sockets' as const,
-        method: 'unknown' as const,
-        scope_confirmed: false,
-        voltage_drop_model_confirmed: false,
-        overload_duration_confirmed: false,
-        supply_origin: 'unknown' as const,
-        length_m: '30',
-        protections: {
-          cable_k: '115',
-          earthing_system: 'unknown' as const,
-          rcd_type_compatible_confirmed: false,
-        },
-      },
-    ],
+  { analysis_scope: 'current' as const },
+  { energisa_demand: { enabled: true, confirmed_absent_groups: [] } },
+  { circuits: [{ id: 'legacy' }] },
+  { service_entry: { scope_confirmed: true } },
+])(
+  'archived installation metadata does not request another energy calculation: %j',
+  async (patch) => {
+    const fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => ({ installed_power: { value: '7500' } }),
+    });
+    vi.stubGlobal('fetch', fetch);
+    const { result, rerender } = renderHook(({ data }) => useCalculation(data), {
+      initialProps: { data: input },
+    });
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(400);
+    });
+    const previous = result.current.result;
+    rerender({ data: { ...input, ...patch } as typeof input });
+    expect(result.current.result).toBe(previous);
+    expect(result.current.stale).toBe(false);
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(400);
+    });
+    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(JSON.parse(fetch.mock.calls[0][1].body).analysis_scope).toBe('installed');
   },
-  {
-    service_entry: {
-      network: '220_127' as const,
-      route: 'underground' as const,
-      insulation: 'unknown' as const,
-      scope_confirmed: false,
-      special_loads_reviewed: false,
-    },
-  },
-])('circuit and entry edits invalidate current results immediately', async (patch) => {
-  const fetch = vi.fn().mockResolvedValue({
-    ok: true,
-    status: 200,
-    json: async () => ({ installed_power: { value: '0' } }),
-  });
-  vi.stubGlobal('fetch', fetch);
-  const { result, rerender } = renderHook(({ data }) => useCalculation(data), {
-    initialProps: { data: input },
-  });
-  await act(async () => {
-    await vi.advanceTimersByTimeAsync(400);
-  });
-  rerender({ data: { ...input, ...patch } });
-  expect(result.current.result).toBeUndefined();
-  expect(result.current.stale).toBe(true);
-  await act(async () => {
-    await vi.advanceTimersByTimeAsync(400);
-  });
-  expect(JSON.parse(fetch.mock.calls[1][1].body)).toMatchObject(patch);
-});
+);

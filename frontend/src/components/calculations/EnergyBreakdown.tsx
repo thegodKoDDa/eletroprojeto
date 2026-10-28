@@ -13,7 +13,7 @@ export function EnergyBreakdown({
   if (!result.monthly_energy) return null;
   const partial = !!result.energy_unknown_load_ids?.length;
   return (
-    <details className="energy-breakdown mt-4">
+    <details open className="energy-breakdown mt-4">
       <summary>Contas automáticas: ambientes, maiores consumos e 12 meses</summary>
       <p className="field-hint mt-2">
         {partial
@@ -97,7 +97,19 @@ export function EnergyBreakdown({
               </button>
               <span>{format(load.monthly_energy_kwh)} kWh/mês</span>
               <span>
-                {share == null ? 'Participação não definida' : `${format(share)}% do subtotal`}
+                {share == null ? (
+                  'Participação não definida'
+                ) : (
+                  <>
+                    <meter
+                      min={0}
+                      max={100}
+                      value={Number(share)}
+                      aria-label={`Participação de ${load.name} no subtotal`}
+                    />{' '}
+                    {format(share)}% do subtotal
+                  </>
+                )}
               </span>
             </li>
           ) : null;

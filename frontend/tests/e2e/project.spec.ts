@@ -80,8 +80,7 @@ test('full reference workflow, stable editing, persistence and mobile layout', a
   await expect(page.getByLabel('Resumo de resultados')).toContainText('1,296');
 
   // A mounted row, focused input and expanded memory survive debounce/recalculation.
-  await page.getByText('Detalhes dos cálculos e previsões técnicas', { exact: true }).click();
-  await page.locator('#results').getByText('Referências e rastreabilidade').click();
+  await page.getByText('Memória de cálculo e premissas', { exact: true }).click();
   await page.evaluate(() => {
     const section = document.querySelector('#results')!;
     (window as unknown as { savedMemoryNode: Element | null }).savedMemoryNode =
@@ -96,7 +95,7 @@ test('full reference workflow, stable editing, persistence and mobile layout', a
   await expect(
     page
       .locator('#results')
-      .getByText('Referências e rastreabilidade', { exact: true })
+      .getByText('Memória de cálculo e premissas', { exact: true })
       .locator('..'),
   ).toHaveAttribute('open', '');
   await expect(page.locator('#results')).toHaveAttribute('data-stale', 'false');
@@ -127,24 +126,6 @@ test('full reference workflow, stable editing, persistence and mobile layout', a
   await secondShower.getByLabel('Tensão nominal (V)').fill('220');
   await secondShower.getByLabel('Origem da potência').selectOption('nameplate');
   await expect(page.getByLabel('Resumo de resultados')).toContainText('14,296');
-  await expect(page.locator('#results')).toContainText('Dados do projeto a revisar');
-  await page.getByLabel('Requisitos para').selectOption('current');
-  await expect(page.getByTestId('calculation-status')).toContainText('Resultados atualizados');
-  const correctVoltage = page.getByRole('button', {
-    name: /Corrigir informação: Quarto → Lâmpada LED · Tensão nominal/,
-  });
-  await correctVoltage.click();
-  await expect(led.getByLabel('Tensão nominal (V)')).toBeFocused();
-  await led.getByLabel('Tensão nominal (V)').fill('127');
-  await expect(correctVoltage).toHaveCount(0);
-  await page
-    .getByRole('button', {
-      name: /Corrigir informação: Quarto → Lâmpada LED · Configuração para corrente/,
-    })
-    .click();
-  await expect(led.getByTestId('equipment-advanced')).toHaveAttribute('open', '');
-  await expect(led.getByLabel('Configuração para corrente')).toBeFocused();
-  await led.getByLabel('Configuração para corrente').selectOption('single_phase');
   await page.getByRole('button', { name: 'Salvar projeto', exact: true }).click();
   await expect(page.getByTestId('project-message')).toContainText('Projeto salvo');
   await page.reload();
@@ -245,11 +226,8 @@ test('home, draft continuity, library, duplication, trash and exports work toget
   await page.getByRole('button', { name: 'Adicionar primeiro ambiente' }).click();
   const room = page.locator('main article').first();
   await room.getByLabel('Nome', { exact: true }).fill('Sala');
-  await room.getByText('Medidas, iluminação e tomadas (opcional)', { exact: true }).click();
+  await room.getByText('Área do ambiente (opcional)', { exact: true }).click();
   await room.getByLabel('Área (m²)', { exact: true }).fill('12.5');
-  await room.getByLabel('Perímetro (m)', { exact: true }).fill('15');
-  await room.getByLabel('Pontos de luz', { exact: true }).fill('2');
-  await room.getByLabel('Pontos de tomadas', { exact: true }).fill('4');
   await room
     .getByRole('combobox', { name: 'Adicionar equipamento em Sala' })
     .selectOption('philips-led-929001195311');
@@ -273,9 +251,6 @@ test('home, draft continuity, library, duplication, trash and exports work toget
   const json = JSON.parse(await readFile((await downloaded.path())!, 'utf8'));
   expect(json.ambientes[0]).toMatchObject({
     area_m2: '12.5',
-    perimetro_m: '15',
-    pontos_de_luz: 2,
-    tug: 4,
     potencia_conhecida_w: '27',
   });
   expect(json.emissao.fuso).toBe('America/Sao_Paulo');
@@ -439,135 +414,6 @@ test('monthly energy, cost, manual recalculation and saved schedules stay consis
   await page.screenshot({ path: '/tmp/eletroprojeto-energy-mobile.png', fullPage: true });
 });
 
-test('research coverage is informative while real input problems remain correctable', async ({
-  page,
-  request,
-}) => {
-  await page.goto('/');
-  await page.getByRole('button', { name: /^Criar novo projeto/ }).click();
-  await page.getByLabel('Município', { exact: true }).fill('Cidade de teste');
-  await page.getByText('Outros dados do projeto', { exact: true }).click();
-  await page.getByLabel('Concessionária', { exact: true }).selectOption('energisa_sul_sudeste');
-  await page.getByRole('button', { name: 'Adicionar primeiro ambiente' }).click();
-  const room = page.locator('main article').first();
-  await room
-    .getByRole('combobox', { name: /Adicionar equipamento em/ })
-    .selectOption('philips-led-929001195311');
-  await expect(page.getByTestId('calculation-status')).toContainText('Resultados atualizados');
-  await expect(page.locator('#results')).toContainText(
-    'Nenhum dado pendente para o cálculo selecionado.',
-  );
-  await expect(page.getByLabel('Resumo de resultados')).not.toContainText('Demanda');
-  await expect(page.locator('#results')).not.toContainText('Procedimento não validado');
-  const coverage = page.getByLabel('Cobertura normativa');
-  await expect(coverage).toHaveCount(0);
-  await expect(page.getByRole('region', { name: 'Revisão da demanda Energisa' })).toHaveCount(0);
-  await page.getByText('Estudos técnicos (opcional)', { exact: true }).click();
-  await page.getByText('Demanda da residência · Energisa', { exact: true }).click();
-  await expect(page.getByRole('region', { name: 'Revisão da demanda Energisa' })).toBeVisible();
-  const registry = await (
-    await request.get(
-      'http://127.0.0.1:8010/api/v1/technical/rules?utility=energisa_sul_sudeste&state=SP',
-    )
-  ).json();
-  expect(registry.coverage.filter((item: { available: boolean }) => item.available)).toHaveLength(
-    3,
-  );
-  expect(
-    registry.coverage
-      .find((item: { code: string }) => item.code === 'demand')
-      .evidence.some((item: { section: string | null }) => item.section?.includes('9.1')),
-  ).toBe(true);
-  const power = room.getByLabel('Potência unitária (W)');
-  await power.fill('');
-  await expect(
-    page
-      .locator('#results')
-      .getByRole('button', { name: /Corrigir informação:.*Potência unitária/ }),
-  ).toBeVisible();
-  await power.fill('9');
-  await expect(
-    page
-      .locator('#results')
-      .getByRole('button', { name: /Corrigir informação:.*Potência unitária/ }),
-  ).toHaveCount(0);
-  await page.getByLabel('Concessionária', { exact: true }).selectOption('cpfl_paulista');
-  await expect(page.getByTestId('calculation-status')).toContainText('Resultados atualizados');
-  await expect(coverage.getByRole('link', { name: 'Energisa NDU-001 — PDF oficial' })).toHaveCount(
-    0,
-  );
-  await page.getByText('Detalhes dos cálculos e previsões técnicas', { exact: true }).click();
-  await expect(coverage.locator('details').first()).not.toHaveAttribute('open', '');
-  await coverage.getByText('Recursos normativos ainda indisponíveis (1)', { exact: true }).click();
-  await expect(coverage).toContainText('Não indicam erros na sua instalação');
-  await coverage
-    .getByText('Pesquisa e fontes de demanda da distribuidora', { exact: true })
-    .click();
-  await expect(coverage.getByRole('link', { name: 'CPFL GED-13' })).toBeVisible();
-  await page.screenshot({ path: '/tmp/eletroprojeto-coverage-desktop.png', fullPage: true });
-  for (const width of [320, 390, 768, 1440]) {
-    await page.setViewportSize({ width, height: 844 });
-    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
-      true,
-    );
-  }
-  await page.setViewportSize({ width: 390, height: 844 });
-  await page.screenshot({ path: '/tmp/eletroprojeto-coverage-mobile.png', fullPage: true });
-});
-
-test('residential prevision recalculates geometry and manual points, and exports concise results', async ({
-  page,
-}) => {
-  const { readFile } = await import('node:fs/promises');
-  await page.goto('/');
-  await page.getByRole('button', { name: /^Criar novo projeto/ }).click();
-  const name = `Previsão residencial ${Date.now()}`;
-  await page.getByLabel('Nome do projeto', { exact: true }).fill(name);
-  await page.getByLabel('Município', { exact: true }).fill('Cidade');
-  await page.getByRole('button', { name: 'Adicionar primeiro ambiente' }).click();
-  const room = page.locator('main article').first();
-  await room.getByLabel('Nome', { exact: true }).fill('Quarto residencial');
-  await room.getByLabel('Tipo', { exact: true }).selectOption('bedroom');
-  await page.getByText('Detalhes dos cálculos e previsões técnicas', { exact: true }).click();
-  await page.getByLabel('Requisitos para').selectOption('normative');
-  await expect(
-    page.locator('#results').getByRole('button', { name: /Corrigir informação:.*Área/ }),
-  ).toBeVisible();
-  await room.getByText('Medidas, iluminação e tomadas (opcional)', { exact: true }).click();
-  await room.getByLabel('Área (m²)', { exact: true }).fill('12');
-  await room.getByLabel('Perímetro (m)', { exact: true }).fill('14');
-  await room.getByLabel('Pontos de tomadas', { exact: true }).fill('5');
-  const prevision = page.getByLabel('Previsão residencial por ambiente');
-  await expect(prevision).toContainText('Iluminação: 160 VA');
-  await expect(prevision).toContainText('TUG: 5 cadastrado(s) · mínimo 3');
-  await expect(prevision).toContainText('500 VA · 5 ponto(s) considerados');
-  await room.getByLabel('Área (m²)', { exact: true }).fill('14');
-  await expect(prevision).toContainText('Iluminação: 220 VA');
-  await expect(room.getByLabel('Pontos de tomadas', { exact: true })).toHaveValue('5');
-  await expect(page.getByTestId('calculation-status')).toContainText('Resultados atualizados');
-  await page.getByLabel('Mais ações do projeto').click();
-  const downloading = page.waitForEvent('download');
-  await page.getByRole('button', { name: 'Exportar JSON', exact: true }).click();
-  const file = await downloading;
-  expect(file.suggestedFilename()).toBe(`${name}.json`);
-  const data = JSON.parse(await readFile((await file.path())!, 'utf8'));
-  expect(data.previsao_residencial_por_ambiente[0]).toMatchObject({
-    iluminacao_va: '220',
-    minimo_pontos_tug: 3,
-    pontos_tug_considerados: 5,
-    previsao_tug_va: '500',
-  });
-  expect(data.previsoes_normativas.demand.valor).toBeNull();
-  for (const width of [320, 390, 768, 1440]) {
-    await page.setViewportSize({ width, height: 844 });
-    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
-      true,
-    );
-  }
-  await page.setViewportSize({ width: 390, height: 844 });
-  await page.screenshot({ path: '/tmp/eletroprojeto-residential-mobile.png', fullPage: true });
-});
-
 test('room duplication preserves manual data, creates independent IDs and survives saving', async ({
   page,
   request,
@@ -580,10 +426,8 @@ test('room duplication preserves manual data, creates independent IDs and surviv
   const rooms = page.locator('#environments > .space-y-5 > article');
   const original = rooms.nth(0);
   await original.getByLabel('Nome', { exact: true }).fill('Quarto');
-  await original.getByText('Medidas, iluminação e tomadas (opcional)', { exact: true }).click();
+  await original.getByText('Área do ambiente (opcional)', { exact: true }).click();
   await original.getByLabel('Área (m²)', { exact: true }).fill('12');
-  await original.getByLabel('Perímetro (m)', { exact: true }).fill('14');
-  await original.getByLabel('Pontos de tomadas', { exact: true }).fill('5');
   await original
     .getByRole('combobox', { name: 'Adicionar equipamento em Quarto' })
     .selectOption('philips-led-929001195311');
@@ -651,12 +495,9 @@ test('PDF and JSON exports carry energy coverage, use assumptions and residentia
   const room = page.locator('#environments article').first();
   await room.getByLabel('Nome', { exact: true }).fill('Quarto');
   await room.getByLabel('Tipo', { exact: true }).selectOption('bedroom');
-  await room.getByText('Medidas, iluminação e tomadas (opcional)', { exact: true }).click();
+  await room.getByText('Área do ambiente (opcional)', { exact: true }).click();
   await room.getByLabel('Área (m²)', { exact: true }).fill('12');
-  await room.getByLabel('Perímetro (m)', { exact: true }).fill('14');
-  await room.getByLabel('Pontos de tomadas', { exact: true }).fill('5');
-  await page.getByText('Detalhes dos cálculos e previsões técnicas', { exact: true }).click();
-  await page.getByLabel('Requisitos para').selectOption('normative');
+  await page.getByText('Memória de cálculo e premissas', { exact: true }).click();
   const picker = room.getByRole('combobox', { name: 'Adicionar equipamento em Quarto' });
   await picker.selectOption('philips-led-929001195311');
   const led = room.getByTestId('equipment-editor').first();
@@ -686,14 +527,10 @@ test('PDF and JSON exports carry energy coverage, use assumptions and residentia
     horas_por_dia: '5',
     dias_por_mes: 30,
   });
-  expect(data.ambientes[0]).toMatchObject({ area_m2: '12', perimetro_m: '14', tug: 5 });
-  expect(data.previsao_residencial_por_ambiente[0]).toMatchObject({
-    minimo_pontos_tug: 3,
-    pontos_tug_considerados: 5,
-  });
-  expect(data.atendimento_distribuidora.demanda_disponivel).toBe(false);
-  expect(data.previsoes_normativas.demand.valor).toBeNull();
-  expect(JSON.stringify(data)).not.toContain('source_url');
+  expect(data.ambientes[0]).toMatchObject({ area_m2: '12' });
+  expect(data.previsoes_normativas).toBeUndefined();
+  expect(data.atendimento_distribuidora).toBeUndefined();
+  expect(data.memoria_calculo).toBeTruthy();
   await expect(page.getByRole('button', { name: 'Exportar PDF', exact: true })).toBeEnabled();
   const pdfDownload = page.waitForEvent('download');
   await page.getByRole('button', { name: 'Exportar PDF', exact: true }).click();
@@ -743,7 +580,7 @@ test('shower reference variants retain usage through restoration, saving and JSO
   const { readFile } = await import('node:fs/promises');
   const file = await download;
   const report = JSON.parse(await readFile((await file.path())!, 'utf8'));
-  expect(report.formato_versao).toBe('1.4');
+  expect(report.formato_versao).toBe('2.0');
   expect(report.equipamentos[0].potencia_personalizada).toBe(false);
   expect(report.equipamentos[0].horas_por_dia).toBe('0.5');
   expect(Number(report.resultados.consumo_mensal.valor)).toBe(112.5);

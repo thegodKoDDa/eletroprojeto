@@ -1,65 +1,21 @@
-import { DemandSummary } from '@/components/calculations/DemandSummary';
-import { render, screen, fireEvent, cleanup, within } from '@testing-library/react';
-import { afterEach, expect, it, vi } from 'vitest';
+import { render, screen, cleanup, fireEvent } from '@testing-library/react';
+import { afterEach, expect, it } from 'vitest';
 import { ResultsPanel } from '@/components/calculations/ResultsPanel';
 import type { CalculationResult } from '@/lib/api';
 import fixture from './fixtures/result.json';
 afterEach(cleanup);
-it('presentation changes expand the same backend memory without changing the calculation scope', () => {
-  const onScopeChange = vi.fn();
-  const { container } = render(
-    <ResultsPanel
-      result={fixture as CalculationResult}
-      loading={false}
-      stale={false}
-      scope="installed"
-      onScopeChange={onScopeChange}
-    />,
-  );
-  const memory = screen.getByText('Memória por equipamento').closest('details')!;
-  const before = container.textContent;
+it('prioritizes energy estimates and keeps calculation memory secondary', () => {
+  render(<ResultsPanel result={fixture as CalculationResult} loading={false} stale={false} />);
+  expect(screen.getByRole('heading', { name: 'Resultados e Estimativas' })).toBeVisible();
+  const memory = screen.getByText('Memória de cálculo e premissas').closest('details')!;
   expect(memory.open).toBe(false);
-  fireEvent.change(screen.getByLabelText('Apresentação'), { target: { value: 'technical' } });
+  fireEvent.click(screen.getByText('Memória de cálculo e premissas'));
   expect(memory.open).toBe(true);
-  expect(container.textContent).toBe(before);
-  expect(onScopeChange).not.toHaveBeenCalled();
-  fireEvent.change(screen.getByLabelText('Apresentação'), { target: { value: 'simple' } });
-  expect(memory.open).toBe(false);
+  expect(screen.queryByText('Requisitos para')).toBeNull();
+  expect(screen.queryByLabelText('Cobertura normativa')).toBeNull();
+  expect(screen.queryByText('Demanda normativa')).toBeNull();
 });
-
-it('demand presentation follows the API status rather than a permanent validation label', () => {
-  const { rerender } = render(
-    <DemandSummary demand={{ value: '12.5', unit: 'kVA', status: 'calculated' }} stale={false} />,
-  );
-  expect(screen.getByText('12,5 kVA')).toBeInTheDocument();
-  expect(screen.queryByText('Cálculo ainda indisponível')).toBeNull();
-  rerender(
-    <DemandSummary
-      demand={{
-        value: null,
-        unit: 'kVA',
-        status: 'pending',
-        reason: 'Informe a classificação da carga.',
-      }}
-      stale={false}
-    />,
-  );
-  expect(screen.getByText('Dados de entrada pendentes')).toBeInTheDocument();
-  expect(screen.getByText('Informe a classificação da carga.')).toBeInTheDocument();
-  rerender(
-    <DemandSummary
-      demand={{
-        value: null,
-        status: 'awaiting_technical_validation',
-        reason: 'Tabela oficial não conferida.',
-      }}
-      stale={false}
-    />,
-  );
-  expect(screen.getByText('Cálculo ainda indisponível')).toBeInTheDocument();
-});
-
-it('shows incomplete monthly consumption and estimated cost from the API', () => {
+it('shows partial monthly consumption and cost supplied by Python', () => {
   render(
     <ResultsPanel
       result={
@@ -72,45 +28,13 @@ it('shows incomplete monthly consumption and estimated cost from the API', () =>
       }
       loading={false}
       stale={false}
-      scope="installed"
-      onScopeChange={vi.fn()}
     />,
   );
   expect(screen.getByText('85,4 kWh/mês')).toBeVisible();
   expect(screen.getByText('R$ 68,32')).toBeVisible();
   expect(screen.getByText(/1 aparelho\(s\) sem consumo informado/)).toBeVisible();
 });
-
-it('separates unavailable features from correctable inputs without repeating warning cards', () => {
-  render(
-    <ResultsPanel
-      result={fixture as CalculationResult}
-      loading={false}
-      stale={false}
-      scope="installed"
-      onScopeChange={vi.fn()}
-    />,
-  );
-  expect(screen.getByText('Dados do projeto a revisar')).toBeVisible();
-  expect(screen.getByText('Nenhum dado pendente para o cálculo selecionado.')).toBeVisible();
-  expect(screen.queryByText('Procedimento não validado')).toBeNull();
-  expect(screen.queryByText('Demanda normativa')).toBeNull();
-  const coverage = screen.getByLabelText('Cobertura normativa');
-  expect(coverage.querySelector('details')?.open).toBe(false);
-  fireEvent.click(screen.getByText('Detalhes dos cálculos e previsões técnicas'));
-  fireEvent.click(screen.getByText('Recursos normativos ainda indisponíveis (3)'));
-  expect(screen.getByText(/Não indicam erros na sua instalação/)).toBeVisible();
-  expect(screen.getByRole('heading', { name: 'Previsão mínima de iluminação' })).toBeVisible();
-  fireEvent.click(screen.getByText('Pesquisa e fontes de previsão mínima de iluminação'));
-  expect(
-    within(
-      screen.getByRole('heading', { name: 'Previsão mínima de iluminação' }).closest('section')!,
-    ).getByRole('link', { name: 'Catálogo oficial ABNT' }),
-  ).toHaveAttribute('href', 'https://www.abntcatalogo.com.br/');
-  expect(screen.queryByRole('button', { name: /Corrigir informação/ })).toBeNull();
-});
-
-it('keeps real missing inputs actionable while hiding stale coverage details', () => {
+it('keeps input issues actionable and hides old results during recalculation', () => {
   const result = {
     ...fixture,
     notifications: [
@@ -119,46 +43,32 @@ it('keeps real missing inputs actionable while hiding stale coverage details', (
         category: 'error',
         location: ['Sala', 'Carga'],
         problem: 'Potência ausente',
-        solution: 'Informe a placa',
+        solution: 'Informe a potência adotada',
         affected_results: ['W'],
         target_id: 'load.a.unit_power_w',
       },
     ],
   } as CalculationResult;
-  const view = render(
+  const view = render(<ResultsPanel result={result} loading={false} stale={false} />);
+  expect(screen.getByRole('button', { name: /Corrigir informação/ })).toBeVisible();
+  view.rerender(<ResultsPanel result={result} loading stale />);
+  expect(screen.getByText('Recalculando as entradas atuais…')).toBeVisible();
+  expect(screen.queryByRole('button', { name: /Corrigir informação/ })).toBeNull();
+});
+it('shows daily and annual estimates without calculating in the frontend', () => {
+  render(
     <ResultsPanel
-      result={result}
+      result={
+        {
+          ...fixture,
+          daily_energy: { value: '3.15', unit: 'kWh', status: 'estimated' },
+          annual_energy: { value: '1152', unit: 'kWh', status: 'estimated' },
+        } as CalculationResult
+      }
       loading={false}
       stale={false}
-      scope="installed"
-      onScopeChange={vi.fn()}
     />,
   );
-  expect(screen.getByRole('button', { name: /Corrigir informação/ })).toBeVisible();
-  expect(screen.queryByText('Nenhum dado pendente para o cálculo selecionado.')).toBeNull();
-  view.rerender(
-    <ResultsPanel
-      result={result}
-      loading={true}
-      stale={true}
-      scope="installed"
-      onScopeChange={vi.fn()}
-    />,
-  );
-  expect(screen.getByText('Atualizando a cobertura para as entradas atuais…')).not.toBeVisible();
-  expect(screen.queryByRole('link', { name: 'Catálogo oficial ABNT' })).toBeNull();
-});
-
-it('hides an old demand value while new project inputs are recalculating', () => {
-  const demand = {
-    value: '6.913043478',
-    unit: 'kVA',
-    status: 'estimated',
-    reason: 'Inventário revisado',
-  };
-  const { rerender } = render(<DemandSummary demand={demand} stale={false} />);
-  expect(screen.getByText('6,913 kVA')).toBeInTheDocument();
-  rerender(<DemandSummary demand={demand} stale />);
-  expect(screen.queryByText('6,913 kVA')).not.toBeInTheDocument();
-  expect(screen.getByText('Recalculando demanda…')).toBeInTheDocument();
+  expect(screen.getByText('3,15 kWh/dia')).toBeVisible();
+  expect(screen.getByText('1.152 kWh/ano')).toBeVisible();
 });

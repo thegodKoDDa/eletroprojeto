@@ -35,10 +35,10 @@ export function ContextHelp() {
           </p>
         </div>
         <div>
-          <h3>Estudos técnicos são opcionais</h3>
+          <h3>Premissas sob seu controle</h3>
           <p>
-            Demanda, circuitos, proteções e localização têm condições próprias. Os avisos indicam os
-            limites; concluir o cadastro não significa conformidade elétrica.
+            Ajuste os valores de referência e os hábitos para sua residência atual ou planejada.
+            Geladeiras e outros aparelhos com ciclos podem usar os kWh declarados na etiqueta.
           </p>
         </div>
       </div>

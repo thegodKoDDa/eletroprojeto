@@ -1,6 +1,5 @@
 import os
 from contextlib import asynccontextmanager
-from dataclasses import asdict
 from decimal import Decimal
 from typing import Annotated, Literal
 from uuid import UUID, uuid4
@@ -17,13 +16,14 @@ from sqlalchemy.orm.exc import StaleDataError
 
 from .auth import authenticate_request
 from .auth import router as auth_router
-from .calculations.energisa import calculate_energisa_demand
+from .calculations.comparison import compare_estimates
 from .calculations.engine import ENGINE_VERSION, calculate
-from .calculations.standards import ENERGISA_V7_EVIDENCE, RULES
 from .catalog import CATALOG
 from .catalog_store import initialize_catalog
 from .database import HistoryRow, ProjectRow, TechnicalRevisionRow, get_session, utcnow
+from .estimate_metadata import revision as registry_version
 from .knowledge import router as knowledge_router
+from .locations import STATES, UTILITIES
 from .municipalities import lookup as municipality_lookup
 from .projects import (
     ProjectValidationError,
@@ -40,9 +40,8 @@ from .schemas import (
     CalculationInput,
     CalculationResult,
     CatalogItem,
-    DocumentRegistry,
-    EnergisaDemandInput,
-    EnergisaDemandResult,
+    EstimateComparison,
+    EstimateComparisonInput,
     FieldRequirement,
     HealthInfo,
     InputValidationError,
@@ -50,24 +49,11 @@ from .schemas import (
     PDFExportInput,
     Project,
     ProjectInput,
-    ProjectRevalidation,
     ProjectSummary,
-    TechnicalRules,
     TerritoryLookup,
     UtilityInfo,
 )
 from .security import RequestBoundary, cors_origins
-from .technical import (
-    DOCUMENTS,
-    MATHEMATICAL_RULES,
-    REGIONAL_METHODS,
-    STATES,
-    UTILITIES,
-    applicability,
-    integrity,
-    normative_capabilities,
-    registry_version,
-)
 from .territory import lookup as territory_lookup
 from .version import APP_VERSION
 
@@ -90,7 +76,7 @@ app = FastAPI(
     separate_input_output_schemas=False,
     title="EletroProjeto",
     version=APP_VERSION,
-    description="Cálculos de cargas residenciais: potência instalada (W/kW), potência aparente (VA/kVA), correntes, conversões, consumo mensal e estimativa de custo pela tarifa informada. Valores padrão são sugestões documentadas; valores manuais válidos são respeitados e recalculados. Previsão residencial de iluminação e TUG disponível por seleção explícita, com escopo e limites documentados. Demanda Energisa residencial parametrizada disponível em escopo limitado e inventário explícito. Demanda automática do cadastro e dimensionamento final permanecem pendentes.",
+    description="Estimativas residenciais de potência, energia e custo pelos equipamentos e hábitos informados. Sem demanda de fornecimento ou dimensionamento de instalações.",
 )
 app.include_router(auth_router)
 app.include_router(knowledge_router)
@@ -324,19 +310,16 @@ def permanently_remove(
 
 
 @app.post(PREFIX + "/calculations/loads", tags=["Cálculos"], response_model=CalculationResult)
-@app.post(PREFIX + "/calculations/demand", tags=["Cálculos"], response_model=CalculationResult)
 @app.post(PREFIX + "/calculations/full", tags=["Cálculos"], response_model=CalculationResult)
 def full(data: CalculationInput):
     return calculate(data.model_dump(mode="json"))
 
 
-@app.post(
-    PREFIX + "/calculations/energisa-demand", tags=["Cálculos"], response_model=EnergisaDemandResult
-)
-def energisa_demand(data: EnergisaDemandInput):
-    """NDU-001 v7 residencial individual d1–d7, inventário explícito; sem dimensionamento final."""
-    result = calculate_energisa_demand(data.model_dump(mode="json"))
-    return {**result, "reference": asdict(ENERGISA_V7_EVIDENCE)}
+@app.post(PREFIX + "/calculations/compare", tags=["Cálculos"], response_model=EstimateComparison)
+def compare(data: EstimateComparisonInput):
+    return compare_estimates(
+        data.baseline.model_dump(mode="json"), data.scenario.model_dump(mode="json")
+    )
 
 
 @app.get(PREFIX + "/equipment", tags=["Equipamentos"], response_model=list[CatalogItem])
@@ -396,11 +379,6 @@ def territory(
     return territory_lookup(latitude, longitude)
 
 
-@app.get(PREFIX + "/standards", tags=["Referências técnicas"])
-def standards():
-    return [asdict(rule) for rule in RULES]
-
-
 @app.get(PREFIX + "/projects/{project_id}/report", tags=["Projetos"])
 def report(project_id: UUID, session: Session = Depends(get_session)):
     row = find(session, project_id)
@@ -414,7 +392,7 @@ def report(project_id: UUID, session: Session = Depends(get_session)):
         "recorded_registry_version": row.standards_version,
         "current_registry_version": registry_version(),
         "recorded_calculation": latest.result if latest else None,
-        "notice": "Documento parcial. Não substitui revisão e responsabilidade técnica profissional.",
+        "notice": "Estimativa dos equipamentos e hábitos informados; não é medição real.",
     }
 
 
@@ -443,23 +421,6 @@ def states():
     return STATES
 
 
-@app.get(
-    PREFIX + "/technical/documents", tags=["Referências técnicas"], response_model=DocumentRegistry
-)
-def documents():
-    return {"registry_version": registry_version(), "documents": DOCUMENTS}
-
-
-@app.get(PREFIX + "/technical/applicability", tags=["Referências técnicas"])
-def applicable(utility: str, state: str = Query(default="SP", pattern="^[A-Z]{2}$")):
-    return applicability(utility, state)
-
-
-@app.get(PREFIX + "/technical/integrity", tags=["Referências técnicas"])
-def validate_registry():
-    return integrity()
-
-
 @app.get(PREFIX + "/technical/revisions", tags=["Referências técnicas"])
 def revisions(session: Session = Depends(get_session)):
     rows = session.scalars(
@@ -477,31 +438,6 @@ def revision(revision_id: str, session: Session = Depends(get_session)):
     if row is None:
         raise HTTPException(404, "Versão técnica não encontrada")
     return {"id": row.id, "snapshot": row.payload, "status": row.review_status}
-
-
-@app.get(
-    PREFIX + "/projects/{project_id}/revalidation",
-    tags=["Projetos"],
-    response_model=ProjectRevalidation,
-)
-def revalidation(project_id: UUID, session: Session = Depends(get_session)):
-    row = find(session, project_id)
-    current = registry_version()
-    latest = latest_history(session, row.id)
-    return {
-        "project_id": row.id,
-        "project_version": row.version,
-        "previous_engine_version": latest.result.get("engine_version") if latest else None,
-        "previous_registry_version": row.standards_version,
-        "current_registry_version": current,
-        "requires_revalidation": row.standards_version != current
-        or (latest is not None and latest.result.get("engine_version") != ENGINE_VERSION),
-        "previous_result": latest.result if latest else None,
-        "current_result": CalculationResult.model_validate(
-            calculate(CalculationInput.model_validate(row.payload).model_dump(mode="json"))
-        ),
-        "notice": "Comparação conservadora. Valores manuais e histórico permanecem preservados.",
-    }
 
 
 @app.post(PREFIX + "/projects/{project_id}/recalculate", tags=["Projetos"], response_model=Project)
@@ -534,26 +470,6 @@ def duplicate(project_id: UUID, session: Session = Depends(get_session)):
     payload = dict(original.payload)
     payload["name"] = payload["name"][:190] + " · cópia"
     return create(ProjectInput.model_validate(payload), session)
-
-
-@app.get(PREFIX + "/technical/rules", tags=["Referências técnicas"], response_model=TechnicalRules)
-def computational_rules(
-    utility: str = Query(default="unconfirmed", max_length=100),
-    state: str = Query(default="SP", pattern="^[A-Z]{2}$"),
-):
-    return {
-        "registry_version": registry_version(),
-        "coverage": normative_capabilities(utility, state),
-        "mathematical": MATHEMATICAL_RULES,
-        "normative": [asdict(rule) for rule in RULES],
-        "regional_methods": [
-            method
-            for method in REGIONAL_METHODS
-            if utility == "unconfirmed"
-            or (utility in method["supported_utilities"] and state in method["supported_states"])
-        ],
-        "notice": "Validação matemática não implica conformidade normativa.",
-    }
 
 
 @app.get(PREFIX + "/equipment/{equipment_id}", tags=["Equipamentos"], response_model=CatalogItem)
