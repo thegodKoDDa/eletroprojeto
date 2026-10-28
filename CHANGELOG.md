@@ -2,6 +2,7 @@
 
 ## 0.25.1 — 28/10/2026 / motor 0.13.0 preservado
 
+- Release estável v0.25.1 publicada: ZIP de fontes/iniciadores, manifesto do commit e SHA-256, substituindo a v0.24.1 como Latest; README, setup, estado e limitações alinhados. A v0.24.1 permanece disponível.
 - Corrigido: autosave não apaga mais a referência da comparação; atualização da referência é explícita.
 - Corrigido: salvar novamente metadados legados sem id não causa erro nem duplica histórico, na API e no navegador.
 - Corrigido: tarifa já preenchida, subtotais parciais, potência desconhecida e ambientes vazios recebem mensagens adequadas; potência fica opcional quando há kWh declarados.

@@ -20,7 +20,7 @@ TechnicalRevisionRow também armazena a revisão própria de estimativas por com
 
 ## Browser e distribuição
 
-browser_runtime despacha o mesmo motor Python via Pyodide; store JSON/localStorage, histórico e backup imediato independem do SQLite local. build_pages inclui estimate_metadata e locations; o bundle inclui somente os módulos necessários às estimativas, sem enviar módulos normativos ao runtime. Builds local/standalone e estático permanecem disponíveis. ZIP estável publicado0.24.1 é anterior à reformulação; publicação nova não foi presumida.
+browser_runtime despacha o mesmo motor Python via Pyodide; store JSON/localStorage, histórico e backup imediato independem do SQLite local. build_pages inclui estimate_metadata e locations; o bundle inclui somente os módulos necessários às estimativas, sem enviar módulos normativos ao runtime. Builds local/standalone e estático permanecem disponíveis. ZIP estável publicado v0.25.1 contém o mesmo código da main nessa versão.
 
 ## Execução e verificação
 

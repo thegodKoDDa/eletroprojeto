@@ -26,7 +26,7 @@ Contratos por `npm run types:sync`, TypeScript, ESLint, Prettier, Ruff/checkform
 
 ## Ambiente e próxima ação
 
-API e interface mantidas em **http://localhost:8000/docs** e **http://localhost:3000**, com HTTP 200 confirmado. API reiniciada graciosamente para carregar as correções, versão 0.25.1/motor 0.13.0. Código 0.25.1 sincronizado em `fe8d0e8`; implantação Pages concluída com sucesso e versão publicada conferida. Release ZIP publicada continua 0.24.1, anterior ao código atual.
+API e interface mantidas em **http://localhost:8000/docs** e **http://localhost:3000**, com HTTP 200 confirmado. API reiniciada graciosamente para carregar as correções, versão 0.25.1/motor 0.13.0. Código 0.25.1 sincronizado em `fe8d0e8`; implantação Pages concluída com sucesso e versão publicada conferida. Release ZIP v0.25.1 publicada a pedido do usuário em 28/10/2026, gerada do commit documental correspondente; manifesto e SHA-256 conferidos contra o download público.
 
 Nenhuma implementação interrompida. Próximo passo: usar o sistema limpo e atender ao próximo pedido, mantendo o foco em consumo residencial. Limites em [KNOWN_ISSUES](KNOWN_ISSUES.md) e prioridades em [roadmap](roadmap.md).
 
