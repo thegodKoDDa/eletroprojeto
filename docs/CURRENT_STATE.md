@@ -6,6 +6,10 @@
 
 Auditado o sistema permanente existente, sem recriar produto, alterar aparência, cálculos, dependências ou dados. AGENTS reforça identidade e leitura inicial. Esta fotografia foi reduzida; o conteúdo anterior permanece no [arquivo histórico](history/state-through-2026-10-27.md). Memória e continuidade corrigem referências antigas ao Pages/Actions e explicitam limites e retenção. Histórico de desenvolvimento recuperável já consta em SESSION_HISTORY, CHANGELOG e Git; acontecimentos não registrados não foram reconstruídos por suposição.
 
+## Revalidação do encerramento — 28/10/2026
+
+Novo pedido de encerramento: entrada limpa/sincronizada em `1d2c53e`, nenhuma alteração funcional ou de dados desde a entrega anterior. Checkpoint `20261028T204516250811Z` restaurado isoladamente com sucesso: 304 arquivos, SQLite íntegro e mesmas contagens abaixo. Retomada com consulta ao origin aprovada; serviços continuam parados. Sem repetir baterias aprovadas sem mudança. Registro deste fechamento em SESSION_HISTORY; checkpoint final em latest.json.
+
 ## Estado real conferido
 
 - Árvore inicialmente limpa, main sem divergência do origin. Commit documental desta sessão e checkpoint final devem ser confirmados pela saída de encerramento e latest.json.
