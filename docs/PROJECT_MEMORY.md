@@ -8,7 +8,7 @@ Refinamento0.22.1: navegação recolhível no celular/tablet para leigo/profissi
 
 Consumo/custo recebem destaque, tarifa fica visível e uso dos aparelhos é explícito. Medidas/pontos, dados extras, potência, memória e previsões ficam em detalhes. Catálogo sugere referências, não potências universais; valores manuais válidos prevalecem. A biblioteca técnica serve para melhorar utilidades verificadas, não para exigir novos formulários ou presumir dados.
 
-Uso local. GitHub público distribui a fonte/histórico; dados privados continuam locais; implantação do site, CI hospedado, impressão física e cópia externa de dados privados continuam fora do escopo. O agente executa rotinas de terminal, sem delegá-las ao usuário. Autorização de manutenção/sincronização revisada em24/10/2026 está no AGENTS; não repetir perguntas para essas rotinas.
+Uso local. GitHub público distribui a fonte/histórico; dados privados continuam locais; Pages foi publicado por autorização posterior em 27/10/2026; CI geral, impressão física e cópia externa de dados privados continuam fora do escopo. O agente executa rotinas de terminal, sem delegá-las ao usuário. Autorização de manutenção/sincronização revisada em24/10/2026 está no AGENTS; não repetir perguntas para essas rotinas.
 
 ## Visual e ajuda progressiva — 0.23.0
 
@@ -60,7 +60,7 @@ Backend: REST/main, schemas/contratos, projects/histórico, database/ORM, report
 
 Fonte de dependências são manifests/locks. Reutilizar `.venv`, `.venv-windows` e node_modules; não reinstalar por hábito. Contratos somente por `npm run types:sync`. Não rodar build e E2E simultaneamente; QA usa bancos/portas e diretórios próprios.
 
-GitHub: `https://github.com/thegodKoDDa/eletroprojeto`, origin/main, público por autorização explícita em 26/10/2026, Actions desativado. Encerramento autorizado envia commits revisados apenas para esse destino após conferir destino e visibilidade pública; sem force-push ou merge automático. Credencial existente via Git Credential Manager do Windows, sem token em URL/arquivo/log. Código/docs no GitHub; banco, checkpoints, `.env` e originais do acervo continuam locais.
+GitHub: `https://github.com/thegodKoDDa/eletroprojeto`, origin/main, público por autorização explícita em 26/10/2026, workflow Pages habilitado por autorização posterior; quality.yml desativado. Encerramento autorizado envia commits revisados apenas para esse destino após conferir destino e visibilidade pública; sem force-push ou merge automático. Credencial existente via Git Credential Manager do Windows, sem token em URL/arquivo/log. Código/docs no GitHub; banco, checkpoints, `.env` e originais do acervo continuam locais.
 
 Rotina em AGENTS e detalhes em continuity.md. Retomar lê AGENTS/CURRENT_STATE/esta memória e executa continuity retomar; documentos históricos são consultados conforme necessidade. Encerrar atualiza docs uma vez, testa proporcionalmente, faz commit revisado e executa encerrar --sync. Sem rede, checkpoint local é preservado e sincronização fica pendente. Não criar commit extra pelo caminho do ponto; consultar `.checkpoints/latest.json`.
 
@@ -74,13 +74,13 @@ Coleta territorial original ANEEL121feições preservada emreferences/territory,
 
 ## Apresentação e navegação do repositório
 
-README apresenta o produto e a prévia real; instruções de agente e detalhes da instalação local ficam nos documentos responsáveis. `docs/setup.md` e `docs/usage.md` atendem instalação/uso, `CONTRIBUTING.md` reúne desenvolvimento e testes, e `docs/README.md` organiza os caminhos. Descrição/tópicos do GitHub foram alinhados ao produto usando Minecoord como referência de apresentação; privacidade e Actions desativado preservados.
+README apresenta o produto e a prévia real; instruções de agente e detalhes da instalação local ficam nos documentos responsáveis. `docs/setup.md` e `docs/usage.md` atendem instalação/uso, `CONTRIBUTING.md` reúne desenvolvimento e testes, e `docs/README.md` organiza os caminhos. Descrição/tópicos do GitHub foram alinhados ao produto usando Minecoord como referência de apresentação; privacidade e workflow Pages habilitado por autorização posterior; quality.yml desativado preservados.
 
 Revisões anteriores de auditoria/formulários/expansão inicial estão em `docs/history`, com índice e conteúdo preservados. `docs/audit.md` e `docs/forms-and-pdf.md` descrevem o estado atual e apontam para o histórico. Não voltar a apresentar registros antigos como comportamento vigente nem colocar logs de sessão na página de apresentação. Imagens em `docs/assets` contêm somente interface e dados fictícios; manter essa condição ao atualizá-las.
 
 ## Distribuição pública — 0.20.0
 
-Usuário autorizou explicitamente tornar `thegodKoDDa/eletroprojeto` público e preparar formas de uso em 26/10/2026. Visibilidade pública passa a ser a condição do sincronizador; destino, main limpa, revisão de arquivos, ausência de divergência e sem force-push continuam obrigatórios. Histórico preservado. Actions permanece desativado; não confundir publicar código/release com hospedar o site ou enviar dados.
+Usuário autorizou explicitamente tornar `thegodKoDDa/eletroprojeto` público e preparar formas de uso em 26/10/2026. Visibilidade pública passa a ser a condição do sincronizador; destino, main limpa, revisão de arquivos, ausência de divergência e sem force-push continuam obrigatórios. Histórico preservado. Pages foi autorizado e publicado em 27/10/2026; quality.yml permanece desativado. Não enviar dados privados.
 
 ZIP de fontes com iniciadores Windows/Linux/macOS requer Python/Node; Docker contém runtimes e volume SQLite próprio. Não prometer `.exe`, `index.html` independente ou teste nativo Windows/macOS não realizado. Licença ISC do código original; componentes preservam avisos próprios. Iniciadores recusam portas ocupadas e reutilizam dependências compatíveis; não tocam serviços existentes. Native legado usa backend/eletroprojeto.db se presente, cópia nova usa data/eletroprojeto.db, e --data-dir escolhe outra instalação. Nunca remover volume/pasta de dados para atualizar.
 
@@ -112,3 +112,7 @@ Release estável v0.24.1 publicada a pedido do usuário, com ZIP, manifesto e ha
 ## GitHub Pages com motor Python via Pyodide — 0.24.1
 
 A pedido explícito do usuário em 27/10/2026, o `README.md` inclui o acesso online pelo navegador em `https://thegodkodda.github.io/eletroprojeto/` no mesmo padrão do `minecoord`, com publicação via `.github/workflows/pages.yml` e `scripts/build_pages.py` (`quality.yml` permanece desativado). Para respeitar a regra permanente de nunca duplicar fórmulas elétricas no frontend, a edição estática executa os próprios módulos Python de `backend/app` no navegador via Pyodide (`backend/app/browser_runtime.py` + `frontend/src/lib/browser-backend.ts`) e armazena projetos apenas no `localStorage` do navegador do usuário (`eletroprojeto.browser.store.v1` / `eletroprojeto.browser.backup.v1`). Banco SQLite local, checkpoints e acervo técnico continuam exclusivamente locais e fora do Git/Pages.
+
+## Fontes da memória e uso
+
+A história recuperável está em CHANGELOG, SESSION_HISTORY, Git e docs/history; não há registro completo da motivação inicial anterior aos arquivos disponíveis. O guia operacional principal é [usage.md](usage.md): criação, Salvar/Salvar Como, duplicação, lixeira/restauração, ambientes, equipamentos, edição manual e exportação. [architecture.md](architecture.md), [calculations.md](calculations.md) e [standards.md](standards.md) são as fontes técnicas, evitando duplicar fórmulas e regras nesta memória. Implementação/testes não equivalem a validação normativa; situação operacional em CURRENT_STATE e limitações em KNOWN_ISSUES.

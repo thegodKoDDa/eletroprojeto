@@ -4,6 +4,7 @@ Registros anteriores preservados para rastreabilidade. Para o comportamento atua
 
 | Registro | Contexto |
 | --- | --- |
+| [Estado até 27/10/2026](state-through-2026-10-27.md) | Fotografia cumulativa substituída pelo estado conciso de 28/10 |
 | [Auditorias até 0.19.0](audit-through-0.19.0.md) | Revisões de implementação, interface, dados e verificações |
 | [Formulários até 0.14.1](forms-and-pdf-through-0.14.1.md) | Evolução de campos, recuperação e relatórios |
 | [Expansão técnica de 21/10/2026](technical-expansion-2026-10-21.md) | Primeiras decisões de integração técnica |

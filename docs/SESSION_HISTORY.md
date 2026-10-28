@@ -696,3 +696,16 @@ A pedido do usuário, investigado eventual encerramento pendente: main limpa/sin
 Teste rápido no site público com Chromium/Playwright: HTTP200, entrada leiga, projeto fictício,10kWh/mês à tarifa0,80 resultando em R$8,00, salvamento localStorage e reabertura após reload aprovados; nenhum pageerror/console.error detectado. Contexto temporário isolado encerrado normalmente, sem tocar projetos reais/SQLite. Não testados PDF/demais perfis nem repetidas suítes/build por não haver alteração de código.
 
 Usuário pediu encerrar. Registrada a verificação em CURRENT_STATE e neste histórico; disco com923GiB livres, árvore inicialmente limpa, serviços locais parados preservados. Nenhuma instalação, alteração de aplicação/cálculos/dados ou exclusão/limpeza. Commit documental revisado e rotina encerrar --sync executados; confirmação final pela saída e .checkpoints/latest.json.
+
+
+## 28/10/2026 — auditoria permanente de memória e encerramento
+
+Pedido de preservação integral e continuidade entre sessões. Sistema já existia: scripts Python e wrappers PowerShell, backups SQLite pela API, manifests/hashes e restauração isolada de fonte/banco/bundle Git. Preservada a implementação; nenhum produto recriado. Histórico recuperável já registrado desde as primeiras sessões disponíveis; não inferida motivação anterior sem evidência.
+
+Entrada main limpa em6607172, origin consultado sem divergência. Banco backend/eletroprojeto.db integrity/FKok:14ativos/0excluídos,42históricos,12revisões,2.082documentos/51.324páginas/3.788fontes,schema0007(head). Dependências existentes reutilizadas; serviços parados mantidos assim;921GiB livres. Nenhum dado, migração, dependência, acervo ou ponto de recuperação excluído/alterado.
+
+Atualizados AGENTS, CURRENT_STATE, PROJECT_MEMORY, continuity, roadmap, KNOWN_ISSUES, índice histórico e CHANGELOG. Fotografia cumulativa anterior transferida integralmente para history/state-through-2026-10-27.md; histórico de sessões mantido. Corrigido contexto de autorização/publicação Pages e quality.yml; retenção sem expurgo e limites de captura explicitados.
+
+Verificações efetivas:15pytest de continuidade aprovados; leitura de14documentos centrais e links locais sem destinos ausentes; retomada CLIoffline aprovada, Git/SQLite/dependências identificados. git diff --check aprovado; banco/checkpoints ignorados; revisão de arquivos e varredura de indicadores conhecidos de tokens/chaves sem ocorrências (não é garantia universal). Wrappers revisados, PowerShell indisponível para execução nativa. Sem mudança funcional, suítes completas backend/frontend/E2E/build não repetidas.
+
+Fechamento: commit documental único revisado e rotina encerrar --sync para sincronização autorizada e checkpoint com restauração isolada. Resultado final e hash no Git e .checkpoints/latest.json; em caso de falha prevalece a saída real, sem supor sucesso. Próxima tarefa: RETOMAR ELETROPROJETO e aguardar novo pedido; pendências normativas em KNOWN_ISSUES. Buffers não salvos, rascunhos/Pages localStorage, .env e originais do acervo não compõem o backup do SQLite/fonte. Configuração/acervo permanecem no disco, sem cópia externa nesta sessão.

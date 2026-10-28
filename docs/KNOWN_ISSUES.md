@@ -1,5 +1,7 @@
 # Pendências conhecidas
 
+Atualização de escopo em 28/10/2026: Pages foi autorizado e publicado em 27/10; restrições históricas abaixo à publicação não descrevem mais esse modo. CI geral, impressão física e cópia externa continuam fora do escopo. Estado operacional em [CURRENT_STATE](CURRENT_STATE.md).
+
 Escopo local definido pelo usuário em 23/10/2026: publicação remota/CI hospedado, impressão física e backup externo foram descartados do trabalho atual. Recursos já implementados foram preservados. Checkpoints locais continuam em uso.
 
 Revisado integralmente em 26/10/2026, versão0.21.0. Pendências já resolvidas ou descartadas não foram reabertas. Bugs corrigidos constam em CHANGELOG/revisões, não como pendências aqui.

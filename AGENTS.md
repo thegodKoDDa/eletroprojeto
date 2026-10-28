@@ -1,3 +1,7 @@
+# EletroProjeto — manual permanente
+
+Estimativa de consumo elétrico residencial para leigos, profissionais e exploração, com estudos técnicos opcionais e condicionados à validação normativa. Frontend Next.js comunica com API FastAPI e persistência SQLAlchemy/SQLite; a edição Pages executa o mesmo motor Python via Pyodide. Arquitetura em `docs/architecture.md`, uso em `docs/usage.md` e fontes em `docs/standards.md`. Não recriar o projeto ou alterar aparência/funcionalidades sem pedido; não esconder problemas com resultados fictícios.
+
 # Regras permanentes
 
 - Stack: Next.js App Router, TypeScript, Tailwind; Python, FastAPI, Pydantic 2, SQLAlchemy 2, Alembic e SQLite. Preservar portabilidade para PostgreSQL.
@@ -24,7 +28,7 @@
 
 ## RETOMAR ELETROPROJETO
 
-1. Ler AGENTS, `docs/CURRENT_STATE.md` e `docs/PROJECT_MEMORY.md`. Consultar roadmap/KNOWN_ISSUES e a cauda dos registros somente conforme o trabalho atual; versões e limitações históricas não são o estado atual.
+1. Ler AGENTS, `docs/CURRENT_STATE.md` e `docs/PROJECT_MEMORY.md`. Consultar `docs/roadmap.md`, `docs/KNOWN_ISSUES.md` e os últimos registros relevantes de CHANGELOG/SESSION_HISTORY; versões e limitações históricas não são o estado atual.
 2. Executar `python3 scripts/continuity.py retomar`: Git/banco/dependências, consulta do origin, serviços e último checkpoint. Fetch não mescla ou sobrescreve a edição. Sem rede, continuar localmente e informar a pendência; `--offline` evita a consulta.
 3. Seguir o próximo passo registrado/pedido atual. Antes de iniciar serviços, conferir os existentes; entregar localhost somente após HTTP confirmado. Doctor apenas para diagnóstico quando necessário.
 

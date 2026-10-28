@@ -1,5 +1,7 @@
 # Roadmap — uso local, 0.21.0
 
+Atualização de escopo em 28/10/2026: Pages foi autorizado e publicado em 27/10; restrições históricas abaixo à publicação não descrevem mais esse modo. CI geral, impressão física e cópia externa continuam fora do escopo. Estado operacional em [CURRENT_STATE](CURRENT_STATE.md).
+
 Decisão do usuário em 23/10/2026: operar localmente. Publicação/infraestrutura remota, execução hospedada de CI, impressão física e backup externo foram retirados do escopo atual; não tratá-los como bloqueios ou cobrar recursos para essas tarefas. Autenticação e workflow continuam preservados; GitHub público agora recebe a fonte e o encerramento autorizado. Checkpoints locais continuam protegendo SQLite/fonte/Git, com armazenamento compartilhado de cópias idênticas.
 
 0.14.0: biblioteca leve, salvamento idempotente/sem gravação redundante, rascunhos com flush, checkpoints atômicos/reutilizáveis e auditoria/limpeza local. Procedimento em continuity.md; testes atuais em CURRENT_STATE.
