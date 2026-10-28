@@ -698,26 +698,6 @@ Teste rápido no site público com Chromium/Playwright: HTTP200, entrada leiga, 
 Usuário pediu encerrar. Registrada a verificação em CURRENT_STATE e neste histórico; disco com923GiB livres, árvore inicialmente limpa, serviços locais parados preservados. Nenhuma instalação, alteração de aplicação/cálculos/dados ou exclusão/limpeza. Commit documental revisado e rotina encerrar --sync executados; confirmação final pela saída e .checkpoints/latest.json.
 
 
-## 28/10/2026 — auditoria permanente de memória e encerramento
-
-Pedido de preservação integral e continuidade entre sessões. Sistema já existia: scripts Python e wrappers PowerShell, backups SQLite pela API, manifests/hashes e restauração isolada de fonte/banco/bundle Git. Preservada a implementação; nenhum produto recriado. Histórico recuperável já registrado desde as primeiras sessões disponíveis; não inferida motivação anterior sem evidência.
-
-Entrada main limpa em6607172, origin consultado sem divergência. Banco backend/eletroprojeto.db integrity/FKok:14ativos/0excluídos,42históricos,12revisões,2.082documentos/51.324páginas/3.788fontes,schema0007(head). Dependências existentes reutilizadas; serviços parados mantidos assim;921GiB livres. Nenhum dado, migração, dependência, acervo ou ponto de recuperação excluído/alterado.
-
-Atualizados AGENTS, CURRENT_STATE, PROJECT_MEMORY, continuity, roadmap, KNOWN_ISSUES, índice histórico e CHANGELOG. Fotografia cumulativa anterior transferida integralmente para history/state-through-2026-10-27.md; histórico de sessões mantido. Corrigido contexto de autorização/publicação Pages e quality.yml; retenção sem expurgo e limites de captura explicitados.
-
-Verificações efetivas:15pytest de continuidade aprovados; leitura de14documentos centrais e links locais sem destinos ausentes; retomada CLIoffline aprovada, Git/SQLite/dependências identificados. git diff --check aprovado; banco/checkpoints ignorados; revisão de arquivos e varredura de indicadores conhecidos de tokens/chaves sem ocorrências (não é garantia universal). Wrappers revisados, PowerShell indisponível para execução nativa. Sem mudança funcional, suítes completas backend/frontend/E2E/build não repetidas.
-
-Fechamento: commit documental único revisado e rotina encerrar --sync para sincronização autorizada e checkpoint com restauração isolada. Resultado final e hash no Git e .checkpoints/latest.json; em caso de falha prevalece a saída real, sem supor sucesso. Próxima tarefa: RETOMAR ELETROPROJETO e aguardar novo pedido; pendências normativas em KNOWN_ISSUES. Buffers não salvos, rascunhos/Pages localStorage, .env e originais do acervo não compõem o backup do SQLite/fonte. Configuração/acervo permanecem no disco, sem cópia externa nesta sessão.
-
-
-## 28/10/2026 — revalidação a novo pedido de encerramento
-
-Retomada consultou origin: main limpa/sincronizada em1d2c53e, sem arquivos novos. Banco íntegro/FKok,14ativos/0excluídos,42históricos,12revisões,schema0007. Verificar restaurou isoladamente checkpoint20261028T204516250811Z:304arquivos, fonte/SQLite/bundle Git aprovados e contagens preservadas. Serviços parados;921GiB livres. Memória, estado, roadmap, pendências e registros recentes consultados; sistema permanente já implementado.
-
-Atualizados somente CURRENT_STATE e este histórico para registrar a conferência. Sem nova funcionalidade, não alterado CHANGELOG nem repetidos15testes de continuidade ou suítes funcionais aprovados na entrega imediatamente anterior. Nenhum dado, dependência, configuração privada, acervo ou checkpoint excluído/modificado. Commit documental revisado e encerrar --sync com verificação do ponto final; resultado efetivo em latest.json/saída da rotina. Próximo passo permanece RETOMAR ELETROPROJETO e novo pedido do usuário; limites de navegador/buffers/acervo fora do ZIP e ausência de cópia externa preservados.
-
-
 ## 28/10/2026 — reformulação oficial para consumo residencial,0.25.0/motor0.13.0
 
 Usuário determinou retirar o dimensionamento de instalações do produto e manter estimativas residenciais para imóveis existentes ou planejados. Inspeção encontrou engine executando demanda/circuitos/entrada/geometria e consultas normativas a cada recálculo; salvamento/PDF dependiam do registro normativo. Baseline main6b55071 limpa/sincronizada, retomada oficial e checkpoint20261028T204650342615Z restaurado antes de editar.
@@ -741,3 +721,10 @@ Complemento de verificação0.25.0: build estático aprovado; bundle final com24
 Conferência de fechamento: todas as12tabelas novamente idênticas ao checkpoint inicial, integrity/FKok;27documentos/links locais sem destinos ausentes; revisão de94caminhos alterados/novos sem indicadores conhecidos de segredos. Arquivos gerados next-env/tsconfig de QA inspecionados e restaurados à configuração original; Prettier/Ruff/checkformat e git diff --check aprovados. Sem limpeza de dados/acervo/checkpoints.
 
 Após retirar também o ramo obsoleto de notificações normativas,95testes afetados de API/escopo passaram; bundle final regenerado com24arquivos.
+
+
+## 28/10/2026 — reversão das duas ordens de encerramento enviadas por engano
+
+Usuário pediu desfazer os efeitos específicos das ordens duplicadas. Revertidos os acréscimos documentais de1d2c53e/6b55071 ainda vigentes: continuidade/índice/arquivo de estado e alterações nas fotografias históricas; retirados os registros dessas duas ordens da apresentação corrente. Documentos substituídos pela reformulação0.25.0 foram mantidos no escopo de consumo. Código da aplicação, banco, migrações e pesquisa não foram revertidos; scripts de continuidade já existentes antes dessas ordens permanecem. Histórico Git e pontos de recuperação preservados.
+
+Esclarecido: rotina de encerramento influenciou manter serviços parados, mas não impediu push;405b507 já estava sincronizado. Pages anterior ficou sem atualização pela decisão do agente de usar[skip ci]. Agora iniciados API8000/interface3000 com dependências existentes, sem instalação ou reset; entrega exige HTTP confirmado e sincronização normal do GitHub/Pages. Resultado efetivo dos serviços e publicação deve ser conferido na saída desta tarefa. Não repetir testes funcionais sem mudança de aplicação.

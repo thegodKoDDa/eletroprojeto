@@ -30,7 +30,7 @@ Backups SQLite byte a byte idênticos compartilham armazenamento por hardlinks q
 
 ## GitHub e permissões
 
-O único destino de sincronização automática é `thegodKoDDa/eletroprojeto`, confirmado como público pela API antes do envio. Exige main, árvore limpa e commit revisado. Fetch e comparação recusam divergência/commits remotos; nunca há force-push ou reescrita de história. O hash remoto é conferido depois do envio. A confirmação pública usa a API sem credencial. O envio usa a credencial Git existente, sem copiar tokens para URL, arquivos ou logs. O workflow Pages foi habilitado por autorização explícita em 27/10/2026; quality.yml permanece desativado.
+O único destino de sincronização automática é `thegodKoDDa/eletroprojeto`, confirmado como público pela API antes do envio. Exige main, árvore limpa e commit revisado. Fetch e comparação recusam divergência/commits remotos; nunca há force-push ou reescrita de história. O hash remoto é conferido depois do envio. A confirmação pública usa a API sem credencial. O envio usa a credencial Git existente, sem copiar tokens para URL, arquivos ou logs. O workflow Pages existente publica os pushes normais da main; quality.yml permanece desativado. Na correção de entrega pedida em28/10/2026, usar o fluxo normal para atualizar o site.
 
 POSIX: diretórios privados0700, arquivos0600. Doctor verifica e `--fix-permissions` corrige somente privados conhecidos, sem symlinks ou mudanças globais. No Windows, chmod não audita ACL; os wrappers usam o Python já instalado (`.venv-windows`, depois `.venv`) e não mudam ExecutionPolicy. `retomar.ps1 -Offline` e `encerrar.ps1 -Sync` equivalem às opções Python.
 
@@ -64,11 +64,3 @@ O ZIP não contém dados do desenvolvedor. Nativamente, uma instalação nova us
 Atualize o código mantendo a pasta/banco de dados ou volume. `docker compose down` preserva o volume; sua remoção não faz parte da atualização. Antes de transferir dados, pare a instância correspondente e faça cópia consistente. Migrações necessárias pelo iniciador geram cópia anterior em `backups/`, sem apagar versões existentes. Essa cópia não substitui armazenamento externo.
 
 A publicação do repositório e da release de fontes foi autorizada em 26/10/2026. Ela não publica o site, não habilita CI e não envia bancos, credenciais, acervo ou checkpoints. Os mecanismos internos de checkpoint continuam disponíveis para manutenção; o uso normal do iniciador não sincroniza projetos com o GitHub.
-
-## Retenção e limites de preservação
-
-Preservar pontos históricos, sem expurgo automático nem sobrescrita. Revisar crescimento após 14 pontos; reutilizar snapshots sem mudanças e compartilhar bancos idênticos por hardlink verificado. Exclusão de pontos únicos exige autorização específica. Isso reduz duplicação, mas não impõe teto ao crescimento histórico. Monitorar espaço em cada encerramento.
-
-Os scripts não salvam buffers de editores nem capturam rascunhos de navegador. O modo Pages armazena projetos em localStorage, separado do SQLite local: suas duas chaves não constituem cópia externa nem são incluídas neste checkpoint. Originais do acervo e .env permanecem privados nos caminhos existentes; não fazem parte do source.zip. O sistema depende de execução na sessão, sem automação após desligamento.
-
-A autorização posterior de 27/10/2026 permitiu a publicação Pages; as antigas exclusões de publicação nesta página descrevem a distribuição local e não revogam essa entrega. CI geral, impressão física e cópia externa continuam fora do escopo.

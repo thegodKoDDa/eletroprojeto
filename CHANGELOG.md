@@ -10,12 +10,6 @@
 - Preservado: Decimal, referências editáveis, valores manuais, autosave/rascunhos/conflitos, histórico, dados e migrações. Sem atualização em massa dos projetos.
 - Verificação:588pytest/85subtestes,122frontend,40cenáriosE2E cobertos com repetições dos afetados; contratos/tipos/lint/Ruff/build nativo aprovados. Evidências/limites em CURRENT_STATE/SESSION_HISTORY.
 
-## 28/10/2026 — continuidade documental (0.24.1 preservada)
-
-- Manual permanente reforçado, estado atual reduzido e fotografia anterior preservada em docs/history.
-- Corrigidas referências históricas ao escopo Pages/Actions; explicitadas retenção e exclusões dos checkpoints.
-- Sistema existente auditado: 15 testes de continuidade aprovados, retomada offline e links centrais conferidos. Sem mudança funcional ou de dados.
-
 ## 0.24.1 — 27/10/2026 / motor 0.12.0 preservado
 
 - Opção de acesso online direto pelo navegador no GitHub Pages (`https://thegodkodda.github.io/eletroprojeto/`) adicionada ao `README.md` e `docs/setup.md`, seguindo o padrão do `minecoord`.

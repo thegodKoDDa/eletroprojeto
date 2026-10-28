@@ -4,8 +4,6 @@
 
 O EletroProjeto estima consumo energético residencial, não dimensiona instalações. Esta decisão substitui o escopo técnico anterior abaixo: não reintroduzir demanda normativa, circuitos, proteções ou requisitos de fornecimento no fluxo/API de estimativas sem decisão explícita do usuário. Acervo, pesquisa histórica e campos legados são preservados, mas não executados pelo motor. Estado/distribuidora são contexto; tarifa é manual, sem valores inventados. Referências do catálogo são sugestões e valores manuais válidos prevalecem. Imóveis planejados, em construção, prontos ou em reforma usam o mesmo motor.
 
-Estimativa de consumo elétrico residencial para leigos, profissionais e exploração, com referências editáveis e premissas explícitas. Frontend Next.js comunica com API FastAPI e persistência SQLAlchemy/SQLite; a edição Pages executa o mesmo motor Python via Pyodide. Arquitetura em `docs/architecture.md`, uso em `docs/usage.md` e fontes em `docs/standards.md`. Não recriar o projeto ou alterar aparência/funcionalidades sem pedido; não esconder problemas com resultados fictícios.
-
 # Regras permanentes
 
 - Stack: Next.js App Router, TypeScript, Tailwind; Python, FastAPI, Pydantic 2, SQLAlchemy 2, Alembic e SQLite. Preservar portabilidade para PostgreSQL.
@@ -32,9 +30,9 @@ Estimativa de consumo elétrico residencial para leigos, profissionais e explora
 
 ## RETOMAR ELETROPROJETO
 
-1. Ler AGENTS, `docs/CURRENT_STATE.md` e `docs/PROJECT_MEMORY.md`. Consultar `docs/roadmap.md`, `docs/KNOWN_ISSUES.md` e os últimos registros relevantes de CHANGELOG/SESSION_HISTORY; versões e limitações históricas não são o estado atual.
+1. Ler AGENTS, `docs/CURRENT_STATE.md` e `docs/PROJECT_MEMORY.md`. Consultar roadmap/KNOWN_ISSUES e a cauda dos registros somente conforme o trabalho atual; versões e limitações históricas não são o estado atual.
 2. Executar `python3 scripts/continuity.py retomar`: Git/banco/dependências, consulta do origin, serviços e último checkpoint. Fetch não mescla ou sobrescreve a edição. Sem rede, continuar localmente e informar a pendência; `--offline` evita a consulta.
-3. Seguir o próximo passo registrado/pedido atual. Antes de iniciar serviços, conferir os existentes; entregar localhost somente após HTTP confirmado. Doctor apenas para diagnóstico quando necessário.
+3. Seguir o próximo passo registrado/pedido atual. Uma entrega de desenvolvimento não é pedido de encerramento: manter/iniciar os serviços locais, confirmar HTTP e sincronizar as alterações autorizadas; executar encerramento somente quando solicitado. Antes de iniciar serviços, conferir os existentes; entregar localhost somente após HTTP confirmado. Doctor apenas para diagnóstico quando necessário.
 
 ## Durante o trabalho
 
