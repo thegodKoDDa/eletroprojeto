@@ -55,3 +55,7 @@ Próximo passo: atender ao próximo pedido; nenhuma implementação interrompida
 ## Distribuição 0.25.2 — 29/10/2026
 
 Release de correção preparada com as mudanças validadas na vistoria: preservação da configuração no iniciador, isolamento de QA HTTPS e manutenção. Versões frontend/backend/lock e OpenAPI alinhadas; motor 0.13.0 preservado. ZIP gerado exclusivamente do commit revisado, manifesto e SHA-256 conferidos antes e após publicação. Release anterior preservada; nenhuma mudança de dados ou migração.
+
+## Encerramento solicitado — 29/10/2026
+
+Vistoria e manutenção concluídas; release v0.25.2 publicada como Latest, gerada de `9f6e8d6`, com ZIP/manifesto/SHA-256 públicos conferidos. Pages desse commit concluído com sucesso. Verificações e limites da sessão registrados em audit.md e acima; nenhuma bateria repetida no encerramento. Banco/acervo/históricos preservados; limpeza permitida de cerca de156MB realizada durante a vistoria. Git limpo antes deste registro;917GiB livres. Serviços locais encerrados graciosamente a pedido do usuário. Sincronização e checkpoint final pela rotina de continuidade; ponto verificável em `.checkpoints/latest.json`. Nenhuma implementação interrompida; próximo passo: retomar e atender ao próximo pedido. Buffers externos/rascunhos do navegador não são verificáveis pelo checkpoint.
