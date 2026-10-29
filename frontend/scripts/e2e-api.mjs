@@ -52,7 +52,16 @@ const tls =
     : [];
 const child = spawn(
   python,
-  ['-m', 'uvicorn', 'app.main:app', '--host', '127.0.0.1', '--port', '8010', ...tls],
+  [
+    '-m',
+    'uvicorn',
+    'app.main:app',
+    '--host',
+    '127.0.0.1',
+    '--port',
+    process.env.QA_API_PORT ?? '8010',
+    ...tls,
+  ],
   { cwd: backend, stdio: 'inherit', env: process.env },
 );
 for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, () => child.kill(signal));

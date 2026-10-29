@@ -54,3 +54,5 @@ id_ed25519
 # Instalação portátil e pacotes de distribuição
 /data/
 /dist/
+
+frontend/test-results-auth/

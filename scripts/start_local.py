@@ -104,6 +104,21 @@ def fingerprint(frontend, proxy):
     return digest.hexdigest()
 
 
+def build_frontend(node, frontend, env):
+    # Next rewrites these tracked files for each isolated dist directory.
+    paths = [frontend / name for name in ("tsconfig.json", "next-env.d.ts")]
+    originals = {path: path.read_bytes() for path in paths if path.is_file()}
+    try:
+        run(
+            [node, frontend / "node_modules/next/dist/bin/next", "build", "--webpack"],
+            frontend,
+            env,
+        )
+    finally:
+        for path, content in originals.items():
+            path.write_bytes(content)
+
+
 def database_path(root, data_dir):
     if data_dir is not None:
         return data_dir.resolve() / "eletroprojeto.db"
@@ -317,11 +332,7 @@ def main():
     marker = frontend / ".next/local/eletroprojeto-build.json"
     cached = json.loads(marker.read_text()) if marker.exists() else {}
     if cached.get("signature") != signature or not (marker.parent / "BUILD_ID").exists():
-        run(
-            [node, frontend / "node_modules/next/dist/bin/next", "build", "--webpack"],
-            frontend,
-            env,
-        )
+        build_frontend(node, frontend, env)
         marker.write_text(json.dumps({"signature": fingerprint(frontend, env["API_PROXY_TARGET"])}))
     migrate(python, backend, database, env)
     if not args.prepare_only:

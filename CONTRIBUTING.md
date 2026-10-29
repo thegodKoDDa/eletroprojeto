@@ -47,7 +47,7 @@ npm test
 npm run test:e2e
 ```
 
-Playwright exige um navegador instalado. E2E usa banco temporário e portas 3010/8010; o cenário HTTPS de duas contas usa `npm run test:e2e:auth` e portas 3011/8010. Confira as portas antes da execução. Capturas e relatórios de testes não entram no Git.
+Playwright exige um navegador instalado. E2E usa banco temporário e portas 3010/8010; o cenário HTTPS de duas contas usa `npm run test:e2e:auth` e portas 3011/8011. Confira as portas antes da execução. Capturas e relatórios de testes não entram no Git.
 
 Não execute build e E2E simultaneamente. Para um build isolado no Linux/macOS:
 

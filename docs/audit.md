@@ -2,6 +2,16 @@
 
 Este documento organiza os resultados conhecidos. A fotografia operacional está em [CURRENT_STATE](CURRENT_STATE.md); regras e condições de aplicação estão em [standards](standards.md). Uma suíte aprovada verifica os cenários exercitados e não declara conformidade elétrica integral.
 
+## Vistoria completa — 29/10/2026
+
+Revisados os 276 arquivos versionados, organização local, motor/API de estimativas, schemas legados, pacote Python estático, formulários, persistência, comparação, relatórios, testes, scripts e publicação. Os módulos normativos preservados não foram reintegrados ao motor. Nenhum arquivo privado/gerado indevido no Git, link documental local ausente ou padrão de credencial encontrado na varredura dos arquivos versionados. Mantida a organização por responsabilidade e o arquivo histórico; não houve movimentação cosmética de fontes.
+
+Correções: o build do iniciador local restaura `tsconfig.json` e `next-env.d.ts` mesmo em falha, evitando alterações automáticas versionadas; duas regressões exercitam sucesso/falha. HTTPS QA passa a usar API 8011 e saída `test-results-auth`, ignorada no Git e contemplada na limpeza permitida. Descrição pública do GitHub alinhada ao consumo residencial. Fórmulas, contratos, dependências e versões 0.25.1/motor0.13.0 preservados.
+
+Verificações: 601 pytest/85 subtestes e 128 frontend aprovados; depois da correção, 8 testes do iniciador e 14 testes combinados de iniciador/manutenção aprovados. 42 E2E e 1 HTTPS aprovados em rodada válida. Primeira rodada E2E invalidada por execução simultânea de suítes/build (artefatos compartilhados e reinício de Next), corrigida e repetida em sequência. Contratos regenerados sem diferença; TypeScript, ESLint, Prettier, Ruff/checkformat, migrações QA, pip check e instalações npm aprovados. Build nativo com preservação real das configurações e build estático com 24 arquivos aprovados; Pages HTTP 200 e pacote Python público idêntico ao local. Restauração isolada do checkpoint inicial aprovada; as 12 tabelas reais permanecem idênticas (1projeto,2históricos,13revisões e acervo preservados), integridade/FK aprovadas.
+
+Limites desta vistoria: não executados Windows/macOS/ARM, Docker/PostgreSQL reais, carga/pentest, leitor de tela real nem Pyodide real no navegador. A varredura não equivale a revisão humana integral dos originais do acervo. Quality hospedado permanece desativado; release v0.25.1 preservada. Limpeza permitida removeu 156.027.814 bytes de caches e saídas QA; dados/acervo/checkpoints/dependências/build ativo preservados. Serviços locais permanecem ativos. Sincronização e checkpoint final conferidos pela rotina; referência em `.checkpoints/latest.json`.
+
 ## Vistoria de consumo residencial — 28/10/2026, 0.25.1
 
 Vistoria do produto reformulado, com o banco que o usuário já havia esvaziado. As **12 tabelas reais ficaram idênticas** ao checkpoint inicial `20261028T214022868431Z`: 0 projetos/0 históricos, 12 revisões técnicas e acervo preservado. Testes funcionais gravaram somente em bancos de QA e localStorage de contextos temporários.

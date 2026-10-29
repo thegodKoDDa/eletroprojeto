@@ -161,7 +161,11 @@ def cleanup(root, *, apply=False, qa_builds=False):
     except OSError:
         qa_busy = True  # Unknown port state is not permission to delete test output.
     if not qa_busy:
-        paths += [root / "frontend/test-results", root / "frontend/playwright-report"]
+        paths += [
+            root / "frontend/test-results",
+            root / "frontend/test-results-auth",
+            root / "frontend/playwright-report",
+        ]
         if qa_builds:
             paths += [
                 root / f"frontend/.next/{name}"

@@ -91,3 +91,25 @@ def test_current_schema_does_not_migrate_or_duplicate_backups(tmp_path):
         start.migrate(Path(sys.executable), tmp_path, db, {})
         upgrade.assert_not_called()
     assert not (tmp_path / "backups").exists()
+
+
+@pytest.mark.parametrize("fails", [False, True])
+def test_build_preserves_tracked_configuration_even_on_failure(tmp_path, fails):
+    originals = {"tsconfig.json": b'{"include": ["src"]}\n', "next-env.d.ts": b"// original\n"}
+    for name, content in originals.items():
+        (tmp_path / name).write_bytes(content)
+
+    def build(*args):
+        for name in originals:
+            (tmp_path / name).write_text("generated QA paths")
+        if fails:
+            raise RuntimeError("build failed")
+
+    with patch.object(start, "run", side_effect=build):
+        if fails:
+            with pytest.raises(RuntimeError, match="build failed"):
+                start.build_frontend("node", tmp_path, {})
+        else:
+            start.build_frontend("node", tmp_path, {})
+    for name, content in originals.items():
+        assert (tmp_path / name).read_bytes() == content

@@ -1,5 +1,11 @@
 # Histórico de alterações
 
+## Manutenção — 29/10/2026
+
+- Iniciador local preserva configurações versionadas após build, inclusive em falha.
+- QA HTTPS usa API e artefatos separados; limpeza e guia de contribuição atualizados.
+- Vistoria de consumo, preservação de dados e descrição pública do repositório conferidas; evidências em docs/audit.md.
+
 ## 0.25.1 — 28/10/2026 / motor 0.13.0 preservado
 
 - Release estável v0.25.1 publicada: ZIP de fontes/iniciadores, manifesto do commit e SHA-256, substituindo a v0.24.1 como Latest; README, setup, estado e limitações alinhados. A v0.24.1 permanece disponível.
