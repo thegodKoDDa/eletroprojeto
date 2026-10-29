@@ -65,7 +65,7 @@ Configuração de portas, dados, atualização e execução manual: [guia de ins
 
 ## Como usar
 
-A `main` 0.25.1 concentra o sistema em estimativas residenciais. A release estável publicada é a v0.25.1, com o mesmo código da `main` nessa versão. Escolha **USUÁRIO LEIGO**, **USUÁRIO PROFISSIONAL** ou **ESTOU APENAS DANDO UMA OLHADA**; os perfis mudam apresentação, sem alterar cálculos, dados ou permissões.
+A `main` 0.25.2 concentra o sistema em estimativas residenciais. A release estável é a v0.25.2, com o mesmo código da `main` nessa versão. Escolha **USUÁRIO LEIGO**, **USUÁRIO PROFISSIONAL** ou **ESTOU APENAS DANDO UMA OLHADA**; os perfis mudam apresentação, sem alterar cálculos, dados ou permissões.
 
 1. **Projeto e imóvel:** nome, localização contextual, tipo/estágio e tarifa opcional.
 2. **Ambientes e aparelhos:** referências editáveis, kWh da etiqueta ou potência e horários efetivos.

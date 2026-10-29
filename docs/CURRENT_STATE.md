@@ -1,4 +1,4 @@
-# Estado atual — EletroProjeto 0.25.1 / motor 0.13.0
+# Estado atual — EletroProjeto 0.25.2 / motor 0.13.0
 
 Atualizado em **29/10/2026**. Branch `main`; entrada da vistoria `35c0936`. Commit final no Git e checkpoint em `.checkpoints/latest.json`.
 
@@ -51,3 +51,7 @@ Verificações: 601 pytest/85 subtestes e 128 frontend aprovados; depois da corr
 Limites desta vistoria: não executados Windows/macOS/ARM, Docker/PostgreSQL reais, carga/pentest, leitor de tela real nem Pyodide real no navegador. A varredura não equivale a revisão humana integral dos originais do acervo. Quality hospedado permanece desativado; release v0.25.1 preservada. Limpeza permitida removeu 156.027.814 bytes de caches e saídas QA; dados/acervo/checkpoints/dependências/build ativo preservados. Serviços locais permanecem ativos. Sincronização e checkpoint final conferidos pela rotina; referência em `.checkpoints/latest.json`.
 
 Próximo passo: atender ao próximo pedido; nenhuma implementação interrompida.
+
+## Distribuição 0.25.2 — 29/10/2026
+
+Release de correção preparada com as mudanças validadas na vistoria: preservação da configuração no iniciador, isolamento de QA HTTPS e manutenção. Versões frontend/backend/lock e OpenAPI alinhadas; motor 0.13.0 preservado. ZIP gerado exclusivamente do commit revisado, manifesto e SHA-256 conferidos antes e após publicação. Release anterior preservada; nenhuma mudança de dados ou migração.

@@ -1,6 +1,6 @@
 # Histórico de alterações
 
-## Manutenção — 29/10/2026
+## 0.25.2 — 29/10/2026 / motor 0.13.0 preservado
 
 - Iniciador local preserva configurações versionadas após build, inclusive em falha.
 - QA HTTPS usa API e artefatos separados; limpeza e guia de contribuição atualizados.
